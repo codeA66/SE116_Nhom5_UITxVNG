@@ -45,14 +45,16 @@ func is_alive() -> bool:
 	return health == null or not health.is_dead()
 
 
-func receive_hit(info: DamageInfo) -> void:
-	if is_invincible() or not is_alive():
-		return
+## Trả về true nếu đòn thực sự được tính (không bị bất tử chặn, mục tiêu còn sống)
+func receive_hit(info: DamageInfo) -> bool:
+	if not is_alive() or (is_invincible() and not info.ignores_invincibility):
+		return false
 	_invincible_timer = invincibility_time
 	var damage_taken := _resolve_damage(info)
 	if health:
 		health.take_damage(damage_taken)
 	hurt.emit(info, damage_taken)
+	return true
 
 
 func _resolve_damage(info: DamageInfo) -> int:

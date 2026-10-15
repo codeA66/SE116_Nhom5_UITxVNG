@@ -9,6 +9,11 @@ extends Area3D
 @export var damage_type: DamageInfo.Type = DamageInfo.Type.PHYSICAL
 @export var knockback: float = 6.0
 @export var hit_interval: float = 0.5
+@export_group("Hazard")
+## Bẫy môi trường: bỏ qua bất tử của mục tiêu, kể cả bất tử khi dash
+@export var ignore_invincibility: bool = false
+## Trúng xong đưa mục tiêu về chỗ đứng an toàn (nếu mục tiêu hỗ trợ), để không thể đi xuyên bẫy
+@export var return_to_safe_ground: bool = false
 
 ## Mục tiêu đang ở trong vùng -> thời gian còn lại trước khi được trúng tiếp (<= 0 = trúng được ngay)
 var _targets: Dictionary[HurtboxComponent, float] = {}
@@ -51,4 +56,11 @@ func _on_area_exited(area: Area3D) -> void:
 func _hit(hurtbox: HurtboxComponent) -> void:
 	var direction := hurtbox.global_position - global_position
 	direction.y = 0.0
-	hurtbox.receive_hit(DamageInfo.new(damage, damage_type, direction.normalized() * knockback, self))
+	var info := DamageInfo.new(damage, damage_type, direction.normalized() * knockback, self)
+	info.ignores_invincibility = ignore_invincibility
+	if not hurtbox.receive_hit(info) or not return_to_safe_ground or not hurtbox.is_alive():
+		return
+	# Đòn kết liễu thì để chết bình thường; còn sống thì về chỗ an toàn
+	var target := hurtbox.owner
+	if target and target.has_method(&"return_to_safe_ground"):
+		target.call(&"return_to_safe_ground", true)

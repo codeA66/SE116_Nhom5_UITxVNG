@@ -10,6 +10,8 @@ var amount: int
 var type: Type
 var knockback: Vector3
 var source: Node
+## Bỏ qua bất tử của mục tiêu (bẫy môi trường: dash hay vừa bị đánh cũng không đi xuyên được)
+var ignores_invincibility: bool = false
 
 
 func _init(p_amount: int = 1, p_type: Type = Type.PHYSICAL, p_knockback: Vector3 = Vector3.ZERO, p_source: Node = null) -> void:

@@ -180,8 +180,17 @@ func teleport(target_position: Vector3, facing: Vector3 = Vector3.ZERO) -> void:
 
 ## Gọi từ KillZone: đưa về chỗ đứng an toàn gần nhất
 func on_kill_zone_entered() -> void:
+	return_to_safe_ground()
+
+
+## Về chỗ đứng an toàn gần nhất (rơi vực, trúng bẫy). stunned = choáng tại chỗ như bị đánh
+func return_to_safe_ground(stunned: bool = false) -> void:
 	teleport(_last_safe_position, get_facing_direction())
 	_hurtbox.set_invincible(recovery_invincibility)
+	if stunned:
+		# Không đẩy lùi ở chỗ mới, chỉ choáng
+		last_hit = null
+		state_machine.transition_to(PlayerState.HURT)
 
 
 ## Hướng ra đòn: ưu tiên mục tiêu gần nhất nằm trong tầm và lệch không quá soft_lock_angle so với preferred
