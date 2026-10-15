@@ -8,6 +8,8 @@ const ANIM_RUN := &"Rig_Medium_MovementBasic/Running_A"
 const ANIM_JUMP := &"Rig_Medium_MovementBasic/Jump_Start"
 const ANIM_FALL := &"Rig_Medium_MovementBasic/Jump_Idle"
 const ANIM_PICK_UP := &"Rig_Medium_General/PickUp"
+const ANIM_HURT := &"Rig_Medium_General/Hit_A"
+const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 
 @export_group("Input Feel")
 @export var coyote_time: float = 0.12
@@ -21,12 +23,18 @@ const ANIM_PICK_UP := &"Rig_Medium_General/PickUp"
 ## Số frame trên đất liên tục không gió trước khi một vị trí được coi là an toàn
 @export var safe_ground_frames: int = 8
 
+@export_group("Damage Feedback")
+## Chu kỳ nháy hình trong lúc bất tử sau khi bị đánh
+@export var blink_interval: float = 0.08
+
 @export_group("Combat")
 ## Bán kính tìm mục tiêu để tự quay về khi ra đòn
 @export var soft_lock_range: float = 4.0
 ## Góc lệch tối đa (độ) giữa hướng input và mục tiêu để được soft-lock
 @export var soft_lock_angle: float = 60.0
 
+## Đòn đánh gần nhất trúng player, state Hurt dùng để lấy hướng đẩy lùi
+var last_hit: DamageInfo
 ## Vũ khí đang chờ gắn vào tay trong state PickUp
 var pending_weapon: WeaponData
 
@@ -40,9 +48,12 @@ var _air_dashes_used: int = 0
 var _last_safe_position: Vector3
 ## Vị trí trên đất của các frame gần nhất (không gió), phần tử đầu là cũ nhất
 var _recent_floor_positions: Array[Vector3] = []
+var _blink_time_left: float = 0.0
+var _blink_clock: float = 0.0
 
 @onready var hitbox: HitboxComponent = $Model/Hitbox
 @onready var interactor: InteractorComponent = $Interactor
+@onready var health: HealthComponent = $HealthComponent
 @onready var _hurtbox: HurtboxComponent = $HurtboxComponent
 @onready var _camera_rig: CameraRig = $CameraRig
 @onready var _camera: Camera3D = $CameraRig/Camera3D
@@ -55,6 +66,24 @@ func _ready() -> void:
 	# Vào scene mới: gắn lại vũ khí đã có trong tiến trình
 	_attach_weapon_model(GameState.get_weapon())
 	_last_safe_position = global_position
+	# Máu được giữ qua các lần chuyển khu (player là object mới mỗi khu)
+	var kept_health := GameState.get_player_health()
+	if kept_health > 0:
+		health.set_current_health(kept_health)
+	health.health_changed.connect(_on_health_changed)
+	health.died.connect(_on_died)
+	_hurtbox.hurt.connect(_on_hurt)
+	# Chỉ chạy _process khi đang nháy hình
+	set_process(false)
+
+
+func _process(delta: float) -> void:
+	_blink_time_left -= delta
+	if _blink_time_left <= 0.0:
+		_stop_blink()
+		return
+	_blink_clock += delta
+	model.visible = fmod(_blink_clock, blink_interval * 2.0) >= blink_interval
 
 
 func get_move_direction() -> Vector3:
@@ -151,8 +180,17 @@ func teleport(target_position: Vector3, facing: Vector3 = Vector3.ZERO) -> void:
 
 ## Gọi từ KillZone: đưa về chỗ đứng an toàn gần nhất
 func on_kill_zone_entered() -> void:
+	return_to_safe_ground()
+
+
+## Về chỗ đứng an toàn gần nhất (rơi vực, trúng bẫy). stunned = choáng tại chỗ như bị đánh
+func return_to_safe_ground(stunned: bool = false) -> void:
 	teleport(_last_safe_position, get_facing_direction())
 	_hurtbox.set_invincible(recovery_invincibility)
+	if stunned:
+		# Không đẩy lùi ở chỗ mới, chỉ choáng
+		last_hit = null
+		state_machine.transition_to(PlayerState.HURT)
 
 
 ## Hướng ra đòn: ưu tiên mục tiêu gần nhất nằm trong tầm và lệch không quá soft_lock_angle so với preferred
@@ -214,6 +252,36 @@ func _update_buffer(action: StringName, timer: float, buffer_time: float, delta:
 	if Input.is_action_just_pressed(action):
 		return buffer_time
 	return timer - delta
+
+
+func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
+	# Đòn kết liễu đã chuyển sang Dead qua signal died
+	if health.is_dead():
+		return
+	last_hit = info
+	_start_blink(_hurtbox.invincibility_time)
+	state_machine.transition_to(PlayerState.HURT)
+
+
+func _on_died() -> void:
+	_stop_blink()
+	state_machine.transition_to(PlayerState.DEAD)
+
+
+func _on_health_changed(current: int, _max_value: int) -> void:
+	GameState.set_player_health(current)
+
+
+func _start_blink(duration: float) -> void:
+	_blink_time_left = duration
+	_blink_clock = 0.0
+	set_process(true)
+
+
+func _stop_blink() -> void:
+	_blink_time_left = 0.0
+	model.visible = true
+	set_process(false)
 
 
 func _on_hitbox_hit(_hurtbox: HurtboxComponent) -> void:

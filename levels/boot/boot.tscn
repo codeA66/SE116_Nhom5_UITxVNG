@@ -1,7 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dd7aoddqgl8wv"]
 
-[ext_resource type="Script" path="res://levels/boot/boot.gd" id="1_boot"]
+[ext_resource type="Script" uid="uid://6ep30vvcmjh2" path="res://levels/boot/boot.gd" id="1_boot"]
 
-[node name="Boot" type="Node"]
+[node name="Boot" type="Node" unique_id=1000528376]
 script = ExtResource("1_boot")
-first_zone = "res://tests/zones/test_zone_a.tscn"

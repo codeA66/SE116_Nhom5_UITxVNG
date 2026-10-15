@@ -11,6 +11,8 @@ signal progress_replaced
 
 var progress: PlayerProgress = PlayerProgress.new()
 
+var _player_health: int = -1
+
 
 func get_weapon() -> WeaponData:
 	return progress.weapon
@@ -54,6 +56,7 @@ func set_flag(id: StringName) -> void:
 ## Thay toàn bộ tiến trình. Không phát progress_changed để không ghi đè file save ngay khi vừa đọc
 func replace_progress(new_progress: PlayerProgress) -> void:
 	progress = new_progress
+	reset_player_health()
 	progress_replaced.emit()
 
 
@@ -76,3 +79,17 @@ func get_checkpoint_zone() -> String:
 
 func get_checkpoint_spawn_id() -> StringName:
 	return progress.checkpoint_spawn_id
+
+
+## Máu player giữ qua các lần chuyển khu (player là object mới mỗi khu). Không ghi ra file save:
+## mở lại game hay hồi sinh đều đầy máu. -1 = đầy
+func get_player_health() -> int:
+	return _player_health
+
+
+func set_player_health(value: int) -> void:
+	_player_health = value
+
+
+func reset_player_health() -> void:
+	_player_health = -1

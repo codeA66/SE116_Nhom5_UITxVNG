@@ -51,8 +51,8 @@ func _set_present(present: bool) -> void:
 	_hurtbox.set_deferred(&"monitorable", present)
 
 
-func _on_hurt(_damage: int, knockback: Vector3) -> void:
-	velocity += knockback
+func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
+	velocity += info.knockback
 	_flash()
 
 

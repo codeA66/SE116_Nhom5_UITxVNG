@@ -9,6 +9,8 @@ const FALL := &"Fall"
 const PICK_UP := &"PickUp"
 const ATTACK := &"Attack"
 const DASH := &"Dash"
+const HURT := &"Hurt"
+const DEAD := &"Dead"
 
 var player: Player
 

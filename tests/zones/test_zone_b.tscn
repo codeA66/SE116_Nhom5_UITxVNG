@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://objects/spawn_point/spawn_point.gd" id="2_spawn"]
 [ext_resource type="PackedScene" path="res://objects/portal/portal.tscn" id="3_portal"]
 [ext_resource type="PackedScene" path="res://objects/checkpoint/checkpoint.tscn" id="4_cp"]
+[ext_resource type="PackedScene" path="res://objects/hazards/spike_trap.tscn" id="5_spike"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 
@@ -58,3 +59,6 @@ target_portal_id = &"to_b"
 [node name="Checkpoint1" parent="." instance=ExtResource("4_cp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
 checkpoint_id = &"zone_b_cp1"
+
+[node name="SpikeTrap" parent="." instance=ExtResource("5_spike")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
