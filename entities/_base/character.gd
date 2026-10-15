@@ -78,6 +78,14 @@ func face_direction(direction: Vector3, delta: float) -> void:
 	model.rotation.y = lerp_angle(model.rotation.y, target_angle, 1.0 - exp(-movement.rotation_speed * delta))
 
 
+## Dịch chuyển tức thời (cổng, hồi sinh, rơi vực): xóa vận tốc và không nội suy từ vị trí cũ
+func teleport(target_position: Vector3, facing: Vector3 = Vector3.ZERO) -> void:
+	global_position = target_position
+	velocity = Vector3.ZERO
+	reset_physics_interpolation()
+	face_instantly(facing)
+
+
 ## Quay ngay lập tức, dùng khi ra đòn để đòn đánh đúng hướng
 func face_instantly(direction: Vector3) -> void:
 	if direction.is_zero_approx():

@@ -5,6 +5,7 @@ extends Node
 signal progress_changed
 signal ability_unlocked(ability: AbilityData)
 signal weapon_changed(weapon: WeaponData)
+signal checkpoint_changed(zone_path: String, spawn_id: StringName)
 ## Toàn bộ tiến trình bị thay (đọc save, chơi lại từ đầu)
 signal progress_replaced
 
@@ -54,3 +55,24 @@ func set_flag(id: StringName) -> void:
 func replace_progress(new_progress: PlayerProgress) -> void:
 	progress = new_progress
 	progress_replaced.emit()
+
+
+func has_checkpoint() -> bool:
+	return progress.has_checkpoint()
+
+
+func set_checkpoint(zone_path: String, spawn_id: StringName) -> void:
+	if progress.checkpoint_zone == zone_path and progress.checkpoint_spawn_id == spawn_id:
+		return
+	progress.checkpoint_zone = zone_path
+	progress.checkpoint_spawn_id = spawn_id
+	checkpoint_changed.emit(zone_path, spawn_id)
+	progress_changed.emit()
+
+
+func get_checkpoint_zone() -> String:
+	return progress.checkpoint_zone
+
+
+func get_checkpoint_spawn_id() -> StringName:
+	return progress.checkpoint_spawn_id

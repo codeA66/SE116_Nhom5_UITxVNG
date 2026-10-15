@@ -8,9 +8,19 @@ extends Resource
 ## Cờ thế giới theo persistent_id, ví dụ "test_movement.sword_pickup" = vật đã nhặt
 @export var flags: Dictionary[StringName, bool] = {}
 
+@export_group("Checkpoint")
+## Scene của khu chứa checkpoint gần nhất; rỗng = chưa có checkpoint
+@export_file("*.tscn") var checkpoint_zone: String = ""
+## Tên điểm xuất hiện của checkpoint trong khu đó
+@export var checkpoint_spawn_id: StringName
+
 
 func get_ability(id: StringName) -> AbilityData:
 	for ability in abilities:
 		if ability.id == id:
 			return ability
 	return null
+
+
+func has_checkpoint() -> bool:
+	return not checkpoint_zone.is_empty()

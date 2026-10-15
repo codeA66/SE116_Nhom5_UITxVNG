@@ -9,7 +9,7 @@ signal loaded
 const SAVE_PATH := "user://savegame.json"
 const TEMP_PATH := "user://savegame.json.tmp"
 ## Tăng khi đổi định dạng file, kèm xử lý chuyển đổi trong _deserialize
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
 
 
 func _ready() -> void:
@@ -83,6 +83,7 @@ func _serialize(progress: PlayerProgress) -> Dictionary:
 		"weapon": progress.weapon.resource_path if progress.weapon else "",
 		"abilities": ability_paths,
 		"flags": flag_ids,
+		"checkpoint": {"zone": progress.checkpoint_zone, "spawn": String(progress.checkpoint_spawn_id)},
 	}
 
 
@@ -104,6 +105,14 @@ func _deserialize(data: Dictionary) -> PlayerProgress:
 	if flag_ids is Array:
 		for flag: Variant in flag_ids:
 			progress.flags[StringName(str(flag))] = true
+
+	# Từ version 2. Save version 1 không có checkpoint: bắt đầu ở khu đầu tiên
+	var checkpoint: Variant = data.get("checkpoint", {})
+	if checkpoint is Dictionary:
+		var zone := str((checkpoint as Dictionary).get("zone", ""))
+		if _is_valid_scene_path(zone):
+			progress.checkpoint_zone = zone
+			progress.checkpoint_spawn_id = StringName(str((checkpoint as Dictionary).get("spawn", "")))
 	return progress
 
 
@@ -115,3 +124,7 @@ func _load_resource(path: String) -> Resource:
 		push_warning("SaveManager: bỏ qua đường dẫn không hợp lệ '%s'" % path)
 		return null
 	return load(path)
+
+
+func _is_valid_scene_path(path: String) -> bool:
+	return path.begins_with("res://") and path.ends_with(".tscn") and ResourceLoader.exists(path)

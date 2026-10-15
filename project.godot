@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="SE116"
-run/main_scene="res://tests/test_movement.tscn"
+run/main_scene="res://levels/boot/boot.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 HitStop="*res://autoload/hit_stop.gd"
 GameState="*res://autoload/game_state.gd"
 SaveManager="*res://autoload/save_manager.gd"
+SceneManager="*res://autoload/scene_manager.gd"
 
 [display]
 
