@@ -20,6 +20,9 @@ func _ground_update(_delta: float) -> void:
 func _try_common_transitions() -> bool:
 	if Input.is_action_just_pressed("interact") and player.interactor.try_interact():
 		return true
+	if player.can_dash():
+		state_machine.transition_to(DASH)
+		return true
 	if player.can_attack():
 		state_machine.transition_to(ATTACK)
 		return true

@@ -1,5 +1,5 @@
 extends PlayerState
-## Combo đánh thường. Dữ liệu từng đòn lấy từ player.weapon.combo (AttackData).
+## Combo đánh thường. Dữ liệu từng đòn lấy từ player.get_weapon().combo (AttackData).
 
 var _combo_index: int = 0
 var _elapsed: float = 0.0
@@ -23,8 +23,13 @@ func physics_update(delta: float) -> void:
 	_apply_lunge(delta)
 	_update_hitbox()
 
+	# Animation cancel: từ cancel_start được hủy phần thu đòn bằng dash
+	if _elapsed >= _attack.cancel_start and player.can_dash():
+		state_machine.transition_to(DASH)
+		return
+
 	# Attack buffer nằm ở Player: bấm sớm trong lúc đòn chưa xong vẫn được ghi nhận
-	var has_next := _combo_index < player.weapon.combo.size() - 1
+	var has_next := _combo_index < player.get_weapon().combo.size() - 1
 	if has_next and _elapsed >= _attack.combo_window_start and player.can_attack():
 		_combo_index += 1
 		_start_attack()
@@ -38,7 +43,7 @@ func physics_update(delta: float) -> void:
 func _start_attack() -> void:
 	player.consume_attack_input()
 	player.hitbox.deactivate()
-	_attack = player.weapon.combo[_combo_index]
+	_attack = player.get_weapon().combo[_combo_index]
 	_elapsed = 0.0
 	_hitbox_used = false
 

@@ -1,11 +1,11 @@
-extends PlayerState
+extends PlayerAirState
 
 
 func enter(_previous: StringName) -> void:
 	player.play_anim(Player.ANIM_FALL)
 
 
-func physics_update(delta: float) -> void:
+func _air_update(delta: float) -> void:
 	player.apply_gravity(delta)
 	player.move_toward_direction(player.get_move_direction(), delta)
 

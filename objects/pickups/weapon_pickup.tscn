@@ -12,19 +12,12 @@ script = ExtResource("1_pickup")
 [node name="Visual" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 
-[node name="InteractableComponent" type="Area3D" parent="." node_paths=PackedStringArray("prompt")]
+[node name="InteractableComponent" type="Area3D" parent="."]
 collision_layer = 32
 collision_mask = 0
 script = ExtResource("2_interact")
-prompt = NodePath("../Prompt")
+prompt_text = "PICK UP"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("SphereShape3D_range")
-
-[node name="Prompt" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-billboard = 1
-no_depth_test = true
-font_size = 48
-outline_size = 12

@@ -1,4 +1,4 @@
-extends PlayerState
+extends PlayerAirState
 
 
 func enter(_previous: StringName) -> void:
@@ -6,7 +6,7 @@ func enter(_previous: StringName) -> void:
 	player.play_anim(Player.ANIM_JUMP)
 
 
-func physics_update(delta: float) -> void:
+func _air_update(delta: float) -> void:
 	if Input.is_action_just_released("jump"):
 		player.cut_jump()
 	player.apply_gravity(delta)

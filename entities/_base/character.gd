@@ -10,9 +10,13 @@ const ANIM_BLEND := 0.15
 
 var gravity: float
 var jump_velocity: float
+## Tắt để bỏ qua lực ngoài (gió...), ví dụ trong lúc dash
+var external_forces_enabled: bool = true
 
 @onready var model: Node3D = $Model
 @onready var state_machine: StateMachine = $StateMachine
+## Không bắt buộc: nhân vật không có node này thì không chịu gió
+@onready var wind_receiver: WindReceiverComponent = get_node_or_null(^"WindReceiverComponent")
 @onready var _anim: AnimationPlayer = $AnimationPlayer
 
 
@@ -28,7 +32,10 @@ func _physics_process(delta: float) -> void:
 	# Thứ tự cố định: chuẩn bị (lớp con) -> state quyết định -> áp dụng vật lý
 	_pre_state_update(delta)
 	state_machine.physics_update(delta)
-	move_and_slide()
+	if wind_receiver and external_forces_enabled:
+		wind_receiver.move_with_wind(self, delta)
+	else:
+		move_and_slide()
 
 
 func apply_gravity(delta: float) -> void:
