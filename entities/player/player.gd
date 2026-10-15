@@ -44,6 +44,7 @@ var _recent_floor_positions: Array[Vector3] = []
 @onready var hitbox: HitboxComponent = $Model/Hitbox
 @onready var interactor: InteractorComponent = $Interactor
 @onready var _hurtbox: HurtboxComponent = $HurtboxComponent
+@onready var _camera_rig: CameraRig = $CameraRig
 @onready var _camera: Camera3D = $CameraRig/Camera3D
 @onready var _weapon_socket: Node3D = $WeaponSocket
 
@@ -136,14 +137,22 @@ func start_dash() -> DashData:
 	return dash
 
 
+## Dịch chuyển kèm đặt lại chỗ an toàn và camera (cổng, hồi sinh)
+func teleport(target_position: Vector3, facing: Vector3 = Vector3.ZERO) -> void:
+	super(target_position, facing)
+	# Chỗ mới là chỗ an toàn ban đầu; bỏ lịch sử vị trí ở chỗ cũ
+	_last_safe_position = target_position
+	_recent_floor_positions.clear()
+	_camera_rig.snap()
+	# Player vừa được tạo thì FSM chưa có state hiện tại, khi đó đã ở Idle sẵn
+	if state_machine.current_state:
+		state_machine.transition_to(PlayerState.IDLE)
+
+
 ## Gọi từ KillZone: đưa về chỗ đứng an toàn gần nhất
 func on_kill_zone_entered() -> void:
-	global_position = _last_safe_position
-	velocity = Vector3.ZERO
-	# Dịch chuyển tức thời: không nội suy từ vị trí cũ để tránh vệt trượt
-	reset_physics_interpolation()
+	teleport(_last_safe_position, get_facing_direction())
 	_hurtbox.set_invincible(recovery_invincibility)
-	state_machine.transition_to(PlayerState.IDLE)
 
 
 ## Hướng ra đòn: ưu tiên mục tiêu gần nhất nằm trong tầm và lệch không quá soft_lock_angle so với preferred
