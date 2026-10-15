@@ -1,6 +1,7 @@
 class_name Player
 extends Character
-## Player: đọc input theo hướng camera, coyote time, jump buffer, attack buffer, nhặt và cầm vũ khí.
+## Player: đọc input theo hướng camera, coyote time, các input buffer, nhặt vũ khí, mở khóa kỹ năng.
+## Vũ khí và kỹ năng thuộc tiến trình (GameState), không lưu trong player: chuyển scene không bị mất.
 
 const ANIM_IDLE := &"Rig_Medium_General/Idle_A"
 const ANIM_RUN := &"Rig_Medium_MovementBasic/Running_A"
@@ -12,6 +13,13 @@ const ANIM_PICK_UP := &"Rig_Medium_General/PickUp"
 @export var coyote_time: float = 0.12
 @export var jump_buffer_time: float = 0.12
 @export var attack_buffer_time: float = 0.25
+@export var dash_buffer_time: float = 0.15
+
+@export_group("Fall Recovery")
+## Thời gian bất tử sau khi được đưa về chỗ an toàn
+@export var recovery_invincibility: float = 1.0
+## Số frame trên đất liên tục không gió trước khi một vị trí được coi là an toàn
+@export var safe_ground_frames: int = 8
 
 @export_group("Combat")
 ## Bán kính tìm mục tiêu để tự quay về khi ra đòn
@@ -19,16 +27,23 @@ const ANIM_PICK_UP := &"Rig_Medium_General/PickUp"
 ## Góc lệch tối đa (độ) giữa hướng input và mục tiêu để được soft-lock
 @export var soft_lock_angle: float = 60.0
 
-var weapon: WeaponData
 ## Vũ khí đang chờ gắn vào tay trong state PickUp
 var pending_weapon: WeaponData
 
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
 var _attack_buffer_timer: float = 0.0
+var _dash_buffer_timer: float = 0.0
+var _dash_cooldown_timer: float = 0.0
+var _air_dashes_used: int = 0
+## Vị trí trên đất cuối cùng không bị gió đẩy, dùng khi rơi xuống vực
+var _last_safe_position: Vector3
+## Vị trí trên đất của các frame gần nhất (không gió), phần tử đầu là cũ nhất
+var _recent_floor_positions: Array[Vector3] = []
 
 @onready var hitbox: HitboxComponent = $Model/Hitbox
 @onready var interactor: InteractorComponent = $Interactor
+@onready var _hurtbox: HurtboxComponent = $HurtboxComponent
 @onready var _camera: Camera3D = $CameraRig/Camera3D
 @onready var _weapon_socket: Node3D = $WeaponSocket
 
@@ -36,6 +51,9 @@ var _attack_buffer_timer: float = 0.0
 func _ready() -> void:
 	super()
 	hitbox.hit.connect(_on_hitbox_hit)
+	# Vào scene mới: gắn lại vũ khí đã có trong tiến trình
+	_attach_weapon_model(GameState.get_weapon())
+	_last_safe_position = global_position
 
 
 func get_move_direction() -> Vector3:
@@ -58,8 +76,12 @@ func jump() -> void:
 	_coyote_timer = 0.0
 
 
+func get_weapon() -> WeaponData:
+	return GameState.get_weapon()
+
+
 func has_weapon() -> bool:
-	return weapon != null
+	return get_weapon() != null
 
 
 ## Đúng khi đang cầm vũ khí và có lệnh đánh trong buffer
@@ -78,12 +100,50 @@ func pick_up_weapon(data: WeaponData) -> void:
 
 
 func equip_weapon(data: WeaponData) -> void:
-	weapon = data
 	pending_weapon = null
-	for child in _weapon_socket.get_children():
-		child.queue_free()
-	if data and data.model_scene:
-		_weapon_socket.add_child(data.model_scene.instantiate())
+	GameState.set_weapon(data)
+	_attach_weapon_model(data)
+
+
+func unlock_ability(ability: AbilityData) -> void:
+	GameState.unlock_ability(ability)
+
+
+func has_ability(id: StringName) -> bool:
+	return GameState.has_ability(id)
+
+
+func get_ability(id: StringName) -> AbilityData:
+	return GameState.get_ability(id)
+
+
+## Đúng khi đã mở khóa dash, có lệnh dash trong buffer, hết cooldown và còn lượt dash trên không
+func can_dash() -> bool:
+	var dash := get_ability(DashData.ID) as DashData
+	if dash == null or _dash_buffer_timer <= 0.0 or _dash_cooldown_timer > 0.0:
+		return false
+	return is_on_floor() or _air_dashes_used < dash.air_dashes
+
+
+## Gọi khi vào state Dash: tiêu input, tính cooldown, trừ lượt trên không, bật i-frames
+func start_dash() -> DashData:
+	var dash := get_ability(DashData.ID) as DashData
+	_dash_buffer_timer = 0.0
+	_dash_cooldown_timer = dash.duration + dash.cooldown
+	if not is_on_floor():
+		_air_dashes_used += 1
+	_hurtbox.set_invincible(dash.duration)
+	return dash
+
+
+## Gọi từ KillZone: đưa về chỗ đứng an toàn gần nhất
+func on_kill_zone_entered() -> void:
+	global_position = _last_safe_position
+	velocity = Vector3.ZERO
+	# Dịch chuyển tức thời: không nội suy từ vị trí cũ để tránh vệt trượt
+	reset_physics_interpolation()
+	_hurtbox.set_invincible(recovery_invincibility)
+	state_machine.transition_to(PlayerState.IDLE)
 
 
 ## Hướng ra đòn: ưu tiên mục tiêu gần nhất nằm trong tầm và lệch không quá soft_lock_angle so với preferred
@@ -112,11 +172,29 @@ func find_attack_direction(preferred: Vector3) -> Vector3:
 func _pre_state_update(delta: float) -> void:
 	if is_on_floor():
 		_coyote_timer = coyote_time
+		_air_dashes_used = 0
+		# Area3D nhận biết vùng gió trễ vài frame: chỉ công nhận vị trí của safe_ground_frames frame trước,
+		# khi suốt khoảng đó không có gió. Chỗ an toàn vì vậy luôn lùi khỏi mép vùng gió và mép vực
+		if wind_receiver != null and not wind_receiver.get_wind().is_zero_approx():
+			_recent_floor_positions.clear()
+		else:
+			_recent_floor_positions.append(global_position)
+			if _recent_floor_positions.size() > safe_ground_frames:
+				_last_safe_position = _recent_floor_positions.pop_front()
 	else:
 		_coyote_timer -= delta
 
 	_jump_buffer_timer = _update_buffer(&"jump", _jump_buffer_timer, jump_buffer_time, delta)
 	_attack_buffer_timer = _update_buffer(&"attack", _attack_buffer_timer, attack_buffer_time, delta)
+	_dash_buffer_timer = _update_buffer(&"dash", _dash_buffer_timer, dash_buffer_time, delta)
+	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
+
+
+func _attach_weapon_model(data: WeaponData) -> void:
+	for child in _weapon_socket.get_children():
+		child.queue_free()
+	if data and data.model_scene:
+		_weapon_socket.add_child(data.model_scene.instantiate())
 
 
 func _is_holding_jump() -> bool:

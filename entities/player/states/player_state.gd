@@ -8,6 +8,7 @@ const JUMP := &"Jump"
 const FALL := &"Fall"
 const PICK_UP := &"PickUp"
 const ATTACK := &"Attack"
+const DASH := &"Dash"
 
 var player: Player
 

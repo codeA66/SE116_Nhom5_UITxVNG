@@ -1,13 +1,14 @@
 class_name InteractableComponent
 extends Area3D
 ## Gắn vào vật tương tác được (vũ khí, rương, cửa, NPC...).
-## InteractorComponent chọn vật gần nhất thì hiện gợi ý; người chơi bấm interact thì phát signal.
+## InteractorComponent chọn vật gần nhất; UI gợi ý đọc prompt_text và vị trí từ đây.
 
 signal interacted(interactor: Node3D)
 
-@export var prompt_text: String = "[E] Tương tác"
-## Node hiển thị gợi ý, có thể để trống
-@export var prompt: Label3D
+## Chữ hành động hiển thị trên gợi ý, ví dụ "PICK UP", "OPEN", "TALK"
+@export var prompt_text: String = "INTERACT"
+## Điểm neo gợi ý so với vật, UI chiếu điểm này lên màn hình
+@export var prompt_offset: Vector3 = Vector3.ZERO
 
 var enabled: bool = true
 
@@ -15,20 +16,10 @@ var enabled: bool = true
 func _ready() -> void:
 	monitoring = false
 	monitorable = true
-	if prompt:
-		prompt.text = prompt_text
-	set_focused(false)
 
 
-func set_prompt_text(text: String) -> void:
-	prompt_text = text
-	if prompt:
-		prompt.text = text
-
-
-func set_focused(focused: bool) -> void:
-	if prompt:
-		prompt.visible = focused and enabled
+func get_prompt_position() -> Vector3:
+	return global_position + prompt_offset
 
 
 func interact(interactor: Node3D) -> void:

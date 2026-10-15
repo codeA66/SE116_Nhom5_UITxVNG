@@ -17,7 +17,7 @@ func _physics_process(_delta: float) -> void:
 
 ## Tương tác với mục tiêu hiện tại. Trả về false nếu không có gì để tương tác
 func try_interact() -> bool:
-	if current == null:
+	if not is_instance_valid(current):
 		return false
 	current.interact(owner as Node3D)
 	return true
@@ -35,11 +35,10 @@ func _update_focus() -> void:
 			best_distance = distance
 			nearest = interactable
 
+	# Mục tiêu cũ có thể đã bị xóa (ví dụ vật phẩm vừa được nhặt)
+	if not is_instance_valid(current):
+		current = null
 	if nearest == current:
 		return
-	if is_instance_valid(current):
-		current.set_focused(false)
 	current = nearest
-	if current:
-		current.set_focused(true)
 	focus_changed.emit(current)
