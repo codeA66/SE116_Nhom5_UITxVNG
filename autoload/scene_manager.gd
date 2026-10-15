@@ -9,6 +9,9 @@ signal zone_ready
 const FADE_LAYER_SCENE := preload("res://ui/transition/fade_layer.tscn")
 ## Scene không có ZoneRoot sẽ không báo zone_ready: chờ tối đa chừng này frame rồi vẫn sáng lại
 const ZONE_READY_TIMEOUT_FRAMES := 30
+## Khu đầu tiên của game: mở game lần đầu, hoặc chết khi chưa chạm checkpoint nào.
+## Khai báo duy nhất ở đây; đổi khu đầu game chỉ sửa dòng này
+const START_ZONE := "res://tests/zones/test_zone_a.tscn"
 
 @export var fade_duration: float = 0.25
 
@@ -51,12 +54,17 @@ func change_zone(zone_path: String, spawn_id: StringName = &"") -> void:
 	zone_changed.emit(zone_path)
 
 
-## Hồi sinh tại checkpoint gần nhất (kể cả khi đang ở khu khác); chưa có checkpoint thì tải lại khu hiện tại
+## Hồi sinh tại checkpoint gần nhất (kể cả khi đang ở khu khác); chưa có checkpoint thì về khu đầu game
 func respawn_at_checkpoint() -> void:
+	go_to_last_checkpoint()
+
+
+## Vào checkpoint đã lưu; chưa có thì vào điểm start của khu đầu game. Dùng khi mở game và khi hồi sinh
+func go_to_last_checkpoint() -> void:
 	if GameState.has_checkpoint():
 		change_zone(GameState.get_checkpoint_zone(), GameState.get_checkpoint_spawn_id())
 	else:
-		change_zone(get_tree().current_scene.scene_file_path)
+		change_zone(START_ZONE)
 
 
 ## ZoneRoot gọi sau khi đã đặt player vào điểm xuất hiện
