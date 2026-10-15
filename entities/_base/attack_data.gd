@@ -8,6 +8,7 @@ extends Resource
 
 @export_group("Damage")
 @export var damage: int = 1
+@export var damage_type: DamageInfo.Type = DamageInfo.Type.PHYSICAL
 @export var knockback: float = 5.0
 @export var hitstop: float = 0.05
 

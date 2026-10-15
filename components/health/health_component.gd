@@ -32,3 +32,9 @@ func take_damage(amount: int) -> void:
 func heal_full() -> void:
 	current_health = max_health
 	health_changed.emit(current_health, max_health)
+
+
+## Đặt máu trực tiếp (khôi phục máu khi chuyển khu); không phát damaged/died
+func set_current_health(value: int) -> void:
+	current_health = clampi(value, 0, max_health)
+	health_changed.emit(current_health, max_health)

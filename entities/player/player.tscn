@@ -23,6 +23,9 @@
 [ext_resource type="AnimationLibrary" uid="uid://dbwkradlvj17x" path="res://assets/characters/KayKit_Character_Animations_1.1/Animations/gltf/Rig_Medium/Rig_Medium_MovementAdvanced.glb" id="20_moveadv"]
 [ext_resource type="PackedScene" path="res://components/blob_shadow/blob_shadow.tscn" id="21_blob"]
 [ext_resource type="Script" path="res://components/wind_receiver/wind_receiver_component.gd" id="22_wind"]
+[ext_resource type="Script" path="res://entities/player/states/hurt.gd" id="23_hurt"]
+[ext_resource type="Script" path="res://entities/player/states/dead.gd" id="24_dead"]
+[ext_resource type="PackedScene" path="res://ui/hud/health_bar.tscn" id="25_hpbar"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -87,6 +90,7 @@ collision_mask = 0
 script = ExtResource("14_hurtbox")
 health = NodePath("../HealthComponent")
 invincibility_time = 0.5
+fixed_damage_per_hit = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -113,6 +117,9 @@ shape = SubResource("CapsuleShape3D_wind")
 [node name="BlobShadow" parent="." instance=ExtResource("21_blob")]
 
 [node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="HealthBar" parent="HUD" node_paths=PackedStringArray("health") instance=ExtResource("25_hpbar")]
+health = NodePath("../../HealthComponent")
 
 [node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor") instance=ExtResource("18_prompt")]
 interactor = NodePath("../../Interactor")
@@ -150,3 +157,9 @@ script = ExtResource("12_attack")
 
 [node name="Dash" type="Node" parent="StateMachine"]
 script = ExtResource("19_dash")
+
+[node name="Hurt" type="Node" parent="StateMachine"]
+script = ExtResource("23_hurt")
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("24_dead")

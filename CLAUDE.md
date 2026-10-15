@@ -67,6 +67,18 @@ docs/          tài liệu
 - Collision layer phải đặt tên trong Project Settings và dùng nhất quán.
 - Comment bằng tiếng Việt, ngắn gọn, chỉ giải thích "tại sao", không giải thích điều hiển nhiên.
 
+### Hiệu năng (bắt buộc)
+
+- **Không viết code làm giảm hiệu năng; luôn chọn cách tối ưu nhất** trong khi vẫn giữ kiến trúc mở rộng được.
+- **Ưu tiên signal / sự kiện thay cho kiểm tra mỗi frame.** Không quét `get_overlapping_areas()`, `get_nodes_in_group()`, `find_children()` trong `_process` / `_physics_process` khi có thể theo dõi bằng signal vào/ra.
+- **Tắt xử lý khi không cần:** `set_process(false)` / `set_physics_process(false)` khi node không có việc gì (vùng trống, hiệu ứng đã xong, vật đã dùng).
+- **Không cấp phát trong vòng lặp nóng:** không tạo mảng, Dictionary, Resource, node mới mỗi frame; cache lại tham chiếu (`@onready`, biến thành viên).
+- **Không `get_node()` / `$Path` lặp lại mỗi frame**: lấy một lần vào `@onready`.
+- **Vật lý:** dùng collision layer/mask để lọc ngay từ engine thay vì lọc bằng code; Area3D chỉ bật `monitoring` khi cần.
+- **Hình ảnh:** particle có giới hạn số hạt hợp lý; tắt `cast_shadow` cho mesh/hiệu ứng nhỏ không cần bóng; dùng chung material/mesh khi không cần riêng (chỉ `duplicate()` khi bắt buộc).
+- **Thứ cần tạo/xóa liên tục** (đạn, hiệu ứng trúng đòn, số sát thương...) dùng **object pool** thay vì `instantiate()` / `queue_free()` mỗi lần.
+- Khi có lựa chọn giữa cách dễ viết và cách nhanh hơn mà độ phức tạp tương đương, chọn cách nhanh hơn và ghi chú lý do bằng comment.
+
 ## 5. Game feel — checklist bắt buộc
 
 Code điều khiển nhân vật phải có đủ các mục dưới đây (trừ khi người dùng bỏ). Mọi thông số đều phải `@export` để chỉnh được.
