@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://ogqrogwu58gt"]
+
+[ext_resource type="Script" uid="uid://quruvmagqouy" path="res://entities/player/player.gd" id="1_sglur"]
+[ext_resource type="PackedScene" uid="uid://dbudj58ogfwub" path="res://assets/characters/kaykit_adventurers/Characters/gltf/Knight.glb" id="1_symyc"]
+[ext_resource type="Resource" path="res://resources/player_movement.tres" id="2_move"]
+[ext_resource type="Script" uid="uid://blr8snfwvdvqy" path="res://components/state_machine/state_machine.gd" id="3_bls4j"]
+[ext_resource type="AnimationLibrary" uid="uid://cvhj4js7q8irn" path="res://assets/characters/kaykit_adventurers/Animations/gltf/Rig_Medium/Rig_Medium_General.glb" id="4_general"]
+[ext_resource type="AnimationLibrary" uid="uid://ctk12nfuk6ncg" path="res://assets/characters/kaykit_adventurers/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb" id="5_movement"]
+[ext_resource type="Script" uid="uid://cthmkxcqaca82" path="res://entities/player/camera_rig.gd" id="6_camrig"]
+[ext_resource type="Script" uid="uid://dkyk8ucntxdga" path="res://entities/player/states/idle.gd" id="7_idle"]
+[ext_resource type="Script" uid="uid://cdpskso3yh3xi" path="res://entities/player/states/run.gd" id="8_run"]
+[ext_resource type="Script" uid="uid://boj3o7h8xcbyq" path="res://entities/player/states/jump.gd" id="9_jump"]
+[ext_resource type="Script" uid="uid://dnbp6fhk50t0s" path="res://entities/player/states/fall.gd" id="10_fall"]
+[ext_resource type="Script" path="res://entities/player/states/pick_up.gd" id="11_pickup"]
+[ext_resource type="Script" path="res://entities/player/states/attack.gd" id="12_attack"]
+[ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="13_hitbox"]
+[ext_resource type="Script" path="res://components/hurtbox/hurtbox_component.gd" id="14_hurtbox"]
+[ext_resource type="Script" path="res://components/health/health_component.gd" id="15_health"]
+[ext_resource type="Script" path="res://components/interaction/interactor_component.gd" id="16_interactor"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
+size = Vector3(1.6, 1.4, 1.6)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hurtbox"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
+radius = 1.2
+
+[node name="Player" type="CharacterBody3D" unique_id=1289567380]
+collision_layer = 2
+collision_mask = 5
+floor_snap_length = 0.3
+script = ExtResource("1_sglur")
+movement = ExtResource("2_move")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1933727033]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Model" parent="." unique_id=414762663 instance=ExtResource("1_symyc")]
+
+[node name="Hitbox" type="Area3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 1)
+collision_layer = 8
+collision_mask = 4
+script = ExtResource("13_hitbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Model/Hitbox"]
+shape = SubResource("BoxShape3D_hitbox")
+
+[node name="WeaponSocket" type="BoneAttachment3D" parent="."]
+use_external_skeleton = true
+external_skeleton = NodePath("../Model/Rig_Medium/Skeleton3D")
+bone_name = "handslot.r"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=983512932]
+root_node = NodePath("../Model")
+libraries/Rig_Medium_General = ExtResource("4_general")
+libraries/Rig_Medium_MovementBasic = ExtResource("5_movement")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("15_health")
+max_health = 5
+
+[node name="HurtboxComponent" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("14_hurtbox")
+health = NodePath("../HealthComponent")
+invincibility_time = 0.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_hurtbox")
+
+[node name="Interactor" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 32
+script = ExtResource("16_interactor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("SphereShape3D_interact")
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=1233256162]
+script = ExtResource("6_camrig")
+follow_speed = 5.5
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=68364600]
+transform = Transform3D(1, 0, 0, 0, 0.6427876, 0.76604444, 0, -0.76604444, 0.6427876, 0, 16.85, 14.14)
+current = true
+fov = 30.0
+
+[node name="StateMachine" type="Node" parent="." unique_id=51405696 node_paths=PackedStringArray("initial_state")]
+script = ExtResource("3_bls4j")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine" unique_id=754124358]
+script = ExtResource("7_idle")
+
+[node name="Run" type="Node" parent="StateMachine" unique_id=1570109289]
+script = ExtResource("8_run")
+
+[node name="Jump" type="Node" parent="StateMachine" unique_id=355741882]
+script = ExtResource("9_jump")
+
+[node name="Fall" type="Node" parent="StateMachine" unique_id=1529057692]
+script = ExtResource("10_fall")
+
+[node name="PickUp" type="Node" parent="StateMachine"]
+script = ExtResource("11_pickup")
+
+[node name="Attack" type="Node" parent="StateMachine"]
+script = ExtResource("12_attack")

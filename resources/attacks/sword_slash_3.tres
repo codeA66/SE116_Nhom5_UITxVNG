@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AttackData" format=3]
+
+[ext_resource type="Script" path="res://entities/_base/attack_data.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+animation = &"Rig_Medium_General/Throw"
+anim_speed = 1.8
+damage = 2
+knockback = 9.0
+hitstop = 0.09
+active_start = 0.28
+active_end = 0.42
+combo_window_start = 0.70
+cancel_start = 0.40
+duration = 0.70
+lunge_speed = 0.0
+lunge_time = 0.15
