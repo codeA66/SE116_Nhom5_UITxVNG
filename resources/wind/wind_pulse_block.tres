@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="WindData" format=3]
+
+[ext_resource type="Script" uid="uid://1safs58a5ahc" path="res://objects/wind_zone/wind_data.gd" id="1_wind"]
+
+[resource]
+script = ExtResource("1_wind")
+strength = 8.0
+blocks_player = true
+pulse_enabled = true
+on_time = 2.0
+off_time = 2.0
+warning_time = 0.6

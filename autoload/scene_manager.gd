@@ -11,7 +11,7 @@ const FADE_LAYER_SCENE := preload("res://ui/transition/fade_layer.tscn")
 const ZONE_READY_TIMEOUT_FRAMES := 30
 ## Khu đầu tiên của game: mở game lần đầu, hoặc chết khi chưa chạm checkpoint nào.
 ## Khai báo duy nhất ở đây; đổi khu đầu game chỉ sửa dòng này
-const START_ZONE := "res://tests/zones/test_zone_a.tscn"
+const START_ZONE := "res://tests/test_game.tscn"
 
 @export var fade_duration: float = 0.25
 

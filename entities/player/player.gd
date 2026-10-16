@@ -352,5 +352,5 @@ func _stop_blink() -> void:
 	set_process(false)
 
 
-func _on_hitbox_hit(_hurtbox: HurtboxComponent) -> void:
+func _on_hitbox_hit(_target: HurtboxComponent) -> void:
 	HitStop.stop(hitbox.attack.hitstop)

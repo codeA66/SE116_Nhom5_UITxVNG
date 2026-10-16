@@ -11,7 +11,7 @@ Tài liệu chung cho cả nhóm khi xây map. Chỉ ghi những gì nhóm đã 
 - **Cấu trúc lai**:
   - mỗi khu (zone) là một scene riêng;
   - các phòng trong cùng một khu nối liền mạch, không có màn hình chờ;
-  - khu nối khu bằng **cổng dịch chuyển hai chiều**.
+  - **không dùng cổng dịch chuyển (portal)**; cách nối giữa các khu **chưa chốt** (tạm thời các khu chưa nối với nhau).
 - **Checkpoint**: đi qua là kích hoạt. Chết thì hồi sinh ở checkpoint; chưa có checkpoint thì về khu bắt đầu.
 
 ## 2. Kiểu map: khóa – chìa (giống Death's Door)
@@ -47,7 +47,7 @@ Vì chỉ có một kỹ năng gió, gió phải dùng được cho nhiều lo�
 | Vực (KillZone) | Đã có code |
 | Bẫy gai (SpikeTrap) | Đã có code |
 | Checkpoint | Đã có code |
-| Cổng dịch chuyển (Portal) | Đã có code |
+| Cổng dịch chuyển (Portal) | Có code nhưng **tạm không dùng** (giữ trong objects/portal/) |
 | Tượng nhận kỹ năng (AbilityStatue) | Đã có code |
 | Kỹ năng thổi gió | **Chưa có code** |
 | Thuyền chạy bằng gió | **Chưa có code** |

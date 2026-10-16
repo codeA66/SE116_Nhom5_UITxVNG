@@ -256,8 +256,8 @@ func _apply_ground(size: Vector3) -> void:
 	_ground_found = not is_nan(floor_y)
 	if not _ground_found:
 		return
-	var basis := Basis.looking_at(-forward, Vector3.UP) * Basis.from_scale(Vector3(scale_xz.x, 1.0, scale_xz.y))
-	_ground.global_transform = Transform3D(basis, Vector3(center.x, floor_y + style.ground_offset, center.z))
+	var ground_basis := Basis.looking_at(-forward, Vector3.UP) * Basis.from_scale(Vector3(scale_xz.x, 1.0, scale_xz.y))
+	_ground.global_transform = Transform3D(ground_basis, Vector3(center.x, floor_y + style.ground_offset, center.z))
 
 
 ## Độ cao mặt đất dưới vùng; NAN nếu không có đất. Editor không dò vật lý, lấy đáy vùng
