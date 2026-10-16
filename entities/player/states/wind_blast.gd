@@ -14,6 +14,7 @@ func enter(_previous: StringName) -> void:
 	var input_direction := player.get_move_direction()
 	var preferred := player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
 	player.face_instantly(player.find_attack_direction(preferred))
+	player.wind_blast.begin_charge(_data)
 	player.play_action(_data.animation, _data.anim_speed)
 
 

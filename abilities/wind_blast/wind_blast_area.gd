@@ -5,17 +5,15 @@ extends Area3D
 ## Thứ gì muốn phản ứng với gió (quái, thuyền, lửa...) chỉ cần có WindReceiverComponent.
 
 signal pushed(receiver: WindReceiverComponent)
-
-## Hạt bay chậm nhất bằng tỉ lệ này so với hạt nhanh nhất, cho luồng gió không đều
-const PARTICLE_SPEED_SPREAD := 0.7
+signal charge_started(data: WindBlastData)
+signal blast_started(data: WindBlastData)
+signal blast_stopped
 
 var _data: WindBlastData
 var _active: bool = false
 var _already_pushed: Array[WindReceiverComponent] = []
 
 @onready var _shape: CollisionShape3D = $CollisionShape3D
-@onready var _particles: CPUParticles3D = $Particles
-@onready var _sound: AudioStreamPlayer3D = $Sound
 
 
 func _ready() -> void:
@@ -28,6 +26,10 @@ func is_active() -> bool:
 	return _active
 
 
+func begin_charge(data: WindBlastData) -> void:
+	charge_started.emit(data)
+
+
 func activate(data: WindBlastData) -> void:
 	_data = data
 	_already_pushed.clear()
@@ -36,19 +38,14 @@ func activate(data: WindBlastData) -> void:
 	var box := _shape.shape as BoxShape3D
 	box.size = Vector3(data.width, data.height, data.reach)
 	_shape.position.z = data.reach * 0.5
-	# Hạt bay vừa hết tầm thổi trong đúng thời gian sống
-	var particle_speed := data.reach / _particles.lifetime
-	_particles.initial_velocity_max = particle_speed
-	_particles.initial_velocity_min = particle_speed * PARTICLE_SPEED_SPREAD
-	_particles.restart()
-	if _sound.stream:
-		_sound.play()
 	set_deferred(&"monitoring", true)
+	blast_started.emit(data)
 
 
 func deactivate() -> void:
 	_active = false
 	set_deferred(&"monitoring", false)
+	blast_stopped.emit()
 
 
 func _on_area_entered(area: Area3D) -> void:

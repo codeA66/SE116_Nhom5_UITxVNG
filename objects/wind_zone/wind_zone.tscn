@@ -1,69 +1,15 @@
 [gd_scene format=3]
-
 [ext_resource type="Script" path="res://objects/wind_zone/wind_zone.gd" id="1_wind"]
 [ext_resource type="Resource" path="res://resources/wind/wind_lane.tres" id="2_default"]
-
+[ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_zone_vfx.tscn" id="3_vfx"]
 [sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
 resource_local_to_scene = true
 size = Vector3(4, 3, 8)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_streak"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(1, 1, 1, 0.45)
-
-[sub_resource type="BoxMesh" id="BoxMesh_streak"]
-material = SubResource("StandardMaterial3D_streak")
-size = Vector3(0.03, 0.7, 0.03)
-
-[sub_resource type="Gradient" id="Gradient_ring"]
-offsets = PackedFloat32Array(0, 0.55, 0.78, 1)
-colors = PackedColorArray(1, 1, 1, 0.08, 1, 1, 1, 0.35, 1, 1, 1, 1, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_ring"]
-gradient = SubResource("Gradient_ring")
-width = 128
-height = 128
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0.5, 0)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ring"]
-transparency = 1
-cull_mode = 2
-shading_mode = 0
-albedo_color = Color(0.55, 0.85, 1, 0.6)
-albedo_texture = SubResource("GradientTexture2D_ring")
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_ring"]
-size = Vector2(1, 1)
-orientation = 2
-
 [node name="WindZone" type="Area3D"]
 collision_layer = 64
 collision_mask = 0
 script = ExtResource("1_wind")
 data = ExtResource("2_default")
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_zone")
-
-[node name="Particles" type="CPUParticles3D" parent="."]
-local_coords = true
-cast_shadow = 0
-emitting = false
-amount = 40
-lifetime = 1.0
-mesh = SubResource("BoxMesh_streak")
-particle_flag_align_y = true
-emission_shape = 3
-emission_box_extents = Vector3(2, 1.5, 4)
-direction = Vector3(0, 0, -1)
-spread = 0.0
-gravity = Vector3(0, 0, 0)
-
-[node name="BaseRing" type="MeshInstance3D" parent="."]
-visible = false
-cast_shadow = 0
-material_override = SubResource("StandardMaterial3D_ring")
-mesh = SubResource("PlaneMesh_ring")
+[node name="WindZoneVfx" parent="." instance=ExtResource("3_vfx")]
