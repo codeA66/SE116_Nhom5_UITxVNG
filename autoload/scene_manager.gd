@@ -39,6 +39,8 @@ func change_zone(zone_path: String, spawn_id: StringName = &"") -> void:
 		return
 	_busy = true
 	await _fade.fade_out(fade_duration)
+	# Rời khu mà chưa chạm checkpoint: trạng thái chờ lưu (thuyền đã đi...) bị bỏ
+	GameState.discard_pending_flags()
 	_pending_spawn_id = spawn_id
 	_zone_ready = false
 	get_tree().change_scene_to_file(zone_path)

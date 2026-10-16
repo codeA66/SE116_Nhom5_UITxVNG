@@ -200,6 +200,12 @@ func on_kill_zone_entered() -> void:
 	return_to_safe_ground()
 
 
+## Gọi từ KillZone bật Lethal (nước sâu...): chết thật, hồi sinh ở checkpoint qua state Dead
+func on_lethal_zone_entered() -> void:
+	if not health.is_dead():
+		health.take_damage(health.current_health)
+
+
 ## Về chỗ đứng an toàn gần nhất (rơi vực, trúng bẫy). stunned = choáng tại chỗ như bị đánh
 func return_to_safe_ground(stunned: bool = false) -> void:
 	teleport(_last_safe_position, get_facing_direction())

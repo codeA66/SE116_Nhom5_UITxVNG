@@ -18,6 +18,11 @@ const GROUND_PROBE_EXTRA := 3.0
 const STROKE_SEED := 11
 const MOTE_SEED := 23
 const MIST_SEED := 37
+## Cột gió: style.updraft_strokes ứng với tiết diện chuẩn này (m², cột 4x4); to hơn thì thêm nét theo diện tích
+const UPDRAFT_REFERENCE_AREA := 16.0
+## Giới hạn số nét cột gió để cột rất to không làm nặng máy
+const UPDRAFT_MAX_STROKES := 72
+const UPDRAFT_MIN_STROKES := 4
 
 ## Tắt để editor không vẽ hiệu ứng (đỡ rối khi dựng map)
 @export var preview_enabled: bool = true:
@@ -130,9 +135,11 @@ func _use_style(next_style: WindVfxStyle) -> void:
 func _rebuild_instances(size: Vector3) -> void:
 	var stroke_count: int
 	if _vertical:
-		stroke_count = style.updraft_strokes
+		var area_ratio := size.x * size.y / UPDRAFT_REFERENCE_AREA
+		stroke_count = clampi(roundi(style.updraft_strokes * area_ratio), UPDRAFT_MIN_STROKES, UPDRAFT_MAX_STROKES)
 	else:
-		stroke_count = clampi(ceili(size.x * size.z * style.gust_stroke_density), 1, style.gust_max_strokes)
+		# Gió mạnh dày nét hơn: số nét tăng theo căn bậc hai sức gió để không rối
+		stroke_count = clampi(ceili(size.x * size.z * style.gust_stroke_density * sqrt(_strength_scale())), 1, style.gust_max_strokes)
 	var mote_count := clampi(ceili(size.x * size.y * size.z * _zone.data.particle_density * style.mote_density_ratio), 0, style.max_motes)
 	_ensure_multimesh(_strokes, WindVfxGeometry.strip(), stroke_count, STROKE_SEED)
 	_ensure_multimesh(_motes, WindVfxGeometry.quad(), mote_count, MOTE_SEED)
@@ -180,11 +187,11 @@ func _apply_stroke_uniforms(size: Vector3) -> void:
 		m.set_shader_parameter(&"stroke_length", style.updraft_stroke_length)
 		m.set_shader_parameter(&"travel_speed", style.updraft_rise_speed)
 	else:
-		m.set_shader_parameter(&"width", style.gust_width)
+		m.set_shader_parameter(&"width", style.gust_width * _width_scale())
 		m.set_shader_parameter(&"stroke_length", style.gust_stroke_length / maxf(size.z, 0.01))
-		m.set_shader_parameter(&"travel_speed", style.gust_travel_speed)
-	m.set_shader_parameter(&"wave_amplitude", style.gust_wave)
-	m.set_shader_parameter(&"curl_fraction", style.gust_curl_fraction)
+		m.set_shader_parameter(&"travel_speed", style.gust_travel_speed * _strength_scale())
+	m.set_shader_parameter(&"wave_amplitude", style.blocking_wave if _is_blocking() else style.gust_wave)
+	m.set_shader_parameter(&"curl_fraction", style.blocking_curl_fraction if _is_blocking() else style.gust_curl_fraction)
 	m.set_shader_parameter(&"curl_radius", style.gust_curl_radius)
 	m.set_shader_parameter(&"curl_turns", style.gust_curl_turns)
 	m.set_shader_parameter(&"funnel_bottom", style.funnel_bottom)
@@ -203,9 +210,9 @@ func _apply_mote_uniforms() -> void:
 	m.set_shader_parameter(&"speck_color", style.speck_color)
 	m.set_shader_parameter(&"leaf_size", style.leaf_size)
 	m.set_shader_parameter(&"speck_size", style.speck_size)
-	m.set_shader_parameter(&"travel_speed", style.mote_speed)
+	m.set_shader_parameter(&"travel_speed", style.mote_speed * (1.0 if _vertical else _strength_scale()))
 	m.set_shader_parameter(&"flutter", style.mote_flutter)
-	m.set_shader_parameter(&"tumble_speed", style.leaf_tumble_speed)
+	m.set_shader_parameter(&"tumble_speed", style.leaf_tumble_speed * (style.blocking_tumble_multiplier if _is_blocking() else 1.0))
 	m.set_shader_parameter(&"funnel_bottom", style.funnel_bottom)
 	m.set_shader_parameter(&"funnel_top", style.funnel_top)
 	m.set_shader_parameter(&"spin_speed", style.updraft_spin_speed)
@@ -219,34 +226,30 @@ func _apply_mist_uniforms(size: Vector3) -> void:
 	m.set_shader_parameter(&"tint", style.mist_color)
 	m.set_shader_parameter(&"opacity", style.mist_opacity)
 	m.set_shader_parameter(&"puff_size", style.mist_size)
-	m.set_shader_parameter(&"drift_speed", style.mist_speed)
+	m.set_shader_parameter(&"drift_speed", style.mist_speed * (1.0 if _vertical else _strength_scale()))
 	_mist.position = Vector3(0.0, 0.0, size.z * 0.325) if _vertical else Vector3.ZERO
 
 
 func _apply_ground(size: Vector3) -> void:
+	# Cột gió không có dấu dưới chân (chân cột sẽ do model 3D của map đảm nhận)
+	if _vertical:
+		_ground_found = false
+		return
 	var m := _ground_material
 	m.set_shader_parameter(&"tint", style.ground_color)
-	m.set_shader_parameter(&"opacity", style.ground_opacity * (_zone.data.ring_opacity / 0.6 if _vertical else 1.0))
+	var ground_opacity := style.blocking_ground_opacity if _is_blocking() else style.ground_opacity
+	m.set_shader_parameter(&"opacity", ground_opacity)
+	m.set_shader_parameter(&"arrows", _is_blocking())
 	m.set_shader_parameter(&"fill_opacity", style.ground_fill_opacity)
 	m.set_shader_parameter(&"zone_length", size.z)
 	m.set_shader_parameter(&"zone_width", size.x)
 	m.set_shader_parameter(&"line_width", style.ground_line_width)
-	m.set_shader_parameter(&"dash_speed", style.ground_dash_speed)
-	m.set_shader_parameter(&"row_count", maxf(roundf(size.x * style.ground_rows_per_meter), 1.0))
-	m.set_shader_parameter(&"ring_mode", _vertical)
-	m.set_shader_parameter(&"ring_spin", style.ring_spin)
-	var center: Vector3
-	var scale_xz: Vector2
+	m.set_shader_parameter(&"dash_speed", style.ground_dash_speed * _strength_scale())
+	var rows := size.x * style.ground_rows_per_meter / (style.arrow_row_span if _is_blocking() else 1.0)
+	m.set_shader_parameter(&"row_count", maxf(roundf(rows), 1.0))
+	var center := _zone.global_position
+	var scale_xz := Vector2(size.x, size.z)
 	var forward := _zone.global_basis.z
-	if _vertical:
-		center = _zone.to_global(Vector3(0.0, 0.0, size.z * 0.5))
-		# Vòng chân cột gió bằng đúng tiết diện collider
-		var diameter := minf(size.x, size.y)
-		scale_xz = Vector2(diameter, diameter)
-		forward = Vector3.BACK
-	else:
-		center = _zone.global_position
-		scale_xz = Vector2(size.x, size.z)
 	forward.y = 0.0
 	forward = forward.normalized() if not forward.is_zero_approx() else Vector3.BACK
 	var floor_y := _find_floor_y(center, size)
@@ -259,7 +262,7 @@ func _apply_ground(size: Vector3) -> void:
 
 ## Độ cao mặt đất dưới vùng; NAN nếu không có đất. Editor không dò vật lý, lấy đáy vùng
 func _find_floor_y(center: Vector3, size: Vector3) -> float:
-	var bottom := center.y if _vertical else _zone.to_global(Vector3(0.0, -size.y * 0.5, 0.0)).y
+	var bottom := _zone.to_global(Vector3(0.0, -size.y * 0.5, 0.0)).y
 	if Engine.is_editor_hint() or not is_inside_tree():
 		return bottom
 	_ground_query.from = Vector3(center.x, center.y + 0.5, center.z)
@@ -312,3 +315,17 @@ func _on_flow_changed() -> void:
 func _on_screen_changed(on_screen: bool) -> void:
 	_on_screen = on_screen
 	_apply_visibility()
+
+
+## Gió ngang đánh dấu chặn người chơi (cột gió luôn dùng kiểu thường)
+func _is_blocking() -> bool:
+	return not _vertical and _zone.data.blocks_player
+
+
+## Tỉ lệ sức gió so với sức gió gốc của style: nét và hạt chạy nhanh hơn theo đúng tỉ lệ này
+func _strength_scale() -> float:
+	return clampf(_zone.data.strength / maxf(style.reference_strength, 0.01), 0.5, style.max_strength_scale)
+
+
+func _width_scale() -> float:
+	return maxf(1.0 + log(_strength_scale()) / log(2.0) * style.width_per_strength, 0.5)

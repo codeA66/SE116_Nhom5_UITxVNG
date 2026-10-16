@@ -4,6 +4,9 @@ extends Area3D
 ## Cộng lực của mọi WindZone đang chồng lên và di chuyển body theo đó.
 ## Cú thổi (kỹ năng gió) tìm thấy component này qua collision layer "wind_receiver" và gọi push().
 
+## Bị cú thổi trúng; vật không di chuyển bằng move_with_wind (thuyền, chong chóng...) nghe signal này để phản ứng
+signal pushed(impulse: Vector3)
+
 ## Pháp tuyến có thành phần Y nhỏ hơn mức này được coi là tường (không phải sàn/dốc)
 const WALL_NORMAL_MAX_Y := 0.7
 
@@ -38,8 +41,10 @@ func get_wind() -> Vector3:
 
 ## Gọi từ cú thổi: cộng vận tốc trôi, đi chung đường với gió vùng nên không xuyên tường
 func push(impulse: Vector3) -> void:
-	if enabled:
-		_push_velocity += impulse * wind_multiplier
+	if not enabled:
+		return
+	_push_velocity += impulse * wind_multiplier
+	pushed.emit(impulse)
 
 
 ## Thay cho body.move_and_slide().

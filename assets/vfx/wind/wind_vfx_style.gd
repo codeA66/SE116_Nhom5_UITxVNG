@@ -14,6 +14,46 @@ extends Resource
 		stroke_opacity = value
 		emit_changed()
 
+@export_group("Strength")
+## Sức gió ứng với thông số gốc bên dưới; gió mạnh hơn thì nét chạy nhanh hơn, dày và đặc hơn
+@export var reference_strength: float = 4.0:
+	set(value):
+		reference_strength = value
+		emit_changed()
+@export var max_strength_scale: float = 3.0:
+	set(value):
+		max_strength_scale = value
+		emit_changed()
+## Mỗi lần sức gió gấp đôi thì độ dày nét tăng thêm tỉ lệ này
+@export var width_per_strength: float = 0.25:
+	set(value):
+		width_per_strength = value
+		emit_changed()
+
+@export_group("Blocking Wind")
+## Gió chặn (WindData.blocks_player): nét căng thẳng, ít cuộn, lá bay vụt, mũi tên dưới đất
+@export_range(0.0, 1.0) var blocking_curl_fraction: float = 0.06:
+	set(value):
+		blocking_curl_fraction = value
+		emit_changed()
+@export var blocking_wave: float = 0.01:
+	set(value):
+		blocking_wave = value
+		emit_changed()
+@export var blocking_tumble_multiplier: float = 2.0:
+	set(value):
+		blocking_tumble_multiplier = value
+		emit_changed()
+@export_range(0.0, 1.0) var blocking_ground_opacity: float = 0.75:
+	set(value):
+		blocking_ground_opacity = value
+		emit_changed()
+## Mỗi hàng mũi tên rộng bằng mấy hàng vạch thường
+@export var arrow_row_span: float = 2.0:
+	set(value):
+		arrow_row_span = value
+		emit_changed()
+
 @export_group("Gust")
 ## Số nét trên mỗi m² mặt bằng vùng
 @export var gust_stroke_density: float = 0.5:
@@ -193,10 +233,6 @@ extends Resource
 @export_range(0.0, 1.0) var ground_fill_opacity: float = 0.12:
 	set(value):
 		ground_fill_opacity = value
-		emit_changed()
-@export var ring_spin: float = 1.2:
-	set(value):
-		ring_spin = value
 		emit_changed()
 ## Nhích dấu mặt đất lên khỏi sàn để không nhấp nháy (z-fighting)
 @export var ground_offset: float = 0.03:

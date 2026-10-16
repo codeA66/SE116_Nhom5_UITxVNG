@@ -31,10 +31,10 @@ varying float v_tone;
 
 vec3 mote_center(float p, vec4 c, float time) {
 	if (updraft) {
-		float half_section = min(zone_size.x, zone_size.y) * 0.5;
-		float radius = mix(funnel_bottom, funnel_top, p) * half_section * (0.3 + 0.7 * c.g);
+		vec2 half_section = zone_size.xy * 0.5;
+		vec2 radius = mix(funnel_bottom, funnel_top, p) * half_section * (0.3 + 0.7 * c.g);
 		float angle = c.r * TAU + p * TAU * 1.5 + time * spin_speed;
-		return vec3(cos(angle) * radius, sin(angle) * radius, zone_size.z * (0.5 - p));
+		return vec3(cos(angle) * radius.x, sin(angle) * radius.y, zone_size.z * (0.5 - p));
 	}
 	float x = (c.r - 0.5) * zone_size.x * 0.95 + sin(time * 1.7 + c.b * 40.0) * flutter;
 	float y = (c.g - 0.5) * zone_size.y * 0.85 + sin(time * 2.3 + c.a * 50.0) * flutter;

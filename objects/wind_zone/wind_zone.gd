@@ -13,6 +13,8 @@ signal configuration_changed
 
 ## Vùng có hướng gió lệch khỏi phương ngang quá mức này được coi là cột gió (lên hoặc xuống)
 const VERTICAL_THRESHOLD := 0.7
+## Chỉ dùng để cảnh báo trong editor: gió chặn hay không là so sức gió với tốc độ chạy của player
+const PLAYER_MOVEMENT: MovementStats = preload("res://resources/player_movement.tres")
 
 @export var data: WindData:
 	set(value):
@@ -24,12 +26,15 @@ const VERTICAL_THRESHOLD := 0.7
 		if is_node_ready():
 			_on_data_changed()
 		update_configuration_warnings()
-## Kích thước vùng (cục bộ); chiều Z là chiều gió thổi
+## Kích thước vùng (cục bộ); chiều Z là chiều gió thổi.
+## Đồng bộ hai chiều với hộp CollisionShape3D qua BoxShapeSyncComponent: kéo gizmo hộp cũng cập nhật ô này và VFX
 @export var size: Vector3 = Vector3(4.0, 3.0, 8.0):
 	set(value):
+		if size == value:
+			return
 		size = value
 		if is_node_ready():
-			_apply_size()
+			_box_sync.apply(size)
 			configuration_changed.emit()
 ## Lực giảm dần về 0 ở cuối vùng: dùng cho cột gió để nhân vật lơ lửng gần đỉnh
 @export var fade_toward_end: bool = false
@@ -41,14 +46,15 @@ var flow_age: float = 0.0
 
 var _cycle_time: float = 0.0
 
-@onready var _shape: CollisionShape3D = $CollisionShape3D
+@onready var _box_sync: BoxShapeSyncComponent = $BoxShapeSync
 
 
 func _ready() -> void:
 	monitoring = false
 	monitorable = true
 	set_notify_transform(true)
-	_apply_size()
+	_box_sync.apply(size)
+	_box_sync.size_changed.connect(_on_box_size_changed)
 	_on_data_changed()
 
 
@@ -71,6 +77,13 @@ func _physics_process(delta: float) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	if data == null:
 		return ["Chưa gán WindData: kéo một file trong resources/wind/ vào ô Data."]
+	if is_vertical():
+		return []
+	var run_speed := PLAYER_MOVEMENT.max_speed
+	if data.blocks_player and data.strength <= run_speed:
+		return ["Gió đánh dấu Blocks Player nhưng sức gió (%.1f) không lớn hơn tốc độ chạy (%.1f): người chơi vẫn đi ngược được. Tăng Strength hoặc tắt Blocks Player." % [data.strength, run_speed]]
+	if not data.blocks_player and data.strength >= run_speed:
+		return ["Sức gió (%.1f) ≥ tốc độ chạy (%.1f) nên người chơi không đi ngược được, nhưng hình ảnh vẫn là gió nhẹ. Bật Blocks Player hoặc giảm Strength." % [data.strength, run_speed]]
 	return []
 
 
@@ -124,8 +137,9 @@ func _set_active(value: bool) -> void:
 	active_changed.emit(active)
 
 
-func _apply_size() -> void:
-	(_shape.shape as BoxShape3D).size = size
+func _on_box_size_changed(box_size: Vector3) -> void:
+	# size setter bỏ qua khi bằng nhau nên không lặp vô hạn giữa hai chiều
+	size = box_size
 
 
 func _on_data_changed() -> void:
@@ -137,4 +151,5 @@ func _on_data_changed() -> void:
 		_set_active(false)
 	elif not data.pulse_enabled:
 		_set_active(true)
+	update_configuration_warnings()
 	configuration_changed.emit()
