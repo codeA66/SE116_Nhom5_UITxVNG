@@ -8,6 +8,13 @@ extends Resource
 	set(value):
 		strength = value
 		emit_changed()
+## Gió mạnh chặn đường: sức gió lớn hơn tốc độ chạy nên không đi ngược được (chỉ dash qua).
+## Hình ảnh chuyển sang kiểu gió mạnh (nét dày đặc, căng, mũi tên dưới đất) để người chơi đọc trước.
+## WindZone cảnh báo trong editor nếu cờ này mâu thuẫn với strength.
+@export var blocks_player: bool = false:
+	set(value):
+		blocks_player = value
+		emit_changed()
 
 @export_group("Pulse")
 ## Bật/tắt theo chu kỳ để người chơi canh thời điểm

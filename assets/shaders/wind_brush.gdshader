@@ -56,11 +56,11 @@ vec3 gust_point(float p, vec4 c) {
 
 vec3 updraft_point(float p, vec4 c, float time) {
 	float t = pow(clamp(p, 0.0, 1.0), rise_acceleration);
-	float half_section = min(zone_size.x, zone_size.y) * 0.5;
-	float radius = mix(funnel_bottom, funnel_top, pow(t, 1.3)) * half_section * (0.75 + 0.25 * c.g);
-	// Bán kính tối đa = nửa tiết diện: hình khớp đúng khung collider, nhìn thấy nét là bị đẩy
+	// Tiết diện elip theo đúng X, Y của vùng: hình khớp khung collider ở mọi kích thước
+	vec2 half_section = zone_size.xy * 0.5;
+	vec2 radius = mix(funnel_bottom, funnel_top, pow(t, 1.3)) * half_section * (0.75 + 0.25 * c.g);
 	float angle = c.r * TAU + t * twist_turns * TAU + time * spin_speed * (0.8 + 0.4 * c.a);
-	return vec3(cos(angle) * radius, sin(angle) * radius, zone_size.z * (0.5 - t));
+	return vec3(cos(angle) * radius.x, sin(angle) * radius.y, zone_size.z * (0.5 - t));
 }
 
 // s: 0 = đuôi nét, 1 = đầu nét

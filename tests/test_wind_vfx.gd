@@ -20,6 +20,9 @@ func _run() -> void:
 	await _check_blast()
 	await _check_steady_zone()
 	await _check_pulse_zone()
+	await _check_against_wind(preload("res://resources/wind/wind_lane.tres"), true)
+	await _check_against_wind(preload("res://resources/wind/wind_gap.tres"), false)
+	_check_blocking_warnings()
 	print("WIND_VFX_CHECK ", "FAILED" if _failed else "PASSED")
 	get_tree().quit(1 if _failed else 0)
 
@@ -107,9 +110,15 @@ func _check_steady_zone() -> void:
 	var up_vfx := updraft.get_node("WindZoneVfx") as WindZoneVfx
 	_check(updraft.is_vertical(), "cột gió được nhận là thẳng đứng")
 	_check(updraft.get_wind_at(updraft.global_position).y > 0.0, "cột gió đẩy lên")
-	_check((up_vfx.get_node("Strokes") as MultiMeshInstance3D).multimesh.instance_count == up_vfx.style.updraft_strokes, "cột gió dùng số nét riêng")
-	var ring := up_vfx.get_node("Ground") as Node3D
-	_check(ring.visible and absf(ring.global_position.y - up_vfx.style.ground_offset) < 0.05, "vòng chân cột gió nằm trên sàn")
+	var expected_strokes := clampi(roundi(up_vfx.style.updraft_strokes * 3.0 * 3.0 / WindZoneVfx.UPDRAFT_REFERENCE_AREA), WindZoneVfx.UPDRAFT_MIN_STROKES, WindZoneVfx.UPDRAFT_MAX_STROKES)
+	_check((up_vfx.get_node("Strokes") as MultiMeshInstance3D).multimesh.instance_count == expected_strokes, "số nét cột gió theo diện tích tiết diện")
+	var base := up_vfx.get_node("Ground") as Node3D
+	_check(not base.visible, "cột gió không có vòng dưới chân")
+	updraft.size = Vector3(4.0, 10.0, 6.0)
+	await _frames(2)
+	var up_material := (up_vfx.get_node("Strokes") as GeometryInstance3D).material_override as ShaderMaterial
+	_check(up_material.get_shader_parameter(&"zone_size") == Vector3(4.0, 10.0, 6.0), "cột gió nhận tiết diện không vuông")
+	_check((up_vfx.get_node("Strokes") as MultiMeshInstance3D).multimesh.instance_count > up_vfx.style.updraft_strokes, "cột gió to hơn thì nhiều nét hơn")
 	zone.queue_free()
 	updraft.queue_free()
 	await _frames(2)
@@ -182,7 +191,50 @@ func _check(condition: bool, label: String) -> void:
 func _frames(count: int) -> void:
 	for index in count:
 		await get_tree().physics_frame
+		# VFX cập nhật trong _process: chờ cả frame vẽ để kết quả không phụ thuộc nhịp frame
+		await get_tree().process_frame
 
 
 func _seconds(duration: float) -> void:
 	await get_tree().create_timer(duration, true, true).timeout
+
+
+## Player giữ phím đi ngược gió 1.5 giây: gió nhẹ phải tiến lên được, gió chặn phải bị đẩy lùi
+func _check_against_wind(data: WindData, should_advance: bool) -> void:
+	var zone := ZONE_SCENE.instantiate() as WindZone
+	zone.data = data
+	zone.size = Vector3(6.0, 3.0, 16.0)
+	# Gió thổi theo +X (trục -Z cục bộ quay sang +X)
+	zone.transform = Transform3D(Basis(Vector3.UP, -PI * 0.5), Vector3(0.0, 1.5, 12.0))
+	add_child(zone)
+	var player := PLAYER_SCENE.instantiate() as Player
+	add_child(player)
+	await _frames(2)
+	player.teleport(Vector3(0.0, 0.0, 12.0), Vector3.LEFT)
+	await _frames(10)
+	var start_x := player.global_position.x
+	Input.action_press(&"move_left")
+	await _seconds(1.5)
+	Input.action_release(&"move_left")
+	var moved := player.global_position.x - start_x
+	var label := "%s (sức %.0f, blocks=%s): đi ngược gió dịch %.2f m" % [data.resource_path.get_file(), data.strength, data.blocks_player, moved]
+	_check(moved < -0.5 if should_advance else moved > 0.0, label)
+	player.queue_free()
+	zone.queue_free()
+	await _frames(2)
+
+
+func _check_blocking_warnings() -> void:
+	var zone := ZONE_SCENE.instantiate() as WindZone
+	add_child(zone)
+	var data := WindData.new()
+	zone.data = data
+	data.strength = 4.0
+	_check(zone._get_configuration_warnings().is_empty(), "gió nhẹ đúng cấu hình không cảnh báo")
+	data.strength = 8.0
+	_check(not zone._get_configuration_warnings().is_empty(), "gió mạnh mà chưa bật blocks_player thì cảnh báo")
+	data.blocks_player = true
+	_check(zone._get_configuration_warnings().is_empty(), "gió chặn đúng cấu hình không cảnh báo")
+	data.strength = 4.0
+	_check(not zone._get_configuration_warnings().is_empty(), "bật blocks_player mà gió yếu thì cảnh báo")
+	zone.queue_free()
