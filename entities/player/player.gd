@@ -27,6 +27,9 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export_group("Damage Feedback")
 ## Chu kỳ nháy hình trong lúc bất tử sau khi bị đánh
 @export var blink_interval: float = 0.08
+## Nháy đỏ trước khi chết vì bẫy chết người (gai...); màu phủ lên model
+@export var lethal_flash_color: Color = Color(1.0, 0.12, 0.1, 0.65)
+@export var lethal_flash_time: float = 0.4
 
 @export_group("Combat")
 ## Bán kính tìm mục tiêu để tự quay về khi ra đòn
@@ -53,6 +56,11 @@ var _last_safe_position: Vector3
 var _recent_floor_positions: Array[Vector3] = []
 var _blink_time_left: float = 0.0
 var _blink_clock: float = 0.0
+## Lần chết này có nháy đỏ trước không (state Dead đọc một lần)
+var _lethal_flash_pending: bool = false
+var _flash_material: StandardMaterial3D
+var _model_meshes: Array[MeshInstance3D] = []
+var _flash_tween: Tween
 
 @onready var hitbox: HitboxComponent = $Model/Hitbox
 @onready var wind_blast: WindBlastArea = $Model/WindBlastArea
@@ -200,10 +208,40 @@ func on_kill_zone_entered() -> void:
 	return_to_safe_ground()
 
 
-## Gọi từ KillZone bật Lethal (nước sâu...): chết thật, hồi sinh ở checkpoint qua state Dead
-func on_lethal_zone_entered() -> void:
-	if not health.is_dead():
-		health.take_damage(health.current_health)
+## Gọi từ vùng chết người (nước sâu, gai...): chết thật, hồi sinh ở checkpoint qua state Dead.
+## red_flash: nháy đỏ trước rồi mới ngã (bẫy gai); rơi nước thì không
+func on_lethal_zone_entered(red_flash: bool = false) -> void:
+	if health.is_dead():
+		return
+	_lethal_flash_pending = red_flash
+	health.take_damage(health.current_health)
+
+
+## State Dead gọi khi vào: lần chết này có nháy đỏ không (đọc xong thì xóa)
+func consume_lethal_flash() -> bool:
+	var pending := _lethal_flash_pending
+	_lethal_flash_pending = false
+	return pending
+
+
+## Nháy màu lethal_flash_color lên model trong duration giây
+func start_red_flash(duration: float) -> void:
+	if _flash_material == null:
+		# Tạo một lần, dùng lại cho các lần sau
+		_flash_material = StandardMaterial3D.new()
+		_flash_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		_flash_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_flash_material.albedo_color = lethal_flash_color
+		for node in model.find_children("*", "MeshInstance3D", true, false):
+			_model_meshes.append(node as MeshInstance3D)
+	if _flash_tween:
+		_flash_tween.kill()
+	var cycles := maxi(ceili(duration / (blink_interval * 2.0)), 1)
+	_flash_tween = create_tween().set_loops(cycles)
+	_flash_tween.tween_callback(_set_flash_overlay.bind(true))
+	_flash_tween.tween_interval(blink_interval)
+	_flash_tween.tween_callback(_set_flash_overlay.bind(false))
+	_flash_tween.tween_interval(blink_interval)
 
 
 ## Về chỗ đứng an toàn gần nhất (rơi vực, trúng bẫy). stunned = choáng tại chỗ như bị đánh
@@ -301,6 +339,11 @@ func _start_blink(duration: float) -> void:
 	_blink_time_left = duration
 	_blink_clock = 0.0
 	set_process(true)
+
+
+func _set_flash_overlay(on: bool) -> void:
+	for mesh in _model_meshes:
+		mesh.material_overlay = _flash_material if on else null
 
 
 func _stop_blink() -> void:

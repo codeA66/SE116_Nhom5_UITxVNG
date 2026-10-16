@@ -12,6 +12,10 @@ extends Area3D
 @export_group("Hazard")
 ## Bẫy môi trường: bỏ qua bất tử của mục tiêu, kể cả bất tử khi dash
 @export var ignore_invincibility: bool = false
+## Chạm là chết thật (hồi sinh ở checkpoint), bỏ qua máu và bất tử. Mục tiêu cần hàm on_lethal_zone_entered()
+@export var lethal: bool = false
+## Khi lethal: mục tiêu nháy đỏ trước khi chết
+@export var lethal_red_flash: bool = true
 ## Trúng xong đưa mục tiêu về chỗ đứng an toàn (nếu mục tiêu hỗ trợ), để không thể đi xuyên bẫy
 @export var return_to_safe_ground: bool = false
 
@@ -54,6 +58,11 @@ func _on_area_exited(area: Area3D) -> void:
 
 
 func _hit(hurtbox: HurtboxComponent) -> void:
+	if lethal:
+		var victim := hurtbox.owner
+		if victim and victim.has_method(&"on_lethal_zone_entered"):
+			victim.call(&"on_lethal_zone_entered", lethal_red_flash)
+			return
 	var direction := hurtbox.global_position - global_position
 	direction.y = 0.0
 	var info := DamageInfo.new(damage, damage_type, direction.normalized() * knockback, self)

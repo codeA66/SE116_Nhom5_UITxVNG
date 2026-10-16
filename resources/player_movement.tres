@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="MovementStats" format=3]
+[gd_resource type="Resource" script_class="MovementStats" format=3 uid="uid://bfne2pcgun4sj"]
 
-[ext_resource type="Script" path="res://entities/_base/movement_stats.gd" id="1_stats"]
+[ext_resource type="Script" uid="uid://1ogi6ru3cdf" path="res://entities/_base/movement_stats.gd" id="1_stats"]
 
 [resource]
 script = ExtResource("1_stats")
+ground_accel = 45.0

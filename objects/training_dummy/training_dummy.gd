@@ -45,6 +45,15 @@ func on_kill_zone_entered() -> void:
 	_set_present(true)
 
 
+## Gọi từ vùng chết người (gai...): chết ngay rồi hồi lại như khi hết máu
+func on_lethal_zone_entered(red_flash: bool = false) -> void:
+	if _health.is_dead():
+		return
+	if red_flash:
+		_flash()
+	_health.take_damage(_health.current_health)
+
+
 func _set_present(present: bool) -> void:
 	visible = present
 	set_physics_process(present)
