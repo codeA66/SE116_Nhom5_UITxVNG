@@ -22,9 +22,15 @@ Tài liệu này là quy tắc bắt buộc cho Claude khi làm việc trong pro
    - Không bịa tên asset, link, giá, license, tính năng của tool/asset. Không kiểm tra được thì nói thẳng là chưa kiểm tra.
    - Không khẳng định code "chạy được" nếu chưa chạy thử. Báo đúng kết quả, kể cả lỗi.
    - Không bịa nội dung GDD. Thông tin GDD chưa có thì hỏi, không tự điền.
-3. Không commit / push git khi chưa được yêu cầu.
-4. Không tự cài plugin, addon hay tải asset khi chưa được yêu cầu.
-5. Không dùng cú pháp Godot 3 (`KinematicBody`, `yield`, `export var`, `onready var`, `move_and_slide(velocity)`...).
+3. **Cấm đoán, phải hỏi.**
+   - Không tự đặt giả định về thiết kế hay cách người dùng sẽ cấu hình (ví dụ "cột gió luôn vuông", "size chỉ chỉnh ở một chỗ"). Chưa rõ thì hỏi trước khi code.
+   - Mọi giả định phải được ghi rõ trong kế hoạch dưới dạng câu hỏi để người dùng duyệt.
+   - Thông số chỉnh được (@export, Resource) phải được test cả giá trị lệch và cực đoan (không vuông, rất lớn, rất nhỏ), không chỉ giá trị mặc định.
+   - Chỉ báo "đã chạy đúng" sau khi đo hành vi thật (va chạm thật, chụp ảnh, chạy thử), không dựa vào việc đọc giá trị thuộc tính.
+   - Không hiểu ý người dùng thì hỏi lại, không tự suy ra ý định.
+4. Không commit / push git khi chưa được yêu cầu.
+5. Không tự cài plugin, addon hay tải asset khi chưa được yêu cầu.
+6. Không dùng cú pháp Godot 3 (`KinematicBody`, `yield`, `export var`, `onready var`, `move_and_slide(velocity)`...).
 
 ## 3. Cấu trúc thư mục (tổ chức theo tính năng)
 
