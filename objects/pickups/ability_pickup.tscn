@@ -1,0 +1,57 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/pickups/ability_pickup.gd" id="1_pickup"]
+[ext_resource type="Script" path="res://components/interaction/interactable_component.gd" id="2_interact"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cover"]
+albedo_color = Color(0.55, 0.82, 0.95, 1)
+emission_enabled = true
+emission = Color(0.35, 0.75, 0.95, 1)
+emission_energy_multiplier = 0.6
+roughness = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_cover"]
+material = SubResource("StandardMaterial3D_cover")
+size = Vector3(0.5, 0.06, 0.65)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pages"]
+albedo_color = Color(0.95, 0.92, 0.82, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_pages"]
+material = SubResource("StandardMaterial3D_pages")
+size = Vector3(0.44, 0.1, 0.6)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_range"]
+radius = 1.5
+
+[node name="AbilityPickup" type="Node3D"]
+script = ExtResource("1_pickup")
+
+[node name="Visual" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="CoverBottom" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_cover")
+
+[node name="Pages" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, 0, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_pages")
+
+[node name="CoverTop" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_cover")
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2_interact")
+prompt_text = "PICK UP"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("SphereShape3D_range")

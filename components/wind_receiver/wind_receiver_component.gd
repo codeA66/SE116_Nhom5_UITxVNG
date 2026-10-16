@@ -2,6 +2,7 @@ class_name WindReceiverComponent
 extends Area3D
 ## Gắn vào thứ chịu tác động của gió (player, quái, vật thể).
 ## Cộng lực của mọi WindZone đang chồng lên và di chuyển body theo đó.
+## Cú thổi (kỹ năng gió) tìm thấy component này qua collision layer "wind_receiver" và gọi push().
 
 ## Pháp tuyến có thành phần Y nhỏ hơn mức này được coi là tường (không phải sàn/dốc)
 const WALL_NORMAL_MAX_Y := 0.7
@@ -10,12 +11,18 @@ const WALL_NORMAL_MAX_Y := 0.7
 @export var wind_multiplier: float = 1.0
 ## Gia tốc kéo vận tốc đứng về tốc độ gió dọc; phải lớn hơn trọng lực để cột gió nâng được
 @export var vertical_response: float = 80.0
+## Tốc độ giảm lực đẩy của cú thổi (m/s²): quãng bị đẩy = push_speed² / (2 * push_decay)
+@export var push_decay: float = 20.0
 
 var enabled: bool = true
 
+## Vận tốc trôi còn lại từ cú thổi, giảm dần về 0
+var _push_velocity: Vector3 = Vector3.ZERO
+
 
 func _ready() -> void:
-	monitorable = false
+	# Phải monitorable để vùng thổi của kỹ năng gió phát hiện được
+	monitorable = true
 
 
 func get_wind() -> Vector3:
@@ -29,11 +36,18 @@ func get_wind() -> Vector3:
 	return total * wind_multiplier
 
 
+## Gọi từ cú thổi: cộng vận tốc trôi, đi chung đường với gió vùng nên không xuyên tường
+func push(impulse: Vector3) -> void:
+	if enabled:
+		_push_velocity += impulse * wind_multiplier
+
+
 ## Thay cho body.move_and_slide().
 ## Gió ngang là vận tốc trôi cộng tạm thời (không tích lũy, người chơi vẫn chống lại được);
 ## gió dọc kéo vận tốc đứng về tốc độ gió (nâng lên, lơ lửng khi lực giảm dần).
 func move_with_wind(body: CharacterBody3D, delta: float) -> void:
-	var wind := get_wind()
+	var wind := get_wind() + _push_velocity
+	_push_velocity = _push_velocity.move_toward(Vector3.ZERO, push_decay * delta)
 	if wind.is_zero_approx():
 		body.move_and_slide()
 		return

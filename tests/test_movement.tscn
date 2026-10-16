@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" path="res://objects/ability_statue/ability_statue.tscn" id="5_statue"]
 [ext_resource type="Resource" path="res://abilities/dash/dash.tres" id="6_dash"]
 [ext_resource type="Resource" uid="uid://cfx8hwfpny7l4" path="res://resources/wind/wind_updraft.tres" id="8_y4g0r"]
+[ext_resource type="PackedScene" path="res://objects/pickups/ability_pickup.tscn" id="9_book"]
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="10_blast"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 
@@ -103,3 +105,7 @@ monitoring = false
 data = ExtResource("8_y4g0r")
 size = Vector3(4, 4, 6)
 fade_toward_end = true
+
+[node name="WindBook" parent="." unique_id=371238597 instance=ExtResource("9_book")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -7)
+ability = ExtResource("10_blast")

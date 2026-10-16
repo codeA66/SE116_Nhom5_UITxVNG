@@ -16,6 +16,7 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export var jump_buffer_time: float = 0.12
 @export var attack_buffer_time: float = 0.25
 @export var dash_buffer_time: float = 0.15
+@export var wind_blast_buffer_time: float = 0.15
 
 @export_group("Fall Recovery")
 ## Thời gian bất tử sau khi được đưa về chỗ an toàn
@@ -44,6 +45,8 @@ var _attack_buffer_timer: float = 0.0
 var _dash_buffer_timer: float = 0.0
 var _dash_cooldown_timer: float = 0.0
 var _air_dashes_used: int = 0
+var _wind_blast_buffer_timer: float = 0.0
+var _wind_blast_cooldown_timer: float = 0.0
 ## Vị trí trên đất cuối cùng không bị gió đẩy, dùng khi rơi xuống vực
 var _last_safe_position: Vector3
 ## Vị trí trên đất của các frame gần nhất (không gió), phần tử đầu là cũ nhất
@@ -52,6 +55,7 @@ var _blink_time_left: float = 0.0
 var _blink_clock: float = 0.0
 
 @onready var hitbox: HitboxComponent = $Model/Hitbox
+@onready var wind_blast: WindBlastArea = $Model/WindBlastArea
 @onready var interactor: InteractorComponent = $Interactor
 @onready var health: HealthComponent = $HealthComponent
 @onready var _hurtbox: HurtboxComponent = $HurtboxComponent
@@ -166,6 +170,19 @@ func start_dash() -> DashData:
 	return dash
 
 
+## Đúng khi đã mở khóa kỹ năng gió, có lệnh trong buffer và hết cooldown
+func can_wind_blast() -> bool:
+	return has_ability(WindBlastData.ID) and _wind_blast_buffer_timer > 0.0 and _wind_blast_cooldown_timer <= 0.0
+
+
+## Gọi khi vào state WindBlast: tiêu input, tính cooldown
+func start_wind_blast() -> WindBlastData:
+	var data := get_ability(WindBlastData.ID) as WindBlastData
+	_wind_blast_buffer_timer = 0.0
+	_wind_blast_cooldown_timer = data.duration + data.cooldown
+	return data
+
+
 ## Dịch chuyển kèm đặt lại chỗ an toàn và camera (cổng, hồi sinh)
 func teleport(target_position: Vector3, facing: Vector3 = Vector3.ZERO) -> void:
 	super(target_position, facing)
@@ -235,6 +252,8 @@ func _pre_state_update(delta: float) -> void:
 	_attack_buffer_timer = _update_buffer(&"attack", _attack_buffer_timer, attack_buffer_time, delta)
 	_dash_buffer_timer = _update_buffer(&"dash", _dash_buffer_timer, dash_buffer_time, delta)
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
+	_wind_blast_buffer_timer = _update_buffer(&"skill", _wind_blast_buffer_timer, wind_blast_buffer_time, delta)
+	_wind_blast_cooldown_timer = maxf(_wind_blast_cooldown_timer - delta, 0.0)
 
 
 func _attach_weapon_model(data: WeaponData) -> void:

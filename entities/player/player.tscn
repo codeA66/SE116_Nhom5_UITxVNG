@@ -22,6 +22,8 @@
 [ext_resource type="Script" path="res://entities/player/states/hurt.gd" id="23_hurt"]
 [ext_resource type="Script" path="res://entities/player/states/dead.gd" id="24_dead"]
 [ext_resource type="PackedScene" path="res://ui/hud/health_bar.tscn" id="25_hpbar"]
+[ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_area.tscn" id="26_blast"]
+[ext_resource type="Script" path="res://entities/player/states/wind_blast.gd" id="27_blaststate"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -64,6 +66,8 @@ script = ExtResource("13_hitbox")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Model/Hitbox"]
 shape = SubResource("BoxShape3D_hitbox")
 
+[node name="WindBlastArea" parent="Model" instance=ExtResource("26_blast")]
+
 [node name="WeaponSocket" type="Node3D" parent="."]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=983512932]
@@ -95,7 +99,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("SphereShape3D_interact")
 
 [node name="WindReceiverComponent" type="Area3D" parent="."]
-collision_layer = 0
+collision_layer = 128
 collision_mask = 64
 script = ExtResource("22_wind")
 
@@ -152,3 +156,6 @@ script = ExtResource("23_hurt")
 
 [node name="Dead" type="Node" parent="StateMachine"]
 script = ExtResource("24_dead")
+
+[node name="WindBlast" type="Node" parent="StateMachine"]
+script = ExtResource("27_blaststate")
