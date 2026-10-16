@@ -12,6 +12,9 @@ signal progress_replaced
 var progress: PlayerProgress = PlayerProgress.new()
 
 var _player_health: int = -1
+## Cờ chờ checkpoint (set_flag_on_checkpoint): chỉ ghi vào tiến trình khi chạm checkpoint mới;
+## bị bỏ khi đổi khu, chết hay thoát game mà chưa chạm checkpoint
+var _pending_flags: Dictionary[StringName, bool] = {}
 
 
 func get_weapon() -> WeaponData:
@@ -53,9 +56,23 @@ func set_flag(id: StringName) -> void:
 	progress_changed.emit()
 
 
+## Cờ chỉ được lưu khi người chơi chạm một checkpoint MỚI sau đó (thuyền đã tới bến, công tắc đã bật...).
+## Chết, đổi khu hay thoát game trước khi chạm checkpoint thì vật trở về trạng thái cũ
+func set_flag_on_checkpoint(id: StringName) -> void:
+	if id.is_empty() or has_flag(id):
+		return
+	_pending_flags[id] = true
+
+
+## SceneManager gọi khi đổi khu (kể cả hồi sinh): bỏ các cờ chưa kịp lưu
+func discard_pending_flags() -> void:
+	_pending_flags.clear()
+
+
 ## Thay toàn bộ tiến trình. Không phát progress_changed để không ghi đè file save ngay khi vừa đọc
 func replace_progress(new_progress: PlayerProgress) -> void:
 	progress = new_progress
+	_pending_flags.clear()
 	reset_player_health()
 	progress_replaced.emit()
 
@@ -69,6 +86,10 @@ func set_checkpoint(zone_path: String, spawn_id: StringName) -> void:
 		return
 	progress.checkpoint_zone = zone_path
 	progress.checkpoint_spawn_id = spawn_id
+	# Checkpoint mới: các cờ đang chờ được ghi luôn trong lần lưu này
+	for id in _pending_flags:
+		progress.flags[id] = true
+	_pending_flags.clear()
 	checkpoint_changed.emit(zone_path, spawn_id)
 	progress_changed.emit()
 

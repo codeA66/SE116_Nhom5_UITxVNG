@@ -1,0 +1,114 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/boat/boat.gd" id="1_boat"]
+[ext_resource type="Resource" path="res://resources/boat/boat_default.tres" id="2_data"]
+[ext_resource type="Script" path="res://components/state_machine/state_machine.gd" id="3_fsm"]
+[ext_resource type="Script" path="res://objects/boat/states/docked.gd" id="4_docked"]
+[ext_resource type="Script" path="res://objects/boat/states/sailing.gd" id="5_sailing"]
+[ext_resource type="Script" path="res://objects/boat/states/drifting.gd" id="6_drifting"]
+[ext_resource type="Script" path="res://objects/boat/states/arrived.gd" id="7_arrived"]
+[ext_resource type="Script" path="res://components/wind_receiver/wind_receiver_component.gd" id="8_wind"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wood"]
+albedo_color = Color(0.55, 0.36, 0.22, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wood_dark"]
+albedo_color = Color(0.36, 0.22, 0.13, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sail"]
+albedo_color = Color(0.96, 0.93, 0.85, 1)
+roughness = 1.0
+cull_mode = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_hull"]
+material = SubResource("StandardMaterial3D_wood")
+size = Vector3(1.6, 0.6, 3.2)
+
+[sub_resource type="PrismMesh" id="PrismMesh_bow"]
+material = SubResource("StandardMaterial3D_wood")
+size = Vector3(1.6, 0.8, 0.6)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mast"]
+material = SubResource("StandardMaterial3D_wood_dark")
+top_radius = 0.05
+bottom_radius = 0.07
+height = 2.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_sail"]
+material = SubResource("StandardMaterial3D_sail")
+size = Vector3(1.4, 1.8, 0.04)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hull"]
+size = Vector3(1.6, 0.6, 3.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_deck"]
+size = Vector3(1.5, 1.2, 3.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wind"]
+size = Vector3(1.8, 2.6, 3.4)
+
+[node name="Boat" type="AnimatableBody3D"]
+collision_mask = 0
+script = ExtResource("1_boat")
+data = ExtResource("2_data")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+shape = SubResource("BoxShape3D_hull")
+
+[node name="Hull" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("BoxMesh_hull")
+
+[node name="Bow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.1, 2.0)
+mesh = SubResource("PrismMesh_bow")
+
+[node name="Mast" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.2)
+
+[node name="Pole" type="MeshInstance3D" parent="Mast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("CylinderMesh_mast")
+
+[node name="Sail" type="Node3D" parent="Mast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.08)
+
+[node name="SailMesh" type="MeshInstance3D" parent="Mast/Sail"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("BoxMesh_sail")
+
+[node name="Deck" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck"]
+shape = SubResource("BoxShape3D_deck")
+
+[node name="WindReceiverComponent" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+collision_layer = 128
+collision_mask = 0
+script = ExtResource("8_wind")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiverComponent"]
+shape = SubResource("BoxShape3D_wind")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("3_fsm")
+initial_state = NodePath("Docked")
+
+[node name="Docked" type="Node" parent="StateMachine"]
+script = ExtResource("4_docked")
+
+[node name="Sailing" type="Node" parent="StateMachine"]
+script = ExtResource("5_sailing")
+
+[node name="Drifting" type="Node" parent="StateMachine"]
+script = ExtResource("6_drifting")
+
+[node name="Arrived" type="Node" parent="StateMachine"]
+script = ExtResource("7_arrived")
