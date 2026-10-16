@@ -30,7 +30,9 @@ func _ready() -> void:
 		queue_free()
 		return
 	if weapon.model_scene:
-		_visual.add_child(weapon.model_scene.instantiate())
+		var model := weapon.model_scene.instantiate() as Node3D
+		model.scale = Vector3.ONE * weapon.model_scale
+		_visual.add_child(model)
 	_interactable.interacted.connect(_on_interacted)
 
 

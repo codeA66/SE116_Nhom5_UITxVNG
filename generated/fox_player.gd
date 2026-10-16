@@ -44,8 +44,9 @@ func _ready() -> void:
     super()
 
 
+## Vũ khí lấy đúng từ tiến trình (vật phẩm đã nhặt). Kiếm cáo chỉ dùng trong scene xem thử (preview_sword)
 func get_weapon() -> WeaponData:
-    return FOX_WEAPON if preview_sword or GameState.get_weapon() != null else null
+    return FOX_WEAPON if preview_sword else super()
 
 
 func get_ability(id: StringName) -> AbilityData:
