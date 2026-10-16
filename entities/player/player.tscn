@@ -1,12 +1,9 @@
 [gd_scene format=3 uid="uid://ogqrogwu58gt"]
 
-[ext_resource type="Script" uid="uid://quruvmagqouy" path="res://entities/player/player.gd" id="1_sglur"]
-[ext_resource type="PackedScene" uid="uid://dbudj58ogfwub" path="res://assets/characters/kaykit_adventurers/Characters/gltf/Knight.glb" id="1_symyc"]
+[ext_resource type="Script" path="res://generated/fox_player.gd" id="1_sglur"]
+[ext_resource type="PackedScene" path="res://generated/models/fox_spirit.glb" id="1_symyc"]
 [ext_resource type="Resource" path="res://resources/player_movement.tres" id="2_move"]
 [ext_resource type="Script" uid="uid://blr8snfwvdvqy" path="res://components/state_machine/state_machine.gd" id="3_bls4j"]
-[ext_resource type="AnimationLibrary" uid="uid://cvhj4js7q8irn" path="res://assets/characters/kaykit_adventurers/Animations/gltf/Rig_Medium/Rig_Medium_General.glb" id="4_general"]
-[ext_resource type="AnimationLibrary" uid="uid://ctk12nfuk6ncg" path="res://assets/characters/kaykit_adventurers/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb" id="5_movement"]
-[ext_resource type="AnimationLibrary" uid="uid://b8c7gjxx5g6ix" path="res://assets/characters/KayKit_Character_Animations_1.1/Animations/gltf/Rig_Medium/Rig_Medium_CombatMelee.glb" id="17_melee"]
 [ext_resource type="Script" uid="uid://cthmkxcqaca82" path="res://entities/player/camera_rig.gd" id="6_camrig"]
 [ext_resource type="Script" uid="uid://dkyk8ucntxdga" path="res://entities/player/states/idle.gd" id="7_idle"]
 [ext_resource type="Script" uid="uid://cdpskso3yh3xi" path="res://entities/player/states/run.gd" id="8_run"]
@@ -20,19 +17,20 @@
 [ext_resource type="Script" path="res://components/interaction/interactor_component.gd" id="16_interactor"]
 [ext_resource type="PackedScene" path="res://ui/hud/interaction_prompt.tscn" id="18_prompt"]
 [ext_resource type="Script" path="res://entities/player/states/dash.gd" id="19_dash"]
-[ext_resource type="AnimationLibrary" uid="uid://dbwkradlvj17x" path="res://assets/characters/KayKit_Character_Animations_1.1/Animations/gltf/Rig_Medium/Rig_Medium_MovementAdvanced.glb" id="20_moveadv"]
 [ext_resource type="PackedScene" path="res://components/blob_shadow/blob_shadow.tscn" id="21_blob"]
 [ext_resource type="Script" path="res://components/wind_receiver/wind_receiver_component.gd" id="22_wind"]
 [ext_resource type="Script" path="res://entities/player/states/hurt.gd" id="23_hurt"]
 [ext_resource type="Script" path="res://entities/player/states/dead.gd" id="24_dead"]
 [ext_resource type="PackedScene" path="res://ui/hud/health_bar.tscn" id="25_hpbar"]
+[ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_area.tscn" id="26_blast"]
+[ext_resource type="Script" path="res://entities/player/states/wind_blast.gd" id="27_blaststate"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
 height = 1.8
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
-size = Vector3(2.2857, 2, 2.2857)
+size = Vector3(1.5, 1.4, 1.5)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hurtbox"]
 radius = 0.4
@@ -57,10 +55,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_body")
 
 [node name="Model" parent="." unique_id=414762663 instance=ExtResource("1_symyc")]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="Hitbox" type="Area3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2857, 1.4286)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.9)
 collision_layer = 8
 collision_mask = 4
 script = ExtResource("13_hitbox")
@@ -68,17 +66,12 @@ script = ExtResource("13_hitbox")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Model/Hitbox"]
 shape = SubResource("BoxShape3D_hitbox")
 
-[node name="WeaponSocket" type="BoneAttachment3D" parent="."]
-use_external_skeleton = true
-external_skeleton = NodePath("../Model/Rig_Medium/Skeleton3D")
-bone_name = "handslot.r"
+[node name="WindBlastArea" parent="Model" instance=ExtResource("26_blast")]
+
+[node name="WeaponSocket" type="Node3D" parent="."]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=983512932]
 root_node = NodePath("../Model")
-libraries/Rig_Medium_General = ExtResource("4_general")
-libraries/Rig_Medium_MovementBasic = ExtResource("5_movement")
-libraries/Rig_Medium_CombatMelee = ExtResource("17_melee")
-libraries/Rig_Medium_MovementAdvanced = ExtResource("20_moveadv")
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("15_health")
@@ -106,7 +99,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("SphereShape3D_interact")
 
 [node name="WindReceiverComponent" type="Area3D" parent="."]
-collision_layer = 0
+collision_layer = 128
 collision_mask = 64
 script = ExtResource("22_wind")
 
@@ -129,7 +122,7 @@ script = ExtResource("6_camrig")
 follow_speed = 5.5
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=68364600]
-transform = Transform3D(1, 0, 0, 0, 0.6427876, 0.76604444, 0, -0.76604444, 0.6427876, 0, 38.3, 32.14)
+transform = Transform3D(1, 0, 0, 0, 0.6427876, 0.76604444, 0, -0.76604444, 0.6427876, 0, 24.51, 20.57)
 current = true
 fov = 30.0
 
@@ -163,3 +156,6 @@ script = ExtResource("23_hurt")
 
 [node name="Dead" type="Node" parent="StateMachine"]
 script = ExtResource("24_dead")
+
+[node name="WindBlast" type="Node" parent="StateMachine"]
+script = ExtResource("27_blaststate")

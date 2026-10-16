@@ -3,22 +3,26 @@ class_name WindZone
 extends Area3D
 ## Vùng gió: đẩy mọi WindReceiverComponent bên trong theo trục -Z cục bộ.
 ## Xoay node để đổi hướng: luồng ngang và cột gió nâng là cùng một component.
+## Gió có pulse lan từ mặt vào (+Z) tới mặt ra (-Z) trong sweep_time: chỗ nào gió tới mới bị đẩy.
+## Hình ảnh nằm ở WindZoneVfx (node con), nghe các signal dưới đây.
 
 signal active_changed(active: bool)
+signal warning_changed(warning: bool)
+## Kích thước, hướng hoặc dữ liệu đổi: VFX dựng lại theo
+signal configuration_changed
 
 ## Vùng có hướng gió lệch khỏi phương ngang quá mức này được coi là cột gió (lên hoặc xuống)
 const VERTICAL_THRESHOLD := 0.7
-## Vòng sáng: độ sáng thấp nhất trong nhịp nhấp nháy, và hệ số khi gió đang tắt
-const RING_PULSE_MIN := 0.7
-const RING_INACTIVE_FACTOR := 0.25
-## Vòng sáng rộng hơn tiết diện cột một chút để dễ thấy
-const RING_SIZE_FACTOR := 1.3
-## Nhích vòng sáng khỏi mặt đất để không bị nhấp nháy (z-fighting)
-const RING_SURFACE_OFFSET := 0.05
 
 @export var data: WindData:
 	set(value):
+		if data and data.changed.is_connected(_on_data_changed):
+			data.changed.disconnect(_on_data_changed)
 		data = value
+		if data:
+			data.changed.connect(_on_data_changed)
+		if is_node_ready():
+			_on_data_changed()
 		update_configuration_warnings()
 ## Kích thước vùng (cục bộ); chiều Z là chiều gió thổi
 @export var size: Vector3 = Vector3(4.0, 3.0, 8.0):
@@ -26,52 +30,42 @@ const RING_SURFACE_OFFSET := 0.05
 		size = value
 		if is_node_ready():
 			_apply_size()
+			configuration_changed.emit()
 ## Lực giảm dần về 0 ở cuối vùng: dùng cho cột gió để nhân vật lơ lửng gần đỉnh
 @export var fade_toward_end: bool = false
 
 var active: bool = true
+var warning: bool = false
+## Thời gian từ lúc vùng bắt đầu chạy pulse; đầu gió chưa kịp tới chỗ nào thì chỗ đó chưa có lực
+var flow_age: float = 0.0
 
 var _cycle_time: float = 0.0
-var _ring_material: StandardMaterial3D
-var _visual_time: float = 0.0
 
 @onready var _shape: CollisionShape3D = $CollisionShape3D
-@onready var _particles: CPUParticles3D = $Particles
-@onready var _base_ring: MeshInstance3D = $BaseRing
 
 
 func _ready() -> void:
 	monitoring = false
 	monitorable = true
+	set_notify_transform(true)
 	_apply_size()
-	if Engine.is_editor_hint():
-		return
-	if data == null:
-		# Không dừng game vì một vùng cấu hình sai: báo lỗi và tắt vùng này
-		push_error("%s chưa gán WindData, vùng gió bị tắt" % get_path())
-		_set_active(false)
-		return
-	_setup_particles()
+	_on_data_changed()
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSFORM_CHANGED and is_node_ready():
+		configuration_changed.emit()
+
+
+## Chỉ chạy khi có pulse (bật trong _on_data_changed); vùng gió đều không tốn xử lý mỗi frame
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint() or data == null or not data.pulse_enabled:
-		return
-	_cycle_time = fmod(_cycle_time + delta, data.on_time + data.off_time)
+	flow_age += delta
+	_cycle_time = fmod(_cycle_time + delta, maxf(data.on_time + data.off_time, 0.001))
 	_set_active(_cycle_time < data.on_time)
-	# Báo hiệu: hạt bay chậm xuất hiện trước khi gió bật lại
-	var warning := not active and _cycle_time >= data.on_time + data.off_time - data.warning_time
-	_particles.emitting = active or warning
-	_particles.speed_scale = 1.0 if active else 0.35
-
-
-func _process(delta: float) -> void:
-	if Engine.is_editor_hint() or not _base_ring.visible:
-		return
-	_visual_time += delta
-	# Vòng sáng nhấp nháy nhẹ; gió tắt (ngắt quãng) thì mờ hẳn
-	var pulse := lerpf(RING_PULSE_MIN, 1.0, 0.5 + 0.5 * sin(_visual_time * data.ring_pulse_speed))
-	_ring_material.albedo_color.a = data.ring_opacity * pulse * (1.0 if active else RING_INACTIVE_FACTOR)
+	var next_warning := not active and _cycle_time >= data.on_time + data.off_time - data.warning_time
+	if warning != next_warning:
+		warning = next_warning
+		warning_changed.emit(warning)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -80,21 +74,47 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return []
 
 
-## Gió thổi gần thẳng đứng (cột gió nâng hoặc hút xuống)
 func is_vertical() -> bool:
-	return absf(-global_basis.z.normalized().y) >= VERTICAL_THRESHOLD
+	return absf(global_basis.z.normalized().y) >= VERTICAL_THRESHOLD
 
 
-## Lực gió tại một điểm trong vùng (vận tốc, m/s)
 func get_wind_at(world_position: Vector3) -> Vector3:
-	if not active or data == null:
+	if data == null:
+		return Vector3.ZERO
+	var progress := (size.z * 0.5 - to_local(world_position).z) / maxf(size.z, 0.001)
+	if get_flow_coverage(progress) <= 0.0:
 		return Vector3.ZERO
 	var strength := data.strength
 	if fade_toward_end:
-		# Tiến độ dọc theo chiều gió: 0 ở đầu vùng, 1 ở cuối vùng
-		var progress := clampf((size.z * 0.5 - to_local(world_position).z) / size.z, 0.0, 1.0)
-		strength *= 1.0 - progress
+		strength *= 1.0 - clampf(progress, 0.0, 1.0)
 	return -global_basis.z.normalized() * strength
+
+
+## Pha trong chu kỳ bật/tắt, VFX dùng để khớp hình với lực
+func get_flow_phase() -> float:
+	return _cycle_time
+
+
+## 1 nếu gió đang có mặt tại tiến độ progress (0 = mặt vào, 1 = mặt ra), 0 nếu không
+func get_flow_coverage(progress: float) -> float:
+	if data == null or progress < 0.0 or progress > 1.0:
+		return 0.0
+	if not data.pulse_enabled:
+		return 1.0 if active else 0.0
+	var delay := pow(progress, 1.0 / data.sweep_exponent) * data.sweep_time
+	if flow_age < delay:
+		return 0.0
+	var emission_phase := fposmod(_cycle_time - delay, maxf(data.on_time + data.off_time, 0.001))
+	return 1.0 if emission_phase < data.on_time else 0.0
+
+
+## Còn gió đang chạy trong vùng (kể cả đuôi gió sau khi tắt)
+func has_flow_in_transit() -> bool:
+	if data == null:
+		return false
+	if not data.pulse_enabled:
+		return active
+	return active or _cycle_time < data.on_time + data.sweep_time
 
 
 func _set_active(value: bool) -> void:
@@ -105,56 +125,16 @@ func _set_active(value: bool) -> void:
 
 
 func _apply_size() -> void:
-	# Shape đánh dấu local_to_scene nên mỗi vật có bản riêng: chỉ đổi kích thước, không tạo shape mới
-	# (tạo mới sẽ làm editor ghi thêm shape thừa vào scene cha khi lưu)
 	(_shape.shape as BoxShape3D).size = size
 
 
-func _setup_particles() -> void:
-	var vertical := is_vertical()
-	var material := ((_particles.mesh as PrimitiveMesh).material as StandardMaterial3D).duplicate() as StandardMaterial3D
-	material.albedo_color = data.updraft_color if vertical else data.particle_color
-	# Màu theo vòng đời hạt (color_ramp) nhân vào albedo để làm mờ dần
-	material.vertex_color_use_as_albedo = true
-	_particles.material_override = material
-	_particles.color_ramp = _make_fade_ramp(vertical)
-
-	# Hạt chỉ sinh ở mặt đầu vùng (+Z, gió thổi về -Z) và bay vừa hết chiều dài vùng:
-	# chỗ nào thấy vệt gió thì chỗ đó có lực, không bị lố ra ngoài
-	_particles.position = Vector3(0.0, 0.0, size.z * 0.5)
-	_particles.emission_box_extents = Vector3(size.x * 0.5, size.y * 0.5, 0.0)
-	_particles.amount = maxi(4, int(size.x * size.y * size.z * data.particle_density))
-	var speed := maxf(data.strength * 2.0, 1.0)
-	_particles.initial_velocity_min = speed * 0.8
-	_particles.initial_velocity_max = speed * 1.2
-	# Tính theo hạt nhanh nhất để không hạt nào bay quá cuối vùng
-	_particles.lifetime = size.z / _particles.initial_velocity_max
-	# Chạy trước một vòng đời để vùng gió đã đầy vệt ngay khi scene bắt đầu
-	_particles.preprocess = _particles.lifetime
-	_particles.emitting = true
-
-	_setup_base_ring(vertical)
-
-
-## Gió ngang: hiện dần ở đầu, mờ dần ở cuối. Cột gió: rõ ở chân, mờ dần khi lên cao
-func _make_fade_ramp(vertical: bool) -> Gradient:
-	var ramp := Gradient.new()
-	if vertical:
-		ramp.offsets = PackedFloat32Array([0.0, 0.1, 1.0])
-		ramp.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
-	else:
-		ramp.offsets = PackedFloat32Array([0.0, 0.15, 0.85, 1.0])
-		ramp.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)])
-	return ramp
-
-
-## Vòng sáng ở mặt đầu vùng (chân cột gió), chỉ hiện với cột gió
-func _setup_base_ring(vertical: bool) -> void:
-	_base_ring.visible = vertical
-	if not vertical:
+func _on_data_changed() -> void:
+	if not is_node_ready():
 		return
-	_ring_material = (_base_ring.material_override as StandardMaterial3D).duplicate() as StandardMaterial3D
-	_ring_material.albedo_color = data.updraft_color
-	_base_ring.material_override = _ring_material
-	_base_ring.position = Vector3(0.0, 0.0, size.z * 0.5 - RING_SURFACE_OFFSET)
-	_base_ring.scale = Vector3(size.x * RING_SIZE_FACTOR, size.y * RING_SIZE_FACTOR, 1.0)
+	# Editor không chạy pulse: xem trước như gió đang bật
+	set_physics_process(not Engine.is_editor_hint() and data != null and data.pulse_enabled)
+	if data == null:
+		_set_active(false)
+	elif not data.pulse_enabled:
+		_set_active(true)
+	configuration_changed.emit()

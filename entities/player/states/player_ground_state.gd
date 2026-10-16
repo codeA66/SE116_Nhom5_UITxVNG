@@ -26,6 +26,9 @@ func _try_common_transitions() -> bool:
 	if player.can_attack():
 		state_machine.transition_to(ATTACK)
 		return true
+	if player.can_wind_blast():
+		state_machine.transition_to(WIND_BLAST)
+		return true
 	if player.can_jump():
 		state_machine.transition_to(JUMP)
 		return true

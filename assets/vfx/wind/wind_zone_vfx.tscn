@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/wind/wind_zone_vfx.gd" id="1_vfx"]
+
+[node name="WindZoneVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="Mist" type="MultiMeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="Strokes" type="MultiMeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="Motes" type="MultiMeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="ScreenNotifier" type="VisibleOnScreenNotifier3D" parent="."]
