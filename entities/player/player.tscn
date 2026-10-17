@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://ogqrogwu58gt"]
 
+[ext_resource type="PackedScene" path="res://entities/_base/character.tscn" id="1_base"]
 [ext_resource type="Script" path="res://generated/fox_player.gd" id="1_sglur"]
 [ext_resource type="PackedScene" path="res://generated/models/fox_spirit.glb" id="1_symyc"]
 [ext_resource type="Resource" path="res://resources/player_movement.tres" id="2_move"]
-[ext_resource type="Script" uid="uid://blr8snfwvdvqy" path="res://components/state_machine/state_machine.gd" id="3_bls4j"]
 [ext_resource type="Script" uid="uid://cthmkxcqaca82" path="res://entities/player/camera_rig.gd" id="6_camrig"]
 [ext_resource type="Script" uid="uid://dkyk8ucntxdga" path="res://entities/player/states/idle.gd" id="7_idle"]
 [ext_resource type="Script" uid="uid://cdpskso3yh3xi" path="res://entities/player/states/run.gd" id="8_run"]
@@ -12,52 +12,29 @@
 [ext_resource type="Script" path="res://entities/player/states/pick_up.gd" id="11_pickup"]
 [ext_resource type="Script" path="res://entities/player/states/attack.gd" id="12_attack"]
 [ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="13_hitbox"]
-[ext_resource type="Script" path="res://components/hurtbox/hurtbox_component.gd" id="14_hurtbox"]
-[ext_resource type="Script" path="res://components/health/health_component.gd" id="15_health"]
 [ext_resource type="Script" path="res://components/interaction/interactor_component.gd" id="16_interactor"]
 [ext_resource type="PackedScene" path="res://ui/hud/interaction_prompt.tscn" id="18_prompt"]
 [ext_resource type="Script" path="res://entities/player/states/dash.gd" id="19_dash"]
-[ext_resource type="PackedScene" path="res://components/blob_shadow/blob_shadow.tscn" id="21_blob"]
-[ext_resource type="Script" path="res://components/wind_receiver/wind_receiver_component.gd" id="22_wind"]
 [ext_resource type="Script" path="res://entities/player/states/hurt.gd" id="23_hurt"]
 [ext_resource type="Script" path="res://entities/player/states/dead.gd" id="24_dead"]
 [ext_resource type="PackedScene" path="res://ui/hud/health_bar.tscn" id="25_hpbar"]
 [ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_area.tscn" id="26_blast"]
 [ext_resource type="Script" path="res://entities/player/states/wind_blast.gd" id="27_blaststate"]
 
-[ext_resource type="Script" path="res://components/squash_stretch/squash_stretch_component.gd" id="30_squash"]
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
-radius = 0.35
-height = 1.8
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hurtbox"]
-radius = 0.4
-height = 1.8
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wind"]
-radius = 0.35
-height = 1.8
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
 radius = 1.2
 
-[node name="Player" type="CharacterBody3D" unique_id=1289567380]
+[node name="Player" instance=ExtResource("1_base")]
+editor_description = ""
 collision_layer = 2
 collision_mask = 5
-floor_snap_length = 0.3
 script = ExtResource("1_sglur")
 movement = ExtResource("2_move")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1933727033]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-shape = SubResource("CapsuleShape3D_body")
-
-[node name="Model" parent="." unique_id=414762663 instance=ExtResource("1_symyc")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="FoxSpirit" parent="Model/Visual" instance=ExtResource("1_symyc")]
 
 [node name="Hitbox" type="Area3D" parent="Model"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.9)
@@ -72,24 +49,13 @@ shape = SubResource("BoxShape3D_hitbox")
 
 [node name="WeaponSocket" type="Node3D" parent="."]
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=983512932]
-root_node = NodePath("../Model")
-
-[node name="HealthComponent" type="Node" parent="."]
-script = ExtResource("15_health")
+[node name="HealthComponent" parent="."]
 max_health = 5
 
-[node name="HurtboxComponent" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+[node name="HurtboxComponent" parent="."]
 collision_layer = 2
-collision_mask = 0
-script = ExtResource("14_hurtbox")
-health = NodePath("../HealthComponent")
 invincibility_time = 0.5
 fixed_damage_per_hit = 1
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-shape = SubResource("CapsuleShape3D_hurtbox")
 
 [node name="Interactor" type="Area3D" parent="."]
 collision_layer = 0
@@ -99,22 +65,6 @@ script = ExtResource("16_interactor")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Interactor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("SphereShape3D_interact")
-
-[node name="WindReceiverComponent" type="Area3D" parent="."]
-collision_layer = 128
-collision_mask = 64
-script = ExtResource("22_wind")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiverComponent"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-shape = SubResource("CapsuleShape3D_wind")
-
-[node name="SquashStretch" type="Node" parent="." node_paths=PackedStringArray("body", "target")]
-script = ExtResource("30_squash")
-body = NodePath("..")
-target = NodePath("../Model/FoxRig")
-
-[node name="BlobShadow" parent="." instance=ExtResource("21_blob")]
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -133,8 +83,7 @@ transform = Transform3D(1, 0, 0, 0, 0.6427876, 0.76604444, 0, -0.76604444, 0.642
 current = true
 fov = 30.0
 
-[node name="StateMachine" type="Node" parent="." unique_id=51405696 node_paths=PackedStringArray("initial_state")]
-script = ExtResource("3_bls4j")
+[node name="StateMachine" parent="." node_paths=PackedStringArray("initial_state")]
 initial_state = NodePath("Idle")
 
 [node name="Idle" type="Node" parent="StateMachine" unique_id=754124358]

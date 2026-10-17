@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://b6r4ht78fr5vg" path="res://entities/_base/character.gd" id="1_character"]
+[ext_resource type="Script" uid="uid://bin26hafdtu1e" path="res://components/health/health_component.gd" id="2_health"]
+[ext_resource type="Script" uid="uid://cquuusc2l7sjd" path="res://components/hurtbox/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" uid="uid://b3ue3kprh711p" path="res://components/wind_receiver/wind_receiver_component.gd" id="4_wind"]
+[ext_resource type="Script" uid="uid://bhy2r4v3q4hwg" path="res://components/squash_stretch/squash_stretch_component.gd" id="5_squash"]
+[ext_resource type="PackedScene" path="res://components/blob_shadow/blob_shadow.tscn" id="6_blob"]
+[ext_resource type="Script" uid="uid://blr8snfwvdvqy" path="res://components/state_machine/state_machine.gd" id="7_fsm"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hurtbox"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wind"]
+radius = 0.35
+height = 1.8
+
+[node name="Character" type="CharacterBody3D"]
+editor_description = "Scene gốc cho mọi nhân vật (player, quái, boss). Tạo nhân vật mới bằng New Inherited Scene, xem docs/character_guide.md."
+collision_layer = 0
+floor_snap_length = 0.3
+script = ExtResource("1_character")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Model" type="Node3D" parent="."]
+editor_description = "Xoay theo hướng nhân vật nhìn. Hitbox và vùng kỹ năng gắn vào đây để xoay theo."
+
+[node name="Visual" type="Node3D" parent="Model"]
+editor_description = "Chỉ chứa phần hình (model, rig). SquashStretch co giãn node này nên không ảnh hưởng hitbox."
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Model")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+
+[node name="HurtboxComponent" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("3_hurtbox")
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_hurtbox")
+
+[node name="WindReceiverComponent" type="Area3D" parent="."]
+collision_layer = 128
+collision_mask = 64
+script = ExtResource("4_wind")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiverComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_wind")
+
+[node name="SquashStretch" type="Node" parent="." node_paths=PackedStringArray("body", "target")]
+script = ExtResource("5_squash")
+body = NodePath("..")
+target = NodePath("../Model/Visual")
+
+[node name="BlobShadow" parent="." instance=ExtResource("6_blob")]
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("7_fsm")
