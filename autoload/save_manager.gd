@@ -9,7 +9,7 @@ signal loaded
 const SAVE_PATH := "user://savegame.json"
 const TEMP_PATH := "user://savegame.json.tmp"
 ## Tăng khi đổi định dạng file, kèm xử lý chuyển đổi trong _deserialize
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 
 
 func _ready() -> void:
@@ -72,6 +72,9 @@ func reset_game() -> void:
 
 
 func _serialize(progress: PlayerProgress) -> Dictionary:
+	var weapon_paths: Array[String] = []
+	for weapon in progress.weapons:
+		weapon_paths.append(weapon.resource_path)
 	var ability_paths: Array[String] = []
 	for ability in progress.abilities:
 		ability_paths.append(ability.resource_path)
@@ -81,6 +84,7 @@ func _serialize(progress: PlayerProgress) -> Dictionary:
 	return {
 		"version": SAVE_VERSION,
 		"weapon": progress.weapon.resource_path if progress.weapon else "",
+		"weapons": weapon_paths,
 		"abilities": ability_paths,
 		"flags": flag_ids,
 		"checkpoint": {"zone": progress.checkpoint_zone, "spawn": String(progress.checkpoint_spawn_id)},
@@ -93,6 +97,19 @@ func _deserialize(data: Dictionary) -> PlayerProgress:
 		push_warning("SaveManager: file save được tạo từ phiên bản game mới hơn")
 
 	progress.weapon = _load_resource(str(data.get("weapon", ""))) as WeaponData
+	var weapon_paths: Variant = data.get("weapons", [])
+	if weapon_paths is Array:
+		for path: Variant in weapon_paths:
+			var weapon := _load_resource(str(path)) as WeaponData
+			if weapon and progress.get_weapon_in_slot(weapon.slot) == null:
+				progress.weapons.append(weapon)
+	# Save v1/v2: vũ khí đang cầm cũng là vũ khí đã sở hữu.
+	if progress.weapon:
+		var owned := progress.get_weapon_in_slot(progress.weapon.slot)
+		if owned == null:
+			progress.weapons.append(progress.weapon)
+		else:
+			progress.weapon = owned
 
 	var ability_paths: Variant = data.get("abilities", [])
 	if ability_paths is Array:

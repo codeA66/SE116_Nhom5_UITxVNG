@@ -20,6 +20,7 @@
 [ext_resource type="PackedScene" path="res://ui/hud/health_bar.tscn" id="25_hpbar"]
 [ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_area.tscn" id="26_blast"]
 [ext_resource type="Script" path="res://entities/player/states/wind_blast.gd" id="27_blaststate"]
+[ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="28_slots"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -47,7 +48,13 @@ shape = SubResource("BoxShape3D_hitbox")
 
 [node name="WindBlastArea" parent="Model" instance=ExtResource("26_blast")]
 
-[node name="WeaponSocket" type="Node3D" parent="."]
+[node name="ArrowSpawn" type="Marker3D" parent="Model"]
+position = Vector3(-0.06, 1.02, 0.55)
+
+[node name="WeaponSocket" type="BoneAttachment3D" parent="."]
+bone_name = "Hand_L"
+use_external_skeleton = true
+external_skeleton = NodePath("../Model/Visual/FoxSpirit/FoxRig/Skeleton3D")
 
 [node name="HealthComponent" parent="."]
 max_health = 5
@@ -67,6 +74,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("SphereShape3D_interact")
 
 [node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="WeaponSlots" parent="HUD" instance=ExtResource("28_slots")]
 
 [node name="HealthBar" parent="HUD" node_paths=PackedStringArray("health") instance=ExtResource("25_hpbar")]
 health = NodePath("../../HealthComponent")

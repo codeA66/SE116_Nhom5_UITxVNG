@@ -22,11 +22,41 @@ func get_weapon() -> WeaponData:
 
 
 func set_weapon(weapon: WeaponData) -> void:
+	# Giữ API cũ: cấp vũ khí rồi chọn, không làm mất vũ khí ở ô còn lại.
+	if weapon:
+		_store_weapon(weapon)
 	if progress.weapon == weapon:
 		return
 	progress.weapon = weapon
 	weapon_changed.emit(weapon)
 	progress_changed.emit()
+
+
+func add_weapon(weapon: WeaponData) -> void:
+	if weapon == null or progress.get_weapon_in_slot(weapon.slot) == weapon:
+		return
+	_store_weapon(weapon)
+	progress_changed.emit()
+
+
+func get_weapon_in_slot(slot: WeaponData.Slot) -> WeaponData:
+	return progress.get_weapon_in_slot(slot)
+
+
+func select_weapon(slot: WeaponData.Slot) -> bool:
+	var owned := get_weapon_in_slot(slot)
+	if owned == null:
+		return false
+	set_weapon(owned)
+	return true
+
+
+func _store_weapon(weapon: WeaponData) -> void:
+	for index in progress.weapons.size():
+		if progress.weapons[index].slot == weapon.slot:
+			progress.weapons[index] = weapon
+			return
+	progress.weapons.append(weapon)
 
 
 func has_ability(id: StringName) -> bool:
@@ -72,6 +102,9 @@ func discard_pending_flags() -> void:
 ## Thay toàn bộ tiến trình. Không phát progress_changed để không ghi đè file save ngay khi vừa đọc
 func replace_progress(new_progress: PlayerProgress) -> void:
 	progress = new_progress
+	# Tương thích tiến trình cũ chỉ có một weapon.
+	if progress.weapon:
+		_store_weapon(progress.weapon)
 	_pending_flags.clear()
 	reset_player_health()
 	progress_replaced.emit()

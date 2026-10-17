@@ -45,7 +45,9 @@ func _run() -> void:
     var material := sword.get_active_material(0) as BaseMaterial3D
     _check(material.texture_filter == BaseMaterial3D.TEXTURE_FILTER_NEAREST, "palette sampling without mipmap color bleed")
     _check(material.albedo_texture.get_size() == Vector2(128, 32), "padded palette survives Godot import")
-    _check(animation.get_animation_list().size() == 12, "all 12 clips installed")
+    _check(animation.get_animation_list().size() == 15, "12 original clips and 3 bow clips installed")
+    for bow_clip: StringName in [&"fox/Idle_Bow", &"fox/Run_Bow", &"fox/Bow_Shoot"]:
+        _check(animation.has_animation(bow_clip), "bow clip " + String(bow_clip))
     player.set_physics_process(false)
     for clip: StringName in animation.get_animation_list():
         animation.play(clip)
@@ -63,6 +65,9 @@ func _run() -> void:
             if first_positions[bone].distance_to(skeleton.get_bone_pose_position(bone)) > 0.0001:
                 changed = true
         _check(changed, "bone motion " + String(clip))
+        # Tay kéo dây cung cần gập khuỷu; ràng buộc tay thẳng chỉ áp dụng clip cũ.
+        if String(clip).contains("Bow"):
+            continue
         for side in ["R", "L"]:
             var shoulder := skeleton.get_bone_global_pose(skeleton.find_bone("UpperArm_" + side)).origin
             var elbow := skeleton.get_bone_global_pose(skeleton.find_bone("Forearm_" + side)).origin

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://entities/_base/weapon_data.gd" id="1"]
+[ext_resource type="Script" path="res://entities/_base/attack_data.gd" id="2"]
+[ext_resource type="PackedScene" path="res://assets/weapons/bow_visual.tscn" id="3"]
+[ext_resource type="Resource" path="res://resources/attacks/bow_shot.tres" id="4"]
+[ext_resource type="PackedScene" path="res://objects/projectiles/arrow.tscn" id="5"]
+
+[resource]
+script = ExtResource("1")
+slot = 1
+display_name = "Cung"
+model_scene = ExtResource("3")
+model_scale = 1.0
+attack_range = 12.0
+combo = Array[ExtResource("2")]([ExtResource("4")])
+projectile_scene = ExtResource("5")
+projectile_speed = 18.0
+projectile_lifetime = 1.5

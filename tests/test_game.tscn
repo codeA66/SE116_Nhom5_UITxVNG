@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://objects/pickups/weapon_pickup.tscn" id="6_pcvyj"]
 [ext_resource type="Script" path="res://objects/pickups/weapon_pickup.gd" id="7_mbq41"]
 [ext_resource type="Resource" path="res://resources/weapons/sword.tres" id="8_i1k8n"]
+[ext_resource type="Resource" path="res://resources/weapons/bow.tres" id="bow_weapon"]
 [ext_resource type="PackedScene" path="res://objects/training_dummy/training_dummy.tscn" id="9_kuppm"]
 [ext_resource type="Script" path="res://objects/training_dummy/training_dummy.gd" id="10_yj7l3"]
 [ext_resource type="PackedScene" path="res://objects/wind_zone/wind_zone.tscn" id="11_8pi34"]
@@ -170,6 +171,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 6)
 script = ExtResource("7_mbq41")
 weapon = ExtResource("8_i1k8n")
 persistent_id = &"test_game.sword"
+
+[node name="BowPickup" parent="Station1_Yard" instance=ExtResource("6_pcvyj")]
+position = Vector3(6, 0, 6)
+weapon = ExtResource("bow_weapon")
+persistent_id = &"test_game.bow"
 
 [node name="Dummy1" type="CharacterBody3D" parent="Station1_Yard" unique_id=377788384 instance=ExtResource("9_kuppm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
