@@ -29,10 +29,9 @@ var speed: float = 0.0
 
 var _offset: float = 0.0
 var _passengers: int = 0
-var _sail_tween: Tween
 
 @onready var state_machine: StateMachine = $StateMachine
-@onready var _sail: Node3D = $Mast/Sail
+@onready var _visual: BoatVisual = $BoatVisual
 @onready var _wind_receiver: WindReceiverComponent = $WindReceiverComponent
 @onready var _deck: Area3D = $Deck
 
@@ -47,7 +46,7 @@ func _ready() -> void:
 		push_error("%s thiếu BoatData hoặc tuyến (route), thuyền bị tắt" % get_path())
 		set_physics_process(false)
 		return
-	_sail.scale.y = 0.0
+	_visual.set_deployment(0.0)
 	_wind_receiver.pushed.connect(_on_wind_pushed)
 	_deck.body_entered.connect(_on_deck_body_entered)
 	_deck.body_exited.connect(_on_deck_body_exited)
@@ -123,19 +122,11 @@ func _snap_to_route() -> void:
 
 
 func _tween_sail(target: float, duration: float) -> void:
-	if _sail_tween:
-		_sail_tween.kill()
-	_sail_tween = create_tween()
-	_sail_tween.tween_property(_sail, "scale:y", target, duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_visual.animate_deployment(target, duration)
 
 
 func _flutter_sail() -> void:
-	var angle := deg_to_rad(data.flutter_angle_degrees)
-	var tween := create_tween()
-	var step := data.flutter_time / 4.0
-	tween.tween_property(_sail, "rotation:y", angle, step)
-	tween.tween_property(_sail, "rotation:y", -angle, step * 2.0)
-	tween.tween_property(_sail, "rotation:y", 0.0, step)
+	_visual.flutter(data.flutter_time, sin(deg_to_rad(data.flutter_angle_degrees)))
 
 
 func _on_wind_pushed(impulse: Vector3) -> void:
