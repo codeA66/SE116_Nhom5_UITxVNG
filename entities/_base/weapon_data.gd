@@ -7,5 +7,7 @@ extends Resource
 @export var model_scene: PackedScene
 ## Tỉ lệ model khi nằm trên đất (vật phẩm nhặt): model gốc mỗi vũ khí to nhỏ khác nhau, chỉnh để cân đối với nhân vật
 @export var model_scale: float = 1.0
+## Tầm đánh (m): từ tâm nhân vật tới mép xa của hitbox; mọi đòn trong combo dùng chung
+@export var attack_range: float = 1.65
 ## Chuỗi đòn combo, chạy lần lượt từ đầu
 @export var combo: Array[AttackData] = []
