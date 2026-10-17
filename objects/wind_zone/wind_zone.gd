@@ -94,10 +94,11 @@ func is_vertical() -> bool:
 func get_wind_at(world_position: Vector3) -> Vector3:
 	if data == null:
 		return Vector3.ZERO
-	var progress := (size.z * 0.5 - to_local(world_position).z) / maxf(size.z, 0.001)
+	var local := to_local(world_position)
+	var progress := (size.z * 0.5 - local.z) / maxf(size.z, 0.001)
 	if get_flow_coverage(progress) <= 0.0:
 		return Vector3.ZERO
-	var strength := data.strength
+	var strength := data.strength * _edge_factor(local)
 	if fade_toward_end:
 		strength *= 1.0 - clampf(progress, 0.0, 1.0)
 	return -global_basis.z.normalized() * strength
@@ -128,6 +129,34 @@ func has_flow_in_transit() -> bool:
 	if not data.pulse_enabled:
 		return active
 	return active or _cycle_time < data.on_time + data.sweep_time
+
+
+## 0 ở mép vùng, tăng dần lên 1 sau edge_softness mét, chỉ theo các trục nằm ngang.
+## Trục thẳng đứng bỏ qua: người chơi đứng sát sàn (đáy vùng) vẫn chịu đủ lực, cột gió nâng đủ từ đáy
+func _edge_factor(local: Vector3) -> float:
+	var softness := data.edge_softness
+	if softness <= 0.0:
+		return 1.0
+	var vertical_axis := _vertical_local_axis()
+	var factor := 1.0
+	for axis in 3:
+		if axis == vertical_axis:
+			continue
+		var inside := size[axis] * 0.5 - absf(local[axis])
+		factor = minf(factor, clampf(inside / softness, 0.0, 1.0))
+	return factor
+
+
+## Trục cục bộ (0 = x, 1 = y, 2 = z) gần phương thẳng đứng của thế giới nhất
+func _vertical_local_axis() -> int:
+	var best := 1
+	var best_dot := 0.0
+	for axis in 3:
+		var d := absf(global_basis[axis].normalized().y)
+		if d > best_dot:
+			best_dot = d
+			best = axis
+	return best
 
 
 func _set_active(value: bool) -> void:

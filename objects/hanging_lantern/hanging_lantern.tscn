@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/hanging_lantern/hanging_lantern.gd" id="1_lantern"]
+[ext_resource type="PackedScene" path="res://assets/models/wind_kit/hanging_lantern.glb" id="2_model"]
+
+[node name="HangingLantern" type="Node3D"]
+script = ExtResource("1_lantern")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="VisibleOnScreenNotifier3D" type="VisibleOnScreenNotifier3D" parent="."]
+aabb = AABB(-0.6, 0, -0.6, 2.4, 3.5, 1.2)

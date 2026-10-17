@@ -43,7 +43,9 @@ func physics_update(delta: float) -> void:
 func _start_attack() -> void:
 	player.consume_attack_input()
 	player.hitbox.deactivate()
-	_attack = player.get_weapon().combo[_combo_index]
+	var weapon := player.get_weapon()
+	_attack = weapon.combo[_combo_index]
+	player.hitbox.set_reach(weapon.attack_range)
 	_elapsed = 0.0
 	_hitbox_used = false
 
@@ -58,6 +60,9 @@ func _apply_lunge(delta: float) -> void:
 	if _elapsed < _attack.lunge_time:
 		player.velocity.x = _lunge_direction.x * _attack.lunge_speed
 		player.velocity.z = _lunge_direction.z * _attack.lunge_speed
+	elif _attack.lunge_stop:
+		player.velocity.x = 0.0
+		player.velocity.z = 0.0
 	else:
 		player.move_toward_direction(Vector3.ZERO, delta)
 

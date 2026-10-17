@@ -46,6 +46,12 @@ extends Resource
 	set(value):
 		sweep_exponent = clampf(value, 1.0, 3.0)
 		emit_changed()
+## Lực gió tăng dần từ 0 ở mép vùng lên đủ sức trong khoảng này (m), chỉ theo chiều ngang.
+## Không có mép mềm thì gió mạnh hơn tốc độ chạy làm người chơi nảy qua lại ở mép vùng. 0 = mép cứng
+@export var edge_softness: float = 1.0:
+	set(value):
+		edge_softness = maxf(value, 0.0)
+		emit_changed()
 
 @export_group("Visual")
 @export var particle_color: Color = Color(0.97, 0.99, 1.0, 0.95):

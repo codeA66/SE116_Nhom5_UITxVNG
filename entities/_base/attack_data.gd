@@ -27,3 +27,5 @@ extends Resource
 ## Lao nhẹ về trước khi ra đòn
 @export var lunge_speed: float = 4.0
 @export var lunge_time: float = 0.12
+## Hết lunge_time thì đứng khựng lại ngay (không trượt theo quán tính): cú lướt ngắn và gọn
+@export var lunge_stop: bool = false
