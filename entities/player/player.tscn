@@ -25,6 +25,8 @@
 [ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_area.tscn" id="26_blast"]
 [ext_resource type="Script" path="res://entities/player/states/wind_blast.gd" id="27_blaststate"]
 
+[ext_resource type="Script" path="res://components/squash_stretch/squash_stretch_component.gd" id="30_squash"]
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
 height = 1.8
@@ -106,6 +108,11 @@ script = ExtResource("22_wind")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiverComponent"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_wind")
+
+[node name="SquashStretch" type="Node" parent="." node_paths=PackedStringArray("body", "target")]
+script = ExtResource("30_squash")
+body = NodePath("..")
+target = NodePath("../Model/FoxRig")
 
 [node name="BlobShadow" parent="." instance=ExtResource("21_blob")]
 
