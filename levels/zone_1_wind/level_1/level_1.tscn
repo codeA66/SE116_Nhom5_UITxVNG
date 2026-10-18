@@ -20,7 +20,6 @@
 [ext_resource type="PackedScene" path="res://objects/pickups/weapon_pickup.tscn" id="18_d5mwm"]
 [ext_resource type="Script" path="res://objects/pickups/weapon_pickup.gd" id="19_3xtpa"]
 [ext_resource type="Resource" path="res://resources/weapons/sword.tres" id="20_pd35a"]
-[ext_resource type="Resource" path="res://resources/weapons/bow.tres" id="bow_weapon"]
 [ext_resource type="PackedScene" path="res://objects/pickups/ability_pickup.tscn" id="21_trydm"]
 [ext_resource type="Script" path="res://objects/pickups/ability_pickup.gd" id="22_ead55"]
 [ext_resource type="Resource" path="res://abilities/dash/dash.tres" id="23_slwaf"]
@@ -1581,17 +1580,11 @@ script = ExtResource("19_3xtpa")
 weapon = ExtResource("20_pd35a")
 persistent_id = &"level_1.sword_pickup"
 
-[node name="BowPickup" parent="Area11_Sword" instance=ExtResource("18_d5mwm")]
-position = Vector3(17, 9, -127)
-weapon = ExtResource("bow_weapon")
-persistent_id = &"level_1.bow_pickup"
-
 [node name="SignSword" type="Node3D" parent="Area11_Sword" unique_id=1416758150 instance=ExtResource("6_y68c7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 9, -124)
 script = ExtResource("7_w3hun")
-text = "F: nhặt kiếm / cung
-1: kiếm   2: cung
-J: chém / bắn"
+text = "F: nhặt kiếm
+J: chém"
 
 [node name="Area12_Dash" type="Node3D" parent="." unique_id=952975260]
 
