@@ -1,0 +1,81 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/shockwave/ground_shockwave.gd" id="1_script"]
+[ext_resource type="Shader" path="res://assets/shaders/shockwave_ring.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ring"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_shader")
+shader_parameter/radius = 1.0
+shader_parameter/band_width = 0.6
+shader_parameter/max_radius = 6.0
+shader_parameter/plane_size = 13.0
+shader_parameter/preview = false
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ring"]
+size = Vector2(1, 1)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dust"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.1
+emission_ring_radius = 0.6
+emission_ring_inner_radius = 0.5
+direction = Vector3(0, 1, 0)
+spread = 25.0
+initial_velocity_min = 0.5
+initial_velocity_max = 1.5
+gravity = Vector3(0, -3, 0)
+radial_velocity_min = 4.0
+radial_velocity_max = 6.0
+damping_min = 3.0
+damping_max = 5.0
+scale_min = 0.6
+scale_max = 1.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dust"]
+shading_mode = 0
+albedo_color = Color(0.55, 0.5, 0.42, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_dust"]
+material = SubResource("StandardMaterial3D_dust")
+radius = 0.09
+height = 0.18
+radial_segments = 6
+rings = 3
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_detect"]
+resource_local_to_scene = true
+height = 2.0
+radius = 7.0
+
+[node name="GroundShockwave" type="Node3D"]
+top_level = true
+script = ExtResource("1_script")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_ring")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_ring")
+
+[node name="Dust" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 40
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+visibility_aabb = AABB(-8, -1, -8, 16, 4, 16)
+process_material = SubResource("ParticleProcessMaterial_dust")
+draw_pass_1 = SubResource("SphereMesh_dust")
+cast_shadow = 0
+
+[node name="DetectArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DetectArea"]
+shape = SubResource("CylinderShape3D_detect")

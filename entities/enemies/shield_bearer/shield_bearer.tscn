@@ -1,0 +1,294 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_base"]
+[ext_resource type="Script" path="res://entities/enemies/shield_bearer/shield_bearer.gd" id="2_script"]
+[ext_resource type="Resource" path="res://resources/enemies/shield_bearer.tres" id="3_data"]
+[ext_resource type="Script" path="res://components/hurtbox/guarded_hurtbox_component.gd" id="4_guarded"]
+[ext_resource type="Script" path="res://components/hit_guard/directional_hit_guard.gd" id="5_guard"]
+[ext_resource type="PackedScene" path="res://objects/shockwave/ground_shockwave.tscn" id="6_wave"]
+[ext_resource type="Shader" path="res://assets/shaders/shockwave_ring.gdshader" id="7_ring_shader"]
+[ext_resource type="Script" path="res://entities/enemies/shield_bearer/states/shield_advance.gd" id="8_advance"]
+[ext_resource type="Script" path="res://entities/enemies/shield_bearer/states/shield_block.gd" id="9_block"]
+[ext_resource type="Script" path="res://entities/enemies/shield_bearer/states/shield_slam.gd" id="10_slam"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/shield_bearer/shield_bearer.glb" id="11_model"]
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "Idle"
+length = 1.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/ShieldBearerModel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.8, 1.6), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0.025, 0), Vector3(0, 0, 0)]}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Visual/ShieldBearerModel:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {"times": PackedFloat32Array(0, 0.8, 1.6), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, -0.012, 0), Vector3(0, 0.012, 0), Vector3(0, -0.012, 0)]}
+
+[sub_resource type="Animation" id="Animation_walk"]
+resource_name = "Walk"
+length = 0.55
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/ShieldBearerModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.275, 0.55), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, -0.055), Vector3(0, 0, 0.055), Vector3(0, 0, -0.055)]}
+
+[sub_resource type="Animation" id="Animation_run"]
+resource_name = "Run"
+length = 0.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/ShieldBearerModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.19, 0.38), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, -0.09), Vector3(0, 0, 0.09), Vector3(0, 0, -0.09)]}
+
+[sub_resource type="Animation" id="Animation_hurt"]
+resource_name = "Hurt"
+length = 0.24
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/ShieldBearerModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.07, 0.24), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0, 0.13), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="Animation_death"]
+resource_name = "Death"
+length = 0.65
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/ShieldBearerModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.55, 0.65), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0, -1.15), Vector3(0, 0, -1.15)]}
+
+[sub_resource type="Animation" id="Animation_slam"]
+resource_name = "ShieldSlam"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/ShieldBearerModel/ShieldBearerModel/Shield:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.8, 0.9, 1.7, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.39, 0.73, 0.245), Vector3(-0.39, 0.91, 0.165), Vector3(0.19, 0.6493296, 1.0968372), Vector3(0.19, 0.6493296, 1.0968372), Vector3(-0.39, 0.73, 0.245)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Visual/ShieldBearerModel/ShieldBearerModel/Shield:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.8, 0.9, 1.7, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(0.62, 0, 0), Vector3(0.62, 0, 0), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_block"]
+resource_name = "GuardBlock"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/ShieldBearerModel/ShieldBearerModel/Shield:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.08, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(-0.16, 0, 0), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_main"]
+_data = {
+&"Death": SubResource("Animation_death"),
+&"Hurt": SubResource("Animation_hurt"),
+&"Idle": SubResource("Animation_idle"),
+&"Run": SubResource("Animation_run"),
+&"Walk": SubResource("Animation_walk"),
+&"GuardBlock": SubResource("Animation_block"),
+&"ShieldSlam": SubResource("Animation_slam")
+}
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.45
+height = 1.9
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hurtbox"]
+radius = 0.5
+height = 2.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
+resource_local_to_scene = true
+size = Vector3(1.4, 1.2, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shield"]
+albedo_color = Color(0.45, 0.4, 0.33, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_shield"]
+material = SubResource("StandardMaterial3D_shield")
+size = Vector3(0.9, 1.2, 0.12)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_preview"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("7_ring_shader")
+shader_parameter/radius = 6.0
+shader_parameter/band_width = 0.6
+shader_parameter/max_radius = 6.0
+shader_parameter/plane_size = 12.4
+shader_parameter/preview = true
+shader_parameter/preview_progress = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_preview"]
+size = Vector2(1, 1)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparks"]
+direction = Vector3(0, 0.3, 1)
+spread = 60.0
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+gravity = Vector3(0, -6, 0)
+scale_min = 0.6
+scale_max = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sparks"]
+shading_mode = 0
+albedo_color = Color(1, 0.7, 0.25, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_sparks"]
+material = SubResource("StandardMaterial3D_sparks")
+radius = 0.04
+height = 0.08
+radial_segments = 4
+rings = 2
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_deflect"]
+direction = Vector3(0, 0.2, 0.5)
+spread = 90.0
+initial_velocity_min = 1.5
+initial_velocity_max = 3.0
+gravity = Vector3(0, -1, 0)
+damping_min = 2.0
+damping_max = 3.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_deflect"]
+shading_mode = 0
+albedo_color = Color(0.5, 0.48, 0.44, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_deflect"]
+material = SubResource("StandardMaterial3D_deflect")
+radius = 0.07
+height = 0.14
+radial_segments = 4
+rings = 2
+
+[node name="ShieldBearer" instance=ExtResource("1_base")]
+editor_description = "Hộ Vệ Khiên: áo choàng tối, khiên đá lấy từ cổng đền bị vỡ."
+script = ExtResource("2_script")
+data = ExtResource("3_data")
+chase_state = &"ShieldAdvance"
+attack_state = &"ShieldSlam"
+
+[node name="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_main")
+}
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="ShieldBearerModel" parent="Model/Visual" instance=ExtResource("11_model")]
+
+[node name="CollisionShape3D" parent="Model/Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.7)
+shape = SubResource("BoxShape3D_hitbox")
+
+[node name="ShockwaveOrigin" type="Marker3D" parent="Model"]
+editor_description = "Chỗ mép dưới khiên chạm đất: tâm sóng kích và vòng báo phạm vi."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
+
+[node name="BlockSparks" type="GPUParticles3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.7)
+emitting = false
+amount = 12
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+process_material = SubResource("ParticleProcessMaterial_sparks")
+draw_pass_1 = SubResource("SphereMesh_sparks")
+cast_shadow = 0
+
+[node name="WindDeflect" type="GPUParticles3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.6)
+emitting = false
+amount = 16
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+process_material = SubResource("ParticleProcessMaterial_deflect")
+draw_pass_1 = SubResource("SphereMesh_deflect")
+cast_shadow = 0
+
+[node name="HurtboxComponent" parent="." node_paths=PackedStringArray("guards")]
+script = ExtResource("4_guarded")
+guards = [NodePath("ShieldGuard")]
+
+[node name="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_hurtbox")
+
+[node name="ShieldGuard" type="Node" parent="HurtboxComponent" node_paths=PackedStringArray("facing_node")]
+script = ExtResource("5_guard")
+facing_node = NodePath("../../Model")
+arc_degrees = 120.0
+
+[node name="GroundShockwave" parent="." instance=ExtResource("6_wave")]
+
+[node name="SlamPreview" type="MeshInstance3D" parent="."]
+editor_description = "Vòng báo phạm vi sóng kích: hiện lúc tụ lực."
+top_level = true
+visible = false
+material_override = SubResource("ShaderMaterial_preview")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_preview")
+
+[node name="ShieldAdvance" type="Node" parent="StateMachine"]
+script = ExtResource("8_advance")
+
+[node name="ShieldBlock" type="Node" parent="StateMachine"]
+script = ExtResource("9_block")
+
+[node name="ShieldSlam" type="Node" parent="StateMachine"]
+script = ExtResource("10_slam")
