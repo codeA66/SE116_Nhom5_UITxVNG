@@ -28,6 +28,14 @@ const MIN_TRIGGER_SIZE := 0.5
 		trigger_size = value.max(Vector3.ONE * MIN_TRIGGER_SIZE)
 		_apply_trigger_size()
 
+@export_group("Clear Feedback")
+## Làm chậm thời gian khi giết con cuối (s, thời gian thật) và tỉ lệ tốc độ lúc đó
+@export var clear_slowmo_time: float = 0.5
+@export var clear_slowmo_scale: float = 0.25
+## Đợi bao lâu (s, thời gian thật) sau đòn kết liễu mới vào slow-mo; nên ≥ kill_hitstop của DeathEffectData
+@export var clear_slowmo_delay: float = 0.12
+@export_range(0.0, 1.0) var clear_trauma: float = 0.3
+
 var _pending: Array[Enemy] = []
 var _alive: int = 0
 var _player: Node3D
@@ -145,4 +153,8 @@ func _on_enemy_died(_enemy: Enemy) -> void:
 		return
 	_running = false
 	GameState.set_flag(persistent_id)
+	ScreenShake.add_trauma(clear_trauma)
 	cleared.emit()
+	# Chờ hitstop của đòn kết liễu chạy hết rồi mới slow-mo: gọi ngay thì slow-mo ghi đè, cú chém cuối mất lực
+	await get_tree().create_timer(clear_slowmo_delay, true, false, true).timeout
+	HitStop.slow_motion(clear_slowmo_time, clear_slowmo_scale)

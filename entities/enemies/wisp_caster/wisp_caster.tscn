@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="Resource" path="res://resources/feedback/hit_wisp_caster.tres" id="98_hit"]
+[ext_resource type="Resource" path="res://resources/feedback/death_wisp_caster.tres" id="99_death"]
 [ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_enemy"]
 [ext_resource type="Script" path="res://entities/enemies/wisp_caster/wisp_caster.gd" id="2_caster"]
 [ext_resource type="Resource" path="res://resources/enemies/wisp_caster.tres" id="3_data"]
@@ -236,3 +238,9 @@ script = ExtResource("9_cast")
 
 [node name="Teleport" type="Node" parent="StateMachine"]
 script = ExtResource("10_teleport")
+
+[node name="DeathEffectComponent" parent="."]
+data = ExtResource("99_death")
+
+[node name="HitFeedbackComponent" parent="."]
+data = ExtResource("98_hit")

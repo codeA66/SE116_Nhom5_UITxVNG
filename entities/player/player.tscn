@@ -21,6 +21,12 @@
 [ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_area.tscn" id="26_blast"]
 [ext_resource type="Script" path="res://entities/player/states/wind_blast.gd" id="27_blaststate"]
 [ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="28_slots"]
+[ext_resource type="Script" path="res://components/camera_shake/camera_shake.gd" id="29_shake"]
+[ext_resource type="Script" path="res://components/hit_feedback/hit_feedback_component.gd" id="30_feedback"]
+[ext_resource type="Resource" path="res://resources/feedback/player_hit.tres" id="31_feedbackdata"]
+[ext_resource type="PackedScene" path="res://components/slash_trail/slash_trail.tscn" id="32_trail"]
+[ext_resource type="PackedScene" path="res://ui/hud/hurt_vignette.tscn" id="33_vignette"]
+[ext_resource type="Resource" path="res://resources/attacks/sword_slash_3.tres" id="34_slash3"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -124,3 +130,20 @@ script = ExtResource("24_dead")
 
 [node name="WindBlast" type="Node" parent="StateMachine"]
 script = ExtResource("27_blaststate")
+
+[node name="CameraShake" type="Node" parent="CameraRig/Camera3D"]
+script = ExtResource("29_shake")
+
+[node name="HitFeedbackComponent" type="Node" parent="." node_paths=PackedStringArray("hurtbox", "squash_stretch")]
+script = ExtResource("30_feedback")
+hurtbox = NodePath("../HurtboxComponent")
+squash_stretch = NodePath("../SquashStretch")
+data = ExtResource("31_feedbackdata")
+
+[node name="SlashTrail" parent="." node_paths=PackedStringArray("hitbox", "follow") instance=ExtResource("32_trail")]
+hitbox = NodePath("../Model/Hitbox")
+follow = NodePath("../Model")
+finisher_attack = ExtResource("34_slash3")
+
+[node name="HurtVignette" parent="HUD" node_paths=PackedStringArray("hurtbox") instance=ExtResource("33_vignette")]
+hurtbox = NodePath("../../HurtboxComponent")

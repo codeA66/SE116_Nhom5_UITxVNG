@@ -1,0 +1,93 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://components/slash_trail/slash_trail.gd" id="1_script"]
+[ext_resource type="Shader" path="res://assets/shaders/slash_trail.gdshader" id="2_trail"]
+[ext_resource type="Shader" path="res://assets/shaders/slash_glow.gdshader" id="3_glow"]
+[ext_resource type="Shader" path="res://assets/shaders/star_flash.gdshader" id="4_star"]
+[ext_resource type="Shader" path="res://assets/shaders/debris_shard.gdshader" id="5_debris"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_arc"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_trail")
+shader_parameter/head = 0.0
+shader_parameter/dissolve = 0.0
+shader_parameter/direction = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_back"]
+resource_local_to_scene = true
+render_priority = -1
+shader = ExtResource("2_trail")
+shader_parameter/head = 0.0
+shader_parameter/dissolve = 0.0
+shader_parameter/direction = 1.0
+shader_parameter/thickness = 0.55
+shader_parameter/crumble = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_glow"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("3_glow")
+shader_parameter/head = 0.0
+shader_parameter/dissolve = 0.0
+shader_parameter/direction = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_star"]
+resource_local_to_scene = true
+render_priority = 2
+shader = ExtResource("4_star")
+shader_parameter/intensity = 2.5
+shader_parameter/short_arm = 0.4
+shader_parameter/core_radius = 0.12
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_debris"]
+resource_local_to_scene = true
+shader = ExtResource("5_debris")
+shader_parameter/color = Color(0.04, 0.05, 0.08, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_star"]
+size = Vector2(1, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_debris"]
+size = Vector2(1, 1)
+
+[node name="SlashTrail" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="ArcBack" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_back")
+cast_shadow = 0
+
+[node name="Arc" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_arc")
+cast_shadow = 0
+
+[node name="ArcGlow" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_glow")
+cast_shadow = 0
+
+[node name="Star" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_star")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_star")
+
+[node name="Sparkles" type="CPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_debris")
+cast_shadow = 0
+emitting = false
+amount = 6
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.6
+randomness = 0.5
+local_coords = false
+mesh = SubResource("QuadMesh_debris")
+direction = Vector3(0, 1, 0)
+spread = 25.0
+gravity = Vector3(0, -4, 0)
+initial_velocity_min = 1.5
+initial_velocity_max = 3.2
+damping_min = 1.5
+damping_max = 3.0
+scale_amount_min = 0.06
+scale_amount_max = 0.14

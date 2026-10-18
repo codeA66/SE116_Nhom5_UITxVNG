@@ -3,13 +3,17 @@ extends Enemy
 ## Hộ Vệ Khiên: chậm, nặng, khiên chặn đòn từ phía trước, đập khiên tạo sóng kích vòng. Không bị gió thổi bay.
 ## Hành vi nằm ở các state trong states/ (ShieldAdvance, ShieldBlock, ShieldSlam); script này giữ khiên, sóng và VFX.
 
-## Phát khi khiên chạm đất: chỗ cắm rung camera / âm thanh sau này (project chưa có hệ thống screen shake)
+## Phát khi khiên chạm đất: chỗ cắm âm thanh, rung camera (đã nối với ScreenShake ở _ready)
 signal slammed(position: Vector3)
 
 ## Độ cao nâng vòng báo phạm vi khỏi mặt đất để khỏi z-fight (m)
 const PREVIEW_LIFT := 0.04
 ## Phần dư của plane vòng báo so với đường kính sóng (m)
 const PREVIEW_PADDING := 0.4
+
+@export_group("Feedback")
+## Rung màn hình khi khiên đập đất (0..1)
+@export_range(0.0, 1.0) var slam_trauma: float = 0.4
 
 @onready var guard: DirectionalHitGuard = $HurtboxComponent/ShieldGuard
 @onready var guarded_hurtbox: GuardedHurtboxComponent = hurtbox as GuardedHurtboxComponent
@@ -26,6 +30,7 @@ func _ready() -> void:
 	assert(data is ShieldBearerData, "%s cần ShieldBearerData" % name)
 	assert(guarded_hurtbox != null, "%s: HurtboxComponent phải dùng GuardedHurtboxComponent" % name)
 	guarded_hurtbox.blocked.connect(_on_blocked)
+	slammed.connect(_on_slammed)
 	if wind_receiver:
 		# Gió không đẩy được (wind_multiplier = 0) nhưng vẫn báo cho người chơi biết gió có trúng
 		wind_receiver.pushed.connect(_on_wind_deflected)
@@ -85,3 +90,7 @@ func _on_blocked(info: DamageInfo, _guard: HitGuard) -> void:
 
 func _on_wind_deflected(_impulse: Vector3) -> void:
 	_wind_deflect.restart()
+
+
+func _on_slammed(_position: Vector3) -> void:
+	ScreenShake.add_trauma(slam_trauma)

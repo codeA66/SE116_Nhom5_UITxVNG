@@ -5,6 +5,8 @@ extends Area3D
 ## Hình va chạm là một hộp (BoxShape3D) hướng về +Z của node cha; set_reach() kéo dài về phía trước.
 
 signal hit(hurtbox: HurtboxComponent)
+## Phát khi hitbox bật: vệt chém, âm thanh... bắt đầu theo đòn mà không cần state biết
+signal activated(attack: AttackData)
 
 ## Độ sâu tối thiểu của hộp (m)
 const MIN_DEPTH := 0.1
@@ -32,6 +34,12 @@ func is_active() -> bool:
 	return _active
 
 
+## Tầm đánh hiện tại (m) tính từ gốc node cha tới mép xa của hộp
+func get_reach() -> float:
+	var box := _shape.shape as BoxShape3D
+	return _back_edge + box.size.z if box else 0.0
+
+
 ## Tầm đánh (m) tính từ gốc node cha tới mép xa của hộp; mép sau giữ nguyên
 func set_reach(reach: float) -> void:
 	var box := _shape.shape as BoxShape3D
@@ -48,6 +56,7 @@ func activate(data: AttackData) -> void:
 	_already_hit.clear()
 	_active = true
 	set_deferred(&"monitoring", true)
+	activated.emit(data)
 
 
 func deactivate() -> void:

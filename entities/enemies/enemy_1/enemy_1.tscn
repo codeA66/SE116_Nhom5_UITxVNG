@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="Resource" path="res://resources/feedback/hit_enemy_1.tres" id="98_hit"]
+[ext_resource type="Resource" path="res://resources/feedback/death_enemy_1.tres" id="99_death"]
 [ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_base"]
 [ext_resource type="Resource" path="res://resources/enemies/enemy_1.tres" id="2_data"]
 [ext_resource type="PackedScene" path="res://assets/models/enemies/enemy_1/enemy_1.glb" id="3_model"]
@@ -92,3 +94,9 @@ visible = false
 
 [node name="BladeGlow" parent="Model/Visual/Rig/Enemy1Model/Hips/Torso/ArmBlade_R" index="0"]
 visible = false
+
+[node name="DeathEffectComponent" parent="."]
+data = ExtResource("99_death")
+
+[node name="HitFeedbackComponent" parent="."]
+data = ExtResource("98_hit")

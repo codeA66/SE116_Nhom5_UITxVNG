@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="Resource" path="res://resources/feedback/hit_shield_bearer.tres" id="98_hit"]
+[ext_resource type="Resource" path="res://resources/feedback/death_shield_bearer.tres" id="99_death"]
 [ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_base"]
 [ext_resource type="Script" path="res://entities/enemies/shield_bearer/shield_bearer.gd" id="2_script"]
 [ext_resource type="Resource" path="res://resources/enemies/shield_bearer.tres" id="3_data"]
@@ -292,3 +294,9 @@ script = ExtResource("9_block")
 
 [node name="ShieldSlam" type="Node" parent="StateMachine"]
 script = ExtResource("10_slam")
+
+[node name="DeathEffectComponent" parent="."]
+data = ExtResource("99_death")
+
+[node name="HitFeedbackComponent" parent="."]
+data = ExtResource("98_hit")

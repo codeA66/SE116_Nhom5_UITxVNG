@@ -12,6 +12,10 @@
 [ext_resource type="Script" path="res://entities/enemies/_base/states/hurt.gd" id="10_hurt"]
 [ext_resource type="Script" path="res://entities/enemies/_base/states/dead.gd" id="11_dead"]
 [ext_resource type="Script" path="res://entities/enemies/_base/states/blown.gd" id="12_blown"]
+[ext_resource type="Script" path="res://components/hit_feedback/hit_feedback_component.gd" id="13_feedback"]
+[ext_resource type="Resource" path="res://resources/feedback/enemy_hit.tres" id="14_feedbackdata"]
+[ext_resource type="Script" path="res://components/death_effect/death_effect_component.gd" id="15_death"]
+[ext_resource type="Resource" path="res://resources/feedback/death_default.tres" id="16_deathdata"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
 shading_mode = 0
@@ -109,3 +113,16 @@ script = ExtResource("11_dead")
 
 [node name="Blown" type="Node" parent="StateMachine"]
 script = ExtResource("12_blown")
+
+[node name="HitFeedbackComponent" type="Node" parent="." node_paths=PackedStringArray("hurtbox", "squash_stretch")]
+script = ExtResource("13_feedback")
+hurtbox = NodePath("../HurtboxComponent")
+squash_stretch = NodePath("../SquashStretch")
+data = ExtResource("14_feedbackdata")
+
+[node name="DeathEffectComponent" type="Node" parent="." node_paths=PackedStringArray("health", "model", "feedback")]
+script = ExtResource("15_death")
+health = NodePath("../HealthComponent")
+model = NodePath("../Model")
+feedback = NodePath("../HitFeedbackComponent")
+data = ExtResource("16_deathdata")
