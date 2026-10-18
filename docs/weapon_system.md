@@ -4,14 +4,18 @@ Nhánh: `weapon_system`. Dùng player cáo hiện tại, FSM hiện tại và h�
 
 ## Chạy thử
 
-- **F5**: chơi màn chính. Trong `Area11_Sword`, kiếm ở `(15, 9, -127)`, cung ở `(17, 9, -127)` — cách nhau 2 m trên cùng sân.
+- **F5**: chơi màn chính. Trong `Area11_Sword`, kiếm ở `(15, 9, -127)`, cung ở `(16.1, 9, -127)` — cách nhau 1,1 m trên cùng sân.
 - Thử nhanh: mở `tests/test_movement.tscn` hoặc `tests/test_game.tscn`, nhấn **F6**. Cả hai scene cũng có cung cạnh kiếm.
 - **F**: nhặt vật gần nhất; prompt ghi rõ “Nhặt Kiếm” hoặc “Nhặt Cung”. Vũ khí mới được tự chọn sau động tác nhặt.
 - **1**: chọn kiếm. **2**: chọn cung. Chỉ chọn được vũ khí đã nhặt.
 - **J**: chém hoặc bắn một mũi tên. Bấm lại để tấn công tiếp.
 - **WASD**: chọn hướng di chuyển/ra đòn. Khi không di chuyển, bắn theo hướng nhân vật đang nhìn. Có hỗ trợ quay về mục tiêu gần trong góc cho phép, giống kiếm.
 
-Hai ô hình thoi nằm dưới thanh máu. Chưa nhặt thì biểu tượng mờ; đã nhặt thì biểu tượng hiện rõ; đang chọn thì viền sáng xanh và ghi “ĐANG DÙNG”. Nếu bấm đổi trong lúc chém, bắn, nhặt hoặc dash, game nhớ lựa chọn cuối và đổi khi trở lại trạng thái di chuyển. Không đổi khi đã chết.
+Các ô hình thoi nhỏ nằm dưới thanh máu, chỉ hiện khi đã nhặt vũ khí. `HBoxContainer` tự dồn các ô cạnh nhau, không chừa ô trống cho vũ khí chưa có. Vũ khí đang chọn có viền sáng xanh; không có tên, trạng thái hay dòng hướng dẫn trên HUD.
+
+Mỗi ô chỉ có một nhãn bên dưới, lấy binding đầu tiên của `weapon_1` / `weapon_2` từ **Project Settings > Input Map**. Ví dụ: `1`, `Q`, `Home`, `Ctrl+Q`, `M2` (chuột phải), `Pad 0` (nút tay cầm số 0). Nếu gán nhiều nút cho một action, tất cả vẫn điều khiển được nhưng HUD chỉ hiện nút đầu tiên. Chưa gán nút thì nhãn là `—`. Nhãn được cập nhật khi vào scene, khi nhặt/đổi vũ khí và mỗi 0,25 giây lúc HUD hiện để theo các lần rebind trong runtime.
+
+Nếu bấm đổi trong lúc chém, bắn, nhặt hoặc dash, game nhớ lựa chọn cuối và đổi khi trở lại trạng thái di chuyển. Không đổi khi đã chết. Vật phẩm đã nhặt trong save sẽ không xuất hiện lại trong map; ô tương ứng được khôi phục trên HUD.
 
 Cung hiện bắn thẳng, tên vô hạn; chưa có tích lực khi giữ nút, trọng lực đạn hoặc ngắm bằng chuột.
 
@@ -30,19 +34,17 @@ Player
 │     ├─ TopString (MeshInstance3D)
 │     └─ BottomString (MeshInstance3D)
 └─ HUD
-   └─ WeaponSlots (Control)                 ← mới
+   └─ WeaponSlots (HBoxContainer)           ← tự dồn các ô đã nhặt
       ├─ SwordSlot (Control)
       │  ├─ Icon (TextureRect)
-      │  ├─ Key (Label)
-      │  ├─ Name (Label)
-      │  └─ Status (Label)
+      │  └─ Key (Label)                     ← binding từ Input Map
       ├─ BowSlot (Control, các con như SwordSlot)
-      └─ Hint (Label)
+      └─ BindingRefresh (Timer)             ← cập nhật nhãn khi rebind
 ```
 
 `WeaponSocket` dùng **Use External Skeleton**, trỏ tới skeleton của cáo; **Bone Name = Hand_L**. Kiếm vẫn dùng mesh `Sword` đã skin vào tay phải trong GLB, chỉ ẩn/hiện theo vũ khí được chọn. Các mesh con của `BowVisual` được script tạo khi scene sẵn sàng, có xem trước khi mở riêng `assets/weapons/bow_visual.tscn`.
 
-Trong màn chính: thêm `Area11_Sword/BowPickup`, instance của `objects/pickups/weapon_pickup.tscn`; giữ các node con `Visual` và `InteractableComponent/CollisionShape3D`. Gán `weapon = resources/weapons/bow.tres`, `persistent_id = level_1.bow_pickup`. Bảng `SignSword` được cập nhật phím điều khiển.
+Trong màn chính: `Area11_Sword/BowPickup` là instance của `objects/pickups/weapon_pickup.tscn`; giữ các node con `Visual` và `InteractableComponent/CollisionShape3D`. Gán `weapon = resources/weapons/bow.tres`, `persistent_id = level_1.bow_pickup`. Đã bỏ bảng hướng dẫn `SignSword` để không còn chữ phím cố định cho vũ khí.
 
 Khi bắn, thêm một instance `objects/projectiles/arrow.tscn` vào cùng scene với player:
 
@@ -59,7 +61,7 @@ Tên quét ray trên toàn bộ đoạn di chuyển mỗi physics frame, gồm c
 
 | Muốn chỉnh | Nơi chỉnh | Giá trị hiện tại / ý nghĩa |
 | --- | --- | --- |
-| Vị trí cung trong map | `Area11_Sword/BowPickup > Transform > Position` | `(17, 9, -127)` |
+| Vị trí cung trong map | `Area11_Sword/BowPickup > Transform > Position` | `(16.1, 9, -127)` |
 | Kích thước cung khi nằm trên đất | `resources/weapons/bow.tres > Model Scale` | `1.0` |
 | Tốc độ tên | `bow.tres > Projectile Speed` | `18 m/s` |
 | Thời gian tồn tại | `bow.tres > Projectile Lifetime` | `1.5 s`, tầm bay tối đa khoảng `27 m` |
@@ -70,7 +72,9 @@ Tên quét ray trên toàn bộ đoạn di chuyển mỗi physics frame, gồm c
 | Tổng thời gian bắn | `bow_shot.tres > Duration` | `0.55 s` |
 | Mốc được hủy bằng dash | `bow_shot.tres > Cancel Start` | `0.38 s` |
 | Điểm sinh tên | `Player/Model/ArrowSpawn > Position` | `(-0.06, 1.02, 0.55)`, trong không gian Model |
-| Vị trí/kích thước HUD | `ui/hud/weapon_slots.tscn` | Chỉnh offsets của root và hai slot |
+| Vị trí HUD | `ui/hud/weapon_slots.tscn` | Chỉnh offsets của root `WeaponSlots` |
+| Cỡ ô / khoảng cách | `weapon_slot.gd > _draw()` và `WeaponSlots > Theme Overrides > Constants > Separation` | Hình thoi rộng 56 px (trước 86 px), mỗi ô 64 × 84 px, separation 2 px |
+| Đổi nút chọn vũ khí | `Project Settings > Input Map > weapon_1 / weapon_2` | Nhãn dưới ô tự lấy binding, không sửa text trong scene |
 | Màu sáng ô chọn | `SwordSlot` / `BowSlot > Accent Color` | Xanh `#7be9ff` |
 | Hình biểu tượng | `ui/hud/icons/sword.svg`, `bow.svg` | SVG có thể sửa/thay độc lập |
 | Hình dáng, màu cung | `assets/weapons/bow_visual.gd` | Mảng `points`, bán kính và material của thân/dây |
@@ -99,6 +103,6 @@ Từ PowerShell tại repo, thay đường dẫn Godot theo máy:
 
 Thêm `-Visual` để chạy có render và xuất ảnh `.godot/weapon_pickups.png`, `weapon_sword_equipped.png`, `weapon_bow_equipped.png`, `weapon_bow_draw.png`. Script cô lập APPDATA/LOCALAPPDATA trong `.godot/weapon_runtime`, sau đó khôi phục biến môi trường; không thay save cá nhân. Scene tự động không được chạy trực tiếp bằng F6 với save thật, còn hai scene chơi thử phía trên chạy bình thường.
 
-`tests/test_weapon_system.tscn` kiểm tra input nhặt/đổi/đánh, HUD, model đang cầm, kiếm gây sát thương, bắn đúng một tên, va chạm tường mỏng và tường sát người, tên hết hạn, bị ngắt khi kéo cung, save v3, chuyển save v2 và tạo player mới. Các bài kiểm tra rig/player cũ đã cập nhật cho ba clip cung mới.
+`tests/test_weapon_system.tscn` kiểm tra input nhặt/đổi/đánh, ẩn/hiện HUD theo quyền sở hữu, tự dồn ô khi chỉ có cung, rebind chữ/phím vật lý/nút chuột/tay cầm và modifier, đổi vũ khí qua `Input.parse_input_event`, model đang cầm, kiếm gây sát thương, bắn đúng một tên, va chạm tường, tên hết hạn, ngắt kéo cung, save v3/v2 và vị trí cung trong Level 1. Các bài kiểm tra rig/player cũ đã cập nhật cho ba clip cung mới.
 
 Tham khảo API: [BoneAttachment3D](https://docs.godotengine.org/en/stable/classes/class_boneattachment3d.html), [ray casting trong Godot](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html).
