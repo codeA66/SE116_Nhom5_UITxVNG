@@ -39,6 +39,11 @@ func get_wind() -> Vector3:
 	return total * wind_multiplier
 
 
+## Còn đang trôi vì cú thổi (lực đẩy chưa giảm hết)
+func is_being_pushed() -> bool:
+	return not _push_velocity.is_zero_approx()
+
+
 ## Gọi từ cú thổi: cộng vận tốc trôi, đi chung đường với gió vùng nên không xuyên tường
 func push(impulse: Vector3) -> void:
 	if not enabled:
