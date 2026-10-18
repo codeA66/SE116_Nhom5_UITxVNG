@@ -28,6 +28,7 @@ height = 1.9
 
 [node name="TrainingDummy" type="CharacterBody3D"]
 collision_layer = 4
+collision_mask = 257
 script = ExtResource("1_dummy")
 flash_material = SubResource("StandardMaterial3D_flash")
 

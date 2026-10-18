@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/projectiles/spirit_orb.gd" id="1_orb"]
+[ext_resource type="Script" path="res://components/wind_receiver/wind_receiver_component.gd" id="2_wind"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hostile"]
+shading_mode = 0
+albedo_color = Color(0.752941, 0.313726, 0.603922, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_reflected"]
+shading_mode = 0
+albedo_color = Color(0.85098, 0.94902, 1, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hit"]
+resource_local_to_scene = true
+radius = 0.22
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_wind"]
+resource_local_to_scene = true
+radius = 0.45
+
+[sub_resource type="SphereMesh" id="SphereMesh_core"]
+radius = 0.15
+height = 0.3
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="SphereMesh_particle"]
+radius = 0.05
+height = 0.1
+radial_segments = 6
+rings = 3
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_trail"]
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 0.0
+initial_velocity_max = 0.3
+scale_min = 0.6
+scale_max = 1.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_burst"]
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 1.5
+initial_velocity_max = 3.0
+scale_min = 0.8
+scale_max = 1.4
+
+[node name="SpiritOrb" type="Area3D"]
+collision_layer = 0
+collision_mask = 3
+monitorable = false
+script = ExtResource("1_orb")
+hostile_material = SubResource("StandardMaterial3D_hostile")
+reflected_material = SubResource("StandardMaterial3D_reflected")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_hit")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_core")
+
+[node name="WindReceiverComponent" type="Area3D" parent="."]
+editor_description = "Vùng cho cú thổi gió bắt được quả cầu. Mask 0: cột gió tĩnh không làm lệch quỹ đạo."
+collision_layer = 128
+collision_mask = 0
+script = ExtResource("2_wind")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiverComponent"]
+shape = SubResource("SphereShape3D_wind")
+
+[node name="Trail" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 16
+lifetime = 0.4
+local_coords = false
+process_material = SubResource("ParticleProcessMaterial_trail")
+material_override = SubResource("StandardMaterial3D_hostile")
+draw_pass_1 = SubResource("SphereMesh_particle")
+
+[node name="Burst" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 12
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+local_coords = false
+process_material = SubResource("ParticleProcessMaterial_burst")
+material_override = SubResource("StandardMaterial3D_hostile")
+draw_pass_1 = SubResource("SphereMesh_particle")
+
+[node name="ReflectSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="ImpactSound" type="AudioStreamPlayer3D" parent="."]

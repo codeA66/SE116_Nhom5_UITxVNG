@@ -1,0 +1,238 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_enemy"]
+[ext_resource type="Script" path="res://entities/enemies/wisp_caster/wisp_caster.gd" id="2_caster"]
+[ext_resource type="Resource" path="res://resources/enemies/wisp_caster.tres" id="3_data"]
+[ext_resource type="Script" path="res://components/hover/hover_component.gd" id="4_hover"]
+[ext_resource type="Script" path="res://components/teleport_point_finder/teleport_point_finder.gd" id="5_finder"]
+[ext_resource type="Script" path="res://components/object_pool/object_pool.gd" id="6_pool"]
+[ext_resource type="PackedScene" path="res://objects/projectiles/spirit_orb.tscn" id="7_orb"]
+[ext_resource type="Script" path="res://entities/enemies/wisp_caster/states/keep_distance.gd" id="8_keep"]
+[ext_resource type="Script" path="res://entities/enemies/wisp_caster/states/cast_orb.gd" id="9_cast"]
+[ext_resource type="Script" path="res://entities/enemies/wisp_caster/states/teleport.gd" id="10_teleport"]
+[ext_resource type="Resource" path="res://resources/enemies/wisp_caster_hover.tres" id="11_hover_stats"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/wisp_caster/wisp_caster.glb" id="12_model"]
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "Idle"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/WispCasterModel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.6, 1.2), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0.055, 0), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="Animation_walk"]
+resource_name = "Walk"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/WispCasterModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.3, 0.6), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, -0.08), Vector3(0, 0, 0.08), Vector3(0, 0, -0.08)]}
+
+[sub_resource type="Animation" id="Animation_run"]
+resource_name = "Run"
+length = 0.42
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/WispCasterModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.21, 0.42), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, -0.13), Vector3(0, 0, 0.13), Vector3(0, 0, -0.13)]}
+
+[sub_resource type="Animation" id="Animation_cast"]
+resource_name = "Cast"
+length = 1.15
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/WispCasterModel/WispCasterModel/Arm_R:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.5, 0.72, 1.15), "transitions": PackedFloat32Array(1, 1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0, 0.42), Vector3(0, 0, 0.22), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="Animation_vanish"]
+resource_name = "Vanish"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/WispCasterModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.35), "transitions": PackedFloat32Array(1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0, 0.18)]}
+
+[sub_resource type="Animation" id="Animation_appear"]
+resource_name = "Appear"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/WispCasterModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.35), "transitions": PackedFloat32Array(1, 1), "update": 0, "values": [Vector3(0, 0, 0.18), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="Animation_hurt"]
+resource_name = "Hurt"
+length = 0.22
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/WispCasterModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.06, 0.22), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(-0.12, 0, 0), Vector3(0, 0, 0)]}
+
+[sub_resource type="Animation" id="Animation_death"]
+resource_name = "Death"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visual/WispCasterModel:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {"times": PackedFloat32Array(0, 0.55, 0.7), "transitions": PackedFloat32Array(1, 1, 1), "update": 0, "values": [Vector3(0, 0, 0), Vector3(0, 0, 1.2), Vector3(0, 0, 1.2)]}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wisp"]
+_data = {
+&"Appear": SubResource("Animation_appear"),
+&"Cast": SubResource("Animation_cast"),
+&"Death": SubResource("Animation_death"),
+&"Hurt": SubResource("Animation_hurt"),
+&"Idle": SubResource("Animation_idle"),
+&"Run": SubResource("Animation_run"),
+&"Vanish": SubResource("Animation_vanish"),
+&"Walk": SubResource("Animation_walk")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_robe"]
+albedo_color = Color(0.227451, 0.2, 0.275, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mask"]
+albedo_color = Color(0.54902, 0.541176, 0.52549, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glow"]
+shading_mode = 0
+albedo_color = Color(0.752941, 0.313726, 0.603922, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_marker"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.752941, 0.313726, 0.603922, 0.55)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_robe"]
+material = SubResource("StandardMaterial3D_robe")
+top_radius = 0.4
+bottom_radius = 0.03
+height = 1.1
+radial_segments = 8
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_mask"]
+material = SubResource("StandardMaterial3D_mask")
+size = Vector3(0.32, 0.34, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_eyes"]
+material = SubResource("StandardMaterial3D_glow")
+size = Vector3(0.22, 0.06, 0.02)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_arm"]
+material = SubResource("StandardMaterial3D_robe")
+radius = 0.05
+height = 0.6
+radial_segments = 6
+rings = 2
+
+[sub_resource type="SphereMesh" id="SphereMesh_charge"]
+material = SubResource("StandardMaterial3D_glow")
+radius = 0.15
+height = 0.3
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_marker"]
+material = SubResource("StandardMaterial3D_marker")
+top_radius = 0.7
+bottom_radius = 0.7
+height = 0.02
+radial_segments = 16
+rings = 1
+
+[node name="WispCaster" instance=ExtResource("1_enemy")]
+script = ExtResource("2_caster")
+data = ExtResource("3_data")
+chase_state = &"KeepDistance"
+attack_state = &"CastOrb"
+
+[node name="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_wisp")
+}
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="WispCasterModel" parent="Model/Visual" instance=ExtResource("12_model")]
+
+[node name="OrbSpawn" type="Marker3D" parent="Model"]
+editor_description = "Điểm bắn: đặt ở tay phải theo model thật."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.63, 1.58, 0.18)
+
+[node name="ChargeOrb" type="MeshInstance3D" parent="Model/OrbSpawn"]
+cast_shadow = 0
+visible = false
+mesh = SubResource("SphereMesh_charge")
+
+[node name="HoverComponent" type="Node" parent="."]
+script = ExtResource("4_hover")
+stats = ExtResource("11_hover_stats")
+
+[node name="TeleportPointFinder" type="Node" parent="."]
+script = ExtResource("5_finder")
+
+[node name="OrbPool" type="Node" parent="."]
+script = ExtResource("6_pool")
+scene = ExtResource("7_orb")
+initial_size = 3
+
+[node name="AppearMarker" type="Node3D" parent="."]
+editor_description = "Dấu hiệu dưới đất ở chỗ sắp hiện ra khi dịch chuyển."
+top_level = true
+visible = false
+
+[node name="Disc" type="MeshInstance3D" parent="AppearMarker"]
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_marker")
+
+[node name="CastSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="FireSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="VanishSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="AppearSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="HoverLoop" type="AudioStreamPlayer3D" parent="."]
+
+[node name="KeepDistance" type="Node" parent="StateMachine"]
+script = ExtResource("8_keep")
+
+[node name="CastOrb" type="Node" parent="StateMachine"]
+script = ExtResource("9_cast")
+
+[node name="Teleport" type="Node" parent="StateMachine"]
+script = ExtResource("10_teleport")

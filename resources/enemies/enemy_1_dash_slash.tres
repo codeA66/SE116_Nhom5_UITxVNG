@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="DashSlashData" format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/_base/dash_slash_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+windup_time = 0.65
+track_time = 0.45
+dash_speed = 14.0
+dash_max_distance = 3.5
+stop_distance = 1.0
+dash_timeout_extra = 0.1
+stop_at_ledge = true
+require_clear_path = true
+path_block_tolerance = 0.5
+windup_animation = &"DashSlash_Windup"
+dash_animation = &"DashSlash_Dash"

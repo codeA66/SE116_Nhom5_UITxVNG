@@ -1,0 +1,111 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/_base/character.tscn" id="1_base"]
+[ext_resource type="Script" path="res://entities/enemies/_base/enemy.gd" id="2_enemy"]
+[ext_resource type="Resource" path="res://resources/enemies/base_enemy.tres" id="3_data"]
+[ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="4_hitbox"]
+[ext_resource type="Script" path="res://components/enemy_sensor/enemy_sensor.gd" id="5_sensor"]
+[ext_resource type="Script" path="res://entities/enemies/_base/states/idle.gd" id="6_idle"]
+[ext_resource type="Script" path="res://entities/enemies/_base/states/patrol.gd" id="7_patrol"]
+[ext_resource type="Script" path="res://entities/enemies/_base/states/chase.gd" id="8_chase"]
+[ext_resource type="Script" path="res://entities/enemies/_base/states/attack.gd" id="9_attack"]
+[ext_resource type="Script" path="res://entities/enemies/_base/states/hurt.gd" id="10_hurt"]
+[ext_resource type="Script" path="res://entities/enemies/_base/states/dead.gd" id="11_dead"]
+[ext_resource type="Script" path="res://entities/enemies/_base/states/blown.gd" id="12_blown"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.85)
+transparency = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_telegraph"]
+shading_mode = 0
+albedo_color = Color(1, 0.45, 0.25, 0.55)
+transparency = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
+resource_local_to_scene = true
+size = Vector3(1.2, 1.2, 1.0)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_sensor"]
+resource_local_to_scene = true
+radius = 7.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.36, 0.3, 0.42, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+material = SubResource("StandardMaterial3D_body")
+radius = 0.4
+height = 1.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eye"]
+shading_mode = 0
+albedo_color = Color(0.95, 0.85, 0.5, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_eye"]
+material = SubResource("StandardMaterial3D_eye")
+size = Vector3(0.5, 0.12, 0.12)
+
+[node name="Enemy" instance=ExtResource("1_base")]
+editor_description = "Scene gốc cho mọi quái. Quái mới: New Inherited Scene từ scene này, gán EnemyData, thêm model vào Model/Visual."
+collision_layer = 4
+script = ExtResource("2_enemy")
+data = ExtResource("3_data")
+hit_flash_material = SubResource("StandardMaterial3D_flash")
+telegraph_material = SubResource("StandardMaterial3D_telegraph")
+
+[node name="Body" type="MeshInstance3D" parent="Model/Visual"]
+editor_description = "Hình tạm: thay bằng model thật ở quái kế thừa."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("CapsuleMesh_body")
+
+[node name="Eye" type="MeshInstance3D" parent="Model/Visual"]
+editor_description = "Vạch mắt chỉ hướng quái đang nhìn (+Z)."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0.36)
+mesh = SubResource("BoxMesh_eye")
+
+[node name="Hitbox" type="Area3D" parent="Model"]
+collision_layer = 16
+collision_mask = 2
+script = ExtResource("4_hitbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Model/Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.7)
+shape = SubResource("BoxShape3D_hitbox")
+
+[node name="HurtboxComponent" parent="."]
+collision_layer = 4
+
+[node name="EnemySensor" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_sensor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EnemySensor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("SphereShape3D_sensor")
+
+[node name="StateMachine" parent="." node_paths=PackedStringArray("initial_state")]
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("6_idle")
+
+[node name="Patrol" type="Node" parent="StateMachine"]
+script = ExtResource("7_patrol")
+
+[node name="Chase" type="Node" parent="StateMachine"]
+script = ExtResource("8_chase")
+
+[node name="Attack" type="Node" parent="StateMachine"]
+script = ExtResource("9_attack")
+
+[node name="Hurt" type="Node" parent="StateMachine"]
+script = ExtResource("10_hurt")
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("11_dead")
+
+[node name="Blown" type="Node" parent="StateMachine"]
+script = ExtResource("12_blown")
