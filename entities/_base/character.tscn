@@ -23,6 +23,7 @@ height = 1.8
 [node name="Character" type="CharacterBody3D"]
 editor_description = "Scene gốc cho mọi nhân vật (player, quái, boss). Tạo nhân vật mới bằng New Inherited Scene, xem docs/character_guide.md."
 collision_layer = 0
+collision_mask = 257
 floor_snap_length = 0.3
 script = ExtResource("1_character")
 

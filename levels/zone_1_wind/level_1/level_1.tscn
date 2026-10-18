@@ -1174,6 +1174,12 @@ _surfaces = [{
 [sub_resource type="BoxShape3D" id="BoxShape3D_s1tvl"]
 size = Vector3(4, 16, 4)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_bridge_ns"]
+size = Vector3(0.3, 3, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bridge_ew"]
+size = Vector3(8, 3, 0.3)
+
 [node name="Level1" type="Node3D" unique_id=1903682845]
 script = ExtResource("1_gic63")
 
@@ -1821,6 +1827,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 11.8)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 11.8)
 
 [node name="EdgeBlocker8" type="StaticBody3D" parent="Fences" unique_id=922833343]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 11.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker8" unique_id=1786875161]
@@ -1848,6 +1856,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.8,
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.8, 0, 0)
 
 [node name="EdgeBlocker16" type="StaticBody3D" parent="Fences" unique_id=742382861]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.8, 1.6, 5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker16" unique_id=114999756]
@@ -1875,6 +1885,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8, 0, 10)
 
 [node name="EdgeBlocker24" type="StaticBody3D" parent="Fences" unique_id=147852083]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8, 1.6, 5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker24" unique_id=821695316]
@@ -1893,6 +1905,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, -2.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1, -2.2)
 
 [node name="EdgeBlocker29" type="StaticBody3D" parent="Fences" unique_id=908118272]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2.6, -2.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker29" unique_id=1469698714]
@@ -1914,6 +1928,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 15.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 15.8, 1, -10)
 
 [node name="EdgeBlocker35" type="StaticBody3D" parent="Fences" unique_id=267718887]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 15.8, 2.6, -7)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker35" unique_id=716245159]
@@ -1935,6 +1951,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8, 1, -4)
 
 [node name="EdgeBlocker41" type="StaticBody3D" parent="Fences" unique_id=348602125]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8, 2.6, -7)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker41" unique_id=156624196]
@@ -1953,6 +1971,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -4, 
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -6, 2.5, -19.8)
 
 [node name="EdgeBlocker46" type="StaticBody3D" parent="Fences" unique_id=1492134794]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -4, 4.1, -19.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker46" unique_id=1221996777]
@@ -1971,6 +1991,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8, 2.5, -14)
 
 [node name="EdgeBlocker51" type="StaticBody3D" parent="Fences" unique_id=294122540]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.8, 4.1, -16)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker51" unique_id=1388099158]
@@ -1983,6 +2005,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 4, 1
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 2, 1, -26.8)
 
 [node name="EdgeBlocker54" type="StaticBody3D" parent="Fences" unique_id=1399679634]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 2, 2.6, -26.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker54" unique_id=565674165]
@@ -2013,6 +2037,8 @@ transform = Transform3D(-4.0979426e-08, 0, 1, 0, 1, 0, -0.9375, 0, -4.371139e-08
 transform = Transform3D(-4.0979426e-08, 0, 1, 0, 1, 0, -0.9375, 0, -4.371139e-08, 15.8, 1, -25.125)
 
 [node name="EdgeBlocker63" type="StaticBody3D" parent="Fences" unique_id=968975997]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 15.8, 2.6, -19.5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker63" unique_id=742941756]
@@ -2031,6 +2057,8 @@ transform = Transform3D(-3.8247464e-08, 0, -1, 0, 1, 0, 0.875, 0, -4.371139e-08,
 transform = Transform3D(-3.8247464e-08, 0, -1, 0, 1, 0, 0.875, 0, -4.371139e-08, 0.2, 1, -21.75)
 
 [node name="EdgeBlocker68" type="StaticBody3D" parent="Fences" unique_id=1716296173]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.2, 2.6, -23.5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker68" unique_id=1323366996]
@@ -2043,6 +2071,8 @@ transform = Transform3D(-0.75, 0, 8.742278e-08, 0, 1, 0, -6.556708e-08, 0, -1, 1
 transform = Transform3D(-0.75, 0, 8.742278e-08, 0, 1, 0, -6.556708e-08, 0, -1, 14.5, 4, -35.8)
 
 [node name="EdgeBlocker71" type="StaticBody3D" parent="Fences" unique_id=1964029752]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 14.5, 5.6, -35.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker71" unique_id=75512204]
@@ -2058,6 +2088,8 @@ transform = Transform3D(-0.8333333, 0, 8.742278e-08, 0, 1, 0, -7.285231e-08, 0, 
 transform = Transform3D(-0.8333333, 0, 8.742278e-08, 0, 1, 0, -7.285231e-08, 0, -1, 5.666667, 4, -35.8)
 
 [node name="EdgeBlocker75" type="StaticBody3D" parent="Fences" unique_id=24964302]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 6.5, 5.6, -35.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker75" unique_id=518218957]
@@ -2079,6 +2111,8 @@ transform = Transform3D(-3.934025e-08, 0, 1, 0, 1, 0, -0.9, 0, -4.371139e-08, 15
 transform = Transform3D(-3.934025e-08, 0, 1, 0, 1, 0, -0.9, 0, -4.371139e-08, 15.8, 4, -34.2)
 
 [node name="EdgeBlocker81" type="StaticBody3D" parent="Fences" unique_id=1886196368]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 15.8, 5.6, -31.5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker81" unique_id=2022053596]
@@ -2100,6 +2134,8 @@ transform = Transform3D(-3.934025e-08, 0, -1, 0, 1, 0, 0.9, 0, -4.371139e-08, 4.
 transform = Transform3D(-3.934025e-08, 0, -1, 0, 1, 0, 0.9, 0, -4.371139e-08, 4.2, 4, -28.8)
 
 [node name="EdgeBlocker87" type="StaticBody3D" parent="Fences" unique_id=927031301]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.2, 5.6, -31.5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker87" unique_id=2074043113]
@@ -2130,6 +2166,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 12.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 12.8, 4, -50)
 
 [node name="EdgeBlocker96" type="StaticBody3D" parent="Fences" unique_id=1439178987]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 12.8, 5.6, -44)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker96" unique_id=1973821188]
@@ -2160,6 +2198,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2,
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2, 4, -38)
 
 [node name="EdgeBlocker105" type="StaticBody3D" parent="Fences" unique_id=554805399]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2, 5.6, -44)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker105" unique_id=1540866378]
@@ -2169,6 +2209,8 @@ shape = SubResource("BoxShape3D_idfcc")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 4, -52.2)
 
 [node name="EdgeBlocker107" type="StaticBody3D" parent="Fences" unique_id=985065087]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 5.6, -52.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker107" unique_id=1378909692]
@@ -2184,6 +2226,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 13, 
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 11, 4, -57.8)
 
 [node name="EdgeBlocker111" type="StaticBody3D" parent="Fences" unique_id=648273321]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 12, 5.6, -57.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker111" unique_id=226077643]
@@ -2193,6 +2237,8 @@ shape = SubResource("BoxShape3D_62ntk")
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 14.8, 4, -52)
 
 [node name="EdgeBlocker113" type="StaticBody3D" parent="Fences" unique_id=1388713614]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 14.8, 5.6, -53)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker113" unique_id=1978054700]
@@ -2208,6 +2254,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2,
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2, 4, -54)
 
 [node name="EdgeBlocker117" type="StaticBody3D" parent="Fences" unique_id=1219065965]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2, 5.6, -55)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker117" unique_id=288360946]
@@ -2238,6 +2286,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 4, -54.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, 4, -54.2)
 
 [node name="EdgeBlocker126" type="StaticBody3D" parent="Fences" unique_id=1029271237]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 5.6, -54.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker126" unique_id=996899254]
@@ -2268,6 +2318,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 19, 
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 17, 4, -57.8)
 
 [node name="EdgeBlocker135" type="StaticBody3D" parent="Fences" unique_id=116003898]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 23, 5.6, -57.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker135" unique_id=66470982]
@@ -2289,6 +2341,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37, 4, -50.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39, 4, -50.2)
 
 [node name="EdgeBlocker141" type="StaticBody3D" parent="Fences" unique_id=166578796]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 5.6, -50.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker141" unique_id=763850318]
@@ -2298,6 +2352,8 @@ shape = SubResource("BoxShape3D_lqrl0")
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 33, 4, -61.8)
 
 [node name="EdgeBlocker143" type="StaticBody3D" parent="Fences" unique_id=1267794838]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 32, 5.6, -61.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker143" unique_id=1449284255]
@@ -2322,6 +2378,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 40.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 40.8, 4, -60)
 
 [node name="EdgeBlocker150" type="StaticBody3D" parent="Fences" unique_id=2105187290]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 40.8, 5.6, -56)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker150" unique_id=1761710756]
@@ -2334,6 +2392,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2, 4, -60)
 
 [node name="EdgeBlocker153" type="StaticBody3D" parent="Fences" unique_id=1178192049]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2, 5.6, -60)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker153" unique_id=196430986]
@@ -2346,6 +2406,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2, 4, -52)
 
 [node name="EdgeBlocker156" type="StaticBody3D" parent="Fences" unique_id=985845043]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2, 5.6, -52)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker156" unique_id=2117936793]
@@ -2376,6 +2438,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 33.2
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 33.2, 4, -64)
 
 [node name="EdgeBlocker165" type="StaticBody3D" parent="Fences" unique_id=1096213208]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 33.2, 5.6, -70)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker165" unique_id=915504326]
@@ -2391,6 +2455,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 2.5, -62.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 2.5, -62.2)
 
 [node name="EdgeBlocker169" type="StaticBody3D" parent="Fences" unique_id=472824305]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, 4.1, -62.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker169" unique_id=1198560114]
@@ -2406,6 +2472,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 45, 
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 43, 2.5, -79.8)
 
 [node name="EdgeBlocker173" type="StaticBody3D" parent="Fences" unique_id=1456636824]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 44, 4.1, -79.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker173" unique_id=1212653897]
@@ -2439,6 +2507,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 46.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 46.8, 2.5, -78)
 
 [node name="EdgeBlocker183" type="StaticBody3D" parent="Fences" unique_id=1712690993]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 46.8, 4.1, -71)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker183" unique_id=1804016888]
@@ -2448,6 +2518,8 @@ shape = SubResource("BoxShape3D_e57h2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 4, -78.2)
 
 [node name="EdgeBlocker185" type="StaticBody3D" parent="Fences" unique_id=1764356391]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 5.6, -78.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker185" unique_id=1466700935]
@@ -2469,6 +2541,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 35, 
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 33, 4, -87.8)
 
 [node name="EdgeBlocker191" type="StaticBody3D" parent="Fences" unique_id=321230510]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 36, 5.6, -87.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker191" unique_id=454584986]
@@ -2487,6 +2561,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 40.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 40.8, 4, -86)
 
 [node name="EdgeBlocker196" type="StaticBody3D" parent="Fences" unique_id=645619427]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 40.8, 5.6, -84)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker196" unique_id=420480393]
@@ -2496,6 +2572,8 @@ shape = SubResource("BoxShape3D_ovmx7")
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2, 4, -88)
 
 [node name="EdgeBlocker198" type="StaticBody3D" parent="Fences" unique_id=1313755244]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2, 5.6, -87)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker198" unique_id=945541105]
@@ -2508,6 +2586,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2, 4, -80)
 
 [node name="EdgeBlocker201" type="StaticBody3D" parent="Fences" unique_id=1129655671]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 31.2, 5.6, -80)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker201" unique_id=11909312]
@@ -2529,6 +2609,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 4, -82.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, 4, -82.2)
 
 [node name="EdgeBlocker207" type="StaticBody3D" parent="Fences" unique_id=115379450]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 5.6, -82.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker207" unique_id=23883138]
@@ -2550,6 +2632,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 25, 
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 23, 4, -85.8)
 
 [node name="EdgeBlocker213" type="StaticBody3D" parent="Fences" unique_id=1303351838]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 26, 5.6, -85.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker213" unique_id=1295468835]
@@ -2574,6 +2658,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 4, -78.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 4, -78.2)
 
 [node name="EdgeBlocker220" type="StaticBody3D" parent="Fences" unique_id=611699470]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 9.5, -78.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker220" unique_id=2084173703]
@@ -2586,6 +2672,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8, 4, -80)
 
 [node name="EdgeBlocker223" type="StaticBody3D" parent="Fences" unique_id=1498674467]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8, 9.5, -80)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker223" unique_id=141121876]
@@ -2607,6 +2695,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8, 4, -94)
 
 [node name="EdgeBlocker229" type="StaticBody3D" parent="Fences" unique_id=1810761799]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8, 9.5, -91)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker229" unique_id=1227655865]
@@ -2640,6 +2730,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2,
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2, 4, -80)
 
 [node name="EdgeBlocker239" type="StaticBody3D" parent="Fences" unique_id=797564870]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2, 9.5, -87)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker239" unique_id=1175924443]
@@ -2655,6 +2747,8 @@ transform = Transform3D(-0.7916667, 0, 8.742278e-08, 0, 1, 0, -6.92097e-08, 0, -
 transform = Transform3D(-0.7916667, 0, 8.742278e-08, 0, 1, 0, -6.92097e-08, 0, -1, 17.833334, 9, -111.8)
 
 [node name="EdgeBlocker243" type="StaticBody3D" parent="Fences" unique_id=291890745]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 18.625, 12, -111.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker243" unique_id=1990826245]
@@ -2670,6 +2764,8 @@ transform = Transform3D(-0.7916667, 0, 8.742278e-08, 0, 1, 0, -6.92097e-08, 0, -
 transform = Transform3D(-0.7916667, 0, 8.742278e-08, 0, 1, 0, -6.92097e-08, 0, -1, 10.583333, 9, -111.8)
 
 [node name="EdgeBlocker247" type="StaticBody3D" parent="Fences" unique_id=613465709]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 11.375, 12, -111.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker247" unique_id=1031138157]
@@ -2700,6 +2796,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8, 9, -110)
 
 [node name="EdgeBlocker256" type="StaticBody3D" parent="Fences" unique_id=685309554]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.8, 12, -104)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker256" unique_id=1149924402]
@@ -2730,6 +2828,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2,
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2, 9, -98)
 
 [node name="EdgeBlocker265" type="StaticBody3D" parent="Fences" unique_id=1553466536]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.2, 12, -104)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker265" unique_id=2123824974]
@@ -2751,6 +2851,8 @@ transform = Transform3D(0.875, 0, 0, 0, 1, 0, 0, 0, 1, 10.25, 9, -120.2)
 transform = Transform3D(0.875, 0, 0, 0, 1, 0, 0, 0, 1, 12, 9, -120.2)
 
 [node name="EdgeBlocker271" type="StaticBody3D" parent="Fences" unique_id=651294006]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.375, 10.6, -120.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker271" unique_id=1544547715]
@@ -2772,6 +2874,8 @@ transform = Transform3D(0.875, 0, 0, 0, 1, 0, 0, 0, 1, 21.5, 9, -120.2)
 transform = Transform3D(0.875, 0, 0, 0, 1, 0, 0, 0, 1, 23.25, 9, -120.2)
 
 [node name="EdgeBlocker277" type="StaticBody3D" parent="Fences" unique_id=150843653]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.625, 10.6, -120.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker277" unique_id=794420784]
@@ -2787,6 +2891,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 23, 
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 21, 9, -135.8)
 
 [node name="EdgeBlocker281" type="StaticBody3D" parent="Fences" unique_id=682370718]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 22, 10.6, -135.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker281" unique_id=2140283899]
@@ -2802,6 +2908,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 9, 9
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 7, 9, -135.8)
 
 [node name="EdgeBlocker285" type="StaticBody3D" parent="Fences" unique_id=298987107]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 8, 10.6, -135.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker285" unique_id=1775809882]
@@ -2832,6 +2940,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 24.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 24.8, 9, -134)
 
 [node name="EdgeBlocker294" type="StaticBody3D" parent="Fences" unique_id=289447551]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 24.8, 10.6, -128)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker294" unique_id=1143875338]
@@ -2862,6 +2972,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5.2,
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5.2, 9, -122)
 
 [node name="EdgeBlocker303" type="StaticBody3D" parent="Fences" unique_id=804497727]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5.2, 10.6, -128)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker303" unique_id=746218968]
@@ -2883,6 +2995,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 18.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 18.8, 9, -144)
 
 [node name="EdgeBlocker309" type="StaticBody3D" parent="Fences" unique_id=842575565]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 18.8, 10.6, -141)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker309" unique_id=944318202]
@@ -2904,6 +3018,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.2
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.2, 9, -138)
 
 [node name="EdgeBlocker315" type="StaticBody3D" parent="Fences" unique_id=1631546733]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.2, 10.6, -141)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker315" unique_id=275054603]
@@ -2919,6 +3035,8 @@ transform = Transform3D(-3.460485e-08, 0, 1, 0, 1, 0, -0.7916667, 0, -4.371139e-
 transform = Transform3D(-3.460485e-08, 0, 1, 0, 1, 0, -0.7916667, 0, -4.371139e-08, 18.8, 6, -149.16667)
 
 [node name="EdgeBlocker319" type="StaticBody3D" parent="Fences" unique_id=1259275620]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 18.8, 7.6, -148.375)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker319" unique_id=1227436278]
@@ -2934,6 +3052,8 @@ transform = Transform3D(-3.460485e-08, 0, -1, 0, 1, 0, 0.7916667, 0, -4.371139e-
 transform = Transform3D(-3.460485e-08, 0, -1, 0, 1, 0, 0.7916667, 0, -4.371139e-08, 11.2, 6, -147.63333)
 
 [node name="EdgeBlocker323" type="StaticBody3D" parent="Fences" unique_id=8635938]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.2, 7.6, -148.425)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker323" unique_id=1673281593]
@@ -2952,6 +3072,8 @@ transform = Transform3D(-3.9340232e-08, 0, 1, 0, 1, 0, -0.8999996, 0, -4.371139e
 transform = Transform3D(-3.9340232e-08, 0, 1, 0, 1, 0, -0.8999996, 0, -4.371139e-08, 18.8, 9, -156.2)
 
 [node name="EdgeBlocker328" type="StaticBody3D" parent="Fences" unique_id=2066742904]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 18.8, 10.6, -154.4)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker328" unique_id=1034570425]
@@ -2970,6 +3092,8 @@ transform = Transform3D(-3.9340232e-08, 0, -1, 0, 1, 0, 0.8999996, 0, -4.371139e
 transform = Transform3D(-3.9340232e-08, 0, -1, 0, 1, 0, 0.8999996, 0, -4.371139e-08, 11.2, 9, -152.6)
 
 [node name="EdgeBlocker333" type="StaticBody3D" parent="Fences" unique_id=887632786]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.2, 10.6, -154.4)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker333" unique_id=1255469208]
@@ -2982,6 +3106,8 @@ transform = Transform3D(-2.4587656e-08, 0, 1, 0, 1, 0, -0.5625, 0, -4.371139e-08
 transform = Transform3D(-2.4587656e-08, 0, 1, 0, 1, 0, -0.5625, 0, -4.371139e-08, 18.8, 9, -164.125)
 
 [node name="EdgeBlocker336" type="StaticBody3D" parent="Fences" unique_id=2095733588]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 18.8, 10.6, -164.125)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker336" unique_id=992233403]
@@ -2994,6 +3120,8 @@ transform = Transform3D(-2.4587656e-08, 0, 1, 0, 1, 0, -0.5625, 0, -4.371139e-08
 transform = Transform3D(-2.4587656e-08, 0, 1, 0, 1, 0, -0.5625, 0, -4.371139e-08, 18.8, 9, -168.875)
 
 [node name="EdgeBlocker339" type="StaticBody3D" parent="Fences" unique_id=595432296]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 18.8, 10.6, -168.875)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker339" unique_id=125114401]
@@ -3012,6 +3140,8 @@ transform = Transform3D(-3.8247464e-08, 0, -1, 0, 1, 0, 0.875, 0, -4.371139e-08,
 transform = Transform3D(-3.8247464e-08, 0, -1, 0, 1, 0, 0.875, 0, -4.371139e-08, 11.2, 9, -164.75)
 
 [node name="EdgeBlocker344" type="StaticBody3D" parent="Fences" unique_id=150775628]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.2, 10.6, -166.5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker344" unique_id=2046692295]
@@ -3030,6 +3160,8 @@ transform = Transform3D(0.875, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 9, -170.2)
 transform = Transform3D(0.875, 0, 0, 0, 1, 0, 0, 0, 1, 9.25, 9, -170.2)
 
 [node name="EdgeBlocker349" type="StaticBody3D" parent="Fences" unique_id=196283656]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 10.6, -170.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker349" unique_id=1773447398]
@@ -3048,6 +3180,8 @@ transform = Transform3D(0.875, 0, 0, 0, 1, 0, 0, 0, 1, 22.5, 9, -170.2)
 transform = Transform3D(0.875, 0, 0, 0, 1, 0, 0, 0, 1, 24.25, 9, -170.2)
 
 [node name="EdgeBlocker354" type="StaticBody3D" parent="Fences" unique_id=58788157]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.5, 10.6, -170.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker354" unique_id=781628891]
@@ -3069,6 +3203,8 @@ transform = Transform3D(-0.9, 0, 8.742278e-08, 0, 1, 0, -7.86805e-08, 0, -1, 20.
 transform = Transform3D(-0.9, 0, 8.742278e-08, 0, 1, 0, -7.86805e-08, 0, -1, 18.8, 9, -187.8)
 
 [node name="EdgeBlocker360" type="StaticBody3D" parent="Fences" unique_id=1397649415]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 21.5, 10.6, -187.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker360" unique_id=235000518]
@@ -3090,6 +3226,8 @@ transform = Transform3D(-0.9, 0, 8.742278e-08, 0, 1, 0, -7.86805e-08, 0, -1, 7.6
 transform = Transform3D(-0.9, 0, 8.742278e-08, 0, 1, 0, -7.86805e-08, 0, -1, 5.8, 9, -187.8)
 
 [node name="EdgeBlocker366" type="StaticBody3D" parent="Fences" unique_id=448621524]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 8.5, 10.6, -187.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker366" unique_id=1797744145]
@@ -3117,6 +3255,8 @@ transform = Transform3D(-4.0589146e-08, 0, 1, 0, 1, 0, -0.9285714, 0, -4.371139e
 transform = Transform3D(-4.0589146e-08, 0, 1, 0, 1, 0, -0.9285714, 0, -4.371139e-08, 25.8, 9, -181.14285)
 
 [node name="EdgeBlocker374" type="StaticBody3D" parent="Fences" unique_id=1409902182]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 10.6, -176.5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker374" unique_id=400813486]
@@ -3150,6 +3290,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.2,
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.2, 9, -172)
 
 [node name="EdgeBlocker384" type="StaticBody3D" parent="Fences" unique_id=2084086567]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.2, 10.6, -179)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker384" unique_id=2069652483]
@@ -3168,6 +3310,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 9, -160.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 9, -160.2)
 
 [node name="EdgeBlocker389" type="StaticBody3D" parent="Fences" unique_id=585218714]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 10.6, -160.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker389" unique_id=655154081]
@@ -3177,6 +3321,8 @@ shape = SubResource("BoxShape3D_mfihn")
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 29, 9, -169.8)
 
 [node name="EdgeBlocker391" type="StaticBody3D" parent="Fences" unique_id=507899606]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 28, 10.6, -169.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker391" unique_id=1407469030]
@@ -3198,6 +3344,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8, 9, -168)
 
 [node name="EdgeBlocker397" type="StaticBody3D" parent="Fences" unique_id=652584630]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8, 10.6, -165)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker397" unique_id=1889163541]
@@ -3210,6 +3358,8 @@ transform = Transform3D(-2.4587656e-08, 0, -1, 0, 1, 0, 0.5625, 0, -4.371139e-08
 transform = Transform3D(-2.4587656e-08, 0, -1, 0, 1, 0, 0.5625, 0, -4.371139e-08, 27.2, 9, -168.875)
 
 [node name="EdgeBlocker400" type="StaticBody3D" parent="Fences" unique_id=290463554]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 27.2, 10.6, -168.875)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker400" unique_id=2020880374]
@@ -3225,6 +3375,8 @@ transform = Transform3D(-3.8247464e-08, 0, -1, 0, 1, 0, 0.875, 0, -4.371139e-08,
 transform = Transform3D(-3.8247464e-08, 0, -1, 0, 1, 0, 0.875, 0, -4.371139e-08, 27.2, 9, -161.75)
 
 [node name="EdgeBlocker404" type="StaticBody3D" parent="Fences" unique_id=819119703]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 27.2, 10.6, -162.625)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker404" unique_id=988900394]
@@ -3240,6 +3392,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8, 10.5, -174)
 
 [node name="EdgeBlocker408" type="StaticBody3D" parent="Fences" unique_id=1761217013]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8, 12.1, -173)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker408" unique_id=527990005]
@@ -3255,6 +3409,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 29.2
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 29.2, 10.5, -172)
 
 [node name="EdgeBlocker412" type="StaticBody3D" parent="Fences" unique_id=78008073]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 29.2, 12.1, -173)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker412" unique_id=925912296]
@@ -3270,6 +3426,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8, 12, -180)
 
 [node name="EdgeBlocker416" type="StaticBody3D" parent="Fences" unique_id=330286941]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 34.8, 13.6, -179)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker416" unique_id=493587420]
@@ -3285,6 +3443,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 29.2
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 29.2, 12, -178)
 
 [node name="EdgeBlocker420" type="StaticBody3D" parent="Fences" unique_id=867859465]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 29.2, 13.6, -179)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker420" unique_id=505356999]
@@ -3294,6 +3454,8 @@ shape = SubResource("BoxShape3D_oavyq")
 transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 28, 12, -182.2)
 
 [node name="EdgeBlocker422" type="StaticBody3D" parent="Fences" unique_id=1335560499]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 13.6, -182.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker422" unique_id=1986468231]
@@ -3309,6 +3471,8 @@ transform = Transform3D(0.8333333, 0, 0, 0, 1, 0, 0, 0, 1, 36.666668, 12, -182.2
 transform = Transform3D(0.8333333, 0, 0, 0, 1, 0, 0, 0, 1, 38.333332, 12, -182.2)
 
 [node name="EdgeBlocker426" type="StaticBody3D" parent="Fences" unique_id=451590722]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.5, 13.6, -182.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker426" unique_id=1387695283]
@@ -3333,6 +3497,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 32, 
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 30, 12, -199.8)
 
 [node name="EdgeBlocker433" type="StaticBody3D" parent="Fences" unique_id=1227510893]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 34, 13.6, -199.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker433" unique_id=1990749085]
@@ -3366,6 +3532,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 12, -198)
 
 [node name="EdgeBlocker443" type="StaticBody3D" parent="Fences" unique_id=1978650611]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 13.6, -191)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker443" unique_id=2039487774]
@@ -3390,6 +3558,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 28.2
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 28.2, 12, -190)
 
 [node name="EdgeBlocker450" type="StaticBody3D" parent="Fences" unique_id=1050356115]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 28.2, 13.6, -194)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker450" unique_id=1577313981]
@@ -3399,6 +3569,8 @@ shape = SubResource("BoxShape3D_ldbh5")
 transform = Transform3D(-2.1855694e-08, 0, -1, 0, 1, 0, 0.5, 0, -4.371139e-08, 28.2, 12, -183)
 
 [node name="EdgeBlocker452" type="StaticBody3D" parent="Fences" unique_id=626021927]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 28.2, 13.6, -182.5)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker452" unique_id=1397542942]
@@ -3408,6 +3580,8 @@ shape = SubResource("BoxShape3D_cpmgj")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 12, -183.2)
 
 [node name="EdgeBlocker454" type="StaticBody3D" parent="Fences" unique_id=171961132]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 13.6, -183.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker454" unique_id=919753092]
@@ -3417,6 +3591,8 @@ shape = SubResource("BoxShape3D_7n113")
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 28, 12, -187.8)
 
 [node name="EdgeBlocker456" type="StaticBody3D" parent="Fences" unique_id=1747231192]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 27, 13.6, -187.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker456" unique_id=1730469294]
@@ -3438,6 +3614,8 @@ transform = Transform3D(0.9, 0, 0, 0, 1, 0, 0, 0, 1, 9.4, 9, -218.2)
 transform = Transform3D(0.9, 0, 0, 0, 1, 0, 0, 0, 1, 11.2, 9, -218.2)
 
 [node name="EdgeBlocker462" type="StaticBody3D" parent="Fences" unique_id=591179925]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 10.6, -218.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker462" unique_id=629527921]
@@ -3459,6 +3637,8 @@ transform = Transform3D(0.9, 0, 0, 0, 1, 0, 0, 0, 1, 22.4, 9, -218.2)
 transform = Transform3D(0.9, 0, 0, 0, 1, 0, 0, 0, 1, 24.2, 9, -218.2)
 
 [node name="EdgeBlocker468" type="StaticBody3D" parent="Fences" unique_id=782467452]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.5, 10.6, -218.2)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker468" unique_id=513314131]
@@ -3498,6 +3678,8 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 8, 9
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 6, 9, -235.8)
 
 [node name="EdgeBlocker480" type="StaticBody3D" parent="Fences" unique_id=1729233493]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 15, 10.6, -235.8)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker480" unique_id=226057603]
@@ -3531,6 +3713,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 9, -234)
 
 [node name="EdgeBlocker490" type="StaticBody3D" parent="Fences" unique_id=1854179923]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 10.6, -227)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker490" unique_id=1914474301]
@@ -3564,6 +3748,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.2,
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.2, 9, -220)
 
 [node name="EdgeBlocker500" type="StaticBody3D" parent="Fences" unique_id=2108636939]
+collision_layer = 256
+collision_mask = 0
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.2, 10.6, -227)
 
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker500" unique_id=1532682197]
@@ -4244,3 +4430,35 @@ mesh = SubResource("ArrayMesh_lxn6d")
 
 [node name="Collision" type="CollisionShape3D" parent="Islands/@StaticBody3D@22" unique_id=719303260]
 shape = SubResource("BoxShape3D_s1tvl")
+
+[node name="BridgeBlockerW" type="StaticBody3D" parent="Area10_Bridge"]
+collision_layer = 256
+collision_mask = 0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.95, 10.5, -116)
+
+[node name="Collision" type="CollisionShape3D" parent="Area10_Bridge/BridgeBlockerW"]
+shape = SubResource("BoxShape3D_bridge_ns")
+
+[node name="BridgeBlockerE" type="StaticBody3D" parent="Area10_Bridge"]
+collision_layer = 256
+collision_mask = 0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.05, 10.5, -116)
+
+[node name="Collision" type="CollisionShape3D" parent="Area10_Bridge/BridgeBlockerE"]
+shape = SubResource("BoxShape3D_bridge_ns")
+
+[node name="BridgeBlockerN" type="StaticBody3D" parent="Area14_BookLoop"]
+collision_layer = 256
+collision_mask = 0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 10.5, -167.55)
+
+[node name="Collision" type="CollisionShape3D" parent="Area14_BookLoop/BridgeBlockerN"]
+shape = SubResource("BoxShape3D_bridge_ew")
+
+[node name="BridgeBlockerS" type="StaticBody3D" parent="Area14_BookLoop"]
+collision_layer = 256
+collision_mask = 0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 10.5, -165.45)
+
+[node name="Collision" type="CollisionShape3D" parent="Area14_BookLoop/BridgeBlockerS"]
+shape = SubResource("BoxShape3D_bridge_ew")
