@@ -16,6 +16,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _build_visual(visual_root: Node3D) -> void:
+	_interactable.prompt_text = "Nhặt %s" % weapon.display_name
 	if weapon.model_scene:
 		var model := weapon.model_scene.instantiate() as Node3D
 		model.scale = Vector3.ONE * weapon.model_scale

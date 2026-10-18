@@ -6,6 +6,7 @@ var _elapsed: float = 0.0
 var _attack: AttackData
 var _lunge_direction: Vector3 = Vector3.ZERO
 var _hitbox_used: bool = false
+var _weapon: WeaponData
 
 
 func enter(_previous: StringName) -> void:
@@ -29,7 +30,7 @@ func physics_update(delta: float) -> void:
 		return
 
 	# Attack buffer nằm ở Player: bấm sớm trong lúc đòn chưa xong vẫn được ghi nhận
-	var has_next := _combo_index < player.get_weapon().combo.size() - 1
+	var has_next := _combo_index < _weapon.combo.size() - 1
 	if has_next and _elapsed >= _attack.combo_window_start and player.can_attack():
 		_combo_index += 1
 		_start_attack()
@@ -43,9 +44,10 @@ func physics_update(delta: float) -> void:
 func _start_attack() -> void:
 	player.consume_attack_input()
 	player.hitbox.deactivate()
-	var weapon := player.get_weapon()
-	_attack = weapon.combo[_combo_index]
-	player.hitbox.set_reach(weapon.attack_range)
+	_weapon = player.get_weapon()
+	_attack = _weapon.combo[_combo_index]
+	if not _weapon.is_ranged():
+		player.hitbox.set_reach(_weapon.attack_range)
 	_elapsed = 0.0
 	_hitbox_used = false
 
@@ -68,6 +70,12 @@ func _apply_lunge(delta: float) -> void:
 
 
 func _update_hitbox() -> void:
+	if _weapon.is_ranged():
+		# Kiểm tra >= thay vì một cửa sổ hẹp: FPS thấp vẫn chỉ phóng đúng một tên.
+		if not _hitbox_used and _elapsed >= _attack.active_start:
+			player.shoot_arrow(_weapon, _attack, _lunge_direction)
+			_hitbox_used = true
+		return
 	var in_window := _elapsed >= _attack.active_start and _elapsed < _attack.active_end
 	if in_window and not _hitbox_used:
 		player.hitbox.activate(_attack)

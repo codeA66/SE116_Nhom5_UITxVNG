@@ -4,6 +4,7 @@ extends Player
 const FOX_WEAPON: WeaponData = preload("res://generated/resources/fox_sword.tres")
 const FOX_DASH: DashData = preload("res://abilities/dash/dash.tres")
 const FOX_MATERIAL: Material = preload("res://generated/resources/fox_material.tres")
+const BOW_ANIMATIONS = preload("res://generated/fox_bow_animations.gd")
 const LOOP_CLIPS: Array[StringName] = [&"Idle", &"Idle_Sword", &"Run", &"Run_Sword", &"Fall"]
 const CLIP_MAP: Dictionary[StringName, StringName] = {
     Player.ANIM_JUMP: &"Jump",
@@ -34,6 +35,8 @@ var _was_grounded: bool = false
 var _previous_vertical_speed: float = 0.0
 var _locomotion: StringName = Player.ANIM_IDLE
 var _sword_mesh: Node3D
+var _bow_visual: BowVisual
+var _bow_tween: Tween
 
 
 func _ready() -> void:
@@ -60,6 +63,10 @@ func has_ability(id: StringName) -> bool:
 
 
 func play_anim(anim_name: StringName) -> void:
+    if _bow_tween:
+        _bow_tween.kill()
+    if is_instance_valid(_bow_visual):
+        _bow_visual.draw_amount = 0.0
     if anim_name == Player.ANIM_IDLE or anim_name == Player.ANIM_RUN:
         _locomotion = anim_name
         if _landing_remaining > 0.0:
@@ -82,6 +89,15 @@ func play_action(anim_name: StringName, speed: float = 1.0) -> void:
             speed = 0.2 / maxf(dash.duration, 0.01)
     _anim.play(clip, 0.05, speed)
     _anim.seek(0.0, true)
+    if _bow_tween:
+        _bow_tween.kill()
+    if is_instance_valid(_bow_visual):
+        _bow_visual.draw_amount = 0.0
+        if anim_name == &"Bow_Shoot":
+            var release := get_weapon().combo[0].active_start
+            _bow_tween = create_tween()
+            _bow_tween.tween_property(_bow_visual, "draw_amount", 1.0, maxf(release, 0.01))
+            _bow_tween.tween_property(_bow_visual, "draw_amount", 0.0, 0.06)
 
 
 func _pre_state_update(delta: float) -> void:
@@ -107,20 +123,33 @@ func _pre_state_update(delta: float) -> void:
 
 
 func _attach_weapon_model(_data: WeaponData) -> void:
-    # Kiếm đã skin vào xương bàn tay phải, không gắn thêm model KayKit.
+    # Kiếm đã skin vào tay phải; cung gắn vào Hand_L bằng BoneAttachment3D.
+    if _bow_tween:
+        _bow_tween.kill()
+    var equipped := get_weapon()
     if is_instance_valid(_sword_mesh):
-        _sword_mesh.visible = get_weapon() != null
+        _sword_mesh.visible = equipped != null and equipped.slot == WeaponData.Slot.SWORD
+    for child in _weapon_socket.get_children():
+        child.queue_free()
+    _bow_visual = null
+    if equipped and equipped.slot == WeaponData.Slot.BOW and equipped.model_scene:
+        _bow_visual = equipped.model_scene.instantiate() as BowVisual
+        _weapon_socket.add_child(_bow_visual)
 
 
 func _resolve_clip(anim_name: StringName) -> StringName:
     var clip: StringName
     if anim_name == Player.ANIM_IDLE:
-        clip = &"Idle_Sword" if has_weapon() else &"Idle"
+        clip = &"Idle_Bow" if _has_bow() else (&"Idle_Sword" if has_weapon() else &"Idle")
     elif anim_name == Player.ANIM_RUN:
-        clip = &"Run_Sword" if has_weapon() else &"Run"
+        clip = &"Run_Bow" if _has_bow() else (&"Run_Sword" if has_weapon() else &"Run")
     else:
         clip = CLIP_MAP.get(anim_name, anim_name)
     return StringName("fox/%s" % clip)
+
+
+func _has_bow() -> bool:
+    return get_weapon() != null and get_weapon().slot == WeaponData.Slot.BOW
 
 
 func _install_animations() -> void:
@@ -134,6 +163,10 @@ func _install_animations() -> void:
         var animation := imported.get_animation(clip).duplicate() as Animation
         animation.loop_mode = Animation.LOOP_LINEAR if clip in LOOP_CLIPS else Animation.LOOP_NONE
         library.add_animation(clip, animation)
+    var skeleton := model.find_child("Skeleton3D", true, false) as Skeleton3D
+    BOW_ANIMATIONS.install(library, skeleton)
+    var socket := get_node("WeaponSocket") as BoneAttachment3D
+    socket.external_skeleton = socket.get_path_to(skeleton)
     _anim.root_node = _anim.get_path_to(imported.get_node(imported.root_node))
     _anim.add_animation_library(&"fox", library)
     imported.stop()

@@ -4,6 +4,8 @@ extends Resource
 ## Chỉ chứa dữ liệu. Mọi thay đổi phải đi qua GameState để phát signal và tự lưu.
 
 @export var weapon: WeaponData
+## Danh sách đã nhặt; weapon phía trên chỉ là vũ khí đang chọn.
+@export var weapons: Array[WeaponData] = []
 @export var abilities: Array[AbilityData] = []
 ## Cờ thế giới theo persistent_id, ví dụ "test_movement.sword_pickup" = vật đã nhặt
 @export var flags: Dictionary[StringName, bool] = {}
@@ -24,3 +26,10 @@ func get_ability(id: StringName) -> AbilityData:
 
 func has_checkpoint() -> bool:
 	return not checkpoint_zone.is_empty()
+
+
+func get_weapon_in_slot(slot: WeaponData.Slot) -> WeaponData:
+	for owned in weapons:
+		if owned.slot == slot:
+			return owned
+	return null

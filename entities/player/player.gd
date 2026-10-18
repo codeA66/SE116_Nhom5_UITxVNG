@@ -41,6 +41,8 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 var last_hit: DamageInfo
 ## Vũ khí đang chờ gắn vào tay trong state PickUp
 var pending_weapon: WeaponData
+## Bấm đổi trong một hành động: thực hiện sau khi hành động kết thúc.
+var _requested_weapon_slot: int = -1
 
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
@@ -70,11 +72,14 @@ var _flash_tween: Tween
 @onready var _camera_rig: CameraRig = $CameraRig
 @onready var _camera: Camera3D = $CameraRig/Camera3D
 @onready var _weapon_socket: Node3D = $WeaponSocket
+@onready var _arrow_spawn: Marker3D = $Model/ArrowSpawn
 
 
 func _ready() -> void:
 	super()
 	hitbox.hit.connect(_on_hitbox_hit)
+	GameState.weapon_changed.connect(_attach_weapon_model)
+	GameState.progress_replaced.connect(_on_progress_replaced)
 	# Vào scene mới: gắn lại vũ khí đã có trong tiến trình
 	_attach_weapon_model(GameState.get_weapon())
 	_last_safe_position = global_position
@@ -128,7 +133,7 @@ func has_weapon() -> bool:
 
 ## Đúng khi đang cầm vũ khí và có lệnh đánh trong buffer
 func can_attack() -> bool:
-	return has_weapon() and _attack_buffer_timer > 0.0
+	return has_weapon() and not get_weapon().combo.is_empty() and _attack_buffer_timer > 0.0
 
 
 func consume_attack_input() -> void:
@@ -137,6 +142,8 @@ func consume_attack_input() -> void:
 
 ## Gọi từ vật phẩm khi được tương tác: chuyển sang state nhặt, vũ khí gắn vào tay trong lúc nhặt
 func pick_up_weapon(data: WeaponData) -> void:
+	# Lưu quyền sở hữu ngay khi nhặt, kể cả khi animation bị ngắt.
+	GameState.add_weapon(data)
 	pending_weapon = data
 	state_machine.transition_to(PlayerState.PICK_UP)
 
@@ -144,7 +151,44 @@ func pick_up_weapon(data: WeaponData) -> void:
 func equip_weapon(data: WeaponData) -> void:
 	pending_weapon = null
 	GameState.set_weapon(data)
-	_attach_weapon_model(data)
+
+
+func _on_progress_replaced() -> void:
+	_requested_weapon_slot = -1
+	_attach_weapon_model(GameState.get_weapon())
+
+
+func _update_weapon_selection() -> void:
+	if health.is_dead():
+		_requested_weapon_slot = -1
+		return
+	if Input.is_action_just_pressed(&"weapon_1"):
+		_requested_weapon_slot = WeaponData.Slot.SWORD
+	elif Input.is_action_just_pressed(&"weapon_2"):
+		_requested_weapon_slot = WeaponData.Slot.BOW
+	if _requested_weapon_slot < 0:
+		return
+	if GameState.get_weapon_in_slot(_requested_weapon_slot) == null:
+		_requested_weapon_slot = -1
+		return
+	var state := state_machine.current_state
+	if state == null or state.name not in [PlayerState.IDLE, PlayerState.RUN, PlayerState.JUMP, PlayerState.FALL]:
+		return
+	GameState.select_weapon(_requested_weapon_slot)
+	_requested_weapon_slot = -1
+	if state.name == PlayerState.IDLE:
+		play_anim(ANIM_IDLE)
+	elif state.name == PlayerState.RUN:
+		play_anim(ANIM_RUN)
+
+
+func shoot_arrow(weapon: WeaponData, attack: AttackData, direction: Vector3) -> void:
+	var arrow := weapon.projectile_scene.instantiate() as ArrowProjectile
+	get_parent().add_child(arrow)
+	arrow.global_position = _arrow_spawn.global_position
+	# Quét từ thân tới đầu tên trong frame đầu để không bắn xuyên tường sát người.
+	var origin := global_position + Vector3.UP * _arrow_spawn.position.y
+	arrow.launch(attack, weapon.projectile_speed, weapon.projectile_lifetime, direction, self, origin)
 
 
 func unlock_ability(ability: AbilityData) -> void:
@@ -258,6 +302,8 @@ func return_to_safe_ground(stunned: bool = false) -> void:
 func find_attack_direction(preferred: Vector3) -> Vector3:
 	var best_direction := preferred
 	var best_distance := INF
+	var weapon := get_weapon()
+	var lock_range := weapon.attack_range if weapon and weapon.is_ranged() else soft_lock_range
 	for node in get_tree().get_nodes_in_group(HurtboxComponent.GROUP):
 		var hurtbox := node as HurtboxComponent
 		# Chỉ nhắm vào phe mà hitbox của mình đánh được
@@ -266,7 +312,7 @@ func find_attack_direction(preferred: Vector3) -> Vector3:
 		var offset := hurtbox.global_position - global_position
 		offset.y = 0.0
 		var distance := offset.length()
-		if distance > soft_lock_range or distance < 0.01:
+		if distance > lock_range or distance < 0.01:
 			continue
 		var direction := offset / distance
 		if rad_to_deg(preferred.angle_to(direction)) > soft_lock_angle:
@@ -278,6 +324,7 @@ func find_attack_direction(preferred: Vector3) -> Vector3:
 
 
 func _pre_state_update(delta: float) -> void:
+	_update_weapon_selection()
 	if is_on_floor():
 		_coyote_timer = coyote_time
 		_air_dashes_used = 0
