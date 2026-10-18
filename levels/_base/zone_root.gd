@@ -3,6 +3,9 @@ extends Node3D
 ## Gốc của một khu (gắn vào node gốc mỗi scene khu). Khi khu tải xong, đặt player vào điểm xuất hiện
 ## mà SceneManager yêu cầu, hoặc điểm mặc định. Khu không cần tự chứa player.
 
+## Player đã được đặt vào khu: hiệu ứng / camera / UI trong khu cần bám player thì nối signal này trong scene
+signal player_spawned(player: Player)
+
 const PLAYER_SCENE := preload("res://entities/player/player.tscn")
 
 ## Dùng khi vào khu không qua cổng hay checkpoint (mở game lần đầu, chạy thử scene bằng F6)
@@ -23,4 +26,5 @@ func _ready() -> void:
 		player.teleport(spawn.global_position, spawn.get_facing())
 	else:
 		push_warning("%s: không có SpawnPoint '%s', player giữ vị trí ban đầu" % [name, default_spawn_id])
+	player_spawned.emit(player)
 	SceneManager.notify_zone_ready()
