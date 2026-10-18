@@ -35,13 +35,13 @@ func _run() -> void:
 	_player.teleport(Vector3(-1, 0.05, 0.9), Vector3.BACK)
 	await _frames(20)
 	_check(_player.get_weapon() == null, "fresh player starts unarmed")
-	_check(not _slot(0).owned and not _slot(1).owned, "both HUD slots start locked")
-	_check((InputMap.action_get_events(&"weapon_1")[0] as InputEventKey).physical_keycode == KEY_1, "key 1 mapped")
-	_check((InputMap.action_get_events(&"weapon_2")[0] as InputEventKey).physical_keycode == KEY_2, "key 2 mapped")
+	_check(not _slot(0).is_visible_in_tree() and not _slot(1).is_visible_in_tree(), "unowned weapons have no HUD slots")
 	await _capture("pickups")
 	await _tap(&"interact")
 	await _frames(70)
 	_check(not is_instance_valid(sword) and _player.get_weapon() == SWORD, "F picks up sword and equips it")
+	_check(_slot(0).is_visible_in_tree() and not _slot(1).is_visible_in_tree(), "only picked-up sword appears")
+	await _capture("sword_only")
 	await _tap(&"weapon_2")
 	_check(_player.get_weapon() == SWORD and _slot(0).selected, "cannot select an unowned bow")
 	_player.teleport(Vector3(1, 0.05, 0.9), Vector3.BACK)
@@ -50,10 +50,12 @@ func _run() -> void:
 	await _frames(70)
 	_check(not is_instance_valid(bow) and _player.get_weapon() == BOW, "F picks up bow and equips it")
 	_check(GameState.progress.weapons.size() == 2, "picking bow keeps sword in inventory")
+	_check(_slot(0).is_visible_in_tree() and _slot(1).is_visible_in_tree(), "both collected weapons appear")
 	_check(_slot(1).selected and not _slot(0).selected, "only bow socket glows")
 	_check(not (_player.model.find_child("Sword", true, false) as Node3D).visible, "sword mesh hidden while using bow")
 	_check(_player.get_node("WeaponSocket").get_child_count() == 1, "one bow attached to hand")
 	await _capture("bow_equipped")
+	await _test_bindings()
 	await _tap(&"weapon_1")
 	_check(_player.get_weapon() == SWORD and _slot(0).selected, "key 1 switches back to sword")
 	await _frames(2)
@@ -122,12 +124,83 @@ func _run() -> void:
 	add_child(_player)
 	await _frames(5)
 	_check(_player.get_weapon() == BOW and _player.get_node("WeaponSocket").get_child_count() == 1, "new player restores equipped bow on scene transition")
+	var saved_progress := GameState.progress
+	var bow_only := PlayerProgress.new()
+	bow_only.weapons = [BOW]
+	bow_only.weapon = BOW
+	GameState.replace_progress(bow_only)
+	await _frames(4)
+	_check(_slot(1).is_visible_in_tree() and not _slot(0).is_visible_in_tree() and is_zero_approx(_slot(1).position.x), "bow-only inventory has no empty sword gap")
+	await _capture("bow_only")
+	GameState.replace_progress(saved_progress)
+	var level := (load("res://levels/zone_1_wind/level_1/level_1.tscn") as PackedScene).instantiate()
+	var map_sword := level.get_node("Area11_Sword/SwordPickup") as WeaponPickup
+	var map_bow := level.get_node("Area11_Sword/BowPickup") as WeaponPickup
+	_check(map_bow.weapon == BOW and map_bow.position.distance_to(map_sword.position) <= 1.2, "Level 1 has a collectible bow immediately beside sword")
+	level.free()
 	print("WEAPON_SYSTEM ", "FAILED" if _failed else "PASSED")
 	get_tree().quit(1 if _failed else 0)
 
 
 func _slot(index: int) -> WeaponSlot:
 	return _player.get_node("HUD/WeaponSlots/" + ("SwordSlot" if index == 0 else "BowSlot")) as WeaponSlot
+
+
+func _test_bindings() -> void:
+	var sword_bindings := InputMap.action_get_events(&"weapon_1")
+	var bow_bindings := InputMap.action_get_events(&"weapon_2")
+	var letter := InputEventKey.new()
+	letter.keycode = KEY_Q
+	var mouse := InputEventMouseButton.new()
+	mouse.button_index = MOUSE_BUTTON_RIGHT
+	_rebind(&"weapon_1", [letter])
+	_rebind(&"weapon_2", [mouse])
+	await _frames(20)
+	_check(_slot(0).get_node("Key").text == "Q" and _slot(1).get_node("Key").text == "M2", "HUD follows letter and mouse remaps automatically")
+	await _tap_event(letter)
+	_check(_player.get_weapon() == SWORD and _slot(0).selected, "remapped keyboard event selects sword")
+	await _tap_event(mouse)
+	_check(_player.get_weapon() == BOW and _slot(1).selected, "remapped mouse event selects bow")
+	await _capture("remapped")
+	var physical := InputEventKey.new()
+	physical.physical_keycode = KEY_HOME
+	_rebind(&"weapon_1", [physical])
+	await _frames(20)
+	_check(_slot(0).get_node("Key").text == "Home", "physical special key has its own label")
+	await _tap_event(physical)
+	_check(_player.get_weapon() == SWORD, "physical key event also selects weapon")
+	var modified := InputEventKey.new()
+	modified.keycode = KEY_Q
+	modified.ctrl_pressed = true
+	_rebind(&"weapon_1", [modified])
+	var pad := InputEventJoypadButton.new()
+	pad.button_index = JOY_BUTTON_A
+	_rebind(&"weapon_2", [pad])
+	await _frames(20)
+	_check(_slot(0).get_node("Key").text == "Ctrl+Q" and _slot(1).get_node("Key").text == "Pad 0", "modifier and controller bindings are shown")
+	_rebind(&"weapon_1", [])
+	await _frames(20)
+	_check(_slot(0).get_node("Key").text == "—", "unbound action does not show stale key")
+	_rebind(&"weapon_1", sword_bindings)
+	_rebind(&"weapon_2", bow_bindings)
+	await _frames(20)
+
+
+func _rebind(action: StringName, bindings: Array[InputEvent]) -> void:
+	InputMap.action_erase_events(action)
+	for event in bindings:
+		InputMap.action_add_event(action, event)
+
+
+func _tap_event(binding: InputEvent) -> void:
+	var event := binding.duplicate() as InputEvent
+	event.set("pressed", true)
+	Input.parse_input_event(event)
+	await _frames(2)
+	event = binding.duplicate() as InputEvent
+	event.set("pressed", false)
+	Input.parse_input_event(event)
+	await _frames(2)
 
 
 func _make_pickup(weapon: WeaponData, at: Vector3, id: StringName) -> WeaponPickup:
