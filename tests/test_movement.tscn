@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://ogqrogwu58gt" path="res://entities/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://objects/pickups/weapon_pickup.tscn" id="2_pickup"]
 [ext_resource type="Resource" path="res://resources/weapons/sword.tres" id="3_sword"]
-[ext_resource type="Resource" path="res://resources/weapons/bow.tres" id="bow_weapon"]
 [ext_resource type="PackedScene" path="res://objects/training_dummy/training_dummy.tscn" id="4_dummy"]
 [ext_resource type="PackedScene" path="res://objects/ability_statue/ability_statue.tscn" id="5_statue"]
 [ext_resource type="Resource" path="res://abilities/dash/dash.tres" id="6_dash"]
@@ -16,6 +15,10 @@
 [ext_resource type="PackedScene" path="res://objects/checkpoint/checkpoint.tscn" id="15_cp"]
 [ext_resource type="PackedScene" path="res://objects/water/water.tscn" id="16_water"]
 [ext_resource type="PackedScene" path="res://objects/boat/boat.tscn" id="17_boat"]
+[ext_resource type="PackedScene" path="res://entities/enemies/enemy_1/enemy_1.tscn" id="17_k3r77"]
+[ext_resource type="Resource" path="res://resources/weapons/bow.tres" id="bow_weapon"]
+[ext_resource type="PackedScene" path="res://entities/enemies/shield_bearer/shield_bearer.tscn" id="18_shield_bearer"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wisp_caster/wisp_caster.tscn" id="19_wisp_caster"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 
@@ -110,14 +113,35 @@ mesh = SubResource("BoxMesh_platform")
 shape = SubResource("BoxShape3D_platform")
 
 [node name="Player" parent="." unique_id=1853474250 instance=ExtResource("1_player")]
+preview_sword = false
+preview_dash = false
+landing_duration = 0.2
+hard_landing_speed = 3.0
+run_reference_speed = 4.0
+min_run_playback = 0.85
+max_run_playback = 1.65
+locomotion_blend = 0.08
+run_playback_response = 12.0
+coyote_time = 0.12
+jump_buffer_time = 0.12
+attack_buffer_time = 0.25
+dash_buffer_time = 0.15
+wind_blast_buffer_time = 0.15
+recovery_invincibility = 1.0
+safe_ground_frames = 8
+blink_interval = 0.08
+lethal_flash_color = Color(1, 0.12, 0.1, 0.65)
+lethal_flash_time = 0.4
+soft_lock_range = 4.0
+soft_lock_angle = 60.0
 
 [node name="SwordPickup" parent="." unique_id=995438666 instance=ExtResource("2_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 0)
 weapon = ExtResource("3_sword")
 persistent_id = &"test_movement.sword_pickup"
 
-[node name="BowPickup" parent="." instance=ExtResource("2_pickup")]
-position = Vector3(-5, 0, 0)
+[node name="BowPickup" parent="." unique_id=1232138925 instance=ExtResource("2_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
 weapon = ExtResource("bow_weapon")
 persistent_id = &"test_movement.bow_pickup"
 
@@ -228,3 +252,14 @@ persistent_id = &"test_movement.boat"
 [node name="CheckpointD" parent="." unique_id=1432756063 instance=ExtResource("15_cp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 0, 0)
 checkpoint_id = &"test_movement_cp_d"
+
+[node name="Enemy1" parent="." unique_id=501379529 instance=ExtResource("17_k3r77")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11)
+hit_flash_time = 0.1
+chase_state = &"Chase"
+
+[node name="ShieldBearer" parent="." instance=ExtResource("18_shield_bearer")]
+transform = Transform3D(0.657, 0, -0.754, 0, 1, 0, 0.754, 0, 0.657, -8, 0, -7)
+
+[node name="WispCaster" parent="." instance=ExtResource("19_wisp_caster")]
+transform = Transform3D(0.657, 0, 0.754, 0, 1, 0, -0.754, 0, 0.657, 8, 0, -7)
