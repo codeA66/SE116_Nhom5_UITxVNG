@@ -125,13 +125,14 @@ func notify_cast() -> void:
 
 
 ## Gọi ngay lúc dịch chuyển xong: reset bộ đếm, bắt đầu hồi chiêu và khoảng hở
-func notify_teleported() -> void:
+func notify_teleported(from: Vector3, to: Vector3) -> void:
 	casts_since_teleport = 0
 	_hurt_pending = false
 	_teleport_cooldown_left = caster_data.teleport.cooldown
 	_post_appear_left = caster_data.teleport.appear_time + caster_data.post_appear_delay
 	invalidate_line_of_sight()
 	hover.reset_memory()
+	teleported.emit(from, to)
 
 
 ## Chọn điểm dịch chuyển quanh mục tiêu; không có điểm hợp lệ thì trả về chỗ đứng hiện tại

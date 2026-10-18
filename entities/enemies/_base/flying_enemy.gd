@@ -16,8 +16,8 @@ func apply_gravity(delta: float) -> void:
 
 ## Bay ngang tới direction (độ dài <= 1) bằng air_accel, KHÔNG xoay model (state tự quyết hướng nhìn)
 func fly_toward(direction: Vector3, delta: float) -> void:
-	var target := direction * movement.max_speed
-	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(target, movement.air_accel * delta)
+	var target_velocity := direction * movement.max_speed
+	var horizontal := Vector3(velocity.x, 0.0, velocity.z).move_toward(target_velocity, movement.air_accel * delta)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
 

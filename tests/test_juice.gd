@@ -277,7 +277,10 @@ func _test_extreme() -> void:
 	for i in 20:
 		CombatFx.spawn_hit(Vector3(i * 0.2, 1.0, 30.0), Vector3(randf() - 0.5, 0.3, randf() - 0.5), Color(1.0, 0.7, 0.25), 1.0, 1.5 if i % 2 == 0 else 1.0)
 		CombatFx.spawn_blood(Vector3(i * 0.2, 1.0, 30.0), Vector3(randf() - 0.5, 0.4, randf() - 0.5), Color(0.4, 0.02, 0.05), 0.0, 1.5, i % 3 == 0)
-	_check(CombatFx.get_hit_pool().get_active_count() == 20, "20 hit cùng 1 frame: 20 tia lửa đang chạy (%d)" % CombatFx.get_hit_pool().get_active_count())
+	# Có trần max_active_hits: vượt thì tái dùng hiệu ứng cũ nhất, số đang chạy không vượt trần
+	var hit_cap := mini(20, CombatFx.max_active_hits)
+	_check(CombatFx.get_hit_pool().get_active_count() == hit_cap, "20 hit cùng 1 frame: số tia lửa đang chạy = trần %d (%d)" % [hit_cap, CombatFx.get_hit_pool().get_active_count()])
+	_check(CombatFx.get_blood_pool().get_active_count() <= CombatFx.max_active_blood, "20 phun máu cùng 1 frame: không vượt trần %d" % CombatFx.max_active_blood)
 	await _real_wait(2.5)
 	_check(CombatFx.get_hit_pool().get_active_count() == 0 and CombatFx.get_blood_pool().get_active_count() == 0, "20 hit + 20 máu cùng frame: nhả hết về pool")
 	_check(CombatFx.get_blood_stains().get_active_count() <= CombatFx.get_blood_stains().get_capacity(), "vết máu không vượt giới hạn sau 20 phun")

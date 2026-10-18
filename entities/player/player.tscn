@@ -144,6 +144,11 @@ data = ExtResource("31_feedbackdata")
 hitbox = NodePath("../Model/Hitbox")
 follow = NodePath("../Model")
 finisher_attack = ExtResource("34_slash3")
+inner_ratio = 0.42
+tilt_degrees = 26.0
+edge_intensity = 3.2
+blade_count = 2
+star_size = 0.55
 
 [node name="HurtVignette" parent="HUD" node_paths=PackedStringArray("hurtbox") instance=ExtResource("33_vignette")]
 hurtbox = NodePath("../../HurtboxComponent")

@@ -65,6 +65,11 @@ func get_total_created() -> int:
 	return _total_created
 
 
+## Đối tượng lấy ra lâu nhất (để tái dùng khi đặt trần số lượng); null nếu không có
+func get_oldest_active() -> Node:
+	return null if _active.is_empty() else _active[0]
+
+
 func get_active_count() -> int:
 	return _active.size()
 

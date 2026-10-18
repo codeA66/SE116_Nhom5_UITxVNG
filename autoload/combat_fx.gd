@@ -6,14 +6,18 @@ extends Node
 @export_group("Hit Spark")
 @export var hit_spark_scene: PackedScene = preload("res://assets/vfx/combat/hit_spark.tscn")
 @export var hit_spark_pool_size: int = 6
+## Trần số hiệu ứng chạy cùng lúc; vượt thì tái dùng cái cũ nhất. Giữ chi phí GPU (vẽ chồng cộng sáng) có giới hạn khi đánh đông quái
+@export var max_active_hits: int = 6
 
 @export_group("Death Burst")
 @export var death_burst_scene: PackedScene = preload("res://assets/vfx/combat/death_burst.tscn")
 @export var death_burst_pool_size: int = 3
+@export var max_active_deaths: int = 3
 
 @export_group("Blood")
 @export var blood_spray_scene: PackedScene = preload("res://assets/vfx/combat/blood_spray.tscn")
 @export var blood_spray_pool_size: int = 4
+@export var max_active_blood: int = 4
 ## Số vết máu tối đa trên sàn
 @export var max_blood_stains: int = 24
 
@@ -35,19 +39,19 @@ func _ready() -> void:
 
 ## position: điểm trúng; direction: hướng tia bay; color: màu tia lửa; power > 1: đòn mạnh / kết liễu
 func spawn_hit(position: Vector3, direction: Vector3, color: Color = Color(1.0, 0.7, 0.25), effect_scale: float = 1.0, power: float = 1.0) -> void:
-	var fx := _hit_pool.acquire() as HitSpark
+	var fx := _acquire_capped(_hit_pool, max_active_hits) as HitSpark
 	fx.play(position, direction, color, effect_scale, power)
 
 
 ## position: chân quái
 func spawn_death(position: Vector3, color: Color = Color(1.0, 0.5, 0.2), effect_scale: float = 1.0) -> void:
-	var fx := _death_pool.acquire() as DeathBurst
+	var fx := _acquire_capped(_death_pool, max_active_deaths) as DeathBurst
 	fx.play(position, color, effect_scale)
 
 
 ## Phun máu hình nón theo direction; floor_y: độ cao mặt sàn (để máu rơi xuống đó và để vết)
 func spawn_blood(position: Vector3, direction: Vector3, color: Color, floor_y: float, power: float = 1.0, kill: bool = false) -> void:
-	var fx := _blood_pool.acquire() as BloodSpray
+	var fx := _acquire_capped(_blood_pool, max_active_blood) as BloodSpray
 	fx.play(position, direction, color, floor_y, power, kill)
 
 
@@ -75,6 +79,12 @@ func get_blood_pool() -> ObjectPool:
 
 func get_blood_stains() -> BloodStains:
 	return _stains
+
+
+func _acquire_capped(pool: ObjectPool, cap: int) -> Node:
+	if cap > 0 and pool.get_active_count() >= cap:
+		pool.release(pool.get_oldest_active())
+	return pool.acquire()
 
 
 func _make_pool(scene: PackedScene, size: int, pool_name: StringName) -> ObjectPool:

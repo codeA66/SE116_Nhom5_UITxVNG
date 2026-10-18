@@ -69,5 +69,4 @@ func _begin_appear() -> void:
 	caster.play_appear_fx(caster.caster_data.teleport.appear_time)
 	caster.fade_appear_marker(caster.caster_data.teleport.appear_time)
 	# Tính hồi chiêu ngay lúc dịch chuyển để bị đánh chen ngang pha Appear cũng không dịch lại liên tục
-	caster.notify_teleported()
-	caster.teleported.emit(from, _point)
+	caster.notify_teleported(from, _point)

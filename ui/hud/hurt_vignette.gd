@@ -49,14 +49,14 @@ func _set_strength(value: float) -> void:
 
 ## Đốm xuất phát từ mép khung hình (toạ độ tương đối tâm màn hình) rồi bị hút vào tâm
 func _setup_embers() -> void:
-	var size := get_viewport_rect().size
-	_embers.position = size * 0.5
+	var viewport_size := get_viewport_rect().size
+	_embers.position = viewport_size * 0.5
 	var points := PackedVector2Array()
 	for i in ember_points:
 		var angle := TAU * float(i) / float(ember_points)
 		var dir := Vector2(cos(angle), sin(angle))
 		# Chiếu hướng ra mép hình chữ nhật
-		var edge := minf(size.x * 0.5 / maxf(absf(dir.x), 0.0001), size.y * 0.5 / maxf(absf(dir.y), 0.0001))
+		var edge := minf(viewport_size.x * 0.5 / maxf(absf(dir.x), 0.0001), viewport_size.y * 0.5 / maxf(absf(dir.y), 0.0001))
 		points.append(dir * edge)
 	_embers.emission_shape = CPUParticles2D.EMISSION_SHAPE_POINTS
 	_embers.emission_points = points
