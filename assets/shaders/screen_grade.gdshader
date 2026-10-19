@@ -17,6 +17,13 @@ uniform vec4 vignette_color : source_color = vec4(0.08, 0.05, 0.12, 1.0);
 uniform float vignette_strength : hint_range(0.0, 1.0) = 0.45;
 uniform float vignette_radius : hint_range(0.0, 1.5) = 0.55;
 uniform float vignette_softness : hint_range(0.01, 1.5) = 0.6;
+// Vùng sáng quanh player (kiểu Death's Door): tâm theo vị trí player trên màn hình (script cập nhật),
+// ra ngoài bán kính thì tối dần về focus_color. Bán kính tính theo chiều cao màn hình
+uniform vec2 focus_uv = vec2(0.5, 0.5);
+uniform vec4 focus_color : source_color = vec4(0.05, 0.03, 0.09, 1.0);
+uniform float focus_strength : hint_range(0.0, 1.0) = 0.35;
+uniform float focus_radius : hint_range(0.0, 2.0) = 0.5;
+uniform float focus_softness : hint_range(0.01, 2.0) = 0.7;
 
 void fragment() {
 	vec3 col = texture(screen_texture, SCREEN_UV).rgb;
@@ -31,5 +38,10 @@ void fragment() {
 	vec2 d = (SCREEN_UV - 0.5) * vec2(1.0, 0.8);
 	float v = smoothstep(vignette_radius, vignette_radius + vignette_softness, length(d) * 1.6);
 	col = mix(col, vignette_color.rgb, v * vignette_strength);
+	// Vùng sáng quanh player: tính theo tỉ lệ khung hình để vùng sáng tròn, không bị kéo dẹt
+	vec2 aspect = vec2(SCREEN_PIXEL_SIZE.y / SCREEN_PIXEL_SIZE.x, 1.0);
+	float fd = length((SCREEN_UV - focus_uv) * aspect);
+	float f = smoothstep(focus_radius, focus_radius + focus_softness, fd);
+	col = mix(col, focus_color.rgb, f * focus_strength);
 	COLOR = vec4(clamp(col, 0.0, 1.0), 1.0);
 }

@@ -53,11 +53,11 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/wisp_caster/wisp_caster.tscn" id="wisp_scene"]
 [ext_resource type="Shader" path="res://assets/shaders/cloud_sea.gdshader" id="cloud_sea_shader"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient_wind.tscn" id="ambient_wind_scene"]
-[ext_resource type="PackedScene" path="res://objects/light_shaft/light_shaft.tscn" id="light_shaft_scene"]
 [ext_resource type="PackedScene" path="res://objects/wind_turbine_switch/wind_turbine_switch.tscn" id="c2_switch"]
 [ext_resource type="PackedScene" path="res://objects/wind_door/wind_door.tscn" id="c2_door"]
 [ext_resource type="PackedScene" path="res://objects/blowable_cover/blowable_cover.tscn" id="c2_cover"]
 [ext_resource type="PackedScene" path="res://objects/screen_grade/screen_grade.tscn" id="screen_grade_scene"]
+[ext_resource type="PackedScene" path="res://assets/vfx/ambient/sun_motes.tscn" id="sun_motes_scene"]
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.3, 0.32, 0.58, 1)
 sky_horizon_color = Color(1, 0.66, 0.48, 1)
@@ -97,9 +97,9 @@ fog_height_density = 0.35
 [sub_resource type="ShaderMaterial" id="StandardMaterial3D_goin3"]
 render_priority = -1
 shader = ExtResource("cloud_sea_shader")
-shader_parameter/color_deep = Color(0.38, 0.3, 0.5, 1)
-shader_parameter/color_mid = Color(0.8, 0.52, 0.55, 1)
-shader_parameter/color_top = Color(1, 0.8, 0.62, 1)
+shader_parameter/color_deep = Color(0.16, 0.12, 0.26, 1)
+shader_parameter/color_mid = Color(0.36, 0.24, 0.4, 1)
+shader_parameter/color_top = Color(0.62, 0.4, 0.46, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_o5tx2"]
 material = SubResource("StandardMaterial3D_goin3")
@@ -4076,45 +4076,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
 [node name="AmbientWind" parent="." unique_id=1590873765 instance=ExtResource("ambient_wind_scene")]
 wind_direction = Vector3(0.6, 0, -1)
 
-[node name="LightShafts" type="Node3D" parent="." unique_id=1336230047]
-
-[node name="ShaftStart" parent="LightShafts" unique_id=200057643 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -2, 0, 3)
-shaft_count = 4
-height = 10.0
-intensity = 0.22
-
-[node name="ShaftSword" parent="LightShafts" unique_id=987516233 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -127)
-shaft_count = 3
-height = 11.0
-intensity = 0.22
-
-[node name="ShaftDash" parent="LightShafts" unique_id=812811744 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -141)
-shaft_count = 2
-height = 9.0
-intensity = 0.22
-
-[node name="ShaftBook" parent="LightShafts" unique_id=910343337 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 34, 12, -191)
-shaft_count = 4
-height = 12.0
-intensity = 0.12
-
-[node name="ShaftBoat" parent="LightShafts" unique_id=170759584 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -186)
-shaft_count = 3
-height = 10.0
-intensity = 0.22
-
-[node name="ShaftFinal" parent="LightShafts" unique_id=1263199419 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -229)
-shaft_count = 5
-height = 12.0
-intensity = 0.22
-
-
 [node name="WindPuzzles" type="Node3D" parent="."]
 
 [node name="C1Turbine" parent="WindPuzzles" instance=ExtResource("c2_switch")]
@@ -4227,6 +4188,10 @@ shape = SubResource("c2_edge_4")
 
 [node name="ScreenGrade" parent="." unique_id=1876543210 instance=ExtResource("screen_grade_scene")]
 
+[node name="SunMotes" parent="." unique_id=1876543211 instance=ExtResource("sun_motes_scene")]
+
 [connection signal="cleared" from="Encounters/FarShore" to="Area15_Boat/ExitNote" method="show"]
 
 [connection signal="player_spawned" from="." to="AmbientWind" method="set_follow_target"]
+[connection signal="player_spawned" from="." to="ScreenGrade" method="set_focus_target"]
+[connection signal="player_spawned" from="." to="SunMotes" method="set_follow_target"]

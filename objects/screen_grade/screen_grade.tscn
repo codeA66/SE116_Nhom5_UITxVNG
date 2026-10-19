@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Shader" path="res://assets/shaders/screen_grade.gdshader" id="1_grade"]
+[ext_resource type="Script" path="res://objects/screen_grade/screen_grade.gd" id="2_script"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_grade"]
 resource_local_to_scene = true
@@ -8,6 +9,7 @@ shader = ExtResource("1_grade")
 
 [node name="ScreenGrade" type="CanvasLayer"]
 layer = -1
+script = ExtResource("2_script")
 
 [node name="Grade" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_grade")
