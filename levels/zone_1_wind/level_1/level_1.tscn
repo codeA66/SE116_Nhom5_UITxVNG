@@ -53,7 +53,6 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/wisp_caster/wisp_caster.tscn" id="wisp_scene"]
 [ext_resource type="Shader" path="res://assets/shaders/cloud_sea.gdshader" id="cloud_sea_shader"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient_wind.tscn" id="ambient_wind_scene"]
-[ext_resource type="PackedScene" path="res://objects/light_shaft/light_shaft.tscn" id="light_shaft_scene"]
 [ext_resource type="PackedScene" path="res://objects/wind_turbine_switch/wind_turbine_switch.tscn" id="c2_switch"]
 [ext_resource type="PackedScene" path="res://objects/wind_door/wind_door.tscn" id="c2_door"]
 [ext_resource type="PackedScene" path="res://objects/blowable_cover/blowable_cover.tscn" id="c2_cover"]
@@ -4076,45 +4075,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7)
 
 [node name="AmbientWind" parent="." unique_id=1590873765 instance=ExtResource("ambient_wind_scene")]
 wind_direction = Vector3(0.6, 0, -1)
-
-[node name="LightShafts" type="Node3D" parent="." unique_id=1336230047]
-
-[node name="ShaftStart" parent="LightShafts" unique_id=200057643 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -2, 0, 3)
-shaft_count = 4
-height = 10.0
-intensity = 0.22
-
-[node name="ShaftSword" parent="LightShafts" unique_id=987516233 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -127)
-shaft_count = 3
-height = 11.0
-intensity = 0.22
-
-[node name="ShaftDash" parent="LightShafts" unique_id=812811744 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -141)
-shaft_count = 2
-height = 9.0
-intensity = 0.22
-
-[node name="ShaftBook" parent="LightShafts" unique_id=910343337 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 34, 12, -191)
-shaft_count = 4
-height = 12.0
-intensity = 0.12
-
-[node name="ShaftBoat" parent="LightShafts" unique_id=170759584 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -186)
-shaft_count = 3
-height = 10.0
-intensity = 0.22
-
-[node name="ShaftFinal" parent="LightShafts" unique_id=1263199419 instance=ExtResource("light_shaft_scene")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -229)
-shaft_count = 5
-height = 12.0
-intensity = 0.22
-
 
 [node name="WindPuzzles" type="Node3D" parent="."]
 
