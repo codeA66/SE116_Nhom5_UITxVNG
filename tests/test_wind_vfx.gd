@@ -39,19 +39,19 @@ func _check_blast() -> void:
 	GameState.progress.abilities.append(BLAST_DATA)
 	var area := player.wind_blast
 	var vfx := area.get_node("WindBlastVfx") as WindBlastVfx
-	var burst := vfx.get_node("Burst") as WindBurstVfx
+	var cone := player.get_node("WindBlastCone") as WindBlastCone
 	var pool := vfx.get_node("ImpactPool") as WindImpactPool
 	var pool_children := pool.get_child_count()
-	_check(not burst.is_processing(), "burst ngủ khi chưa thổi")
+	_check(not cone.is_processing() and not cone.visible, "lốc ngủ và ẩn khi chưa thổi")
 
 	Input.action_press(&"skill")
 	await _frames(2)
 	Input.action_release(&"skill")
 	_check(player.state_machine.current_state.name == PlayerState.WIND_BLAST, "bấm skill vào state WindBlast")
-	_check(burst.charging, "gồng bắt đầu khi vào state")
+	_check(cone.is_charging() and cone.visible, "lốc gồng ở tay khi vào state")
 	await _seconds(BLAST_DATA.active_start + 0.05)
-	_check(burst.playing and not burst.charging, "bung đúng lúc activate, hết gồng")
-	var launch := burst.global_position
+	_check(cone.is_playing() and not cone.is_charging(), "lốc lao ra đúng lúc activate, hết gồng")
+	var launch := player.global_position
 	await _frames(4)
 	_check(pool.get_child_count() == pool_children, "pool không tạo thêm node")
 	var busy := 0
@@ -61,19 +61,20 @@ func _check_blast() -> void:
 	_check(busy == 1, "trúng hình nộm phát đúng 1 bụi từ pool")
 	player.teleport(Vector3(3.0, 0.0, 0.0), Vector3.BACK)
 	await _frames(2)
-	_check(burst.global_position.is_equal_approx(launch), "cú bung đứng yên khi nhân vật đi chỗ khác")
-	await _seconds(burst.style.duration + 0.1)
-	_check(not burst.playing and not burst.is_processing(), "bung xong thì ngủ")
+	# Lốc bay theo hướng thổi từ chỗ thổi, không bám theo nhân vật đã dịch đi chỗ khác
+	_check(cone.global_position.distance_to(Vector3(3.0, 0.0, 0.0)) > 0.5 and cone.global_position.distance_to(launch) < BLAST_DATA.reach + 0.5, "lốc bay từ chỗ thổi, không bám nhân vật")
+	await _seconds(cone.get_blast_time() + 0.1)
+	_check(not cone.is_playing() and not cone.is_processing() and not cone.visible, "bung xong thì ẩn và ngủ")
 
 	# Bị ngắt giữa lúc gồng: phần gồng phải tắt ngay
 	await _seconds(BLAST_DATA.cooldown + 0.3)
 	Input.action_press(&"skill")
 	await _frames(2)
 	Input.action_release(&"skill")
-	_check(burst.charging, "gồng lần 2")
+	_check(cone.is_charging(), "gồng lần 2")
 	player.state_machine.transition_to(PlayerState.IDLE)
 	await _frames(1)
-	_check(not burst.charging and not burst.playing, "bị ngắt trước khi bung thì tắt gồng")
+	_check(not cone.is_charging() and not cone.is_playing() and not cone.visible, "bị ngắt trước khi bung thì tắt gồng")
 
 	GameState.progress.abilities.erase(BLAST_DATA)
 	player.queue_free()

@@ -54,6 +54,9 @@
 [ext_resource type="Shader" path="res://assets/shaders/cloud_sea.gdshader" id="cloud_sea_shader"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient_wind.tscn" id="ambient_wind_scene"]
 [ext_resource type="PackedScene" path="res://objects/light_shaft/light_shaft.tscn" id="light_shaft_scene"]
+[ext_resource type="PackedScene" path="res://objects/wind_turbine_switch/wind_turbine_switch.tscn" id="c2_switch"]
+[ext_resource type="PackedScene" path="res://objects/wind_door/wind_door.tscn" id="c2_door"]
+[ext_resource type="PackedScene" path="res://objects/blowable_cover/blowable_cover.tscn" id="c2_cover"]
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.42, 0.62, 0.78, 1)
 sky_horizon_color = Color(0.8, 0.88, 0.9, 1)
@@ -1221,6 +1224,31 @@ size = Vector3(20, 3.2, 0.3)
 size = Vector3(8, 11, 0.3)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_landing_east"]
+size = Vector3(4, 3.2, 0.3)
+
+
+[sub_resource type="BoxMesh" id="c2_bridge_mesh"]
+size = Vector3(6.4, 0.45, 2.8)
+
+[sub_resource type="BoxShape3D" id="c2_bridge_shape"]
+size = Vector3(6.4, 0.45, 2.8)
+
+[sub_resource type="BoxMesh" id="c2_island_mesh"]
+size = Vector3(4, 1, 5)
+
+[sub_resource type="BoxShape3D" id="c2_island_shape"]
+size = Vector3(4, 1, 5)
+
+[sub_resource type="BoxShape3D" id="c2_edge_5"]
+size = Vector3(5, 3.2, 0.3)
+
+[sub_resource type="BoxShape3D" id="c2_edge_7"]
+size = Vector3(7, 3.2, 0.3)
+
+[sub_resource type="BoxShape3D" id="c2_edge_8"]
+size = Vector3(8, 3.2, 0.3)
+
+[sub_resource type="BoxShape3D" id="c2_edge_4"]
 size = Vector3(4, 3.2, 0.3)
 
 [node name="Level1" type="Node3D" unique_id=1903682845]
@@ -3007,15 +3035,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8
 [node name="IronFence436" type="Node3D" parent="Fences" unique_id=1596823424 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 12, -186)
 
-[node name="IronFence437" type="Node3D" parent="Fences" unique_id=1777084069 instance=ExtResource("33_6p3bn")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 12, -188)
-
-[node name="IronFence438" type="Node3D" parent="Fences" unique_id=542481396 instance=ExtResource("33_6p3bn")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 12, -190)
-
-[node name="IronFence439" type="Node3D" parent="Fences" unique_id=844393876 instance=ExtResource("33_6p3bn")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 12, -192)
-
 [node name="IronFence440" type="Node3D" parent="Fences" unique_id=1378863144 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 12, -194)
 
@@ -3025,13 +3044,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8
 [node name="IronFence442" type="Node3D" parent="Fences" unique_id=1781061501 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 12, -198)
 
-[node name="EdgeBlocker443" type="StaticBody3D" parent="Fences" unique_id=1978650611]
-collision_layer = 256
-collision_mask = 0
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 13.6, -191)
-
-[node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker443" unique_id=2039487774]
-shape = SubResource("BoxShape3D_wwvx5")
 
 [node name="IronFence444" type="Node3D" parent="Fences" unique_id=2008975159 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 28.2, 12, -200)
@@ -3059,38 +3071,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 28.2
 [node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker450" unique_id=1577313981]
 shape = SubResource("BoxShape3D_ldbh5")
 
-[node name="IronFence451" type="Node3D" parent="Fences" unique_id=1454552560 instance=ExtResource("33_6p3bn")]
-transform = Transform3D(-2.1855694e-08, 0, -1, 0, 1, 0, 0.5, 0, -4.371139e-08, 28.2, 12, -183)
 
-[node name="EdgeBlocker452" type="StaticBody3D" parent="Fences" unique_id=626021927]
-collision_layer = 256
-collision_mask = 0
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 28.2, 13.6, -182.5)
 
-[node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker452" unique_id=1397542942]
-shape = SubResource("BoxShape3D_cpmgj")
-
-[node name="IronFence453" type="Node3D" parent="Fences" unique_id=1894129394 instance=ExtResource("33_6p3bn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 12, -183.2)
-
-[node name="EdgeBlocker454" type="StaticBody3D" parent="Fences" unique_id=171961132]
-collision_layer = 256
-collision_mask = 0
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 13.6, -183.2)
-
-[node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker454" unique_id=919753092]
-shape = SubResource("BoxShape3D_7n113")
-
-[node name="IronFence455" type="Node3D" parent="Fences" unique_id=44464096 instance=ExtResource("33_6p3bn")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 28, 12, -187.8)
-
-[node name="EdgeBlocker456" type="StaticBody3D" parent="Fences" unique_id=1747231192]
-collision_layer = 256
-collision_mask = 0
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 27, 13.6, -187.8)
-
-[node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker456" unique_id=1730469294]
-shape = SubResource("BoxShape3D_ree3r")
 
 [node name="IronFence457" type="Node3D" parent="Fences" unique_id=1966467704 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(0.9, 0, 0, 0, 1, 0, 0, 0, 1, 4, 9, -218.2)
@@ -3194,25 +3176,12 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8
 [node name="IronFence485" type="Node3D" parent="Fences" unique_id=934179839 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 9, -226)
 
-[node name="IronFence486" type="Node3D" parent="Fences" unique_id=1507698377 instance=ExtResource("33_6p3bn")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 9, -228)
-
-[node name="IronFence487" type="Node3D" parent="Fences" unique_id=2068431580 instance=ExtResource("33_6p3bn")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 9, -230)
-
 [node name="IronFence488" type="Node3D" parent="Fences" unique_id=1862885797 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 9, -232)
 
 [node name="IronFence489" type="Node3D" parent="Fences" unique_id=459249854 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 9, -234)
 
-[node name="EdgeBlocker490" type="StaticBody3D" parent="Fences" unique_id=1854179923]
-collision_layer = 256
-collision_mask = 0
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 10.6, -227)
-
-[node name="Collision" type="CollisionShape3D" parent="Fences/EdgeBlocker490" unique_id=1914474301]
-shape = SubResource("BoxShape3D_boiw7")
 
 [node name="IronFence491" type="Node3D" parent="Fences" unique_id=1459713662 instance=ExtResource("33_6p3bn")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.2, 9, -236)
@@ -4140,6 +4109,117 @@ transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 15, 9, -22
 shaft_count = 5
 height = 12.0
 intensity = 0.22
+
+
+[node name="WindPuzzles" type="Node3D" parent="."]
+
+[node name="C1Turbine" parent="WindPuzzles" instance=ExtResource("c2_switch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.5, 12, -190)
+permanent = true
+persistent_id = &"level_1.c1_turbine"
+
+[node name="C1Door" parent="WindPuzzles" instance=ExtResource("c2_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39.8, 13.4, -190)
+switch_paths = Array[NodePath]([NodePath("../C1Turbine")])
+persistent_id = &"level_1.c1_bridge"
+permanent = true
+
+[node name="C1Bridge" type="StaticBody3D" parent="WindPuzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.8, 11.4, -190)
+
+[node name="Mesh" type="MeshInstance3D" parent="WindPuzzles/C1Bridge"]
+mesh = SubResource("c2_bridge_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C1Bridge"]
+shape = SubResource("c2_bridge_shape")
+
+[node name="C1Island" type="StaticBody3D" parent="WindPuzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 11, -190)
+
+[node name="Mesh" type="MeshInstance3D" parent="WindPuzzles/C1Island"]
+mesh = SubResource("c2_island_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C1Island"]
+shape = SubResource("c2_island_shape")
+
+[node name="C1Reward" type="Label3D" parent="WindPuzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 12.5, -190)
+pixel_size = 0.012
+billboard = 1
+text = "✦ Bí mật của gió ✦"
+font_size = 32
+
+[node name="C2Cover" parent="WindPuzzles" instance=ExtResource("c2_cover")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 13, -185.5)
+persistent_id = &"level_1.c2_cover"
+
+[node name="C3TurbineLeft" parent="WindPuzzles" instance=ExtResource("c2_switch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 9, -224)
+activation_seconds = 0.0
+
+[node name="C3TurbineRight" parent="WindPuzzles" instance=ExtResource("c2_switch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 9, -224)
+activation_seconds = 0.0
+
+[node name="C3Door" parent="WindPuzzles" instance=ExtResource("c2_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.8, 10.4, -229)
+switch_paths = Array[NodePath]([NodePath("../C3TurbineLeft"), NodePath("../C3TurbineRight")])
+persistent_id = &"level_1.c3_gate"
+permanent = true
+required_flag = &"level_1.enc_final"
+
+[node name="C3Bridge" type="StaticBody3D" parent="WindPuzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.8, 8.4, -229)
+
+[node name="Mesh" type="MeshInstance3D" parent="WindPuzzles/C3Bridge"]
+mesh = SubResource("c2_bridge_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C3Bridge"]
+shape = SubResource("c2_bridge_shape")
+
+[node name="C3Island" type="StaticBody3D" parent="WindPuzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 8, -229)
+
+[node name="Mesh" type="MeshInstance3D" parent="WindPuzzles/C3Island"]
+mesh = SubResource("c2_island_mesh")
+
+[node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C3Island"]
+shape = SubResource("c2_island_shape")
+
+[node name="C3Reward" type="Label3D" parent="WindPuzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 9.5, -229)
+pixel_size = 0.012
+billboard = 1
+text = "✦ Hai luồng gió ✦"
+font_size = 32
+
+[node name="C1NorthEdge" type="StaticBody3D" parent="WindPuzzles"]
+collision_layer = 256
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 13.6, -184.5)
+
+[node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C1NorthEdge"]
+shape = SubResource("c2_edge_5")
+
+[node name="C1SouthEdge" type="StaticBody3D" parent="WindPuzzles"]
+collision_layer = 256
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 39.8, 13.6, -196.5)
+
+[node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C1SouthEdge"]
+shape = SubResource("c2_edge_7")
+
+[node name="C3NorthEdge" type="StaticBody3D" parent="WindPuzzles"]
+collision_layer = 256
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 10.6, -222)
+
+[node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C3NorthEdge"]
+shape = SubResource("c2_edge_8")
+
+[node name="C3SouthEdge" type="StaticBody3D" parent="WindPuzzles"]
+collision_layer = 256
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8, 10.6, -234)
+
+[node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C3SouthEdge"]
+shape = SubResource("c2_edge_4")
 
 [connection signal="cleared" from="Encounters/FarShore" to="Area15_Boat/ExitNote" method="show"]
 
