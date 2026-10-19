@@ -88,6 +88,13 @@ func forget_target() -> void:
 	target = null
 
 
+## Nhận lại mục tiêu cảm biến đang thấy. Cảm biến chỉ báo lúc player vừa bước vào vùng, nên nếu quái bỏ
+## mục tiêu khi player vẫn đứng trong vùng thì không có lần báo nào nữa và quái đứng im mãi
+func reacquire_target() -> void:
+	if not has_target() and not is_dead() and is_instance_valid(sensor.target):
+		target = sensor.target
+
+
 ## Mục tiêu đã ra quá xa, hoặc quái bị kéo quá xa chỗ xuất phát
 func should_give_up_chase() -> bool:
 	return not has_target() or distance_to_target() > data.lose_range or distance_from_home() > data.leash_range
