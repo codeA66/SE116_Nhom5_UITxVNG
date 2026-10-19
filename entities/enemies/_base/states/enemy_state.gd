@@ -29,6 +29,7 @@ func _ready() -> void:
 
 ## Dùng chung: có mục tiêu thì chuyển sang đuổi
 func _check_target() -> bool:
+	enemy.reacquire_target()
 	if enemy.has_target() and not enemy.should_give_up_chase():
 		state_machine.transition_to(enemy.chase_state)
 		return true
