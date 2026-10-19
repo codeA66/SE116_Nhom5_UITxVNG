@@ -27,6 +27,7 @@
 [ext_resource type="PackedScene" path="res://components/slash_trail/slash_trail.tscn" id="32_trail"]
 [ext_resource type="PackedScene" path="res://ui/hud/hurt_vignette.tscn" id="33_vignette"]
 [ext_resource type="Resource" path="res://resources/attacks/sword_slash_3.tres" id="34_slash3"]
+[ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_blast_cone.tscn" id="35_windcone"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -53,6 +54,9 @@ script = ExtResource("13_hitbox")
 shape = SubResource("BoxShape3D_hitbox")
 
 [node name="WindBlastArea" parent="Model" instance=ExtResource("26_blast")]
+
+[node name="WindBlastCone" parent="." node_paths=PackedStringArray("area") instance=ExtResource("35_windcone")]
+area = NodePath("../Model/WindBlastArea")
 
 [node name="ArrowSpawn" type="Marker3D" parent="Model"]
 position = Vector3(-0.06, 1.02, 0.55)

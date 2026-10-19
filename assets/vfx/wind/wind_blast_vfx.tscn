@@ -1,14 +1,9 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://assets/vfx/wind/wind_blast_vfx.gd" id="1_blast"]
-[ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_burst_vfx.tscn" id="2_burst"]
-[ext_resource type="Resource" path="res://assets/vfx/wind/wind_blast_style.tres" id="3_style"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_impact_pool.tscn" id="4_pool"]
 
 [node name="WindBlastVfx" type="Node3D"]
 script = ExtResource("1_blast")
-
-[node name="Burst" parent="." instance=ExtResource("2_burst")]
-style = ExtResource("3_style")
 
 [node name="ImpactPool" parent="." instance=ExtResource("4_pool")]
