@@ -57,12 +57,13 @@
 [ext_resource type="PackedScene" path="res://objects/wind_turbine_switch/wind_turbine_switch.tscn" id="c2_switch"]
 [ext_resource type="PackedScene" path="res://objects/wind_door/wind_door.tscn" id="c2_door"]
 [ext_resource type="PackedScene" path="res://objects/blowable_cover/blowable_cover.tscn" id="c2_cover"]
+[ext_resource type="PackedScene" path="res://objects/screen_grade/screen_grade.tscn" id="screen_grade_scene"]
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
-sky_top_color = Color(0.42, 0.62, 0.78, 1)
-sky_horizon_color = Color(0.8, 0.88, 0.9, 1)
+sky_top_color = Color(0.3, 0.32, 0.58, 1)
+sky_horizon_color = Color(1, 0.66, 0.48, 1)
 sky_curve = 0.12
-ground_bottom_color = Color(0.6, 0.73, 0.79, 1)
-ground_horizon_color = Color(0.8, 0.88, 0.9, 1)
+ground_bottom_color = Color(0.42, 0.34, 0.52, 1)
+ground_horizon_color = Color(0.95, 0.64, 0.52, 1)
 ground_curve = 0.05
 sun_angle_max = 25.0
 
@@ -73,21 +74,21 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 background_mode = 2
 sky = SubResource("Sky_main")
 ambient_light_source = 3
-ambient_light_color = Color(0.72, 0.82, 0.88, 1)
-ambient_light_sky_contribution = 0.6
-ambient_light_energy = 0.6
+ambient_light_color = Color(0.55, 0.55, 0.72, 1)
+ambient_light_sky_contribution = 0.35
+ambient_light_energy = 0.55
 tonemap_mode = 4
 glow_enabled = true
-glow_intensity = 0.55
-glow_strength = 0.9
-glow_bloom = 0.02
+glow_intensity = 0.85
+glow_strength = 1.0
+glow_bloom = 0.05
 glow_blend_mode = 1
-glow_hdr_threshold = 0.95
+glow_hdr_threshold = 0.85
 fog_enabled = true
 fog_mode = 0
-fog_light_color = Color(0.79, 0.87, 0.9, 1)
+fog_light_color = Color(0.86, 0.6, 0.6, 1)
 fog_light_energy = 1.0
-fog_sun_scatter = 0.15
+fog_sun_scatter = 0.35
 fog_density = 0.0008
 fog_sky_affect = 0.0
 fog_height = -2.0
@@ -96,6 +97,9 @@ fog_height_density = 0.35
 [sub_resource type="ShaderMaterial" id="StandardMaterial3D_goin3"]
 render_priority = -1
 shader = ExtResource("cloud_sea_shader")
+shader_parameter/color_deep = Color(0.38, 0.3, 0.5, 1)
+shader_parameter/color_mid = Color(0.8, 0.52, 0.55, 1)
+shader_parameter/color_top = Color(1, 0.8, 0.62, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_o5tx2"]
 material = SubResource("StandardMaterial3D_goin3")
@@ -1258,17 +1262,17 @@ script = ExtResource("1_gic63")
 environment = SubResource("Environment_oggpe")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1231244720]
-transform = Transform3D(0.8660254, -0.38302222, 0.32139382, 0, 0.6427876, 0.76604444, -0.5, -0.66341394, 0.5566704, 0, 10, 0)
-light_color = Color(1, 0.91, 0.76, 1)
-light_energy = 1.35
+transform = Transform3D(0.76604, -0.26145, 0.58722, 0, 0.91355, 0.40674, -0.64279, -0.31158, 0.69982, 0, 10, 0)
+light_color = Color(1, 0.8, 0.6, 1)
+light_energy = 1.7
 shadow_enabled = true
-shadow_opacity = 0.85
+shadow_opacity = 0.92
 directional_shadow_max_distance = 60.0
 
 [node name="WindFill" type="DirectionalLight3D" parent="." unique_id=1758161534]
-transform = Transform3D(-0.766044, 0.321394, -0.556670, 0, 0.866025, 0.5, 0.642788, 0.383022, -0.663414, 0, 10, 0)
-light_color = Color(0.62, 0.8, 0.95, 1)
-light_energy = 0.35
+transform = Transform3D(-0.76604, 0.36869, -0.52654, 0, 0.81915, 0.57358, 0.64279, 0.43939, -0.62751, 0, 10, 0)
+light_color = Color(0.5, 0.52, 0.95, 1)
+light_energy = 0.5
 light_specular = 0.0
 
 [node name="Start" type="Marker3D" parent="." unique_id=589731016]
@@ -4220,6 +4224,8 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 25.8
 
 [node name="Collision" type="CollisionShape3D" parent="WindPuzzles/C3SouthEdge"]
 shape = SubResource("c2_edge_4")
+
+[node name="ScreenGrade" parent="." unique_id=1876543210 instance=ExtResource("screen_grade_scene")]
 
 [connection signal="cleared" from="Encounters/FarShore" to="Area15_Boat/ExitNote" method="show"]
 
