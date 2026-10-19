@@ -14,8 +14,17 @@ extends Node3D
 @export var random_phase: bool = true
 @export var gust_decay: float = 2.5
 @export var gust_swing_degrees: float = 24.0
-@export var light_energy: float = 0.55
+@export_group("Light")
+## Ánh sáng gắn vào phần lồng đèn nên đung đưa theo; vị trí tính từ móc treo (gốc của Lantern_Swing)
+@export var light_offset: Vector3 = Vector3(0.0, -0.75, 0.0)
+@export var light_color: Color = Color(0.4, 0.88, 1.0)
+@export var light_energy: float = 1.6
+@export var light_range: float = 4.5
+## Lập loè thường xuyên (như lửa) và thêm khi bị gió thổi
+@export_range(0.0, 1.0) var idle_flicker: float = 0.08
 @export var light_flicker: float = 0.3
+## Quầng sáng quanh đèn (m); 0 = không có quầng
+@export var halo_size: float = 1.3
 
 var _time: float = 0.0
 var _phase: float = 0.0
@@ -24,6 +33,8 @@ var _gust_direction: Vector3 = Vector3.ZERO
 var _hold_energy: float = 0.0
 var _hold_direction: Vector3 = Vector3.ZERO
 var _light: OmniLight3D
+## Mọi đèn dùng chung mesh + material quầng sáng (không tạo riêng mỗi đèn)
+static var _halo_mesh: QuadMesh
 var _receiver: WindReactiveReceiver
 var _reactive: WindReactiveComponent
 
@@ -36,12 +47,20 @@ func _ready() -> void:
 		_phase = randf() * TAU
 	_light = OmniLight3D.new()
 	_light.name = "LanternLight"
-	_light.light_color = Color(1.0, 0.77, 0.5)
-	_light.omni_range = 3.0
+	_light.light_color = light_color
+	_light.omni_range = light_range
 	_light.light_energy = light_energy
 	_light.shadow_enabled = false
-	_light.position = Vector3(0.0, 1.2, 0.0)
-	add_child(_light)
+	_light.position = light_offset
+	_swing.add_child(_light)
+	if halo_size > 0.0:
+		var halo := MeshInstance3D.new()
+		halo.name = "Halo"
+		halo.mesh = _get_halo_mesh()
+		halo.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		halo.position = light_offset
+		halo.scale = Vector3.ONE * halo_size
+		_swing.add_child(halo)
 	_receiver = WindReactiveReceiver.new()
 	_receiver.name = "WindReceiver"
 	_receiver.collision_layer = 128
@@ -73,7 +92,8 @@ func _process(delta: float) -> void:
 	# Lắc chính quanh trục tay đòn (X), thêm lắc nhỏ theo chiều tay đòn để không cứng
 	_swing.rotation.x = deg_to_rad(swing_degrees) * main / (1.0 + gust_strength) + deg_to_rad(gust_swing_degrees) * sin(t * 3.2) * current_direction.z
 	_swing.rotation.z = deg_to_rad(swing_degrees * 0.35) * sin(t * 0.8 + 2.0) + deg_to_rad(gust_swing_degrees) * sin(t * 2.7) * current_direction.x
-	_light.light_energy = light_energy * (1.0 + light_flicker * current_energy * sin(t * 9.0))
+	var idle := idle_flicker * (sin(_time * 7.3 + _phase) * 0.6 + sin(_time * 12.1 + _phase * 2.0) * 0.4)
+	_light.light_energy = light_energy * (1.0 + idle + light_flicker * current_energy * sin(t * 9.0))
 
 
 func apply_gust(direction: Vector3, strength: float) -> void:
@@ -86,3 +106,12 @@ func apply_gust(direction: Vector3, strength: float) -> void:
 func _on_wind_changed(direction: Vector3, strength: float) -> void:
 	_hold_direction = global_basis.inverse() * direction
 	_hold_energy = clampf(strength / 10.0, 0.0, 2.0)
+
+
+static func _get_halo_mesh() -> QuadMesh:
+	if _halo_mesh == null:
+		_halo_mesh = QuadMesh.new()
+		var material := ShaderMaterial.new()
+		material.shader = preload("res://assets/shaders/lantern_halo.gdshader")
+		_halo_mesh.material = material
+	return _halo_mesh
