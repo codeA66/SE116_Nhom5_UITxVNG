@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/ambient/sun_motes.gd" id="1_motes"]
+[ext_resource type="Shader" path="res://assets/shaders/sun_mote.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mote"]
+shader = ExtResource("2_shader")
+
+[sub_resource type="QuadMesh" id="QuadMesh_mote"]
+material = SubResource("ShaderMaterial_mote")
+size = Vector2(0.24, 0.24)
+
+[sub_resource type="Gradient" id="Gradient_mote"]
+offsets = PackedFloat32Array(0, 0.25, 0.75, 1)
+colors = PackedColorArray(1, 0.82, 0.5, 0, 1, 0.86, 0.58, 1, 1, 0.78, 0.48, 0.9, 1, 0.7, 0.4, 0)
+
+[sub_resource type="Curve" id="Curve_mote_scale"]
+_data = [Vector2(0, 0.4), 0.0, 0.0, 0, 0, Vector2(0.4, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.3), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[node name="SunMotes" type="Node3D"]
+script = ExtResource("1_motes")
+
+[node name="Particles" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 60
+lifetime = 5.0
+preprocess = 5.0
+local_coords = false
+mesh = SubResource("QuadMesh_mote")
+emission_shape = 3
+emission_box_extents = Vector3(9, 2.5, 7)
+direction = Vector3(0.6, 0.3, -1)
+spread = 70.0
+gravity = Vector3(0, 0.04, 0)
+initial_velocity_min = 0.08
+initial_velocity_max = 0.3
+damping_min = 0.02
+damping_max = 0.05
+scale_amount_min = 0.6
+scale_amount_max = 1.4
+scale_amount_curve = SubResource("Curve_mote_scale")
+color_ramp = SubResource("Gradient_mote")

@@ -58,6 +58,7 @@
 [ext_resource type="PackedScene" path="res://objects/wind_door/wind_door.tscn" id="c2_door"]
 [ext_resource type="PackedScene" path="res://objects/blowable_cover/blowable_cover.tscn" id="c2_cover"]
 [ext_resource type="PackedScene" path="res://objects/screen_grade/screen_grade.tscn" id="screen_grade_scene"]
+[ext_resource type="PackedScene" path="res://assets/vfx/ambient/sun_motes.tscn" id="sun_motes_scene"]
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.3, 0.32, 0.58, 1)
 sky_horizon_color = Color(1, 0.66, 0.48, 1)
@@ -4227,7 +4228,10 @@ shape = SubResource("c2_edge_4")
 
 [node name="ScreenGrade" parent="." unique_id=1876543210 instance=ExtResource("screen_grade_scene")]
 
+[node name="SunMotes" parent="." unique_id=1876543211 instance=ExtResource("sun_motes_scene")]
+
 [connection signal="cleared" from="Encounters/FarShore" to="Area15_Boat/ExitNote" method="show"]
 
 [connection signal="player_spawned" from="." to="AmbientWind" method="set_follow_target"]
 [connection signal="player_spawned" from="." to="ScreenGrade" method="set_focus_target"]
+[connection signal="player_spawned" from="." to="SunMotes" method="set_follow_target"]
