@@ -52,6 +52,10 @@ func _ready() -> void:
 		push_warning("%s: model thiếu node Rotor" % get_path())
 	# Vùng nhận gió chỉ bao cánh quạt: thổi trúng quạt mới tính
 	wind_receiver.pushed.connect(_on_wind_pushed)
+	# Nguồn khoá nào có signal activated thì nghe để cánh "thức dậy" đúng lúc được mở (chỉ là hình)
+	for source in locked_by:
+		if source and source.has_signal(&"activated"):
+			source.connect(&"activated", _on_lock_source_activated)
 	set_process(false)
 
 
@@ -96,8 +100,34 @@ func is_locked() -> bool:
 func _on_wind_pushed(_impulse: Vector3) -> void:
 	# Kiểm tra lúc bị thổi thay vì nghe signal: trụ không cần biết nguồn mở khi nào
 	if is_locked():
+		_jiggle_rotor()
 		return
 	(state_machine.current_state as ChargerState).on_blown()
+
+
+## Cánh kẹt: giật một góc rồi bật về
+func _jiggle_rotor() -> void:
+	if _rotor == null or data.rotor_axis.is_zero_approx():
+		return
+	var axis := data.rotor_axis.normalized()
+	var base := _rotor.transform.basis
+	var tween := create_tween()
+	tween.tween_method(func(deg: float) -> void: _rotor.transform.basis = base * Basis(axis, deg_to_rad(deg)), 0.0, data.jam_jiggle_degrees, data.jam_jiggle_time * 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_method(func(deg: float) -> void: _rotor.transform.basis = base * Basis(axis, deg_to_rad(deg)), data.jam_jiggle_degrees, 0.0, data.jam_jiggle_time * 0.7).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+
+
+## Vừa hết khoá: cánh quay một lúc rồi dừng, như "thức dậy"
+func _on_lock_source_activated() -> void:
+	if is_locked() or String(state_machine.current_state.name) != ChargerState.IDLE:
+		return
+	set_rotor_power(data.wake_power)
+	get_tree().create_timer(data.wake_time).timeout.connect(_end_wake)
+
+
+func _end_wake() -> void:
+	# Người chơi có thể đã thổi nạp trong lúc cánh đang "thức dậy": khi đó để state điều khiển cánh
+	if String(state_machine.current_state.name) == ChargerState.IDLE:
+		set_rotor_power(0.0)
 
 
 ## 0..1: cánh quạt quay theo tỉ lệ tốc độ tối đa
