@@ -43,8 +43,10 @@ extends Node3D
 @export var star_intensity: float = 2.5
 
 @export_group("Timing")
-## Thời gian mũi vệt quét hết cung (s)
+## Thời gian mũi vệt quét hết cung (s); dùng khi hitbox không báo độ dài khoảng bật
 @export var sweep_time: float = 0.12
+## Quét đúng bằng khoảng hitbox bật (theo marker vung kiếm): vệt chạy cùng nhịp lưỡi kiếm
+@export var match_hitbox_window: bool = true
 ## Thời gian lưỡi liềm teo hết sau khi quét xong (s)
 @export var fade_time: float = 0.14
 ## Lớp phụ chậm hơn lớp chính bấy nhiêu lần
@@ -63,6 +65,8 @@ const INNER_FLECK_T := 0.08
 const STAR_RADIUS_T := 0.96
 
 var _age: float = 0.0
+## Thời gian quét của lần chém hiện tại (sweep_time hoặc khoảng bật hitbox)
+var _current_sweep: float = 0.0
 var _direction: float = 1.0
 var _star_scale: float = 1.0
 var _sweeping: bool = false
@@ -102,6 +106,7 @@ func _ready() -> void:
 	_arc_glow.visible = false
 	_star.visible = false
 	set_process(false)
+	_current_sweep = sweep_time
 	if hitbox:
 		hitbox.activated.connect(_on_activated)
 	else:
@@ -111,9 +116,9 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_sync_facing()
 	_age += delta
-	var head := _update_layer(_arc_material, _arc, sweep_time, fade_time)
-	_update_layer(_back_material, _arc_back, sweep_time * back_layer_lag, fade_time * back_layer_lag)
-	_update_layer(_glow_material, _arc_glow, sweep_time, fade_time)
+	var head := _update_layer(_arc_material, _arc, _current_sweep, fade_time)
+	_update_layer(_back_material, _arc_back, _current_sweep * back_layer_lag, fade_time * back_layer_lag)
+	_update_layer(_glow_material, _arc_glow, _current_sweep, fade_time)
 	_update_star(head)
 	if _age >= total_time():
 		_sweeping = false
@@ -146,7 +151,7 @@ func _build_mesh_and_points() -> void:
 
 ## Tổng thời gian một lần chém (lớp phụ chậm hơn nên dài nhất)
 func total_time() -> float:
-	return (sweep_time + fade_time) * back_layer_lag
+	return (_current_sweep + fade_time) * back_layer_lag
 
 
 func is_sweeping() -> bool:
@@ -160,6 +165,8 @@ func get_outer_radius() -> float:
 
 func _on_activated(attack: AttackData) -> void:
 	_fit_to_reach()
+	var window := hitbox.get_active_duration()
+	_current_sweep = window if match_hitbox_window and window > 0.0 else sweep_time
 	_direction = -_direction
 	_slash_seed = randf() * 10.0
 	_age = 0.0
@@ -204,7 +211,7 @@ func _update_layer(material: ShaderMaterial, node: MeshInstance3D, sweep: float,
 
 ## Sao lóe bám mũi vệt: phình theo sin trong lúc quét rồi tắt
 func _update_star(head: float) -> void:
-	var t := clampf(_age / maxf(sweep_time * 1.5, 0.0001), 0.0, 1.0)
+	var t := clampf(_age / maxf(_current_sweep * 1.5, 0.0001), 0.0, 1.0)
 	_star.visible = t < 1.0
 	if not _star.visible:
 		return

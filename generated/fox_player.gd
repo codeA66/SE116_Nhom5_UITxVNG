@@ -5,6 +5,10 @@ const FOX_WEAPON: WeaponData = preload("res://generated/resources/fox_sword.tres
 const FOX_DASH: DashData = preload("res://abilities/dash/dash.tres")
 const FOX_MATERIAL: Material = preload("res://generated/resources/fox_material.tres")
 const BOW_ANIMATIONS = preload("res://generated/fox_bow_animations.gd")
+## Mốc vung kiếm đo từ chuyển động tay phải trong clip (hitbox và vệt chém bám theo các mốc này)
+const FOX_MARKERS: AnimationMarkerSet = preload("res://generated/resources/fox_animation_markers.tres")
+## Chuyển cảnh mặc định của clip hành động khi state không yêu cầu riêng
+const ACTION_BLEND := 0.05
 const LOOP_CLIPS: Array[StringName] = [&"Idle", &"Idle_Sword", &"Run", &"Run_Sword", &"Fall"]
 const CLIP_MAP: Dictionary[StringName, StringName] = {
     Player.ANIM_JUMP: &"Jump",
@@ -78,7 +82,7 @@ func play_anim(anim_name: StringName) -> void:
         _anim.play(clip, locomotion_blend)
 
 
-func play_action(anim_name: StringName, speed: float = 1.0) -> void:
+func play_action(anim_name: StringName, speed: float = 1.0, blend: float = -1.0) -> void:
     _landing_remaining = 0.0
     _anim.speed_scale = 1.0
     var clip := _resolve_clip(anim_name)
@@ -87,7 +91,7 @@ func play_action(anim_name: StringName, speed: float = 1.0) -> void:
         var dash := get_ability(DashData.ID) as DashData
         if dash:
             speed = 0.2 / maxf(dash.duration, 0.01)
-    _anim.play(clip, 0.05, speed)
+    _anim.play(clip, ACTION_BLEND if blend < 0.0 else blend, speed)
     _anim.seek(0.0, true)
     if _bow_tween:
         _bow_tween.kill()
@@ -98,6 +102,11 @@ func play_action(anim_name: StringName, speed: float = 1.0) -> void:
             _bow_tween = create_tween()
             _bow_tween.tween_property(_bow_visual, "draw_amount", 1.0, maxf(release, 0.01))
             _bow_tween.tween_property(_bow_visual, "draw_amount", 0.0, 0.06)
+
+
+## Tên đòn trong AttackData là tên clip gốc: đổi sang clip của cáo trước khi đọc marker
+func get_action_marker_time(anim_name: StringName, marker: StringName) -> float:
+    return super(_resolve_clip(anim_name), marker)
 
 
 func _pre_state_update(delta: float) -> void:
@@ -165,6 +174,7 @@ func _install_animations() -> void:
         library.add_animation(clip, animation)
     var skeleton := model.find_child("Skeleton3D", true, false) as Skeleton3D
     BOW_ANIMATIONS.install(library, skeleton)
+    FOX_MARKERS.apply_to(library)
     var socket := get_node("WeaponSocket") as BoneAttachment3D
     socket.external_skeleton = socket.get_path_to(skeleton)
     _anim.root_node = _anim.get_path_to(imported.get_node(imported.root_node))

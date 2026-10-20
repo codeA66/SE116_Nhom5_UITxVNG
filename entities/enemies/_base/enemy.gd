@@ -121,9 +121,9 @@ func play_anim(anim_name: StringName) -> void:
 		super(anim_name)
 
 
-func play_action(anim_name: StringName, speed: float = 1.0) -> void:
+func play_action(anim_name: StringName, speed: float = 1.0, blend: float = -1.0) -> void:
 	if _anim.has_animation(anim_name):
-		super(anim_name, speed)
+		super(anim_name, speed, blend)
 
 
 # ---------- Chết vì môi trường (KillZone / gai gọi tới) ----------

@@ -112,10 +112,19 @@ func play_anim(anim_name: StringName) -> void:
 		_anim.play(anim_name, ANIM_BLEND)
 
 
-## Chạy animation hành động từ đầu (kể cả khi đang chạy chính nó), dùng cho đòn đánh, nhặt đồ
-func play_action(anim_name: StringName, speed: float = 1.0) -> void:
-	_anim.play(anim_name, ANIM_BLEND, speed)
+## Chạy animation hành động từ đầu (kể cả khi đang chạy chính nó), dùng cho đòn đánh, nhặt đồ.
+## blend < 0 dùng ANIM_BLEND; đòn đánh nên dùng 0 để khung hình ra đòn hiện đúng lúc bấm
+func play_action(anim_name: StringName, speed: float = 1.0, blend: float = -1.0) -> void:
+	_anim.play(anim_name, ANIM_BLEND if blend < 0.0 else blend, speed)
 	_anim.seek(0.0, true)
+
+
+## Thời điểm (giây trong clip, chưa chia tốc độ) của marker trong animation; -1 nếu không có
+func get_action_marker_time(anim_name: StringName, marker: StringName) -> float:
+	if marker.is_empty() or not _anim.has_animation(anim_name):
+		return -1.0
+	var animation := _anim.get_animation(anim_name)
+	return animation.get_marker_time(marker) if animation.has_marker(marker) else -1.0
 
 
 ## Lớp con ghi đè để cập nhật timer, cảm biến AI... trước khi state chạy

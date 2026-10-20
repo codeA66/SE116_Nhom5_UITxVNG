@@ -14,6 +14,8 @@ const MIN_DEPTH := 0.1
 var attack: AttackData
 
 var _active: bool = false
+## Độ dài khoảng bật của lần activate gần nhất (s); -1 nếu state không báo
+var _active_duration: float = -1.0
 var _already_hit: Array[HurtboxComponent] = []
 ## Mép sau của hộp (tính theo node cha): giữ cố định để đánh sát người vẫn trúng
 var _back_edge: float = 0.0
@@ -34,6 +36,10 @@ func is_active() -> bool:
 	return _active
 
 
+func get_active_duration() -> float:
+	return _active_duration
+
+
 ## Tầm đánh hiện tại (m) tính từ gốc node cha tới mép xa của hộp
 func get_reach() -> float:
 	var box := _shape.shape as BoxShape3D
@@ -51,8 +57,10 @@ func set_reach(reach: float) -> void:
 	_shape.position.z = _back_edge + depth * 0.5 - position.z
 
 
-func activate(data: AttackData) -> void:
+## duration: độ dài khoảng bật (s) để VFX/âm thanh khớp nhịp; bỏ trống nếu state không tính
+func activate(data: AttackData, duration: float = -1.0) -> void:
 	attack = data
+	_active_duration = duration
 	_already_hit.clear()
 	_active = true
 	set_deferred(&"monitoring", true)

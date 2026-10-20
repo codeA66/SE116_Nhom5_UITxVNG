@@ -5,6 +5,16 @@ extends Resource
 @export_group("Animation")
 @export var animation: StringName
 @export var anim_speed: float = 1.0
+## Thời gian chuyển từ pose trước sang animation đòn (s); < 0 dùng mặc định của nhân vật.
+## 0 = khung ra đòn hiện ngay khi bấm, cảm giác đòn "ăn" phím hơn
+@export var blend_in: float = -1.0
+
+@export_group("Animation Markers")
+## Tên marker trong animation đánh dấu lúc lưỡi bắt đầu/kết thúc vung qua.
+## Có đủ hai marker thì hitbox và vệt chém theo animation (tự khớp khi đổi clip hay anim_speed);
+## thiếu marker thì dùng active_start / active_end bên dưới
+@export var hit_start_marker: StringName = &"hit_start"
+@export var hit_end_marker: StringName = &"hit_end"
 
 @export_group("Damage")
 @export var damage: int = 1

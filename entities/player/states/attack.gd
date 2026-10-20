@@ -7,6 +7,9 @@ var _attack: AttackData
 var _lunge_direction: Vector3 = Vector3.ZERO
 var _hitbox_used: bool = false
 var _weapon: WeaponData
+## Khoảng bật hitbox của đòn hiện tại (giây thực), lấy từ marker animation nếu có
+var _active_start: float = 0.0
+var _active_end: float = 0.0
 
 
 func enter(_previous: StringName) -> void:
@@ -55,7 +58,20 @@ func _start_attack() -> void:
 	var preferred := player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
 	_lunge_direction = player.find_attack_direction(preferred)
 	player.face_instantly(_lunge_direction)
-	player.play_action(_attack.animation, _attack.anim_speed)
+	player.play_action(_attack.animation, _attack.anim_speed, _attack.blend_in)
+	_resolve_active_window()
+
+
+## Marker nằm trong thời gian clip: chia anim_speed ra giây thực. Thiếu marker thì dùng số trong AttackData
+func _resolve_active_window() -> void:
+	_active_start = _attack.active_start
+	_active_end = _attack.active_end
+	var speed := maxf(_attack.anim_speed, 0.001)
+	var start_mark := player.get_action_marker_time(_attack.animation, _attack.hit_start_marker)
+	var end_mark := player.get_action_marker_time(_attack.animation, _attack.hit_end_marker)
+	if start_mark >= 0.0 and end_mark > start_mark:
+		_active_start = start_mark / speed
+		_active_end = end_mark / speed
 
 
 func _apply_lunge(delta: float) -> void:
@@ -72,13 +88,13 @@ func _apply_lunge(delta: float) -> void:
 func _update_hitbox() -> void:
 	if _weapon.is_ranged():
 		# Kiểm tra >= thay vì một cửa sổ hẹp: FPS thấp vẫn chỉ phóng đúng một tên.
-		if not _hitbox_used and _elapsed >= _attack.active_start:
+		if not _hitbox_used and _elapsed >= _active_start:
 			player.shoot_arrow(_weapon, _attack, _lunge_direction)
 			_hitbox_used = true
 		return
-	var in_window := _elapsed >= _attack.active_start and _elapsed < _attack.active_end
+	var in_window := _elapsed >= _active_start and _elapsed < _active_end
 	if in_window and not _hitbox_used:
-		player.hitbox.activate(_attack)
+		player.hitbox.activate(_attack, _active_end - _active_start)
 		_hitbox_used = true
 	elif not in_window and player.hitbox.is_active():
 		player.hitbox.deactivate()
