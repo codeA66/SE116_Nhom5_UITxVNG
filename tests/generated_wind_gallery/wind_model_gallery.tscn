@@ -1,0 +1,69 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://tests/generated_wind_gallery/wind_model_gallery.gd" id="1"]
+[ext_resource type="Script" path="res://tests/generated_wind_gallery/gallery_camera.gd" id="2"]
+[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://assets/generated/wind_ruins/f01/f01_wind_main_banner.glb" id="4"]
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.075, 0.095, 0.125, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.9, 0.94, 1, 1)
+ambient_light_energy = 0.35
+reflected_light_source = 2
+tonemap_mode = 0
+
+[sub_resource type="StandardMaterial3D" id="FloorMaterial"]
+albedo_color = Color(0.17, 0.19, 0.22, 1)
+roughness = 1.0
+
+[sub_resource type="PlaneMesh" id="FloorMesh"]
+material = SubResource("FloorMaterial")
+size = Vector2(200, 200)
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(200, 0.4, 200)
+
+[node name="WindModelGallery" type="Node3D"]
+script = ExtResource("1")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-50, -30, 0)
+light_energy = 1.1
+shadow_enabled = true
+directional_shadow_max_distance = 150.0
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-40, 145, 0)
+light_energy = 0.28
+light_specular = 0.0
+
+[node name="Floor" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Floor"]
+position = Vector3(0, -0.2, 0)
+shape = SubResource("FloorShape")
+
+[node name="ModelStage" type="Node3D" parent="."]
+
+[node name="DefaultFlag" parent="ModelStage" instance=ExtResource("4")]
+
+[node name="Player" parent="." instance=ExtResource("3")]
+position = Vector3(-2, 0.05, 1)
+
+[node name="InspectionCamera" type="Camera3D" parent="."]
+position = Vector3(8, 7, 12)
+rotation_degrees = Vector3(-26, 33, 0)
+current = true
+fov = 40.0
+script = ExtResource("2")
+
