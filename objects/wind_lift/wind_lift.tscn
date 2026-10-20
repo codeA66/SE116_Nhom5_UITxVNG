@@ -1,0 +1,149 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/wind_lift/wind_lift.gd" id="1_squll"]
+[ext_resource type="Resource" path="res://resources/wind_lift/wind_lift_default.tres" id="2_wjh2e"]
+[ext_resource type="PackedScene" path="res://assets/generated/wind_ruins/wind_lift/wind_lift_v1.glb" id="3_6sevh"]
+[ext_resource type="PackedScene" path="res://objects/wind_zone/wind_zone.tscn" id="4_xau3i"]
+[ext_resource type="Resource" path="res://resources/wind/wind_updraft.tres" id="5_tli6n"]
+[ext_resource type="Script" path="res://components/state_machine/state_machine.gd" id="6_af7p1"]
+[ext_resource type="Script" path="res://objects/wind_lift/states/lowered.gd" id="7_1qls6"]
+[ext_resource type="Script" path="res://objects/wind_lift/states/rising.gd" id="8_rav6n"]
+[ext_resource type="Script" path="res://objects/wind_lift/states/raised.gd" id="9_8c4vb"]
+[ext_resource type="Script" path="res://objects/wind_lift/states/falling.gd" id="10_i25hg"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ivu05"]
+size = Vector3(0.95, 5, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0yg4l"]
+size = Vector3(0.95, 5, 1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_lem0u"]
+height = 0.31
+radius = 1.26
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_wt1ou"]
+height = 0.2
+radius = 1.85
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_syys5"]
+size = Vector3(0.22, 0.75, 1.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_583i8"]
+size = Vector3(0.22, 0.75, 1.7)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_18wx3"]
+points = PackedVector3Array(-1.2, 0, 5.3, 1.2, 0, 5.3, -1.2, 1.395, 2, 1.2, 1.395, 2, -1.2, 1.395, 1.5, 1.2, 1.395, 1.5, -1.2, 0, 1.5, 1.2, 0, 1.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_50oov"]
+albedo_color = Color(0.62, 0.6, 0.55, 1)
+roughness = 0.95
+
+[sub_resource type="PrismMesh" id="PrismMesh_amy6d"]
+left_to_right = 1.0
+size = Vector3(3.3, 1.395, 2.4)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_u11lq"]
+height = 1.15
+radius = 1.75
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vavv8"]
+size = Vector3(2.6, 2.6, 0.15)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_glj4s"]
+size = Vector3(3.2, 2.6, 0.15)
+
+[node name="WindLift" type="Node3D" unique_id=1994754108]
+script = ExtResource("1_squll")
+data = ExtResource("2_wjh2e")
+
+[node name="Model" parent="." unique_id=1262250790 instance=ExtResource("3_6sevh")]
+
+[node name="Frame" type="StaticBody3D" parent="." unique_id=1885569496]
+collision_mask = 0
+
+[node name="Pillar" type="CollisionShape3D" parent="Frame" unique_id=249582161]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.13, 2.5, -0.32)
+shape = SubResource("BoxShape3D_ivu05")
+
+[node name="Pillar2" type="CollisionShape3D" parent="Frame" unique_id=1081706131]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.13, 2.5, -0.32)
+shape = SubResource("BoxShape3D_0yg4l")
+
+[node name="Outlet" type="CollisionShape3D" parent="Frame" unique_id=492706828]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.155, 0)
+shape = SubResource("CylinderShape3D_lem0u")
+
+[node name="Platform" type="AnimatableBody3D" parent="." unique_id=1128056785]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.27, 0)
+collision_mask = 0
+
+[node name="Deck" type="CollisionShape3D" parent="Platform" unique_id=1325724469]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+shape = SubResource("CylinderShape3D_wt1ou")
+
+[node name="Rail" type="CollisionShape3D" parent="Platform" unique_id=720790488]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.98, 0.5, 0)
+shape = SubResource("BoxShape3D_syys5")
+
+[node name="Rail2" type="CollisionShape3D" parent="Platform" unique_id=1811750887]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.98, 0.5, 0)
+shape = SubResource("BoxShape3D_583i8")
+
+[node name="ModelFollow" type="RemoteTransform3D" parent="Platform" unique_id=580286918]
+update_rotation = false
+update_scale = false
+
+[node name="Ramp" type="StaticBody3D" parent="." unique_id=510436851]
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Ramp" unique_id=305875851]
+shape = SubResource("ConvexPolygonShape3D_18wx3")
+
+[node name="Mesh" type="MeshInstance3D" parent="Ramp" unique_id=1271333942]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.6975, 3.65)
+material_override = SubResource("StandardMaterial3D_50oov")
+mesh = SubResource("PrismMesh_amy6d")
+
+[node name="UnderGuard" type="StaticBody3D" parent="." unique_id=1315604030]
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="UnderGuard" unique_id=1991546134]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.575, 0)
+shape = SubResource("CylinderShape3D_u11lq")
+
+[node name="Gates" type="StaticBody3D" parent="." unique_id=854042102]
+collision_layer = 256
+collision_mask = 0
+
+[node name="BottomGate" type="CollisionShape3D" parent="Gates" unique_id=1674386285]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 1.98)
+shape = SubResource("BoxShape3D_vavv8")
+
+[node name="TopGate" type="CollisionShape3D" parent="Gates" unique_id=1108907094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.52, -1.98)
+shape = SubResource("BoxShape3D_glj4s")
+
+[node name="WindColumn" parent="." unique_id=1866993457 instance=ExtResource("4_xau3i")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 2.11, 0)
+visible = false
+collision_layer = 0
+data = ExtResource("5_tli6n")
+size = Vector3(2, 2, 3.6)
+fade_toward_end = true
+
+[node name="StateMachine" type="Node" parent="." unique_id=1036252630 node_paths=PackedStringArray("initial_state")]
+script = ExtResource("6_af7p1")
+initial_state = NodePath("Lowered")
+
+[node name="Lowered" type="Node" parent="StateMachine" unique_id=395548797]
+script = ExtResource("7_1qls6")
+
+[node name="Rising" type="Node" parent="StateMachine" unique_id=690844208]
+script = ExtResource("8_rav6n")
+
+[node name="Raised" type="Node" parent="StateMachine" unique_id=1179760038]
+script = ExtResource("9_8c4vb")
+
+[node name="Falling" type="Node" parent="StateMachine" unique_id=912447663]
+script = ExtResource("10_i25hg")
