@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/flag_sway.gdshader" id="1_flag"]
+
+[resource]
+shader = ExtResource("1_flag")
+shader_parameter/wind_direction = Vector3(0.6, 0, -1)
+shader_parameter/sway_amplitude = 0.22
+shader_parameter/sway_speed = 1.6
+shader_parameter/ripple_frequency = 2.4
+shader_parameter/ripple_amplitude = 0.07
+shader_parameter/anchor_top = 4.3
+shader_parameter/cloth_length = 2.4
+shader_parameter/roughness_value = 0.86

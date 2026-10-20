@@ -1,0 +1,137 @@
+{
+  "asset_id": "GEO01",
+  "name": "Large cloud-sea island terrain",
+  "unit": "metres",
+  "coordinate_convention": "Godot XYZ; Blender local X maps to Godot X, Blender Z maps to Godot Y, and Blender Y maps to Godot -Z after GLB Y-up export.",
+  "dimensions_xyz_m": [
+    24.0,
+    30.0,
+    20.0
+  ],
+  "pivot_godot_xyz_m": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "walkable_surface": {
+    "godot_y_m": 0.0,
+    "centered_flat_clear_area_m": [
+      12.0,
+      12.0
+    ],
+    "clear_route_width_m": 4.5
+  },
+  "bounds_blender_local_xyz": {
+    "min": [
+      -12.0,
+      -10.0,
+      -29.5
+    ],
+    "max": [
+      12.0,
+      10.0,
+      0.5
+    ]
+  },
+  "overall_bounds_godot_xyz": {
+    "min": [
+      -12.0,
+      -29.5,
+      -10.0
+    ],
+    "max": [
+      12.0,
+      0.5,
+      10.0
+    ]
+  },
+  "far_side_rim": {
+    "raised_godot_y_m": [
+      0.0,
+      0.5
+    ],
+    "blender_local_y_m": [
+      7.0,
+      9.8
+    ],
+    "note": "Three broad outcrops confined to the far perimeter, beyond the clear 12x12 plaza and 4.5m route."
+  },
+  "base_design": "Blunt base ends in three broad, slightly offset broken faces; no sharp crystal point.",
+  "terrain_only": true,
+  "reserved_future_foundation_pad_m": [
+    7.0,
+    6.0
+  ],
+  "fox_reference": {
+    "source": "generated/models/fox_spirit.glb",
+    "measured_height_m": 1.7562,
+    "target_height_m": 1.755,
+    "included_in_glb": false
+  },
+  "game_camera_reference": {
+    "godot_offset_m": [
+      0,
+      24.51,
+      20.57
+    ],
+    "pitch_degrees": 50.0,
+    "vertical_fov_degrees": 30.0,
+    "resolution": [
+      1280,
+      720
+    ],
+    "preview_only": true
+  },
+  "mesh": {
+    "vertices": 203,
+    "polygons": 203,
+    "triangles": 390,
+    "nonmanifold_edges": 0,
+    "boundary_edges": 0,
+    "materials": [
+      "GEO01 | pale windworn slate",
+      "GEO01 | blue slate",
+      "GEO01 | shadow slate"
+    ]
+  },
+  "glb_validation": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_length": 24980
+  },
+  "files": {
+    "glb": {
+      "path": "assets\\generated\\wind_ruins\\geo01\\geo01_large_cloud_sea_island.glb",
+      "bytes": 24980,
+      "sha256": "9fc07682a0bf6208e0b9171b79dd7f401809886d8013de8b0cd6263e73978206"
+    },
+    "preview": {
+      "path": "assets\\generated\\wind_ruins\\geo01\\preview.png",
+      "bytes": 7693949,
+      "sha256": "7a40c39fa3a1504e4b12e221125e8ac9c0624018f0edc43d56ea8f8b0c83bd93"
+    },
+    "game_camera_check": {
+      "path": "assets\\generated\\wind_ruins\\geo01\\source\\game_camera_check.png",
+      "bytes": 3693523,
+      "sha256": "5eae1243182fa8a48520160ddc5c54e5aec3cb41536801509dae1fa101ec830a"
+    },
+    "source_blend": {
+      "path": "assets\\generated\\wind_ruins\\geo01\\source\\geo01_large_cloud_sea_island.blend",
+      "bytes": 962299,
+      "sha256": "d5d115da129281b82091e1cc371f6449f3c12cab3724975af258f57d3f95ff5d"
+    }
+  },
+  "review": {
+    "2d_result": "PASS",
+    "reviewer": "Sol expansion reviewer",
+    "applied_notes": [
+      "flat 12x12m clear play area",
+      "4.5m clear route",
+      "far-side outcrops only",
+      "top walk datum and pivot Y=0",
+      "three broad blunt base faces",
+      "actual fox and game-camera render checks"
+    ]
+  },
+  "production_note": "Broad faceted slate and one restrained cut terrace suggest engineered Wind-civilization craft while keeping the top modular and free of baked buildings, flags, or emblems."
+}

@@ -1,0 +1,228 @@
+{
+  "id": "P03",
+  "asset": "p03_wind_reading_pedestal",
+  "glb": "assets/generated/wind_ruins/p03/p03_wind_reading_pedestal.glb",
+  "states": {
+    "intact": {
+      "root": "P03_Intact_WindReadingPedestal",
+      "bounds_min_blender_m": [
+        -0.75,
+        -0.6,
+        0.0
+      ],
+      "bounds_max_blender_m": [
+        0.75,
+        0.6,
+        1.49961
+      ],
+      "dimensions_blender_xyz_m": [
+        1.5,
+        1.2,
+        1.49961
+      ],
+      "dimensions_godot_xyz_m": [
+        1.5,
+        1.49961,
+        1.2
+      ],
+      "mesh_parts": 5,
+      "triangles": 272,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "mesh_health": [
+        {
+          "mesh": "P03_Intact_WindReadingPedestal_OnePieceReadingSlab",
+          "triangles": 28,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P03_Intact_WindReadingPedestal_OpenBook_PagesAndCover",
+          "triangles": 80,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P03_Intact_WindReadingPedestal_IntactBase",
+          "triangles": 28,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P03_Intact_WindReadingPedestal_SingleShallowWindCurve",
+          "triangles": 44,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P03_Intact_WindReadingPedestal_TaperedStoneStand",
+          "triangles": 92,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        }
+      ]
+    },
+    "chipped_corner": {
+      "root": "P03_Chipped_WindReadingPedestal",
+      "bounds_min_blender_m": [
+        -0.75,
+        -0.6,
+        0.0
+      ],
+      "bounds_max_blender_m": [
+        0.75,
+        0.6,
+        1.49961
+      ],
+      "dimensions_blender_xyz_m": [
+        1.5,
+        1.2,
+        1.49961
+      ],
+      "dimensions_godot_xyz_m": [
+        1.5,
+        1.49961,
+        1.2
+      ],
+      "mesh_parts": 5,
+      "triangles": 272,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "mesh_health": [
+        {
+          "mesh": "P03_Chipped_WindReadingPedestal_ChippedBase",
+          "triangles": 28,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P03_Chipped_WindReadingPedestal_OnePieceReadingSlab",
+          "triangles": 28,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P03_Chipped_WindReadingPedestal_OpenBook_PagesAndCover",
+          "triangles": 80,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P03_Chipped_WindReadingPedestal_SingleShallowWindCurve",
+          "triangles": 44,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P03_Chipped_WindReadingPedestal_TaperedStoneStand",
+          "triangles": 92,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        }
+      ]
+    }
+  },
+  "nominal_catalog_envelope_blender_xyz_m": [
+    1.5,
+    1.2,
+    1.5
+  ],
+  "pivot_blender_m": [
+    0,
+    0,
+    0
+  ],
+  "pivot_description": "center of bottom plinth; ground at z=0",
+  "reading_surface": {
+    "slab_local_dimensions_m": [
+      1.5,
+      1.2,
+      0.12
+    ],
+    "inclination_degrees": 16,
+    "book_local_dimensions_m": [
+      0.7,
+      0.5
+    ]
+  },
+  "book": {
+    "dimensions_local_xyz_m": [
+      0.7,
+      0.5,
+      0.1655
+    ],
+    "bounds_world_xyz_m": [
+      0.7,
+      0.505101,
+      0.290843
+    ],
+    "same_mesh_datablock_reused": true,
+    "unchanged_in_chipped_state": true
+  },
+  "approach": {
+    "side": "negative Y",
+    "clear_zone_m": [
+      1.5,
+      1.5,
+      2.0
+    ],
+    "source_locators": 4
+  },
+  "materials": 1,
+  "emissive_materials": [],
+  "triangles_total_across_states": 544,
+  "glb_header": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_length": 34496,
+    "file_size": 34496,
+    "length_matches": true,
+    "json_chunk_type": "JSON"
+  },
+  "glb_node_count": 16,
+  "game_camera_blender_location": [
+    0,
+    -20.57,
+    24.51
+  ],
+  "game_camera_pitch_down_degrees": 50,
+  "game_camera_vertical_fov_deg": 30,
+  "viewport": [
+    1280,
+    720
+  ],
+  "fox_scale_reference_height_m": 1.755,
+  "concept": "output/wind_production/concepts/p03_concept_v1.png",
+  "advisory": "Retain tapered pedestal and inclined face, simplify stacked details; use a separate 0.7 x 0.5 m book; replace sweeping ornament with one subdued shallow non-emissive curve; reuse the unchanged book; make one broad base-corner chip; keep the negative-Y 1.5 m approach side clear.",
+  "self_check": {
+    "both_states_within_1.5x1.2x1.5m": true,
+    "intact_top_meets_1.5m_envelope": true,
+    "both_pivots_grounded_at_bottom_center": true,
+    "one_book_mesh_reused_unchanged": true,
+    "book_is_0.70x0.50m_local_size": true,
+    "all_state_meshes_closed_and_no_loose_edges": true,
+    "one_shared_non_emissive_material": true,
+    "both_named_states_in_glb": true,
+    "source_locators_excluded_from_glb": true,
+    "preview_fox_and_helpers_excluded_from_glb": true,
+    "glb_y_up_header_valid": true,
+    "all_states_under_5000_triangles": true,
+    "four_source_locators_retained": true,
+    "source_approach_clearance_is_1.5m": true,
+    "source_default_blender_scene_preserved": true,
+    "source_gdignore_exists_empty": true
+  },
+  "pipeline": "actual2D -> one Sol advisory -> direct MCP Blender 3D -> self-check/export/save; no approval gate"
+}

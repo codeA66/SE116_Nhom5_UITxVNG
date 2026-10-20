@@ -1,0 +1,229 @@
+{
+  "id": "T04",
+  "asset": "cliff edge collapse variants",
+  "glb": "assets/generated/wind_ruins/t04/t04_cliff_edge_collapse.glb",
+  "source": "assets/generated/wind_ruins/t04/source/t04_cliff_edge_collapse.blend",
+  "states": {
+    "left": {
+      "pivot": "center of flat walking surface, local z=0",
+      "bounds_blender_min_m": [
+        -2.0,
+        -1.0,
+        -1.0
+      ],
+      "bounds_blender_max_m": [
+        2.0,
+        1.0,
+        0.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        2.0,
+        1.0
+      ],
+      "dimensions_godot_xyz_m": [
+        4.0,
+        1.0,
+        2.0
+      ],
+      "mesh_health": {
+        "T04_Left_Stone_Body": {
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0,
+          "triangles": 156
+        },
+        "T04_Left_Matching_Fragment": {
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0,
+          "triangles": 12
+        }
+      },
+      "triangles_total": 168,
+      "end_connector_profile_vertices": {
+        "-2": 10,
+        "2": 10
+      }
+    },
+    "center": {
+      "pivot": "center of flat walking surface, local z=0",
+      "bounds_blender_min_m": [
+        -2.0,
+        -1.0,
+        -1.0
+      ],
+      "bounds_blender_max_m": [
+        2.0,
+        1.0,
+        0.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        2.0,
+        1.0
+      ],
+      "dimensions_godot_xyz_m": [
+        4.0,
+        1.0,
+        2.0
+      ],
+      "mesh_health": {
+        "T04_Center_Stone_Body": {
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0,
+          "triangles": 156
+        },
+        "T04_Center_Matching_Fragment": {
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0,
+          "triangles": 12
+        }
+      },
+      "triangles_total": 168,
+      "end_connector_profile_vertices": {
+        "-2": 10,
+        "2": 10
+      }
+    },
+    "right": {
+      "pivot": "center of flat walking surface, local z=0",
+      "bounds_blender_min_m": [
+        -2.0,
+        -1.0,
+        -1.0
+      ],
+      "bounds_blender_max_m": [
+        2.0,
+        1.0,
+        0.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        2.0,
+        1.0
+      ],
+      "dimensions_godot_xyz_m": [
+        4.0,
+        1.0,
+        2.0
+      ],
+      "mesh_health": {
+        "T04_Right_Stone_Body": {
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0,
+          "triangles": 156
+        },
+        "T04_Right_Matching_Fragment": {
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0,
+          "triangles": 12
+        }
+      },
+      "triangles_total": 168,
+      "end_connector_profile_vertices": {
+        "-2": 10,
+        "2": 10
+      }
+    }
+  },
+  "nominal_dimensions_blender_xyz_m": [
+    4,
+    2,
+    1
+  ],
+  "dimensions_godot_xyz_m": [
+    4,
+    1,
+    2
+  ],
+  "walk_surface_pivot": "center of full-width flat top at local z=0",
+  "protected_rear_support": "continuous full-width rear support from y=0 to y=1, down to z=-1",
+  "connector_profiles_identical": true,
+  "connector_end_profile_vertices": {
+    "-2": 10,
+    "2": 10
+  },
+  "damage": "three positions across the exposed lower edge; 2-3 broad faceted tiers; one matching displaced fragment per variant",
+  "fragments_within_envelope": true,
+  "materials": 1,
+  "glb_meshes": [
+    {
+      "name": "T04_Center_Matching_Fragment_Mesh",
+      "triangles": 12,
+      "primitives": 1
+    },
+    {
+      "name": "T04_Center_Stone_Body_Mesh",
+      "triangles": 156,
+      "primitives": 1
+    },
+    {
+      "name": "T04_Left_Matching_Fragment_Mesh",
+      "triangles": 12,
+      "primitives": 1
+    },
+    {
+      "name": "T04_Left_Stone_Body_Mesh",
+      "triangles": 156,
+      "primitives": 1
+    },
+    {
+      "name": "T04_Right_Matching_Fragment_Mesh",
+      "triangles": 12,
+      "primitives": 1
+    },
+    {
+      "name": "T04_Right_Stone_Body_Mesh",
+      "triangles": 156,
+      "primitives": 1
+    }
+  ],
+  "glb_header": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_length": 38936,
+    "file_size": 38936,
+    "length_matches": true,
+    "json_chunk_valid": true
+  },
+  "export_yup_meters": true,
+  "game_camera_blender_location": [
+    0,
+    -20.57,
+    24.51
+  ],
+  "game_camera_vertical_fov_deg": 30,
+  "viewport": [
+    1280,
+    720
+  ],
+  "fox_reference_height_m": 1.755,
+  "fox_action": "Idle",
+  "concept": "output/wind_production/concepts/t04_concept_v1.png",
+  "advisor": "sol_advisor",
+  "advisory": "flat supported top and rear strip; fixed back and connector ends; simplify to broad lower fracture tiers; derive matched fragments from the same exposed edge and keep them off the protected strip.",
+  "self_check": {
+    "all_states_within_4x2x1_m": true,
+    "all_meshes_manifold": true,
+    "identical_end_connectors": true,
+    "one_shared_material": true,
+    "all_meshes_under_5000_triangles": true,
+    "top_surface_flat_and_full_width": true,
+    "glb_header_and_attributes_valid": true,
+    "original_default_cube_camera_light_scene_preserved": true
+  },
+  "pipeline": "actual2D -> one Sol advisory -> direct MCP Blender 3D -> self-check/export; no approval gate",
+  "fox_preview_rig_modifier_target": "T04_PreviewFox_FoxRig",
+  "fox_preview_rig_modifier_fixed": true
+}

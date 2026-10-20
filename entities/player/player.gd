@@ -112,6 +112,23 @@ func get_move_direction() -> Vector3:
 	return right * input.x - forward * input.y
 
 
+## Hướng ngang từ player tới điểm con trỏ chuột chỉ trên mặt phẳng ngang ở độ cao chân player.
+## Trả về Vector3.ZERO nếu không xác định được (chuột ngoài cửa sổ, tia song song mặt phẳng, chuột trùng chân player)
+func get_mouse_aim_direction() -> Vector3:
+	# Chạy headless (test tự động) không có chuột thật: vị trí chuột vô nghĩa, để state dùng hướng phím
+	if DisplayServer.get_name() == "headless":
+		return Vector3.ZERO
+	var mouse := get_viewport().get_mouse_position()
+	var origin := _camera.project_ray_origin(mouse)
+	var normal := _camera.project_ray_normal(mouse)
+	var hit: Variant = Plane(Vector3.UP, global_position.y).intersects_ray(origin, normal)
+	if hit == null:
+		return Vector3.ZERO
+	var offset: Vector3 = (hit as Vector3) - global_position
+	offset.y = 0.0
+	return offset.normalized() if offset.length() > 0.05 else Vector3.ZERO
+
+
 ## Đúng khi có jump buffer và còn coyote time
 func can_jump() -> bool:
 	return _jump_buffer_timer > 0.0 and _coyote_timer > 0.0

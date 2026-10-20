@@ -16,9 +16,13 @@
 [ext_resource type="PackedScene" path="res://objects/water/water.tscn" id="16_water"]
 [ext_resource type="PackedScene" path="res://objects/boat/boat.tscn" id="17_boat"]
 [ext_resource type="PackedScene" path="res://entities/enemies/enemy_1/enemy_1.tscn" id="17_k3r77"]
-[ext_resource type="Resource" path="res://resources/weapons/bow.tres" id="bow_weapon"]
 [ext_resource type="PackedScene" path="res://entities/enemies/shield_bearer/shield_bearer.tscn" id="18_shield_bearer"]
 [ext_resource type="PackedScene" path="res://entities/enemies/wisp_caster/wisp_caster.tscn" id="19_wisp_caster"]
+[ext_resource type="PackedScene" uid="uid://3aajou8m4hhy" path="res://assets/generated/wind_ruins/a01/a01_ceremonial_column.glb" id="20_wyvxm"]
+[ext_resource type="PackedScene" uid="uid://cp03o233irl4a" path="res://assets/generated/wind_ruins/a02/a02_ceremonial_lintel_beam.glb" id="21_pcjtj"]
+[ext_resource type="PackedScene" uid="uid://bqffdsbs2alys" path="res://assets/generated/wind_ruins/a03/a03_low_retaining_wall.glb" id="22_251t2"]
+[ext_resource type="PackedScene" uid="uid://bahgtwesvuhv1" path="res://assets/generated/wind_ruins/d01/d01_ceremonial_ring_fragment.glb" id="23_5dr1t"]
+[ext_resource type="Resource" path="res://resources/weapons/bow.tres" id="bow_weapon"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 
@@ -258,8 +262,24 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11)
 hit_flash_time = 0.1
 chase_state = &"Chase"
 
-[node name="ShieldBearer" parent="." instance=ExtResource("18_shield_bearer")]
+[node name="ShieldBearer" parent="." unique_id=776866607 instance=ExtResource("18_shield_bearer")]
 transform = Transform3D(0.657, 0, -0.754, 0, 1, 0, 0.754, 0, 0.657, -8, 0, -7)
+slam_trauma = 0.4
+hit_flash_time = 0.1
 
-[node name="WispCaster" parent="." instance=ExtResource("19_wisp_caster")]
+[node name="WispCaster" parent="." unique_id=1038949577 instance=ExtResource("19_wisp_caster")]
 transform = Transform3D(0.657, 0, 0.754, 0, 1, 0, -0.754, 0, 0.657, 8, 0, -7)
+teleport_state = &"Teleport"
+hit_flash_time = 0.1
+
+[node name="WindProduction_A01" parent="." unique_id=221437464 instance=ExtResource("20_wyvxm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 8)
+
+[node name="WindProduction_A02" parent="." unique_id=452401964 instance=ExtResource("21_pcjtj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+
+[node name="WindProduction_A03" parent="." unique_id=466130465 instance=ExtResource("22_251t2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 13)
+
+[node name="WindProduction_D01" parent="WindProduction_A03" unique_id=377587968 instance=ExtResource("23_5dr1t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

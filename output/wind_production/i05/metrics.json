@@ -1,0 +1,165 @@
+{
+  "id": "I05",
+  "asset": "i05_wooden_dock",
+  "glb": "assets/generated/wind_ruins/i05/i05_wooden_dock.glb",
+  "states": {
+    "Intact": {
+      "root": "I05_Intact_WoodenDock",
+      "bounds_blender_min_m": [
+        -2.25,
+        -2.0,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        2.25,
+        2.0,
+        0.6
+      ],
+      "dimensions_blender_xyz_m": [
+        4.5,
+        4.0,
+        0.6
+      ],
+      "dimensions_godot_xyz_m": [
+        4.5,
+        0.6,
+        4.0
+      ],
+      "triangles": 208,
+      "mesh_parts": 12,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "separate_support_post_groups": 4,
+      "adjustable_posts": 4,
+      "separate_deck_plank_groups": 6,
+      "separate_stringer_groups": 2
+    },
+    "Damaged": {
+      "root": "I05_Damaged_WoodenDock",
+      "bounds_blender_min_m": [
+        -2.25,
+        -2.0,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        2.25,
+        2.0,
+        0.6
+      ],
+      "dimensions_blender_xyz_m": [
+        4.5,
+        4.0,
+        0.6
+      ],
+      "dimensions_godot_xyz_m": [
+        4.5,
+        0.6,
+        4.0
+      ],
+      "triangles": 208,
+      "mesh_parts": 12,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "separate_support_post_groups": 4,
+      "adjustable_posts": 4,
+      "separate_deck_plank_groups": 6,
+      "separate_stringer_groups": 2
+    },
+    "Collapsed": {
+      "root": "I05_Collapsed_WoodenDock",
+      "bounds_blender_min_m": [
+        -2.25,
+        -2.0,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        2.25,
+        2.0,
+        0.6
+      ],
+      "dimensions_blender_xyz_m": [
+        4.5,
+        4.0,
+        0.6
+      ],
+      "dimensions_godot_xyz_m": [
+        4.5,
+        0.6,
+        4.0
+      ],
+      "triangles": 232,
+      "mesh_parts": 14,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "separate_support_post_groups": 4,
+      "adjustable_posts": 4,
+      "separate_deck_plank_groups": 6,
+      "separate_stringer_groups": 2
+    }
+  },
+  "nominal_dimensions_blender_xyz_m": [
+    4.5,
+    4.0,
+    0.6
+  ],
+  "nominal_dimensions_godot_xyz_m": [
+    4.5,
+    0.6,
+    4.0
+  ],
+  "footprint_shape": "4.5 x 4.0 m deck with two broad shallow bow chamfers; straight 3.1 m central docking face on +X",
+  "deck_plank_count": 6,
+  "support_post_groups_per_state": 4,
+  "posts_separate_and_height_adjustable": true,
+  "docking_edge": "flat central bow strip; no post tops project above deck; unchanged in all variants",
+  "damaged_state": "one shortened outer plank at landward end, away from docking face",
+  "collapsed_state": "one outer corner board segment dropped 0.18 m with its corresponding broken support-post top; central floor and docking strip stay level",
+  "pivot_blender_m": [
+    0,
+    0,
+    0
+  ],
+  "materials": 1,
+  "emissive_materials": [],
+  "triangles_total_across_variants": 648,
+  "maximum_triangles_per_variant": 232,
+  "glb_header": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_length": 73612,
+    "file_size": 73612,
+    "length_matches": true,
+    "json_chunk_type": "JSON"
+  },
+  "glb_node_count": 77,
+  "game_camera_blender_location": [
+    0,
+    -20.57,
+    24.51
+  ],
+  "game_camera_vertical_fov_deg": 30,
+  "viewport": [
+    1280,
+    720
+  ],
+  "fox_scale_reference_height_m": 1.755,
+  "concept": "output/wind_production/concepts/i05_concept_v1.png",
+  "advisory": "5\u20137 broad planks, four separate adjustable posts; slight chamfered bow and flat unobstructed docking edge; right state a visibly dropped corner with a matching broken post tip; middle state damage on one outer plank only.",
+  "self_check": {
+    "all_states_within_4.5x4.0x0.6m_envelope": true,
+    "ground_center_pivot": true,
+    "exactly_six_separate_deck_plank_groups": true,
+    "exactly_four_separate_adjustable_posts": true,
+    "exactly_two_stringer_groups": true,
+    "all_asset_meshes_manifold": true,
+    "all_variants_under_5000_triangles": true,
+    "one_shared_non_emissive_material": true,
+    "docking_strip_unobstructed": true,
+    "glb_valid_header": true,
+    "glb_contains_all_state_roots": true
+  },
+  "pipeline": "actual2D -> one Sol advisory -> direct MCP Blender 3D -> self-check/export; no approval gate"
+}

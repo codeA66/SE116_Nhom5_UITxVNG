@@ -1,0 +1,295 @@
+{
+  "id": "A03",
+  "asset": "modular low retaining wall",
+  "glb": "assets/generated/wind_ruins/a03/a03_low_retaining_wall.glb",
+  "source": "assets/generated/wind_ruins/a03/source/a03_low_retaining_wall.blend",
+  "concept": "assets/generated/wind_ruins/a03/concept.png",
+  "states": {
+    "intact": {
+      "bounds_min_local_m": [
+        -2.0,
+        -0.175,
+        0.0
+      ],
+      "bounds_max_local_m": [
+        2.0,
+        0.175,
+        1.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        0.35,
+        1.0
+      ],
+      "mesh_count": 3,
+      "meshes": [
+        {
+          "name": "A03_Intact_Base",
+          "triangles": 28,
+          "mesh_health": {
+            "vertices": 16,
+            "faces": 10,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 28
+          }
+        },
+        {
+          "name": "A03_Intact_Broad_Wall",
+          "triangles": 12,
+          "mesh_health": {
+            "vertices": 8,
+            "faces": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 12
+          }
+        },
+        {
+          "name": "A03_Intact_Cap",
+          "triangles": 28,
+          "mesh_health": {
+            "vertices": 16,
+            "faces": 10,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 28
+          }
+        }
+      ]
+    },
+    "broken_low": {
+      "bounds_min_local_m": [
+        -2.0,
+        -0.175,
+        0.0
+      ],
+      "bounds_max_local_m": [
+        2.0,
+        0.175,
+        1.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        0.35,
+        1.0
+      ],
+      "mesh_count": 5,
+      "meshes": [
+        {
+          "name": "A03_Broken_Left_Cap",
+          "triangles": 12,
+          "mesh_health": {
+            "vertices": 8,
+            "faces": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 12
+          }
+        },
+        {
+          "name": "A03_Broken_Left_Panel",
+          "triangles": 20,
+          "mesh_health": {
+            "vertices": 12,
+            "faces": 8,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 20
+          }
+        },
+        {
+          "name": "A03_Broken_Low_Continuous_Base",
+          "triangles": 28,
+          "mesh_health": {
+            "vertices": 16,
+            "faces": 10,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 28
+          }
+        },
+        {
+          "name": "A03_Broken_Right_Cap",
+          "triangles": 12,
+          "mesh_health": {
+            "vertices": 8,
+            "faces": 6,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 12
+          }
+        },
+        {
+          "name": "A03_Broken_Right_Panel",
+          "triangles": 20,
+          "mesh_health": {
+            "vertices": 12,
+            "faces": 8,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 20
+          }
+        }
+      ]
+    },
+    "terminal_end": {
+      "bounds_min_local_m": [
+        -2.0,
+        -0.175,
+        0.0
+      ],
+      "bounds_max_local_m": [
+        2.0,
+        0.175,
+        1.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        0.35,
+        1.0
+      ],
+      "mesh_count": 3,
+      "meshes": [
+        {
+          "name": "A03_Terminal_Base",
+          "triangles": 28,
+          "mesh_health": {
+            "vertices": 16,
+            "faces": 10,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 28
+          }
+        },
+        {
+          "name": "A03_Terminal_Cap",
+          "triangles": 20,
+          "mesh_health": {
+            "vertices": 12,
+            "faces": 8,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 20
+          }
+        },
+        {
+          "name": "A03_Terminal_Tapered_Wall",
+          "triangles": 16,
+          "mesh_health": {
+            "vertices": 10,
+            "faces": 7,
+            "non_manifold_edges": 0,
+            "boundary_edges": 0,
+            "loose_edges": 0,
+            "loose_vertices": 0,
+            "triangles": 16
+          }
+        }
+      ]
+    }
+  },
+  "dimensions_blender_xyz_m": [
+    4,
+    0.35,
+    1
+  ],
+  "dimensions_godot_xyz_m": [
+    4,
+    1,
+    0.35
+  ],
+  "cap_thickness_m": 0.12,
+  "base": "continuous across broken-low variant",
+  "terminal_end": "same 4 m module with one tapered closed end and one flat connector",
+  "materials": 1,
+  "glb_meshes": [
+    {
+      "name": "A03_Broken_Left_Cap_Mesh",
+      "triangles": 12,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Broken_Left_Panel_Mesh",
+      "triangles": 20,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Broken_Low_Continuous_Base_Mesh",
+      "triangles": 28,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Broken_Right_Cap_Mesh",
+      "triangles": 12,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Broken_Right_Panel_Mesh",
+      "triangles": 20,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Intact_Base_Mesh",
+      "triangles": 28,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Intact_Broad_Wall_Mesh",
+      "triangles": 12,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Intact_Cap_Mesh",
+      "triangles": 28,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Terminal_Base_Mesh",
+      "triangles": 28,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Terminal_Cap_Mesh",
+      "triangles": 20,
+      "primitives": 1
+    },
+    {
+      "name": "A03_Terminal_Tapered_Wall_Mesh",
+      "triangles": 16,
+      "primitives": 1
+    }
+  ],
+  "glb_bytes": 23956,
+  "glb_v2_y_up_header": true,
+  "color_attributes": "COLOR_0 on every primitive",
+  "advisory": "Keep the intact wall at exactly 4.0 x 0.35 x 1.0 m including its 0.12 m cap; use clean base/body/cap masses and flat modular ends. In the broken-low state remove one broad central panel and cap section, retaining the continuous base and only 2-3 large fracture planes. The terminal state keeps the same section with one tapered closed end; use plain broad faces, slim bevels and sparse moss/color variation.",
+  "game_camera": [
+    0,
+    24.51,
+    20.57
+  ],
+  "vertical_fov_degrees": 30,
+  "self_check": "All three variants fit exact 4 x 0.35 x 1.0 m envelopes; broken-low retains a continuous base, and terminal retains one flat connector plus tapered closed end. Every mesh is manifold, uses one shared material and COLOR_0, and is under 5000 triangles; GLB v2 header/names validated; default Scene/Cube/Camera/Light preserved.",
+  "completed_utc": "2026-10-20T03:47:57.581826Z"
+}

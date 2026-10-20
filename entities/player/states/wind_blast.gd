@@ -11,9 +11,13 @@ func enter(_previous: StringName) -> void:
 	_data = player.start_wind_blast()
 	_elapsed = 0.0
 	_blasted = false
-	var input_direction := player.get_move_direction()
-	var preferred := player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
-	player.face_instantly(player.find_attack_direction(preferred))
+	# Nhắm theo chuột, không tự nhắm: tự nhắm kéo lệch khỏi chỗ người chơi chỉ (phản cầu, thổi cối xay cần chính xác)
+	var aim := player.get_mouse_aim_direction()
+	if aim.is_zero_approx():
+		var input_direction := player.get_move_direction()
+		var preferred := player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
+		aim = player.find_attack_direction(preferred)
+	player.face_instantly(aim)
 	player.wind_blast.begin_charge(_data)
 	player.play_action(_data.animation, _data.anim_speed)
 
