@@ -34,7 +34,9 @@
 [ext_resource type="PackedScene" path="res://objects/boat/boat.tscn" id="32_syg50"]
 [ext_resource type="PackedScene" path="res://entities/enemies/wisp_caster/wisp_caster.tscn" id="33_hvggy"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient_wind.tscn" id="34_75byi"]
+[ext_resource type="PackedScene" path="res://objects/wind_charger/wind_charger.tscn" id="36_7lmrn"]
 [ext_resource type="PackedScene" path="res://objects/hanging_lantern/hanging_lantern.tscn" id="36_fjagb"]
+[ext_resource type="PackedScene" path="res://objects/wind_lift/wind_lift.tscn" id="37_1si7j"]
 
 [sub_resource type="Environment" id="Environment_27hfq"]
 background_mode = 1
@@ -12455,14 +12457,14 @@ instance_count = 24
 mesh = SubResource("ArrayMesh_bl5t6")
 buffer = PackedFloat32Array(0.990227, 0, 0.13946496, -30.007074, 0, 1, 0, 3.6, -0.13946496, 0, 0.990227, -7.753662, 0.9522281, 0, -0.30538756, -20.29066, 0, 1, 0, 7.2, 0.30538756, 0, 0.9522281, -33.003113, 0.65306187, 0, 0.75730455, -26.5422, 0, 1, 0, 0, -0.75730455, 0, 0.65306187, 20.14761, 0.9202293, 0, 0.39137965, -29.657206, 0, 1, 0, 3.6, -0.39137965, 0, 0.9202293, -8.6572075, 0.9640304, 0, 0.26579207, 42.790035, 0, 1, 0, 7.2, -0.26579207, 0, 0.9640304, -59.152676, 0.72101516, 0, -0.6929193, -27.822435, 0, 1, 0, 0, 0.6929193, 0, 0.72101516, 23.963167, 0.99999195, 0, 0.004011382, -22.134214, 0, 1, 0, 7.2, -0.004011382, 0, 0.99999195, -26.851995, 0.97969913, 0, 0.20047353, 41.887825, 0, 1, 0, 7.2, -0.20047353, 0, 0.97969913, -57.57338, 0.80090904, 0, 0.598786, -28.770689, 0, 1, 0, 3.6, -0.598786, 0, 0.80090904, 0.4126835, 0.86145407, 0, -0.50783545, -21.90241, 0, 1, 0, 7.2, 0.50783545, 0, 0.86145407, -25.199207, 0.8143318, 0, 0.5803996, -25.930607, 0, 1, 0, 0, -0.5803996, 0, 0.8143318, 23.436796, 0.8217516, 0, 0.56984586, -29.191479, 0, 1, 0, 3.6, -0.56984586, 0, 0.8217516, -7.2869015, 0.86785156, 0, 0.49682364, 41.203175, 0, 1, 0, 7.2, -0.49682364, 0, 0.86785156, -64.23821, 0.55043924, 0, -0.8348752, -26.056553, 0, 1, 0, 0, 0.8348752, 0, 0.55043924, 30.930418, 0.9786338, 0, -0.20561093, -20.009466, 0, 1, 0, 7.2, 0.20561093, 0, 0.9786338, -24.023224, 0.5957526, 0, -0.803168, 41.979248, 0, 1, 0, 7.2, 0.803168, 0, 0.5957526, -57.560875, 0.56984836, 0, 0.82174987, -30.029747, 0, 1, 0, 3.6, -0.82174987, 0, 0.56984836, -3.8755307, 0.9846107, 0, 0.17476226, -20.514282, 0, 1, 0, 7.2, -0.17476226, 0, 0.9846107, -30.06967, 0.8641926, 0, -0.50316113, -27.578726, 0, 1, 0, 0, 0.50316113, 0, 0.8641926, 25.454378, 0.997067, 0, 0.07653422, -29.356215, 0, 1, 0, 3.6, -0.07653422, 0, 0.997067, 1.3589821, 0.945618, 0, -0.32527933, 41.719315, 0, 1, 0, 7.2, 0.32527933, 0, 0.945618, -61.643204, 0.99835473, 0, 0.057339195, -26.04214, 0, 1, 0, 0, -0.057339195, 0, 0.99835473, 26.802402, 0.8173638, 0, 0.57612187, -20.55068, 0, 1, 0, 7.2, -0.57612187, 0, 0.8173638, -34.274326, 0.99254537, 0, -0.12187564, 43.175922, 0, 1, 0, 7.2, 0.12187564, 0, 0.99254537, -57.685658)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_30eba"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_7lmrn"]
 resource_local_to_scene = true
 size = Vector3(14, 5, 16)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_a2613"]
 size = Vector3(4.5, 0.3, 4.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_ij71g"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1si7j"]
 resource_local_to_scene = true
 size = Vector3(22, 5, 18)
 
@@ -12476,7 +12478,7 @@ point_count = 2
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_npt7l"]
 points = PackedVector3Array(-2.25, 3.2, -38.3, 2.25, 3.2, -38.3, -2.25, 3.6, -39.75, 2.25, 3.6, -39.75, -2.25, 3.1, -39.75, 2.25, 3.1, -39.75)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_3mec5"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_kgreo"]
 resource_local_to_scene = true
 size = Vector3(30, 5, 18)
 
@@ -12654,9 +12656,6 @@ size = Vector3(0.3, 4, 4.3)
 [sub_resource type="BoxShape3D" id="BoxShape3D_804l7"]
 size = Vector3(4.3, 4, 0.3)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_h0p2g"]
-size = Vector3(0.3, 4, 16.3)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_hkeal"]
 size = Vector3(4.3, 4, 0.3)
 
@@ -12704,6 +12703,85 @@ size = Vector3(0.3, 3, 4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_enyt4"]
 size = Vector3(0.3, 3, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oql3i"]
+size = Vector3(0.3, 4, 11.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qvokb"]
+size = Vector3(0.3, 4, 1.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s1awp"]
+size = Vector3(4.2, 0.6, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlcrf"]
+albedo_color = Color(0.36, 0.37, 0.36, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="BoxMesh_1eyas"]
+size = Vector3(4.2, 0.6, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gsg2x"]
+size = Vector3(4.2, 4, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oy6i0"]
+size = Vector3(4.2, 4, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cm1a1"]
+size = Vector3(16, 0.6, 12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_d3xmf"]
+size = Vector3(16, 0.6, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gq0qd"]
+size = Vector3(16, 4, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lnfod"]
+size = Vector3(16, 4, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7pfeq"]
+size = Vector3(0.2, 4, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_xm6j6"]
+size = Vector3(0.2, 4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_c6ifa"]
+size = Vector3(0.2, 4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e0j0s"]
+size = Vector3(16, 0.6, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3xckt"]
+size = Vector3(16, 0.6, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_w0b1e"]
+size = Vector3(16, 0.6, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qqind"]
+size = Vector3(16, 3, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hx1oc"]
+size = Vector3(0.3, 0.6, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tkhq5"]
+size = Vector3(0.3, 3, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ad8wc"]
+size = Vector3(0.3, 0.6, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n24oo"]
+size = Vector3(0.3, 3, 16)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7u0u8"]
+size = Vector3(6.4, 0.6, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e5cso"]
+size = Vector3(6.4, 3, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_esd64"]
+size = Vector3(6.4, 0.6, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ijsgj"]
+size = Vector3(6.4, 3, 0.3)
 
 [node name="MapWindPrototype" type="Node3D" unique_id=243520560]
 script = ExtResource("1_dpv22")
@@ -23981,7 +24059,7 @@ trigger_size = Vector3(14, 5, 16)
 
 [node name="CollisionShape3D" parent="Area2_WindWell/WellGuard/Trigger" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
-shape = SubResource("BoxShape3D_30eba")
+shape = SubResource("BoxShape3D_7lmrn")
 
 [node name="Enemy1_1" parent="Area2_WindWell/WellGuard/Enemies" index="0" unique_id=1223271553 instance=ExtResource("24_tkhq5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -4)
@@ -24037,7 +24115,7 @@ trigger_size = Vector3(22, 5, 18)
 
 [node name="CollisionShape3D" parent="Area5_GuardianCourt/CourtGuard/Trigger" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
-shape = SubResource("BoxShape3D_ij71g")
+shape = SubResource("BoxShape3D_1si7j")
 
 [node name="ShieldBearer_1" parent="Area5_GuardianCourt/CourtGuard/Enemies" index="0" unique_id=1961020433 instance=ExtResource("29_esd64")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -6)
@@ -24105,7 +24183,7 @@ trigger_size = Vector3(30, 5, 18)
 
 [node name="CollisionShape3D" parent="Area7_Sanctuary/FinalGuard/Trigger" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
-shape = SubResource("BoxShape3D_3mec5")
+shape = SubResource("BoxShape3D_kgreo")
 
 [node name="Enemy1_1" parent="Area7_Sanctuary/FinalGuard/Enemies" index="0" unique_id=1333681322 instance=ExtResource("24_tkhq5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, -1)
@@ -24597,14 +24675,6 @@ collision_mask = 0
 [node name="Collision" type="CollisionShape3D" parent="Bounds/SanctuaryEdge3" unique_id=934276583]
 shape = SubResource("BoxShape3D_804l7")
 
-[node name="SanctuaryEdge4" type="StaticBody3D" parent="Bounds" unique_id=29006687]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 9.2, -56)
-collision_layer = 256
-collision_mask = 0
-
-[node name="Collision" type="CollisionShape3D" parent="Bounds/SanctuaryEdge4" unique_id=564912231]
-shape = SubResource("BoxShape3D_h0p2g")
-
 [node name="SanctuaryEdge5" type="StaticBody3D" parent="Bounds" unique_id=1737922031]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, 9.2, -48)
 collision_layer = 256
@@ -24733,6 +24803,22 @@ collision_mask = 0
 [node name="Collision" type="CollisionShape3D" parent="Bounds/NorthDockSide2" unique_id=1883806169]
 shape = SubResource("BoxShape3D_enyt4")
 
+[node name="SanctuaryEdge4South" type="StaticBody3D" parent="Bounds" unique_id=1813101793]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 9.2, -58.5)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Bounds/SanctuaryEdge4South" unique_id=1458212515]
+shape = SubResource("BoxShape3D_oql3i")
+
+[node name="SanctuaryEdge4North" type="StaticBody3D" parent="Bounds" unique_id=1047502267]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, 9.2, -48.5)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Bounds/SanctuaryEdge4North" unique_id=1221802814]
+shape = SubResource("BoxShape3D_qvokb")
+
 [node name="AmbientWind" parent="." unique_id=684587129 instance=ExtResource("34_75byi")]
 wind_direction = Vector3(0.6, 0, -1)
 
@@ -24755,6 +24841,186 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.8, 7.2, -54.2)
 
 [node name="HangingLantern6" parent="Decor" unique_id=307890831 instance=ExtResource("36_fjagb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.8, 7.2, -54.2)
+
+[node name="Area8_LiftRoom" type="Node3D" parent="." unique_id=1643388014]
+
+[node name="Walkway" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=91170084]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 6.8999996, -51)
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/Walkway" unique_id=287770780]
+shape = SubResource("BoxShape3D_s1awp")
+
+[node name="Mesh" type="MeshInstance3D" parent="Area8_LiftRoom/Walkway" unique_id=336444969]
+material_override = SubResource("StandardMaterial3D_hlcrf")
+mesh = SubResource("BoxMesh_1eyas")
+
+[node name="Fence" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=463094215]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 9.2, -53.1)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/Fence" unique_id=1117501815]
+shape = SubResource("BoxShape3D_gsg2x")
+
+[node name="Fence2" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=740916148]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 9.2, -48.9)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/Fence2" unique_id=1700503236]
+shape = SubResource("BoxShape3D_oy6i0")
+
+[node name="RoomFloor" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=291289831]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 6.8999996, -51)
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/RoomFloor" unique_id=1580413602]
+shape = SubResource("BoxShape3D_cm1a1")
+
+[node name="Mesh" type="MeshInstance3D" parent="Area8_LiftRoom/RoomFloor" unique_id=985386529]
+material_override = SubResource("StandardMaterial3D_hlcrf")
+mesh = SubResource("BoxMesh_d3xmf")
+
+[node name="Fence3" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=1999849481]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 9.2, -57)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/Fence3" unique_id=285081535]
+shape = SubResource("BoxShape3D_gq0qd")
+
+[node name="Fence4" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=1545755477]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 9.2, -45)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/Fence4" unique_id=1228361179]
+shape = SubResource("BoxShape3D_lnfod")
+
+[node name="Fence5" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=754310285]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, 9.2, -51)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/Fence5" unique_id=57850078]
+shape = SubResource("BoxShape3D_7pfeq")
+
+[node name="Fence6" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=1388749903]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 9.2, -55)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/Fence6" unique_id=1763884041]
+shape = SubResource("BoxShape3D_xm6j6")
+
+[node name="Fence7" type="StaticBody3D" parent="Area8_LiftRoom" unique_id=703858032]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 9.2, -47)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/Fence7" unique_id=377142765]
+shape = SubResource("BoxShape3D_c6ifa")
+
+[node name="WindCharger" parent="Area8_LiftRoom" unique_id=1555043777 instance=ExtResource("36_7lmrn")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 60.6, 7.2, -50.4)
+
+[node name="WindLift" parent="Area8_LiftRoom" unique_id=1994754108 node_paths=PackedStringArray("charger") instance=ExtResource("37_1si7j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 7.2, -55)
+charger = NodePath("../WindCharger")
+
+[node name="BossArena" type="Node3D" parent="Area8_LiftRoom" unique_id=1021397304]
+
+[node name="Floor" type="StaticBody3D" parent="Area8_LiftRoom/BossArena" unique_id=2128504571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 11.12, -64.8)
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/BossArena/Floor" unique_id=2104822152]
+shape = SubResource("BoxShape3D_e0j0s")
+
+[node name="Mesh" type="MeshInstance3D" parent="Area8_LiftRoom/BossArena/Floor" unique_id=1454912293]
+material_override = SubResource("StandardMaterial3D_hlcrf")
+mesh = SubResource("BoxMesh_3xckt")
+
+[node name="Rail" type="MeshInstance3D" parent="Area8_LiftRoom/BossArena" unique_id=1217739908]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 11.72, -72.8)
+material_override = SubResource("StandardMaterial3D_hlcrf")
+mesh = SubResource("BoxMesh_w0b1e")
+
+[node name="RailBlocker" type="StaticBody3D" parent="Area8_LiftRoom/BossArena" unique_id=113255918]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 12.92, -72.8)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/BossArena/RailBlocker" unique_id=1284125557]
+shape = SubResource("BoxShape3D_qqind")
+
+[node name="Rail2" type="MeshInstance3D" parent="Area8_LiftRoom/BossArena" unique_id=1141973552]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 11.72, -64.8)
+material_override = SubResource("StandardMaterial3D_hlcrf")
+mesh = SubResource("BoxMesh_hx1oc")
+
+[node name="RailBlocker2" type="StaticBody3D" parent="Area8_LiftRoom/BossArena" unique_id=2137434581]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 12.92, -64.8)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/BossArena/RailBlocker2" unique_id=1016571944]
+shape = SubResource("BoxShape3D_tkhq5")
+
+[node name="Rail3" type="MeshInstance3D" parent="Area8_LiftRoom/BossArena" unique_id=806295293]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, 11.72, -64.8)
+material_override = SubResource("StandardMaterial3D_hlcrf")
+mesh = SubResource("BoxMesh_ad8wc")
+
+[node name="RailBlocker3" type="StaticBody3D" parent="Area8_LiftRoom/BossArena" unique_id=350047131]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, 12.92, -64.8)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/BossArena/RailBlocker3" unique_id=507655171]
+shape = SubResource("BoxShape3D_n24oo")
+
+[node name="Rail4" type="MeshInstance3D" parent="Area8_LiftRoom/BossArena" unique_id=1859734161]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.2, 11.72, -56.800003)
+material_override = SubResource("StandardMaterial3D_hlcrf")
+mesh = SubResource("BoxMesh_7u0u8")
+
+[node name="RailBlocker4" type="StaticBody3D" parent="Area8_LiftRoom/BossArena" unique_id=1260963505]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.2, 12.92, -56.800003)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/BossArena/RailBlocker4" unique_id=651485781]
+shape = SubResource("BoxShape3D_e5cso")
+
+[node name="Rail5" type="MeshInstance3D" parent="Area8_LiftRoom/BossArena" unique_id=905062716]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62.8, 11.72, -56.800003)
+material_override = SubResource("StandardMaterial3D_hlcrf")
+mesh = SubResource("BoxMesh_esd64")
+
+[node name="RailBlocker5" type="StaticBody3D" parent="Area8_LiftRoom/BossArena" unique_id=392480424]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62.8, 12.92, -56.800003)
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Area8_LiftRoom/BossArena/RailBlocker5" unique_id=1953487513]
+shape = SubResource("BoxShape3D_ijsgj")
+
+[node name="BossSpawn" type="Marker3D" parent="Area8_LiftRoom/BossArena" unique_id=1793451221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 11.42, -66.8)
+
+[node name="HangingLantern" parent="Area8_LiftRoom" unique_id=1817795258 instance=ExtResource("36_fjagb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 7.2, -46)
+
+[node name="HangingLantern2" parent="Area8_LiftRoom" unique_id=132535934 instance=ExtResource("36_fjagb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 7.2, -46)
+
+[node name="HangingLantern3" parent="Area8_LiftRoom" unique_id=119200785 instance=ExtResource("36_fjagb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 11.42, -71.8)
+
+[node name="HangingLantern4" parent="Area8_LiftRoom" unique_id=290255218 instance=ExtResource("36_fjagb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65, 11.42, -71.8)
 
 [connection signal="player_spawned" from="." to="AmbientWind" method="set_follow_target"]
 [connection signal="cleared" from="Area7_Sanctuary/FinalGuard" to="Area7_Sanctuary/ExitNote" method="show"]
