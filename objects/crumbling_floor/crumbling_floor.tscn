@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/crumbling_floor/crumbling_floor.gd" id="1_bepk7"]
+[ext_resource type="Resource" path="res://resources/puzzles/crumbling_floor_default.tres" id="2_qwtxs"]
+[ext_resource type="Material" path="res://assets/materials/ruin_stone.tres" id="3_7bke5"]
+[ext_resource type="Script" path="res://components/state_machine/state_machine.gd" id="4_d3hok"]
+[ext_resource type="Script" path="res://objects/crumbling_floor/states/solid.gd" id="5_cpsgo"]
+[ext_resource type="Script" path="res://objects/crumbling_floor/states/cracking.gd" id="6_rxg2s"]
+[ext_resource type="Script" path="res://objects/crumbling_floor/states/fallen.gd" id="7_c2ae4"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_mk83e"]
+
+[node name="CrumblingFloor" type="StaticBody3D" unique_id=1273015801]
+collision_mask = 0
+script = ExtResource("1_bepk7")
+data = ExtResource("2_qwtxs")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=958149359]
+
+[node name="Visual" type="Node3D" parent="." unique_id=338370297]
+
+[node name="Mesh" type="MeshInstance3D" parent="Visual" unique_id=1148286692]
+material_override = ExtResource("3_7bke5")
+mesh = SubResource("BoxMesh_mk83e")
+
+[node name="Detector" type="Area3D" parent="." unique_id=772197904]
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Detector" unique_id=734885732]
+
+[node name="StateMachine" type="Node" parent="." unique_id=1336205448 node_paths=PackedStringArray("initial_state")]
+script = ExtResource("4_d3hok")
+initial_state = NodePath("Solid")
+
+[node name="Solid" type="Node" parent="StateMachine" unique_id=1923628807]
+script = ExtResource("5_cpsgo")
+
+[node name="Cracking" type="Node" parent="StateMachine" unique_id=1247503491]
+script = ExtResource("6_rxg2s")
+
+[node name="Fallen" type="Node" parent="StateMachine" unique_id=1276058042]
+script = ExtResource("7_c2ae4")

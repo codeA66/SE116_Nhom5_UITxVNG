@@ -6,7 +6,7 @@ var _timer: float = 0.0
 
 func enter(_previous: StringName) -> void:
 	_timer = 0.0
-	charger.fully_charged.emit()
+	charger.notify_fully_charged()
 
 
 func physics_update(delta: float) -> void:

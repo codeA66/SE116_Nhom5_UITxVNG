@@ -8,7 +8,7 @@ func enter(previous: StringName) -> void:
 	lift.set_platform_height(lift.get_lower_y())
 	lift.set_gates(true, false)
 	if not previous.is_empty():
-		lift.lowered.emit()
+		lift.notify_lowered()
 
 
 func on_charger_full() -> void:

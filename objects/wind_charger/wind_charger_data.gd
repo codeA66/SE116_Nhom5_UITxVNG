@@ -21,3 +21,11 @@ extends Resource
 @export var rotor_max_speed: float = 720.0
 ## Tăng/giảm tốc cánh quạt (độ/giây²)
 @export var rotor_acceleration: float = 1440.0
+
+@export_group("Locked Feedback")
+## Bị khoá mà bị thổi: cánh giật một góc rồi bật về (độ), báo cánh đang kẹt
+@export var jam_jiggle_degrees: float = 9.0
+@export_range(0.05, 1.0, 0.01) var jam_jiggle_time: float = 0.28
+## Vừa được mở khoá: cánh quay "thức dậy" ở mức này (0..1 tốc độ tối đa) trong bấy nhiêu giây
+@export_range(0.0, 1.0, 0.05) var wake_power: float = 0.5
+@export_range(0.0, 5.0, 0.05) var wake_time: float = 1.0

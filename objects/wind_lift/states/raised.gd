@@ -7,7 +7,7 @@ func enter(_previous: StringName) -> void:
 	lift.speed = 0.0
 	lift.set_platform_height(lift.get_upper_y())
 	lift.set_gates(false, true)
-	lift.raised.emit()
+	lift.notify_raised()
 
 
 func physics_update(delta: float) -> void:

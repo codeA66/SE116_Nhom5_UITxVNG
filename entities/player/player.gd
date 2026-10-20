@@ -38,6 +38,9 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export var soft_lock_angle: float = 60.0
 
 ## Đòn đánh gần nhất trúng player, state Hurt dùng để lấy hướng đẩy lùi
+## Tắt khi cutscene / hội thoại: bỏ qua mọi phím (đi, nhảy, đánh, dash, gió, tương tác, đổi vũ khí).
+## Vật lý vẫn chạy nên đứng trên thuyền / bệ vẫn được chở đi. Đổi bằng set_controls_enabled()
+var controls_enabled: bool = true
 var last_hit: DamageInfo
 ## Vũ khí đang chờ gắn vào tay trong state PickUp
 var pending_weapon: WeaponData
@@ -103,7 +106,20 @@ func _process(delta: float) -> void:
 	model.visible = fmod(_blink_clock, blink_interval * 2.0) >= blink_interval
 
 
+func set_controls_enabled(enabled: bool) -> void:
+	controls_enabled = enabled
+	if not enabled:
+		# Xoá lệnh đang chờ trong buffer: thả khoá xong không tự bật đòn đã bấm lúc bị khoá
+		_jump_buffer_timer = 0.0
+		_attack_buffer_timer = 0.0
+		_dash_buffer_timer = 0.0
+		_wind_blast_buffer_timer = 0.0
+		_requested_weapon_slot = -1
+
+
 func get_move_direction() -> Vector3:
+	if not controls_enabled:
+		return Vector3.ZERO
 	# get_vector đã chuẩn hóa: đi chéo không nhanh hơn, có deadzone cho tay cầm
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var cam_basis := _camera.global_basis
@@ -176,7 +192,7 @@ func _on_progress_replaced() -> void:
 
 
 func _update_weapon_selection() -> void:
-	if health.is_dead():
+	if health.is_dead() or not controls_enabled:
 		_requested_weapon_slot = -1
 		return
 	if Input.is_action_just_pressed(&"weapon_1"):
@@ -372,11 +388,11 @@ func _attach_weapon_model(data: WeaponData) -> void:
 
 
 func _is_holding_jump() -> bool:
-	return Input.is_action_pressed("jump")
+	return controls_enabled and Input.is_action_pressed("jump")
 
 
 func _update_buffer(action: StringName, timer: float, buffer_time: float, delta: float) -> float:
-	if Input.is_action_just_pressed(action):
+	if controls_enabled and Input.is_action_just_pressed(action):
 		return buffer_time
 	return timer - delta
 

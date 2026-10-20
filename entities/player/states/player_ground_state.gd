@@ -18,7 +18,7 @@ func _ground_update(_delta: float) -> void:
 
 ## Trả về true nếu đã chuyển state, state con không xử lý tiếp
 func _try_common_transitions() -> bool:
-	if Input.is_action_just_pressed("interact") and player.interactor.try_interact():
+	if player.controls_enabled and Input.is_action_just_pressed("interact") and player.interactor.try_interact():
 		return true
 	if player.can_dash():
 		state_machine.transition_to(DASH)
