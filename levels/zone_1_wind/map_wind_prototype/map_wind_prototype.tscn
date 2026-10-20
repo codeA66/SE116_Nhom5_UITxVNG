@@ -34,7 +34,6 @@
 [ext_resource type="PackedScene" path="res://objects/boat/boat.tscn" id="32_syg50"]
 [ext_resource type="PackedScene" path="res://entities/enemies/wisp_caster/wisp_caster.tscn" id="33_hvggy"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient_wind.tscn" id="34_75byi"]
-[ext_resource type="PackedScene" path="res://assets/vfx/ambient/sun_motes.tscn" id="35_miekv"]
 [ext_resource type="PackedScene" path="res://objects/hanging_lantern/hanging_lantern.tscn" id="36_fjagb"]
 
 [sub_resource type="Environment" id="Environment_27hfq"]
@@ -24737,8 +24736,6 @@ shape = SubResource("BoxShape3D_enyt4")
 [node name="AmbientWind" parent="." unique_id=684587129 instance=ExtResource("34_75byi")]
 wind_direction = Vector3(0.6, 0, -1)
 
-[node name="SunMotes" parent="." unique_id=164504998 instance=ExtResource("35_miekv")]
-
 [node name="Decor" type="Node3D" parent="." unique_id=48155900]
 
 [node name="HangingLantern" parent="Decor" unique_id=1305840732 instance=ExtResource("36_fjagb")]
@@ -24760,7 +24757,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.8, 7.2, -54.2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.8, 7.2, -54.2)
 
 [connection signal="player_spawned" from="." to="AmbientWind" method="set_follow_target"]
-[connection signal="player_spawned" from="." to="SunMotes" method="set_follow_target"]
 [connection signal="cleared" from="Area7_Sanctuary/FinalGuard" to="Area7_Sanctuary/ExitNote" method="show"]
 
 [editable path="Area2_WindWell/WellGuard"]
