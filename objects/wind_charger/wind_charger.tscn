@@ -16,41 +16,41 @@ size = Vector3(1.73, 2.9, 1.45)
 [sub_resource type="BoxShape3D" id="BoxShape3D_pjnws"]
 size = Vector3(1.3, 1.3, 0.6)
 
-[node name="WindCharger" type="Node3D" unique_id=1555043777]
+[node name="WindCharger" type="Node3D" unique_id=923582852]
 script = ExtResource("1_ahd3v")
 data = ExtResource("2_h17m7")
 
 [node name="Model" parent="." unique_id=1767423411 instance=ExtResource("3_kb2a2")]
 
-[node name="Body" type="StaticBody3D" parent="." unique_id=1728505298]
+[node name="Body" type="StaticBody3D" parent="." unique_id=26261044]
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Body" unique_id=1559133848]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body" unique_id=1192774471]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 1.45, -0.08)
 shape = SubResource("BoxShape3D_ft4ga")
 
-[node name="WindReceiver" type="Area3D" parent="." unique_id=479148596]
+[node name="WindReceiver" type="Area3D" parent="." unique_id=1165502685]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.07, 0.35)
 collision_layer = 128
 collision_mask = 0
 monitoring = false
 script = ExtResource("4_k28nf")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiver" unique_id=979915948]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiver" unique_id=1202969890]
 shape = SubResource("BoxShape3D_pjnws")
 
-[node name="StateMachine" type="Node" parent="." unique_id=584690426 node_paths=PackedStringArray("initial_state")]
+[node name="StateMachine" type="Node" parent="." unique_id=17158090 node_paths=PackedStringArray("initial_state")]
 script = ExtResource("5_ucett")
 initial_state = NodePath("Idle")
 
-[node name="Idle" type="Node" parent="StateMachine" unique_id=464514015]
+[node name="Idle" type="Node" parent="StateMachine" unique_id=753285189]
 script = ExtResource("6_wsicr")
 
-[node name="Charging" type="Node" parent="StateMachine" unique_id=913972635]
+[node name="Charging" type="Node" parent="StateMachine" unique_id=1990456278]
 script = ExtResource("7_kjmm3")
 
-[node name="Full" type="Node" parent="StateMachine" unique_id=1199546353]
+[node name="Full" type="Node" parent="StateMachine" unique_id=450238535]
 script = ExtResource("8_rjrut")
 
-[node name="Draining" type="Node" parent="StateMachine" unique_id=352414170]
+[node name="Draining" type="Node" parent="StateMachine" unique_id=532211116]
 script = ExtResource("9_7otiv")

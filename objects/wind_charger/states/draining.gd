@@ -17,7 +17,7 @@ func physics_update(delta: float) -> void:
 	charger.set_lit_count(charger.lit_count - 1)
 	charger.set_rotor_power(charger.get_level())
 	if charger.lit_count == 0:
-		charger.discharged.emit()
+		charger.notify_discharged()
 		state_machine.transition_to(IDLE)
 
 

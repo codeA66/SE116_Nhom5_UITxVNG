@@ -132,3 +132,12 @@ func _on_charger_full() -> void:
 
 func _on_charger_discharged() -> void:
 	(state_machine.current_state as WindLiftState).on_charger_discharged()
+
+
+## State gọi khi bệ tới đỉnh / về đáy: signal phát từ chính class khai báo nó
+func notify_raised() -> void:
+	raised.emit()
+
+
+func notify_lowered() -> void:
+	lowered.emit()

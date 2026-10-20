@@ -13,6 +13,9 @@ signal fully_charged
 signal discharged
 
 @export var data: WindChargerData
+## Trụ bị khoá cho tới khi TẤT CẢ nguồn ở đây đã bật (ví dụ ổ đá). Nguồn là node có hàm is_active().
+## Để trống = không khoá. Bị khoá thì thổi trúng cũng không nạp
+@export var locked_by: Array[Node] = []
 
 ## Số đèn đang sáng; các state đọc/ghi qua set_lit_count()
 var lit_count: int = 0
@@ -83,7 +86,17 @@ func set_lit_count(count: int) -> void:
 	charge_changed.emit(get_level())
 
 
+func is_locked() -> bool:
+	for source in locked_by:
+		if source == null or not source.has_method(&"is_active") or not source.call(&"is_active"):
+			return true
+	return false
+
+
 func _on_wind_pushed(_impulse: Vector3) -> void:
+	# Kiểm tra lúc bị thổi thay vì nghe signal: trụ không cần biết nguồn mở khi nào
+	if is_locked():
+		return
 	(state_machine.current_state as ChargerState).on_blown()
 
 
@@ -91,3 +104,12 @@ func _on_wind_pushed(_impulse: Vector3) -> void:
 func set_rotor_power(power: float) -> void:
 	_rotor_target = data.rotor_max_speed * clampf(power, 0.0, 1.0)
 	set_process(true)
+
+
+## State gọi khi đủ đèn / tắt hết đèn: signal phát từ chính class khai báo nó
+func notify_fully_charged() -> void:
+	fully_charged.emit()
+
+
+func notify_discharged() -> void:
+	discharged.emit()
