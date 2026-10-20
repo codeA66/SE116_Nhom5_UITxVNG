@@ -1,0 +1,239 @@
+{
+  "id": "P04",
+  "asset": "p04_wind_checkpoint_beacon",
+  "glb": "assets/generated/wind_ruins/p04/p04_wind_checkpoint_beacon.glb",
+  "states": {
+    "off": {
+      "root": "P04_Off_WindCheckpoint",
+      "bounds_min_blender_m": [
+        -1.799726,
+        -1.776171,
+        0.0
+      ],
+      "bounds_max_blender_m": [
+        1.8,
+        1.776171,
+        2.25
+      ],
+      "dimensions_blender_xyz_m": [
+        3.599726,
+        3.552341,
+        2.25
+      ],
+      "dimensions_godot_xyz_m": [
+        3.599726,
+        2.25,
+        3.552341
+      ],
+      "mesh_parts": 4,
+      "triangles": 188,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "mesh_health": [
+        {
+          "mesh": "P04_Off_WindCheckpoint_FacetedCrystal",
+          "triangles": 32,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P04_Off_WindCheckpoint_RingSegment_1",
+          "triangles": 52,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P04_Off_WindCheckpoint_RingSegment_2",
+          "triangles": 52,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P04_Off_WindCheckpoint_RingSegment_3",
+          "triangles": 52,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        }
+      ]
+    },
+    "activated": {
+      "root": "P04_Activated_WindCheckpoint",
+      "bounds_min_blender_m": [
+        -1.799726,
+        -1.776171,
+        0.0
+      ],
+      "bounds_max_blender_m": [
+        1.8,
+        1.776171,
+        2.25
+      ],
+      "dimensions_blender_xyz_m": [
+        3.599726,
+        3.552341,
+        2.25
+      ],
+      "dimensions_godot_xyz_m": [
+        3.599726,
+        2.25,
+        3.552341
+      ],
+      "mesh_parts": 4,
+      "triangles": 188,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "mesh_health": [
+        {
+          "mesh": "P04_Activated_WindCheckpoint_FacetedCrystal",
+          "triangles": 32,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P04_Activated_WindCheckpoint_RingSegment_1",
+          "triangles": 52,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P04_Activated_WindCheckpoint_RingSegment_2",
+          "triangles": 52,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        },
+        {
+          "mesh": "P04_Activated_WindCheckpoint_RingSegment_3",
+          "triangles": 52,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0
+        }
+      ]
+    }
+  },
+  "nominal_catalog_base_m": {
+    "outer_diameter": 3.6,
+    "thickness": 0.18
+  },
+  "base": {
+    "segments_per_state": 3,
+    "nominal_open_center_diameter_m": 2.3,
+    "outer_radius_m": 1.8,
+    "inner_radius_m": 1.15,
+    "walkable": true
+  },
+  "crystal": {
+    "center_blender_z_m": 1.7999999523162842,
+    "height_m": 0.9,
+    "world_bounds_z_m": [
+      1.35,
+      2.25
+    ],
+    "broad_facets": 6,
+    "geometry_identical_off_on": true,
+    "off_material": "P04_Crystal_Off_DarkTeal",
+    "activated_material": "P04_Crystal_Activated_WarmAmber"
+  },
+  "materials": {
+    "count": 3,
+    "names": [
+      "P04_Crystal_Activated_WarmAmber",
+      "P04_Crystal_Off_DarkTeal",
+      "P04_SharedNonEmissiveBasalt"
+    ],
+    "emission_strengths": {
+      "P04_SharedNonEmissiveBasalt": 0.0,
+      "P04_Crystal_Activated_WarmAmber": 2.0,
+      "P04_Crystal_Off_DarkTeal": 0.0
+    }
+  },
+  "triangles_total_across_states": 376,
+  "glb_header": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_length": 10616,
+    "file_size": 10616,
+    "length_matches": true,
+    "json_chunk_type": "JSON"
+  },
+  "glb_material_emission": {
+    "off_crystal_emissive": false,
+    "active_crystal_emissive": true,
+    "stone_emissive": false,
+    "off_material_id": 2,
+    "active_material_id": 0
+  },
+  "glb_node_count": 12,
+  "game_camera_blender_location": [
+    0,
+    -20.57,
+    24.51
+  ],
+  "game_camera_pitch_down_degrees": 50,
+  "game_camera_vertical_fov_deg": 30,
+  "viewport": [
+    1280,
+    720
+  ],
+  "fox_scale_reference_height_m": 1.755,
+  "source_locators": [
+    {
+      "name": "P04_Source_BottomPivot",
+      "local_coordinates_m": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "P04_Source_FloatingCrystalCenter",
+      "local_coordinates_m": [
+        0.0,
+        0.0,
+        1.8
+      ]
+    },
+    {
+      "name": "P04_Source_ApproachZoneCenter",
+      "local_coordinates_m": [
+        0.0,
+        -2.55,
+        0.0
+      ]
+    }
+  ],
+  "concept": "output/wind_production/concepts/p04_concept_v1.png",
+  "advisory": "Use exactly three low arc segments as a 3.6 m diameter ring, 0.18 m high overall; leave the center open and keep seams narrow and flush. Float the separate 0.9 m crystal with its center at z=1.8 m, without the illustrated tall cradle; use 5\u20136 broad facets and no internal crack texture. Reuse identical off/on geometry and change only the crystal material to warm emission when active; all stone remains non-emissive.",
+  "self_check": {
+    "three_low_arc_modules_per_state": true,
+    "ring_outer_radius_1.8m_and_open_center": true,
+    "base_thickness_exactly_0.18m": true,
+    "crystal_center_exactly_z1.8m": true,
+    "crystal_height_exactly_0.9m": true,
+    "no_cradle_or_support_geometry": true,
+    "off_on_crystal_geometry_identical": true,
+    "off_on_ring_geometry_and_transforms_match": true,
+    "all_state_meshes_closed_no_boundary_or_loose_edges": true,
+    "only_crystal_is_emissive_when_activated": true,
+    "crystal_off_and_active_use_distinct_materials": true,
+    "both_named_states_in_glb": true,
+    "source_locators_excluded_from_glb": true,
+    "preview_fox_and_helpers_excluded_from_glb": true,
+    "glb_y_up_header_valid": true,
+    "both_states_under_5000_triangles": true,
+    "three_source_locators_retained": true,
+    "source_approach_clearance_is_1.5m": true,
+    "source_default_blender_scene_preserved": true,
+    "source_gdignore_exists_empty": true
+  },
+  "pipeline": "actual2D -> one Sol advisory -> direct MCP Blender 3D -> self-check/export/save; no approval gate"
+}
