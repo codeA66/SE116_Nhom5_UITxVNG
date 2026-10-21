@@ -15,7 +15,8 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export var coyote_time: float = 0.12
 @export var jump_buffer_time: float = 0.12
 @export var attack_buffer_time: float = 0.25
-@export var dash_buffer_time: float = 0.15
+## Không ngắn hơn cancel_start của đòn chém: bấm dash sớm trong đòn vẫn được giữ tới lúc hủy được
+@export var dash_buffer_time: float = 0.2
 @export var wind_blast_buffer_time: float = 0.15
 
 @export_group("Fall Recovery")

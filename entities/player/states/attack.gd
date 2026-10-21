@@ -10,21 +10,25 @@ var _weapon: WeaponData
 ## Khoảng bật hitbox của đòn hiện tại (giây thực), lấy từ marker animation nếu có
 var _active_start: float = 0.0
 var _active_end: float = 0.0
+## Mốc (giây trong đòn) bắt đầu bật lùi vì chém trúng; < 0 = đòn này chưa trúng
+var _recoil_start: float = -1.0
 
 
 func enter(_previous: StringName) -> void:
 	_combo_index = 0
+	player.hitbox.hit.connect(_on_hit)
 	_start_attack()
 
 
 func exit() -> void:
 	player.hitbox.deactivate()
+	player.hitbox.hit.disconnect(_on_hit)
 
 
 func physics_update(delta: float) -> void:
 	_elapsed += delta
 	player.apply_gravity(delta)
-	_apply_lunge(delta)
+	_apply_movement(delta)
 	_update_hitbox()
 
 	# Animation cancel: từ cancel_start được hủy phần thu đòn bằng dash
@@ -39,8 +43,13 @@ func physics_update(delta: float) -> void:
 		_start_attack()
 		return
 
-	if _elapsed >= _attack.duration:
-		var moving := not player.get_move_direction().is_zero_approx()
+	var moving := not player.get_move_direction().is_zero_approx()
+	# Giữ hướng đi (và không có lệnh chém đang chờ) thì bỏ phần thu đòn để chạy tiếp.
+	# Lệnh chém đang chờ thì giữ nhịp đòn như lúc đứng yên, để vừa đi vừa chém không ra đòn nhanh hơn.
+	# Không hủy trước khi hết active: đặt mốc quá sớm cũng không mất đòn
+	var move_cancel_at := maxf(_attack.move_cancel_start, _active_end)
+	var move_cancel := _attack.move_cancel_start >= 0.0 and _elapsed >= move_cancel_at and moving and not player.can_attack()
+	if move_cancel or _elapsed >= _attack.duration:
 		state_machine.transition_to(RUN if moving else IDLE)
 
 
@@ -53,6 +62,7 @@ func _start_attack() -> void:
 		player.hitbox.set_reach(_weapon.attack_range)
 	_elapsed = 0.0
 	_hitbox_used = false
+	_recoil_start = -1.0
 
 	var input_direction := player.get_move_direction()
 	var preferred := player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
@@ -74,15 +84,25 @@ func _resolve_active_window() -> void:
 		_active_end = end_mark / speed
 
 
-func _apply_lunge(delta: float) -> void:
-	if _elapsed < _attack.lunge_time:
-		player.velocity.x = _lunge_direction.x * _attack.lunge_speed
-		player.velocity.z = _lunge_direction.z * _attack.lunge_speed
+func _apply_movement(delta: float) -> void:
+	if _recoil_start >= 0.0:
+		var recoil_t := (_elapsed - _recoil_start) / maxf(_attack.self_recoil_time, 0.001)
+		_set_horizontal_velocity(-_lunge_direction * _attack.self_recoil_speed * maxf(1.0 - recoil_t, 0.0))
+	elif _elapsed < _attack.lunge_time:
+		_set_horizontal_velocity(_lunge_direction * _attack.lunge_speed)
 	elif _attack.lunge_stop:
-		player.velocity.x = 0.0
-		player.velocity.z = 0.0
+		# Phanh đều về 0 thay vì đứng khựng ngay: dừng gọn mà không bị giật
+		var brake := 0.0
+		if _attack.lunge_brake_time > 0.0:
+			brake = clampf(1.0 - (_elapsed - _attack.lunge_time) / _attack.lunge_brake_time, 0.0, 1.0)
+		_set_horizontal_velocity(_lunge_direction * _attack.lunge_speed * brake)
 	else:
 		player.move_toward_direction(Vector3.ZERO, delta)
+
+
+func _set_horizontal_velocity(horizontal: Vector3) -> void:
+	player.velocity.x = horizontal.x
+	player.velocity.z = horizontal.z
 
 
 func _update_hitbox() -> void:
@@ -98,3 +118,9 @@ func _update_hitbox() -> void:
 		_hitbox_used = true
 	elif not in_window and player.hitbox.is_active():
 		player.hitbox.deactivate()
+
+
+func _on_hit(_target: HurtboxComponent) -> void:
+	# Trúng nhiều mục tiêu trong một nhát chỉ bật lùi một lần
+	if _attack.self_recoil_speed > 0.0 and _recoil_start < 0.0:
+		_recoil_start = _elapsed

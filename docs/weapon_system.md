@@ -21,7 +21,7 @@ Cung hiện bắn thẳng, tên vô hạn; chưa có tích lực khi giữ nút,
 
 ## Node được thêm / đổi
 
-Trong `entities/player/player.tscn` (đồng thời cập nhật scene demo `generated/fox_player.tscn`):
+Trong `entities/player/player.tscn` (đồng thời cập nhật scene demo `tests/fox/fox_player.tscn`):
 
 ```text
 Player
@@ -78,9 +78,9 @@ Tên quét ray trên toàn bộ đoạn di chuyển mỗi physics frame, gồm c
 | Màu sáng ô chọn | `SwordSlot` / `BowSlot > Accent Color` | Xanh `#7be9ff` |
 | Hình biểu tượng | `ui/hud/icons/sword.svg`, `bow.svg` | SVG có thể sửa/thay độc lập |
 | Hình dáng, màu cung | `assets/weapons/bow_visual.gd` | Mảng `points`, bán kính và material của thân/dây |
-| Tư thế tay | `generated/fox_bow_animations.gd > _arm_pose()` | Hướng xương cánh tay/cẳng tay và bàn tay |
+| Tư thế tay | `entities/player/fox_bow_animations.gd > _arm_pose()` | Hướng xương cánh tay/cẳng tay và bàn tay |
 
-Giữ `0 < active_start < duration`, `anim_speed > 0`. Cung dùng `active_start` để phóng đúng một tên; `active_end` dành cho cửa sổ hitbox cận chiến. Các animation `Idle_Bow`, `Run_Bow`, `Bow_Shoot` được dựng từ clip gốc khi chạy, dùng thời gian trong `bow_shot.tres`; chỉnh resource rồi chạy lại để xem. Dây cung có động tác kéo/thả riêng trong `generated/fox_player.gd`.
+Giữ `0 < active_start < duration`, `anim_speed > 0`. Cung dùng `active_start` để phóng đúng một tên; `active_end` dành cho cửa sổ hitbox cận chiến. Các animation `Idle_Bow`, `Run_Bow`, `Bow_Shoot` được dựng từ clip gốc khi chạy, dùng thời gian trong `bow_shot.tres`; chỉnh resource rồi chạy lại để xem. Dây cung có động tác kéo/thả riêng trong `entities/player/fox_player.gd`.
 
 ## Luồng code và lưu tiến trình
 
@@ -91,7 +91,7 @@ Giữ `0 < active_start < duration`, `anim_speed > 0`. Cung dùng `active_start`
 - `StateMachine/Attack`: dùng chung cho kiếm và cung. Với kiếm bật hitbox như cũ; với cung phóng tên ở `active_start`, không bật hitbox kiếm. Chụp dữ liệu vũ khí khi bắt đầu đòn để việc đổi vũ khí không thay đổi đòn đang diễn ra.
 - Save JSON lên **version 3**, thêm `weapons`, giữ `weapon` và các cờ pickup. Save v1/v2 có kiếm sẽ tự chuyển sang danh sách sở hữu. Chuyển scene/tải save giữ cả hai vũ khí và ô đang chọn.
 
-`generated/fox_demo.tscn` có tùy chọn `preview_sword` dành riêng cho xem animation kiếm; dùng player/màn chính hoặc `tests/test_movement.tscn` để thử hệ thống đổi vũ khí thực tế.
+`tests/fox/fox_demo.tscn` có tùy chọn `preview_sword` dành riêng cho xem animation kiếm; dùng player/màn chính hoặc `tests/test_movement.tscn` để thử hệ thống đổi vũ khí thực tế.
 
 ## Kiểm tra tự động
 

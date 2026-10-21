@@ -9,6 +9,8 @@ const ID := &"dash"
 @export var duration: float = 0.18
 ## Phần vận tốc giữ lại khi kết thúc dash
 @export_range(0.0, 1.0) var end_momentum: float = 0.3
+## Kết thúc dash mà đang giữ hướng đi thì không chậm hơn tốc độ chạy (tránh tụt tốc rồi tăng lại)
+@export var keep_run_speed: bool = true
 
 @export_group("Limits")
 ## Tính từ lúc kết thúc dash

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://ogqrogwu58gt"]
 
 [ext_resource type="PackedScene" path="res://entities/_base/character.tscn" id="1_base"]
-[ext_resource type="Script" path="res://generated/fox_player.gd" id="1_sglur"]
-[ext_resource type="PackedScene" path="res://generated/models/fox_spirit.glb" id="1_symyc"]
+[ext_resource type="Script" path="res://entities/player/fox_player.gd" id="1_sglur"]
+[ext_resource type="PackedScene" path="res://assets/characters/fox/fox_spirit.glb" id="1_symyc"]
 [ext_resource type="Resource" path="res://resources/player_movement.tres" id="2_move"]
 [ext_resource type="Script" uid="uid://cthmkxcqaca82" path="res://entities/player/camera_rig.gd" id="6_camrig"]
 [ext_resource type="Script" uid="uid://dkyk8ucntxdga" path="res://entities/player/states/idle.gd" id="7_idle"]
@@ -28,6 +28,7 @@
 [ext_resource type="PackedScene" path="res://ui/hud/hurt_vignette.tscn" id="33_vignette"]
 [ext_resource type="Resource" path="res://resources/attacks/sword_slash_3.tres" id="34_slash3"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_blast_cone.tscn" id="35_windcone"]
+[ext_resource type="PackedScene" path="res://components/movement_dust/movement_dust.tscn" id="36_dust"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -156,3 +157,7 @@ star_size = 0.55
 
 [node name="HurtVignette" parent="HUD" node_paths=PackedStringArray("hurtbox") instance=ExtResource("33_vignette")]
 hurtbox = NodePath("../../HurtboxComponent")
+
+[node name="MovementDust" parent="." node_paths=PackedStringArray("body", "state_machine") instance=ExtResource("36_dust")]
+body = NodePath("..")
+state_machine = NodePath("../StateMachine")
