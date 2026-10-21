@@ -64,9 +64,12 @@ func _start_attack() -> void:
 	_hitbox_used = false
 	_recoil_start = -1.0
 
-	var input_direction := player.get_move_direction()
-	var preferred := player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
-	_lunge_direction = player.find_attack_direction(preferred)
+	# Chém theo con trỏ chuột giống Wind Blast; không có chuột (tay cầm, headless) thì theo phím + soft-lock
+	_lunge_direction = player.get_mouse_aim_direction()
+	if _lunge_direction.is_zero_approx():
+		var input_direction := player.get_move_direction()
+		var preferred := player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
+		_lunge_direction = player.find_attack_direction(preferred)
 	player.face_instantly(_lunge_direction)
 	player.play_action(_attack.animation, _attack.anim_speed, _attack.blend_in)
 	_resolve_active_window()
