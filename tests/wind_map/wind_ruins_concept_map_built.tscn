@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://tests/wind_map/wind_ruins_concept_map.gd" id="1_f3n7n"]
 [ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2_dwgkq"]
-[ext_resource type="Script" path="res://entities/player/fox_player.gd" id="3_8vr5s"]
 [ext_resource type="Resource" path="res://resources/player_movement.tres" id="4_v8lf1"]
 [ext_resource type="Shader" path="res://assets/shaders/cloud_sea_prototype.gdshader" id="5_wju0l"]
 [ext_resource type="Shader" path="res://assets/shaders/cloud_puff.gdshader" id="6_qxsa4"]
@@ -13199,7 +13198,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.1, 35)
 collision_layer = 2
 collision_mask = 261
 floor_snap_length = 0.3
-script = ExtResource("3_8vr5s")
 movement = ExtResource("4_v8lf1")
 
 [node name="OverviewCamera" type="Camera3D" parent="." unique_id=1558364471]

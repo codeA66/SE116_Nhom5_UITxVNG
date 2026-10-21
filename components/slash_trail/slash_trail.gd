@@ -6,7 +6,7 @@ extends Node3D
 ## Có lớp phụ mờ chậm hơn tạo chiều sâu, ngôi sao lóe nhỏ ở mũi và vài mảnh đen bắn ra.
 ## Đòn cuối combo (finisher_attack) to hơn, sao to hơn. Mesh cung dựng một lần ở _ready.
 ## _process chỉ chạy lúc đang quét; hướng cung (+Z) lấy theo node follow (thường là Model).
-## Không đặt dưới Model của player: fox_player.gd ghi đè material_override của mọi mesh dưới Model.
+## Không đặt dưới Model của player: foxy_player.gd ghi đè material của mọi mesh dưới Model.
 
 @export var hitbox: HitboxComponent
 ## Node cho biết hướng nhìn; vệt xoay theo node này lúc quét. Để trống = giữ hướng của chính SlashTrail

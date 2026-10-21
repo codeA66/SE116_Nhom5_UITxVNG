@@ -2,7 +2,7 @@ class_name WindBlastCone
 extends Node3D
 ## Hình ảnh cú thổi gió (Wind Blast): một cơn lốc xoáy hình phễu hình thành ở tay player lúc gồng,
 ## rồi lao về phía trước tới hết tầm thổi (WindBlastData.reach) và tan ra. Chỉ nghe signal của WindBlastArea,
-## không chứa logic đẩy. Đặt dưới gốc Player (không dưới Model: fox_player.gd ghi đè material mọi mesh dưới Model).
+## không chứa logic đẩy. Đặt dưới gốc Player (không dưới Model: foxy_player.gd ghi đè material mọi mesh dưới Model).
 ## Lốc tự xoay trên GPU (shader); script chỉ chạy _process trong lúc hiệu ứng đang diễn ra.
 
 signal charge_finished

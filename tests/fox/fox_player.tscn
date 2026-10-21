@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://entities/player/fox_player.gd" id="1_sglur"]
-[ext_resource type="PackedScene" path="res://assets/characters/fox/fox_spirit.glb" id="1_symyc"]
+[ext_resource type="Script" path="res://entities/player/foxy/foxy_player.gd" id="1_sglur"]
+[ext_resource type="PackedScene" path="res://assets/characters/foxy/foxy.glb" id="1_symyc"]
 [ext_resource type="Resource" path="res://resources/player_movement.tres" id="2_move"]
 [ext_resource type="Script" path="res://components/state_machine/state_machine.gd" id="3_bls4j"]
 [ext_resource type="Script" path="res://entities/player/camera_rig.gd" id="6_camrig"]
@@ -73,9 +73,9 @@ shape = SubResource("BoxShape3D_hitbox")
 position = Vector3(-0.06, 1.02, 0.55)
 
 [node name="WeaponSocket" type="BoneAttachment3D" parent="."]
-bone_name = "Hand_L"
+bone_name = "hand.L"
 use_external_skeleton = true
-external_skeleton = NodePath("../Model/FoxRig/Skeleton3D")
+external_skeleton = NodePath("../Model/Foxy_Rig/Skeleton3D")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../Model")
