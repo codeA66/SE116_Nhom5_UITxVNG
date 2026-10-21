@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="AnimationMarkerSet" format=3]
+
+[ext_resource type="Script" uid="uid://cbavvdqmdjnmd" path="res://entities/_base/animation_marker_set.gd" id="1_set"]
+[ext_resource type="Script" uid="uid://5jtw0uce1p3n" path="res://entities/_base/animation_marker.gd" id="2_marker"]
+
+[sub_resource type="Resource" id="Marker_a1_start"]
+script = ExtResource("2_marker")
+clip = &"Attack_1"
+marker = &"hit_start"
+time = 0.05
+
+[sub_resource type="Resource" id="Marker_a1_end"]
+script = ExtResource("2_marker")
+clip = &"Attack_1"
+marker = &"hit_end"
+time = 0.133
+
+[sub_resource type="Resource" id="Marker_a2_start"]
+script = ExtResource("2_marker")
+clip = &"Attack_2"
+marker = &"hit_start"
+time = 0.05
+
+[sub_resource type="Resource" id="Marker_a2_end"]
+script = ExtResource("2_marker")
+clip = &"Attack_2"
+marker = &"hit_end"
+time = 0.133
+
+[sub_resource type="Resource" id="Marker_a3_start"]
+script = ExtResource("2_marker")
+clip = &"Attack_3"
+marker = &"hit_start"
+time = 0.05
+
+[sub_resource type="Resource" id="Marker_a3_end"]
+script = ExtResource("2_marker")
+clip = &"Attack_3"
+marker = &"hit_end"
+time = 0.133
+
+[resource]
+script = ExtResource("1_set")
+markers = Array[ExtResource("2_marker")]([SubResource("Marker_a1_start"), SubResource("Marker_a1_end"), SubResource("Marker_a2_start"), SubResource("Marker_a2_end"), SubResource("Marker_a3_start"), SubResource("Marker_a3_end")])

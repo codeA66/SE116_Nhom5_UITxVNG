@@ -40,14 +40,15 @@ func _run() -> void:
     var animation := player.get_node("AnimationPlayer") as AnimationPlayer
     var skeleton := player.model.find_child("Skeleton3D", true, false) as Skeleton3D
     var sword := player.model.find_child("Sword", true, false) as MeshInstance3D
-    _check(skeleton != null and skeleton.get_bone_count() == 22, "22-bone imported rig with separate sword grip")
-    _check(sword != null and sword.visible, "generated sword visible without changing save")
-    var material := sword.get_active_material(0) as BaseMaterial3D
-    _check(material.texture_filter == BaseMaterial3D.TEXTURE_FILTER_NEAREST, "palette sampling without mipmap color bleed")
-    _check(material.albedo_texture.get_size() == Vector2(128, 32), "padded palette survives Godot import")
-    _check(animation.get_animation_list().size() == 15, "12 original clips and 3 bow clips installed")
-    for bow_clip: StringName in [&"fox/Idle_Bow", &"fox/Run_Bow", &"fox/Bow_Shoot"]:
+    var foxy := player as FoxyPlayer
+    _check(foxy != null, "player uses FoxyPlayer")
+    _check(skeleton != null and skeleton.find_bone(foxy.bow_hand_bone) >= 0, "Foxy rig has bow hand bone")
+    _check(sword != null and sword.visible, "preview sword visible without changing save")
+    for bow_clip: StringName in [&"foxy/Idle_Bow", &"foxy/Run_Bow", &"foxy/Bow_Shoot"]:
         _check(animation.has_animation(bow_clip), "bow clip " + String(bow_clip))
+    for entry: AnimationMarker in foxy.animation_markers.markers:
+        var marked := StringName("foxy/" + String(entry.clip))
+        _check(animation.has_animation(marked) and animation.get_animation(marked).has_marker(entry.marker), "marker %s on %s" % [entry.marker, entry.clip])
     player.set_physics_process(false)
     for clip: StringName in animation.get_animation_list():
         animation.play(clip)
@@ -65,16 +66,6 @@ func _run() -> void:
             if first_positions[bone].distance_to(skeleton.get_bone_pose_position(bone)) > 0.0001:
                 changed = true
         _check(changed, "bone motion " + String(clip))
-        # Tay kéo dây cung cần gập khuỷu; ràng buộc tay thẳng chỉ áp dụng clip cũ.
-        if String(clip).contains("Bow"):
-            continue
-        for side in ["R", "L"]:
-            var shoulder := skeleton.get_bone_global_pose(skeleton.find_bone("UpperArm_" + side)).origin
-            var elbow := skeleton.get_bone_global_pose(skeleton.find_bone("Forearm_" + side)).origin
-            var wrist := skeleton.get_bone_global_pose(skeleton.find_bone("Hand_" + side)).origin
-            var upper_direction := (elbow - shoulder).normalized()
-            var lower_direction := (wrist - elbow).normalized()
-            _check(upper_direction.dot(lower_direction) > 0.999, "straight arm " + side + " " + String(clip))
     player.set_physics_process(true)
     player.state_machine.transition_to(PlayerState.IDLE)
     await _frames(3)
@@ -102,7 +93,7 @@ func _run() -> void:
     var before := health.current_health
     Input.action_press("attack")
     await _frames(2)
-    _check(animation.current_animation == &"fox/Attack_Horizontal", "FSM plays horizontal slash")
+    _check(animation.current_animation == &"foxy/Attack_1", "FSM plays first slash")
     Input.action_release("attack")
     # Chờ hết 0.6 s của đòn đánh, cộng phần thời gian bị hitstop làm chậm.
     await _frames(55)

@@ -46,9 +46,9 @@ func _capture() -> void:
     var specs := {&"Idle_Sword": 36, &"Run_Sword": 24}
     for clip: StringName in specs:
         var count: int = specs[clip]
-        animation.play(StringName("fox/" + clip))
+        animation.play(StringName("foxy/" + clip))
         animation.speed_scale = 0.0
-        var duration := animation.get_animation(StringName("fox/" + clip)).length
+        var duration := animation.get_animation(StringName("foxy/" + clip)).length
         for frame in count:
             animation.seek(duration * frame / count, true)
             await get_tree().process_frame

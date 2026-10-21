@@ -78,9 +78,9 @@ Tên quét ray trên toàn bộ đoạn di chuyển mỗi physics frame, gồm c
 | Màu sáng ô chọn | `SwordSlot` / `BowSlot > Accent Color` | Xanh `#7be9ff` |
 | Hình biểu tượng | `ui/hud/icons/sword.svg`, `bow.svg` | SVG có thể sửa/thay độc lập |
 | Hình dáng, màu cung | `assets/weapons/bow_visual.gd` | Mảng `points`, bán kính và material của thân/dây |
-| Tư thế tay | `entities/player/fox_bow_animations.gd > _arm_pose()` | Hướng xương cánh tay/cẳng tay và bàn tay |
+| Tư thế tay | `entities/player/foxy/foxy_bow_animations.gd > _arm_pose()` | Hướng xương cánh tay/cẳng tay và bàn tay |
 
-Giữ `0 < active_start < duration`, `anim_speed > 0`. Cung dùng `active_start` để phóng đúng một tên; `active_end` dành cho cửa sổ hitbox cận chiến. Các animation `Idle_Bow`, `Run_Bow`, `Bow_Shoot` được dựng từ clip gốc khi chạy, dùng thời gian trong `bow_shot.tres`; chỉnh resource rồi chạy lại để xem. Dây cung có động tác kéo/thả riêng trong `entities/player/fox_player.gd`.
+Giữ `0 < active_start < duration`, `anim_speed > 0`. Cung dùng `active_start` để phóng đúng một tên; `active_end` dành cho cửa sổ hitbox cận chiến. Các animation `Idle_Bow`, `Run_Bow`, `Bow_Shoot` được dựng từ clip gốc khi chạy, dùng thời gian trong `bow_shot.tres`; chỉnh resource rồi chạy lại để xem. Dây cung có động tác kéo/thả riêng trong `entities/player/foxy/foxy_player.gd`.
 
 ## Luồng code và lưu tiến trình
 

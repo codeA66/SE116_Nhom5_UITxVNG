@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://ogqrogwu58gt"]
 
 [ext_resource type="PackedScene" path="res://entities/_base/character.tscn" id="1_base"]
-[ext_resource type="Script" path="res://entities/player/fox_player.gd" id="1_sglur"]
-[ext_resource type="PackedScene" path="res://assets/characters/fox/fox_spirit.glb" id="1_symyc"]
+[ext_resource type="Script" path="res://entities/player/foxy/foxy_player.gd" id="1_sglur"]
+[ext_resource type="PackedScene" path="res://assets/characters/foxy/foxy.glb" id="1_symyc"]
 [ext_resource type="Resource" path="res://resources/player_movement.tres" id="2_move"]
 [ext_resource type="Script" uid="uid://cthmkxcqaca82" path="res://entities/player/camera_rig.gd" id="6_camrig"]
 [ext_resource type="Script" uid="uid://dkyk8ucntxdga" path="res://entities/player/states/idle.gd" id="7_idle"]
@@ -43,7 +43,7 @@ collision_mask = 261
 script = ExtResource("1_sglur")
 movement = ExtResource("2_move")
 
-[node name="FoxSpirit" parent="Model/Visual" instance=ExtResource("1_symyc")]
+[node name="Foxy" parent="Model/Visual" instance=ExtResource("1_symyc")]
 
 [node name="Hitbox" type="Area3D" parent="Model"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.9)
@@ -63,9 +63,9 @@ area = NodePath("../Model/WindBlastArea")
 position = Vector3(-0.06, 1.02, 0.55)
 
 [node name="WeaponSocket" type="BoneAttachment3D" parent="."]
-bone_name = "Hand_L"
+bone_name = "hand.L"
 use_external_skeleton = true
-external_skeleton = NodePath("../Model/Visual/FoxSpirit/FoxRig/Skeleton3D")
+external_skeleton = NodePath("../Model/Visual/Foxy/Foxy_Rig/Skeleton3D")
 
 [node name="HealthComponent" parent="."]
 max_health = 5

@@ -178,7 +178,7 @@ Giải thích:
 | | **A. Rig + animation trong Blender** | **B. Khối rời + clip dựng trong Godot (ĐÃ CHỌN, D1)** |
 |---|---|---|
 | Cấu trúc model | 1 mesh liền + Armature ~20 xương, weight paint; clip là Action Blender, xuất trong .glb | Mỗi bộ phận là object riêng, gốc (origin) đặt ở khớp, lồng nhau theo cây; **không** armature, **không** animation trong .glb |
-| Đưa vào Godot | Copy clip từ AnimationPlayer của .glb sang AnimationPlayer gốc (như `entities/player/fox_player.gd::_install_animations`, cần tách thành component dùng chung) hoặc "Save to file" từng clip | Tạo `enemy_1_animations.tres` (AnimationLibrary) gán vào AnimationPlayer gốc; track trỏ `Visual/Enemy1Model/<Bộ phận>:rotation` (root_node `../Model` có sẵn) |
+| Đưa vào Godot | Copy clip từ AnimationPlayer của .glb sang AnimationPlayer gốc (như `entities/player/foxy/foxy_player.gd::_install_animations`, cần tách thành component dùng chung) hoặc "Save to file" từng clip | Tạo `enemy_1_animations.tres` (AnimationLibrary) gán vào AnimationPlayer gốc; track trỏ `Visual/Enemy1Model/<Bộ phận>:rotation` (root_node `../Model` có sẵn) |
 | Ưu | Biến dạng mềm, chuyển động tự nhiên | Không lỗi weight; khớp thời gian tuyệt đối với `.tres`; ai trong nhóm cũng sửa được trong Godot; hợp phong cách khối phẳng |
 | Nhược | AI rig/weight dễ lỗi; đổi windup_time phải sửa clip trong Blender rồi xuất lại; phải viết thêm bước cài clip | Khớp nối lộ (che bằng khối chồng nhau); chuyển động cứng hơn nếu key ít |
 
