@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="AnimationMarkerSet" format=3 uid="uid://ikd0ap4yos1k"]
+
+[ext_resource type="Script" uid="uid://cbavvdqmdjnmd" path="res://entities/_base/animation_marker_set.gd" id="1_set"]
+[ext_resource type="Script" uid="uid://5jtw0uce1p3n" path="res://entities/_base/animation_marker.gd" id="2_marker"]
+
+[sub_resource type="Resource" id="Marker_hit_start"]
+script = ExtResource("2_marker")
+clip = &"Attack_Horizontal"
+marker = &"hit_start"
+time = 0.22
+
+[sub_resource type="Resource" id="Marker_hit_end"]
+script = ExtResource("2_marker")
+clip = &"Attack_Horizontal"
+marker = &"hit_end"
+time = 0.38
+
+[sub_resource type="Resource" id="Marker_backhand_start"]
+script = ExtResource("2_marker")
+clip = &"Attack_Backhand"
+marker = &"hit_start"
+time = 0.14
+
+[sub_resource type="Resource" id="Marker_backhand_end"]
+script = ExtResource("2_marker")
+clip = &"Attack_Backhand"
+marker = &"hit_end"
+time = 0.25
+
+[sub_resource type="Resource" id="Marker_finisher_start"]
+script = ExtResource("2_marker")
+clip = &"Attack_Finisher"
+marker = &"hit_start"
+time = 0.36
+
+[sub_resource type="Resource" id="Marker_finisher_end"]
+script = ExtResource("2_marker")
+clip = &"Attack_Finisher"
+marker = &"hit_end"
+time = 0.48
+
+[resource]
+script = ExtResource("1_set")
+markers = Array[ExtResource("2_marker")]([SubResource("Marker_hit_start"), SubResource("Marker_hit_end"), SubResource("Marker_backhand_start"), SubResource("Marker_backhand_end"), SubResource("Marker_finisher_start"), SubResource("Marker_finisher_end")])
