@@ -30,6 +30,8 @@ extends Resource
 @export var combo_window_start: float = 0.3
 ## Từ mốc này có thể hủy đòn bằng dash (dùng khi có Dash)
 @export var cancel_start: float = 0.3
+## Từ mốc này, đang giữ hướng đi thì bỏ phần thu đòn để chạy tiếp ngay. < 0 = tắt (chờ hết duration)
+@export var move_cancel_start: float = -1.0
 ## Tổng thời gian đòn, hết thì trở về Idle/Run
 @export var duration: float = 0.5
 
@@ -37,5 +39,14 @@ extends Resource
 ## Lao nhẹ về trước khi ra đòn
 @export var lunge_speed: float = 4.0
 @export var lunge_time: float = 0.12
-## Hết lunge_time thì đứng khựng lại ngay (không trượt theo quán tính): cú lướt ngắn và gọn
+## Hết lunge_time thì không trượt theo quán tính mà dừng hẳn (sau lunge_brake_time): cú lướt gọn
 @export var lunge_stop: bool = false
+## Có lunge_stop: phanh đều từ lunge_speed về 0 trong bấy nhiêu giây thay vì đứng khựng ngay. 0 = dừng ngay
+@export var lunge_brake_time: float = 0.0
+## Chém trúng thì người đánh bật lùi nhẹ (m/s, giảm đều về 0 trong self_recoil_time). 0 = không bật lùi
+@export var self_recoil_speed: float = 0.0
+@export var self_recoil_time: float = 0.1
+
+@export_group("Slash Trail")
+## Chiều quét vệt chém cho khớp hướng vung của animation: 1 / -1 cố định. 0 = đổi chiều luân phiên mỗi nhát
+@export_range(-1, 1, 1) var slash_trail_direction: int = 0

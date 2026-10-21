@@ -29,7 +29,7 @@ func physics_update(delta: float) -> void:
 		_apply_dash_velocity(1.0)
 		return
 
-	_apply_dash_velocity(_dash.end_momentum)
+	_apply_exit_velocity()
 	if not player.is_on_floor():
 		state_machine.transition_to(FALL)
 	elif player.get_move_direction().is_zero_approx():
@@ -40,3 +40,11 @@ func physics_update(delta: float) -> void:
 
 func _apply_dash_velocity(factor: float) -> void:
 	player.velocity = _direction * _dash.speed * factor
+
+
+func _apply_exit_velocity() -> void:
+	var exit_speed := _dash.speed * _dash.end_momentum
+	var move := player.get_move_direction()
+	if _dash.keep_run_speed and not move.is_zero_approx():
+		exit_speed = maxf(exit_speed, player.movement.max_speed * minf(move.length(), 1.0))
+	player.velocity = _direction * exit_speed
