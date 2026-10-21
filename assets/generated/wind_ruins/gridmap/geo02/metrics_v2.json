@@ -1,0 +1,143 @@
+{
+  "asset_id": "GEO02",
+  "revision": "v2",
+  "name": "Medium cloud-sea island terrain",
+  "units": "metres",
+  "coordinate_convention": "GLB Y-up vertex bounds are Godot XYZ: Blender X maps to Godot X, Blender Z maps to Godot Y, and Blender Y maps to Godot -Z.",
+  "dimensions_blender_xyz_m": [
+    12.0,
+    12.0,
+    18.0
+  ],
+  "dimensions_godot_xyz_m": [
+    12.0,
+    18.0,
+    12.0
+  ],
+  "bounds_blender_local_xyz_m": {
+    "min": [
+      -5.86647,
+      -6.09616,
+      -15.01465
+    ],
+    "max": [
+      6.13353,
+      5.90384,
+      2.98535
+    ]
+  },
+  "bounds_glb_godot_xyz_m": {
+    "min": [
+      -5.86647,
+      -15.01465,
+      -5.90384
+    ],
+    "max": [
+      6.13353,
+      2.98535,
+      6.09616
+    ]
+  },
+  "pivot": {
+    "origin_godot_xyz_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "walk_surface_godot_y_m": 0.0
+  },
+  "walkable_surface": {
+    "centered_court_plane_godot_y_m": 0.0,
+    "clear_route_width_m": 4.5,
+    "route_and_foundation_are_source_only_locators": true,
+    "future_foundation_pad_m": [
+      7.0,
+      6.0
+    ]
+  },
+  "outcrops": {
+    "location": "far side of court",
+    "count": 2,
+    "revision_note": "Shortened to about half the prior height, widened into offset faceted terrain masses, and kept clear of the central court route.",
+    "highest_godot_y_m": 2.98535
+  },
+  "terrain_only": true,
+  "baked_architecture_or_landmark": false,
+  "grass_moss_or_noisy_seams": false,
+  "mesh": {
+    "vertices": 285,
+    "polygons": 484,
+    "triangles": 546,
+    "nonmanifold_edges": 0,
+    "boundary_edges": 0,
+    "loose_vertices": 0,
+    "materials": [
+      "GEO02_v2 | pale windworn slate",
+      "GEO02_v2 | blue slate",
+      "GEO02_v2 | shadow slate"
+    ]
+  },
+  "export_validation": {
+    "format": "GLB",
+    "magic": "glTF",
+    "version": 2,
+    "declared_length_matches_file": true,
+    "active_scene_node_count": 1,
+    "mesh_count": 1,
+    "material_count": 3,
+    "selected_terrain_only": true,
+    "fox_camera_lights_or_cube_exported": false,
+    "glb_vertex_bounds_checked_after_y_up_export": true
+  },
+  "concept_review": {
+    "result": "PASS",
+    "reviewer": "Sol expansion reviewer",
+    "review_file": "output/wind_production/expansion/reviews/geo02_2d.md",
+    "concept": "assets/generated/wind_ruins/gridmap/geo02/concept.png"
+  },
+  "model_review": {
+    "reviewer": "Sol expansion reviewer",
+    "feedback_applied": "Lowered the two far-side outcrops to about half height and broadened them into offset broken stone masses; court, route, palette, and body were accepted.",
+    "final_preview_recheck": "not recorded"
+  },
+  "preview": {
+    "path": "assets/generated/wind_ruins/gridmap/geo02/preview_v2.png",
+    "resolution": [
+      900,
+      700
+    ],
+    "render_samples": 8,
+    "lighting": "Neutral copied world background (0.65 RGB, strength 0.8), direct scene-collection studio lights, SUN 3 with shadows disabled."
+  },
+  "game_camera_reference": {
+    "fox_height_m": 1.755,
+    "vertical_fov_degrees": 30.0,
+    "camera_pitch_degrees": 50.0,
+    "godot_offset_m": [
+      0.0,
+      24.51,
+      20.57
+    ],
+    "preview_only": true,
+    "fox_in_glb": false
+  },
+  "files": {
+    "glb": {
+      "path": "assets/generated/wind_ruins/gridmap/geo02/geo02_medium_cloud_sea_island_v2.glb",
+      "bytes": 42368,
+      "sha256": "017135411B5EDD189355451841417693019B29A03B1EB2015B67DB00EFB14922"
+    },
+    "preview": {
+      "path": "assets/generated/wind_ruins/gridmap/geo02/preview_v2.png",
+      "bytes": 451032,
+      "sha256": "0C35C7B6581935E8DA52E04F3A353FBE1F21DA47604C2049541D144B09E1BC54"
+    },
+    "source_blend_external": {
+      "path": "C:/Code/UITxVNG/blend_backup/geo02_medium_cloud_sea_island_v2.blend",
+      "bytes": 1114503,
+      "sha256": "EC9E950BF2468EE814B37812821DE97B70C6DA447B141ACFADEDDBC55256F986"
+    }
+  },
+  "godot_validation": "Not performed; Godot import and runtime behavior remain unverified.",
+  "godot_scene_wrapper": "assets/generated/wind_ruins/gridmap/geo02/geo02_medium_cloud_sea_island_v2.tscn"
+}

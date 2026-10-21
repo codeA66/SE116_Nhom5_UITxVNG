@@ -6,8 +6,8 @@ var _templates: Dictionary = {}
 
 
 func _init() -> void:
-	for directory: String in DirAccess.get_directories_at("res://assets/generated/wind_ruins"):
-		var folder: String = "res://assets/generated/wind_ruins/" + directory
+	for directory: String in DirAccess.get_directories_at("res://assets/generated/wind_ruins/gridmap"):
+		var folder: String = "res://assets/generated/wind_ruins/gridmap/" + directory
 		for file: String in DirAccess.get_files_at(folder):
 			if file.get_extension().to_lower() == "glb":
 				paths[directory.to_upper()] = folder.path_join(file)
