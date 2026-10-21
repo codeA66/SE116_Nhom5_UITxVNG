@@ -1,0 +1,126 @@
+{
+  "id": "T01",
+  "glb": "assets/generated/wind_ruins/gridmap/t01/t01_straight_cliff_wall.glb",
+  "states": {
+    "T01_Intact_Cliff": {
+      "pivot": "bottom center at origin",
+      "bounds_blender_min_m": [
+        -2.0,
+        -1.5,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        2.0,
+        1.5,
+        6.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        3.0,
+        6.0
+      ],
+      "dimensions_godot_xyz_m": [
+        4.0,
+        6.0,
+        3.0
+      ],
+      "mesh": "T01_Intact_Stone",
+      "triangles": 140,
+      "non_manifold_edges": 0,
+      "loose_vertices": 0
+    },
+    "T01_Missing_Corner": {
+      "pivot": "bottom center at origin",
+      "bounds_blender_min_m": [
+        -2.0,
+        -1.5,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        2.0,
+        1.5,
+        6.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        3.0,
+        6.0
+      ],
+      "dimensions_godot_xyz_m": [
+        4.0,
+        6.0,
+        3.0
+      ],
+      "mesh": "T01_Missing_Stone",
+      "triangles": 140,
+      "non_manifold_edges": 0,
+      "loose_vertices": 0
+    },
+    "T01_Diagonal_Crack": {
+      "pivot": "bottom center at origin",
+      "bounds_blender_min_m": [
+        -2.0,
+        -1.5,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        2.0,
+        1.5,
+        6.0
+      ],
+      "dimensions_blender_xyz_m": [
+        4.0,
+        3.0,
+        6.0
+      ],
+      "dimensions_godot_xyz_m": [
+        4.0,
+        6.0,
+        3.0
+      ],
+      "mesh": "T01_Cracked_Stone",
+      "triangles": 194,
+      "non_manifold_edges": 0,
+      "loose_vertices": 0
+    }
+  },
+  "nominal_dimensions_blender_xyz_m": [
+    4,
+    3,
+    6
+  ],
+  "connector_width_m": 4,
+  "top_to_base_ratio": 0.9,
+  "flat_top": true,
+  "triangles_total_across_variants": 474,
+  "maximum_triangles_per_variant": 194,
+  "materials": 1,
+  "glb_header": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_length": 30404,
+    "file_size": 30404,
+    "length_matches": true
+  },
+  "game_camera_blender_location": [
+    0,
+    -20.57,
+    24.51
+  ],
+  "game_camera_vertical_fov_deg": 30,
+  "viewport": [
+    1280,
+    720
+  ],
+  "fox_scale_reference_height_m": 1.755,
+  "concept": "output/wind_production/concepts/t01_concept_v1.png",
+  "advisory": "5 broad planes; 10% base flare; one recessed diagonal groove; fixed 4 m connector edges across states.",
+  "self_check": {
+    "all_variants_match_4x3x6_envelope": true,
+    "all_variants_manifold": true,
+    "all_variants_under_5000_triangles": true,
+    "single_shared_stone_material": true,
+    "glb_valid_header": true
+  },
+  "pipeline": "actual2D -> one Sol advisory -> direct MCP Blender 3D -> self-check/export; no approval gate"
+}

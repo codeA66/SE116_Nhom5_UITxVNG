@@ -1,0 +1,249 @@
+{
+  "id": "D05",
+  "asset": "d05_wind_relief_slab",
+  "glb": "assets/generated/wind_ruins/gridmap/d05/d05_wind_relief_slab.glb",
+  "dimensions_blender_xyz_m": {
+    "D05_StoneRelief_Intact": [
+      2.4000000953674316,
+      0.3499999940395355,
+      2.799999952316284
+    ],
+    "D05_StoneRelief_MissingLowerLeftCorner": [
+      2.4000000953674316,
+      0.3499999940395355,
+      2.799999952316284
+    ]
+  },
+  "dimensions_godot_xyz_m": {
+    "D05_StoneRelief_Intact": [
+      2.4000000953674316,
+      2.799999952316284,
+      0.3499999940395355
+    ],
+    "D05_StoneRelief_MissingLowerLeftCorner": [
+      2.4000000953674316,
+      2.799999952316284,
+      0.3499999940395355
+    ]
+  },
+  "states": {
+    "D05_StoneRelief_Intact": {
+      "bounds_min_blender_m": [
+        -1.2000000476837158,
+        -0.17499999701976776,
+        0.0
+      ],
+      "bounds_max_blender_m": [
+        1.2000000476837158,
+        0.17499999701976776,
+        2.799999952316284
+      ],
+      "dimensions_blender_xyz_m": [
+        2.4000000953674316,
+        0.3499999940395355,
+        2.799999952316284
+      ],
+      "dimensions_godot_xyz_m": [
+        2.4000000953674316,
+        2.799999952316284,
+        0.3499999940395355
+      ],
+      "mesh_parts": 6,
+      "triangles": 968,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "loose_vertices": 0,
+      "mesh_health": [
+        {
+          "mesh": "D05_Intact_InsetField",
+          "triangles": 28,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Intact_Open_C_Ring",
+          "triangles": 516,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Intact_StoneSlab",
+          "triangles": 28,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Intact_WindStroke_Lower",
+          "triangles": 132,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Intact_WindStroke_Middle",
+          "triangles": 132,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Intact_WindStroke_Upper",
+          "triangles": 132,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        }
+      ]
+    },
+    "D05_StoneRelief_MissingLowerLeftCorner": {
+      "bounds_min_blender_m": [
+        -1.2000000476837158,
+        -0.17499999701976776,
+        0.0
+      ],
+      "bounds_max_blender_m": [
+        1.2000000476837158,
+        0.17499999701976776,
+        2.799999952316284
+      ],
+      "dimensions_blender_xyz_m": [
+        2.4000000953674316,
+        0.3499999940395355,
+        2.799999952316284
+      ],
+      "dimensions_godot_xyz_m": [
+        2.4000000953674316,
+        2.799999952316284,
+        0.3499999940395355
+      ],
+      "mesh_parts": 6,
+      "triangles": 984,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "loose_vertices": 0,
+      "mesh_health": [
+        {
+          "mesh": "D05_Broken_InsetField",
+          "triangles": 28,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Broken_Open_C_Ring",
+          "triangles": 516,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Broken_StoneSlab",
+          "triangles": 44,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Broken_WindStroke_Lower",
+          "triangles": 132,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Broken_WindStroke_Middle",
+          "triangles": 132,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        },
+        {
+          "mesh": "D05_Broken_WindStroke_Upper",
+          "triangles": 132,
+          "non_manifold_edges": 0,
+          "boundary_edges": 0,
+          "loose_edges": 0,
+          "loose_vertices": 0
+        }
+      ]
+    }
+  },
+  "geometry": {
+    "catalog_envelope_blender_m": [
+      2.4,
+      0.35,
+      2.8
+    ],
+    "relief_depth_m": 0.1,
+    "f01_open_ring_and_three_same_direction_strokes": true,
+    "shared_emblem_meshes_between_states": true,
+    "broken_corner": "lower-left",
+    "fracture_plane_count": 2,
+    "flat_base_width_m": 1.84
+  },
+  "materials": {
+    "count": 1,
+    "names": [
+      "D05_Shared_Stone_VertexColor"
+    ],
+    "shared": true,
+    "vertex_colors": true,
+    "emission": "none"
+  },
+  "glb_header": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_length": 69180,
+    "file_size": 69180,
+    "length_matches": true,
+    "json_chunk_type": "JSON"
+  },
+  "glb_node_count": 14,
+  "glb_mesh_count": 8,
+  "glb_primitive_count": 8,
+  "preview": {
+    "beauty": "output/wind_production/d05/beauty_3quarter.png",
+    "game_camera": "output/wind_production/d05/game_camera.png",
+    "fox_reference": "actual generated/models/fox_spirit.glb; Idle frame1; runtime fox_palette; helper and Sword hidden",
+    "game_camera_location_blender": [
+      0,
+      -20.57,
+      24.51
+    ],
+    "game_camera_pitch_down_degrees": 50,
+    "vertical_fov_degrees": 30,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  "self_check": {
+    "glb_v2_length_and_json_chunk": true,
+    "both_named_roots_and_all_meshes_exported": true,
+    "both_states_exact_2_4_by_0_35_by_2_8_m": true,
+    "four_exact_shared_f01_emblem_parts_per_state": true,
+    "broken_state_real_lower_corner_chip_with_two_fracture_planes": true,
+    "all_export_meshes_closed_without_loose_geometry": true,
+    "one_shared_non_emissive_vertex_color_material": true,
+    "preview_fox_camera_and_source_locators_excluded": true,
+    "all_primitive_index_accessors_valid": true,
+    "bottom_center_pivots_and_original_default_scene_preserved": true,
+    "idle_fox_preview_and_required_files": true
+  }
+}

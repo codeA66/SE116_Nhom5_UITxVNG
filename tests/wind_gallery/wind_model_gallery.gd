@@ -5,7 +5,7 @@ signal catalog_refreshed(count: int)
 signal variant_loaded(asset_path: String, variant_name: String)
 
 const CAMERA_SCRIPT: Script = preload("res://tests/wind_gallery/gallery_camera.gd")
-const MODEL_DIRECTORY: String = "res://assets/generated/wind_ruins"
+const MODEL_DIRECTORY: String = "res://assets/generated/wind_ruins/gridmap"
 const TITLES: Dictionary = {
 	"F01": "Cờ chính", "F02": "Cờ rách", "F03": "Cờ đổ", "F04": "Cờ ngang",
 	"T01": "Vách đá", "T02": "Góc vách", "T03": "Sàn", "T04": "Mép sạt", "T05": "Cầu thang",
