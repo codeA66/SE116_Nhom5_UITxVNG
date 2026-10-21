@@ -54,6 +54,8 @@ func _ready() -> void:
 		if child is Enemy:
 			_pending.append(child as Enemy)
 			_enemies_root.remove_child(child)
+	# Quái đã gỡ khỏi cây thì ShaderWarmup không tự thấy: đưa ra qua get_shader_warmup_sources()
+	add_to_group(ShaderWarmup.SOURCE_GROUP)
 	_trigger.body_entered.connect(_on_body_entered)
 	_trigger.body_exited.connect(_on_body_exited)
 
@@ -72,6 +74,15 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if enemies == null or enemies.get_child_count() == 0:
 		warnings.append("Chưa có quái dưới node Enemies.")
 	return warnings
+
+
+## ShaderWarmup gọi lúc vào khu: quái chờ trận (chưa nằm trong cây) và hiệu ứng xuất hiện của chúng
+func get_shader_warmup_sources() -> Array:
+	var sources: Array = []
+	sources.append_array(_pending)
+	if spawn_effect:
+		sources.append(spawn_effect)
+	return sources
 
 
 func is_running() -> bool:
