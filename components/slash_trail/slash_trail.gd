@@ -1,7 +1,8 @@
 class_name SlashTrail
 extends Node3D
 ## Vệt chém lưỡi liềm đặc đen kiểu Death's Door phía trước nhân vật. Nghe hitbox.activated: mỗi lần đòn bật
-## thì quét một vệt (mũi nhọn chạy qua cung, đuôi teo dần tới mũi rồi biến mất), lần sau đổi chiều.
+## thì quét một vệt (mũi nhọn chạy qua cung, đuôi teo dần tới mũi rồi biến mất). Chiều quét theo
+## AttackData.slash_trail_direction của đòn; đòn không khai báo thì lần sau đổi chiều.
 ## Có lớp phụ mờ chậm hơn tạo chiều sâu, ngôi sao lóe nhỏ ở mũi và vài mảnh đen bắn ra.
 ## Đòn cuối combo (finisher_attack) to hơn, sao to hơn. Mesh cung dựng một lần ở _ready.
 ## _process chỉ chạy lúc đang quét; hướng cung (+Z) lấy theo node follow (thường là Model).
@@ -167,7 +168,8 @@ func _on_activated(attack: AttackData) -> void:
 	_fit_to_reach()
 	var window := hitbox.get_active_duration()
 	_current_sweep = window if match_hitbox_window and window > 0.0 else sweep_time
-	_direction = -_direction
+	# Đòn khai báo chiều vung thì vệt quét cùng chiều lưỡi kiếm; không khai báo thì luân phiên như trước
+	_direction = float(signi(attack.slash_trail_direction)) if attack.slash_trail_direction != 0 else -_direction
 	_slash_seed = randf() * 10.0
 	_age = 0.0
 	_sweeping = true

@@ -4,15 +4,22 @@
 
 [resource]
 script = ExtResource("1_attack")
-animation = &"Rig_Medium_General/Throw"
-anim_speed = 1.8
+animation = &"Attack_Finisher"
+anim_speed = 1.35
+blend_in = 0.04
 damage = 2
 knockback = 9.0
 hitstop = 0.11
-active_start = 0.28
-active_end = 0.42
-combo_window_start = 0.70
-cancel_start = 0.40
-duration = 0.70
-lunge_speed = 0.0
-lunge_time = 0.15
+active_start = 0.27
+active_end = 0.36
+combo_window_start = 0.62
+cancel_start = 0.4
+move_cancel_start = 0.48
+duration = 0.62
+lunge_speed = 5.0
+lunge_time = 0.22
+lunge_stop = true
+lunge_brake_time = 0.12
+self_recoil_speed = 4.0
+self_recoil_time = 0.12
+slash_trail_direction = -1
