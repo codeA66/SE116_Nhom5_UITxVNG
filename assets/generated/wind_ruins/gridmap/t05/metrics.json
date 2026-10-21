@@ -1,0 +1,140 @@
+{
+  "id": "T05",
+  "asset": "ceremonial staircase with intact/damaged states and separate landing",
+  "glb": "assets/generated/wind_ruins/gridmap/t05/t05_ceremonial_staircase.glb",
+  "source": "assets/generated/wind_ruins/gridmap/t05/source/t05_ceremonial_staircase.blend",
+  "concept": "assets/generated/wind_ruins/gridmap/t05/concept.png",
+  "states": {
+    "intact": {
+      "bounds_min_blender_m": [
+        -2.25,
+        0.0,
+        0.0
+      ],
+      "bounds_max_blender_m": [
+        2.25,
+        3.6,
+        1.8
+      ],
+      "dimensions_blender_xyz_m": [
+        4.5,
+        3.6,
+        1.8
+      ],
+      "dimensions_godot_xyz_m": [
+        4.5,
+        1.8,
+        3.6
+      ],
+      "mesh_health": {
+        "vertices": 84,
+        "faces": 65,
+        "non_manifold_edges": 0,
+        "boundary_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "triangles": 164
+      }
+    },
+    "damaged": {
+      "bounds_min_blender_m": [
+        -2.25,
+        0.0,
+        0.0
+      ],
+      "bounds_max_blender_m": [
+        2.25,
+        3.6,
+        1.8
+      ],
+      "dimensions_blender_xyz_m": [
+        4.5,
+        3.6,
+        1.8
+      ],
+      "dimensions_godot_xyz_m": [
+        4.5,
+        1.8,
+        3.6
+      ],
+      "mesh_health": {
+        "vertices": 84,
+        "faces": 65,
+        "non_manifold_edges": 0,
+        "boundary_edges": 0,
+        "loose_edges": 0,
+        "loose_vertices": 0,
+        "triangles": 164
+      }
+    }
+  },
+  "stair_envelope_blender_xyz_m": [
+    4.5,
+    3.6,
+    1.8
+  ],
+  "stair_envelope_godot_xyz_m": [
+    4.5,
+    1.8,
+    3.6
+  ],
+  "separate_landing_local_dimensions_blender_xyz_m": [
+    4.5,
+    0.8,
+    0.16
+  ],
+  "separate_landing_origin_blender_m": [
+    0,
+    3.6,
+    1.64
+  ],
+  "assembled_envelope_blender_xyz_m": [
+    4.5,
+    4.4,
+    1.8
+  ],
+  "steps": {
+    "treads": 9,
+    "tread_run_m": 0.4,
+    "risers": 9,
+    "riser_height_m": 0.2,
+    "central_walk_width_m": 4.1,
+    "overall_width_including_cheeks_m": 4.5
+  },
+  "damage": "two broad sloped planes cut only from the exposed front terminal of the right low cheek; every tread and landing join is unchanged",
+  "landing_join": "separate 4.5 x 0.8 x 0.16 m module; begins at y=3.6 m and top is flush at z=1.8 m",
+  "materials": 1,
+  "glb_meshes": [
+    {
+      "name": "T05_Staircase_Damaged_Mesh",
+      "triangles": 164,
+      "primitives": 1
+    },
+    {
+      "name": "T05_Staircase_Intact_Mesh",
+      "triangles": 164,
+      "primitives": 1
+    },
+    {
+      "name": "T05_Landing_Slab_Mesh",
+      "triangles": 28,
+      "primitives": 1
+    }
+  ],
+  "glb_bytes": 24608,
+  "glb_v2_y_up_header": true,
+  "color_attributes": "COLOR_0 on every primitive",
+  "fox_reference": "current project fox preview rig, Idle frame 1, helper and sword excluded; palette retained",
+  "camera_godot": [
+    0,
+    24.51,
+    20.57
+  ],
+  "vertical_fov_degrees": 30,
+  "viewport": [
+    1280,
+    720
+  ],
+  "self_check": "9 measured 0.20 m rises and 9 measured 0.40 m treads; central stair mesh and separate landing are manifold, within envelopes, under 5000 triangles; GLB header, roots, names, materials, indices and COLOR_0 verified; original Scene/Cube/Camera/Light preserved",
+  "completed_utc": "2026-10-20T02:29:28.414988Z"
+}

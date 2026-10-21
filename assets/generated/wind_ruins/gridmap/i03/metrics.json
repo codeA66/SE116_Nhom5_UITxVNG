@@ -1,0 +1,180 @@
+{
+  "id": "I03",
+  "glb": "assets/generated/wind_ruins/gridmap/i03/i03_wind_sail_machine.glb",
+  "states": {
+    "Intact": {
+      "root": "I03_Intact_WindMachine",
+      "bounds_blender_min_m": [
+        -2.4,
+        -1.0,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        2.4,
+        1.0,
+        6.24939
+      ],
+      "dimensions_blender_xyz_m": [
+        4.8,
+        2.0,
+        6.24939
+      ],
+      "dimensions_godot_xyz_m": [
+        4.8,
+        6.24939,
+        2.0
+      ],
+      "triangles": 524,
+      "mesh_parts": 28,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "sail_assemblies": 4,
+      "torn_sail_assemblies": 0,
+      "rotor_pivot_local_m": [
+        0.0,
+        0.0,
+        4.0
+      ],
+      "rotor_tip_radius_m": 2.25
+    },
+    "Damaged": {
+      "root": "I03_Damaged_WindMachine",
+      "bounds_blender_min_m": [
+        -2.4,
+        -1.0,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        2.4,
+        1.0,
+        6.24939
+      ],
+      "dimensions_blender_xyz_m": [
+        4.8,
+        2.0,
+        6.24939
+      ],
+      "dimensions_godot_xyz_m": [
+        4.8,
+        6.24939,
+        2.0
+      ],
+      "triangles": 500,
+      "mesh_parts": 26,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "sail_assemblies": 3,
+      "torn_sail_assemblies": 1,
+      "rotor_pivot_local_m": [
+        0.0,
+        0.0,
+        4.0
+      ],
+      "rotor_tip_radius_m": 2.25
+    },
+    "Collapsed": {
+      "root": "I03_Collapsed_WindMachine",
+      "bounds_blender_min_m": [
+        -2.4,
+        -2.17902,
+        0.0
+      ],
+      "bounds_blender_max_m": [
+        4.85902,
+        2.29902,
+        2.18868
+      ],
+      "dimensions_blender_xyz_m": [
+        7.25902,
+        4.47804,
+        2.18868
+      ],
+      "dimensions_godot_xyz_m": [
+        7.25902,
+        2.18868,
+        4.47804
+      ],
+      "triangles": 488,
+      "mesh_parts": 27,
+      "non_manifold_edges": 0,
+      "boundary_edges": 0,
+      "loose_edges": 0,
+      "sail_assemblies": 3,
+      "torn_sail_assemblies": 1,
+      "rotor_pivot_local_m": [
+        2.62,
+        0.06,
+        0.5
+      ],
+      "rotor_tip_radius_m": 2.25
+    }
+  },
+  "nominal_dimensions_blender_xyz_m": [
+    4.8,
+    2.0,
+    6.3
+  ],
+  "nominal_dimensions_godot_xyz_m": [
+    4.8,
+    6.3,
+    2.0
+  ],
+  "intact_dimensions_measured_blender_xyz_m": [
+    4.8,
+    2.0,
+    6.24939
+  ],
+  "base_height_m": 1.5,
+  "base_depth_m": 2.0,
+  "rotor_tip_diameter_m": 4.5,
+  "rotor_axle_height_m": 4.0,
+  "lowest_rotor_tip_sweep_m": 1.75,
+  "rotor_axis_blender": "local Y",
+  "rotor_plane_blender": "local XZ",
+  "parts": "Frame fixed; Rotor pivot at axle; separate Sail assemblies parented under Rotor",
+  "damaged_variant": "one missing sail assembly and one sail with a single broad diagonal tear",
+  "collapsed_variant": "same damaged rotor and sail proportions laid horizontally beside its snapped frame/base",
+  "simple_fixed_collider": "stable plinth only",
+  "triangles_total_across_variants": 1512,
+  "maximum_triangles_per_variant": 524,
+  "materials": 1,
+  "glb_header": {
+    "magic": "glTF",
+    "version": 2,
+    "declared_length": 167828,
+    "file_size": 167828,
+    "length_matches": true,
+    "json_chunk_type": "JSON"
+  },
+  "glb_node_count": 101,
+  "game_camera_blender_location": [
+    0,
+    -20.57,
+    24.51
+  ],
+  "game_camera_vertical_fov_deg": 30,
+  "viewport": [
+    1280,
+    720
+  ],
+  "fox_scale_reference_height_m": 1.755,
+  "concept": "output/wind_production/concepts/i03_concept_v1.png",
+  "advisory": "\u00d84.5 m rotating envelope, axle at 4.0 m, cradle behind rotor; simple 1.5 m plinth and two slender supports; one missing and one broad torn sail reused in the fallen version.",
+  "self_check": {
+    "intact_matches_4.8x2x6.3_nominal_with_0.05m_tip_rounding": true,
+    "rotor_tip_envelope_diameter_4.5m": true,
+    "axle_at_4m_for_intact_and_damaged": true,
+    "lowest_tip_sweep_1.75m": true,
+    "all_asset_meshes_manifold": true,
+    "all_variants_under_5000_triangles": true,
+    "single_shared_material": true,
+    "one_sail_missing_and_one_torn": true,
+    "collapsed_uses_same_missing_and_torn_sails": true,
+    "rotor_and_sails_separate_from_frame": true,
+    "glb_valid_header": true,
+    "glb_contains_all_state_roots": true
+  },
+  "pipeline": "actual2D -> one Sol advisory -> direct MCP Blender 3D -> self-check/export; no approval gate"
+}
