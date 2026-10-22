@@ -7,6 +7,8 @@ extends Node3D
 ## Hướng văng chính là +Z cục bộ. Hành vi theo FSM dạng node (objects/rubble_jam/states/).
 
 signal activated
+## Vừa đủ nguồn, đang chờ wait_source báo mới vỡ (camera cắt cảnh nghe signal này để bay tới)
+signal unlock_started
 
 @export var data: RubbleJamData
 @export var sources: Array[Node] = []:
@@ -15,6 +17,12 @@ signal activated
 		update_configuration_warnings()
 ## Cờ lưu đã phá. Để trống = mỗi lần vào khu đá lại chèn
 @export var persistent_id: StringName
+
+@export_group("Wait")
+## Đủ nguồn thì chờ signal wait_signal (không tham số) của node này rồi mới vỡ, ví dụ camera cắt cảnh đã tới khung hình.
+## Để trống = vỡ ngay. Quá data.wait_timeout mà chưa có tín hiệu thì vẫn vỡ
+@export var wait_source: Node
+@export var wait_signal: StringName = &"shot_reached"
 
 var _cleared: bool = false
 
@@ -67,6 +75,11 @@ func mark_cleared() -> void:
 	if not persistent_id.is_empty():
 		GameState.set_flag(persistent_id)
 	activated.emit()
+
+
+## State gọi khi bắt đầu chờ: signal phát từ chính class khai báo nó
+func notify_unlock_started() -> void:
+	unlock_started.emit()
 
 
 func _refresh() -> void:

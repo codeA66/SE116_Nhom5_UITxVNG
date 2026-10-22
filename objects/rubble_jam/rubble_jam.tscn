@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://objects/rubble_jam/states/jammed.gd" id="8_ys5pu"]
 [ext_resource type="Script" path="res://objects/rubble_jam/states/bursting.gd" id="9_u4jy8"]
 [ext_resource type="Script" path="res://objects/rubble_jam/states/cleared.gd" id="10_cl8m3"]
+[ext_resource type="Script" path="res://objects/rubble_jam/states/waiting.gd" id="11_wait"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_hr7mq"]
 radius = 1.0
@@ -195,6 +196,9 @@ initial_state = NodePath("Jammed")
 
 [node name="Jammed" type="Node" parent="StateMachine" unique_id=1771567200]
 script = ExtResource("8_ys5pu")
+
+[node name="Waiting" type="Node" parent="StateMachine"]
+script = ExtResource("11_wait")
 
 [node name="Bursting" type="Node" parent="StateMachine" unique_id=1671995618]
 script = ExtResource("9_u4jy8")

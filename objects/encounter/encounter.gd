@@ -1,8 +1,9 @@
 @tool
 class_name Encounter
 extends Node3D
-## Trận đánh theo khu (kiểu Death's Door): quái đặt sẵn làm con của node Enemies nhưng chưa có mặt trong thế giới.
-## Player bước vào Trigger (và đã có cờ required_flag nếu đặt) thì quái lần lượt xuất hiện và lao vào player.
+## Trận đánh theo khu (kiểu Death's Door): quái đặt sẵn làm con của node Enemies, đứng ngủ yên trong phòng
+## (hoặc ẩn hẳn nếu tắt enemies_visible_before_start). Player bước vào Trigger (và đã có cờ required_flag nếu đặt)
+## thì quái lần lượt thức dậy / xuất hiện và lao vào player.
 ## Giết hết quái thì phát cleared và lưu cờ persistent_id: lần sau vào khu không gặp lại trận đã thắng.
 ## Thêm loại quái mới chỉ cần đặt scene quái (kế thừa Enemy) dưới Enemies, không sửa file này.
 
@@ -18,6 +19,9 @@ const MIN_TRIGGER_SIZE := 0.5
 @export var required_flag: StringName
 ## Khoảng cách thời gian giữa hai con quái xuất hiện (s); 0 = cùng lúc
 @export var spawn_interval: float = 0.35
+## Quái đứng sẵn trong phòng (thấy từ xa) nhưng ngủ yên tới khi player vào Trigger.
+## Tắt = quái ẩn rồi lần lượt xuất hiện khi trận bắt đầu (kiểu cũ)
+@export var enemies_visible_before_start: bool = true
 ## Quái nhắm player ngay khi xuất hiện thay vì chờ cảm biến phát hiện
 @export var aggro_on_start: bool = true
 ## Hiệu ứng xuất hiện tại chỗ mỗi con quái (tuỳ chọn). Scene nên tự huỷ khi chạy xong
@@ -49,11 +53,14 @@ func _ready() -> void:
 		_enemies_root.queue_free()
 		_trigger.queue_free()
 		return
-	# Gỡ quái khỏi cây: không tốn xử lý, không có va chạm vô hình trước khi trận bắt đầu
 	for child in _enemies_root.get_children():
 		if child is Enemy:
 			_pending.append(child as Enemy)
-			_enemies_root.remove_child(child)
+			if enemies_visible_before_start:
+				(child as Enemy).set_dormant(true)
+			else:
+				# Gỡ khỏi cây: không tốn xử lý, không có va chạm vô hình trước khi trận bắt đầu
+				_enemies_root.remove_child(child)
 	# Quái đã gỡ khỏi cây thì ShaderWarmup không tự thấy: đưa ra qua get_shader_warmup_sources()
 	add_to_group(ShaderWarmup.SOURCE_GROUP)
 	_trigger.body_entered.connect(_on_body_entered)
@@ -96,9 +103,16 @@ func start() -> void:
 	_trigger.set_deferred("monitoring", false)
 	_disconnect_progress()
 	started.emit()
-	var queue := _pending.duplicate()
+	# Quái đứng sẵn có thể đã bị giết trước khi trận bắt đầu: chỉ đếm con còn sống
+	var queue: Array[Enemy] = []
+	for enemy in _pending:
+		if is_instance_valid(enemy) and not enemy.is_dead():
+			queue.append(enemy)
 	_pending.clear()
 	_alive = queue.size()
+	if _alive == 0:
+		_finish()
+		return
 	for enemy: Enemy in queue:
 		_spawn(enemy)
 		if spawn_interval > 0.0:
@@ -108,7 +122,16 @@ func start() -> void:
 
 
 func _spawn(enemy: Enemy) -> void:
+	# Chết trong lúc chờ tới lượt (bị đánh khi còn ngủ yên): tính như đã hạ
+	if not is_instance_valid(enemy) or enemy.is_dead():
+		_count_down()
+		return
 	enemy.died.connect(_on_enemy_died, CONNECT_ONE_SHOT)
+	if enemy.is_inside_tree():
+		enemy.set_dormant(false)
+		if aggro_on_start and is_instance_valid(_player):
+			enemy.target = _player
+		return
 	_enemies_root.add_child(enemy)
 	if aggro_on_start and is_instance_valid(_player):
 		enemy.target = _player
@@ -155,9 +178,17 @@ func _apply_trigger_size() -> void:
 
 
 func _on_enemy_died(_enemy: Enemy) -> void:
+	_count_down()
+
+
+func _count_down() -> void:
 	_alive -= 1
 	if _alive > 0:
 		return
+	_finish()
+
+
+func _finish() -> void:
 	_running = false
 	GameState.set_flag(persistent_id)
 	ScreenShake.add_trauma(clear_trauma)

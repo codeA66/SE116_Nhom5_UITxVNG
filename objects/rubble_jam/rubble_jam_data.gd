@@ -7,6 +7,10 @@ extends Resource
 @export_range(0.0, 2.0, 0.05) var charge_time: float = 0.4
 @export_range(0.0, 0.2, 0.005) var charge_shake: float = 0.05
 
+@export_group("Wait")
+## Có wait_source mà quá bấy nhiêu giây chưa có tín hiệu (cutscene đã xem rồi...) thì vẫn vỡ
+@export_range(0.0, 10.0, 0.1) var wait_timeout: float = 4.0
+
 @export_group("Debris")
 ## Tốc độ văng của mảnh đá (m/s), ngẫu nhiên trong khoảng
 @export var speed_min: float = 4.0

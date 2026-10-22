@@ -140,6 +140,12 @@ func is_dead() -> bool:
 	return health.is_dead()
 
 
+## Ngủ yên (đứng sẵn trong phòng, trận chưa bắt đầu): tắt cảm biến nên không tự lao vào player.
+## Bị đánh vẫn phản ứng như thường. Gọi trễ vì có thể chạy trong callback vật lý (player bước vào Trigger)
+func set_dormant(dormant: bool) -> void:
+	sensor.set_deferred(&"monitoring", not dormant)
+
+
 # ---------- Nội bộ ----------
 
 func _die_now() -> void:

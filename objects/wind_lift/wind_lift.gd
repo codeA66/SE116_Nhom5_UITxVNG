@@ -15,6 +15,9 @@ signal lowered
 	set(value):
 		charger = value
 		update_configuration_warnings()
+## Bệ đặt chìm (m): đặt gốc thấp xuống bấy nhiêu để mặt bệ lúc hạ ngang mặt sàn, đi thẳng lên không cần dốc.
+## Điểm dừng trên và cửa chặn trên được nâng bù đúng bấy nhiêu nên bệ vẫn lên tới độ cao cũ. > 0 thì bỏ dốc
+@export var sunken_depth: float = 0.0
 
 ## Sức gió hiện tại 0..1 (state đọc/ghi qua set_wind)
 var wind: float = 0.0
@@ -54,6 +57,10 @@ func _ready() -> void:
 	# Marker tính theo gốc WindLift; bệ chỉ chạy theo trục Y cục bộ
 	_lower_y = to_local(lower.global_position).y
 	_upper_y = to_local(upper.global_position).y
+	_upper_y += sunken_depth
+	if sunken_depth > 0.0:
+		_top_gate.position.y += sunken_depth
+		$Ramp.queue_free()
 	platform.position.y = _lower_y
 	# Phần hình của bệ bám theo thân va chạm. Tìm theo tên thay vì gõ đường dẫn:
 	# GLB nhập vào có thêm tầng node gốc, đường dẫn cứng dễ trỏ sai mà không báo
