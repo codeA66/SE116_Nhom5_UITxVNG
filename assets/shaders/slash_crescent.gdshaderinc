@@ -8,16 +8,16 @@ uniform float dissolve = 0.0;
 // +1 / -1: đổi chiều quét (đòn nối sau chém ngược lại)
 uniform float direction = 1.0;
 // Bề dày tối đa của lưỡi liềm (tỉ lệ bề rộng mesh) và độ phình
-uniform float thickness = 0.8;
-uniform float shape_power = 0.8;
+uniform float thickness = 0.6;
+uniform float shape_power = 1.3;
 // Độ dài đoạn thon nhọn ở mũi và ở đuôi (tỉ lệ cung)
-uniform float tip_taper = 0.2;
+uniform float tip_taper = 0.12;
 // Đuôi mỏng hơn mũi: độ dày ở cuối vệt so với ở mũi, và độ dài đoạn mỏng dần (theo head)
 uniform float tail_thickness = 0.4;
 uniform float tail_length = 0.8;
-// Độ dày biến thiên không đều dọc cung (xoắn) và độ vụn của mép trong
-uniform float twist = 0.35;
-uniform float crumble = 0.07;
+// Độ dày biến thiên dọc cung (xoắn) và độ vụn mép trong. Mặc định gần 0: lưỡi đều, mép sắc
+uniform float twist = 0.0;
+uniform float crumble = 0.02;
 uniform float seed = 0.0;
 
 const float PI_F = 3.14159265;

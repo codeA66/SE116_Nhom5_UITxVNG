@@ -1,11 +1,12 @@
 [gd_resource type="Resource" script_class="AttackData" format=3]
 
 [ext_resource type="Script" path="res://entities/_base/attack_data.gd" id="1_attack"]
+[ext_resource type="Resource" path="res://resources/attacks/slash_style_3.tres" id="2_style"]
 
 [resource]
 script = ExtResource("1_attack")
 animation = &"Attack_Finisher"
-anim_speed = 1.35
+anim_speed = 0.95238
 blend_in = 0.04
 damage = 2
 knockback = 9.0
@@ -15,7 +16,7 @@ active_end = 0.36
 combo_window_start = 0.62
 cancel_start = 0.4
 move_cancel_start = 0.48
-duration = 0.62
+duration = 0.77
 lunge_speed = 5.0
 lunge_time = 0.22
 lunge_stop = true
@@ -23,3 +24,4 @@ lunge_brake_time = 0.12
 self_recoil_speed = 4.0
 self_recoil_time = 0.12
 slash_trail_direction = -1
+slash_style = ExtResource("2_style")

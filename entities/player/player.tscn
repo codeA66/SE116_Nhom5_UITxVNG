@@ -29,6 +29,7 @@
 [ext_resource type="Resource" path="res://resources/attacks/sword_slash_3.tres" id="34_slash3"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_blast_cone.tscn" id="35_windcone"]
 [ext_resource type="PackedScene" path="res://components/movement_dust/movement_dust.tscn" id="36_dust"]
+[ext_resource type="Script" path="res://components/combo_tracker/combo_tracker.gd" id="37_combo"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -123,6 +124,9 @@ script = ExtResource("11_pickup")
 
 [node name="Attack" type="Node" parent="StateMachine"]
 script = ExtResource("12_attack")
+
+[node name="ComboTracker" type="Node" parent="StateMachine/Attack"]
+script = ExtResource("37_combo")
 
 [node name="Dash" type="Node" parent="StateMachine"]
 script = ExtResource("19_dash")

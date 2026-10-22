@@ -13,9 +13,12 @@ var _active_end: float = 0.0
 ## Mốc (giây trong đòn) bắt đầu bật lùi vì chém trúng; < 0 = đòn này chưa trúng
 var _recoil_start: float = -1.0
 
+## Nhớ nhát kế sau khi rời đòn: đang đi mà đòn bị hủy để chạy thì bấm tiếp vẫn nối combo
+@onready var _combo: ComboTracker = $ComboTracker
+
 
 func enter(_previous: StringName) -> void:
-	_combo_index = 0
+	_combo_index = _combo.peek_index(player.get_weapon().combo.size())
 	player.hitbox.hit.connect(_on_hit)
 	_start_attack()
 
@@ -23,6 +26,7 @@ func enter(_previous: StringName) -> void:
 func exit() -> void:
 	player.hitbox.deactivate()
 	player.hitbox.hit.disconnect(_on_hit)
+	_combo.start_grace()
 
 
 func physics_update(delta: float) -> void:
@@ -58,6 +62,7 @@ func _start_attack() -> void:
 	player.hitbox.deactivate()
 	_weapon = player.get_weapon()
 	_attack = _weapon.combo[_combo_index]
+	_combo.mark_started(_combo_index, _weapon.combo.size())
 	if not _weapon.is_ranged():
 		player.hitbox.set_reach(_weapon.attack_range)
 	_elapsed = 0.0

@@ -4,7 +4,8 @@ extends Node3D
 ## thì quét một vệt (mũi nhọn chạy qua cung, đuôi teo dần tới mũi rồi biến mất). Chiều quét theo
 ## AttackData.slash_trail_direction của đòn; đòn không khai báo thì lần sau đổi chiều.
 ## Có lớp phụ mờ chậm hơn tạo chiều sâu, ngôi sao lóe nhỏ ở mũi và vài mảnh đen bắn ra.
-## Đòn cuối combo (finisher_attack) to hơn, sao to hơn. Mesh cung dựng một lần ở _ready.
+## Đòn có SlashStyle thì chiều quét, độ nghiêng, độ cao, kích thước lấy từ đó (mỗi nhát combo một kiểu);
+## không có thì đòn cuối combo (finisher_attack) to hơn, sao to hơn. Mesh cung dựng một lần ở _ready.
 ## _process chỉ chạy lúc đang quét; hướng cung (+Z) lấy theo node follow (thường là Model).
 ## Không đặt dưới Model của player: foxy_player.gd ghi đè material của mọi mesh dưới Model.
 
@@ -35,7 +36,9 @@ extends Node3D
 @export var edge_intensity: float = 2.5
 ## Số lưỡi gió nhỏ bên trong thân đen (0..5)
 @export_range(0, 5) var blade_count: int = 4
-@export_range(0.0, 1.0) var back_layer_alpha: float = 0.35
+@export_range(0.0, 1.0) var back_layer_alpha: float = 0.2
+## Bật = mỗi lần chém hình lưỡi hơi khác nhau (nhiễu theo seed ngẫu nhiên). Tắt = cùng nhát luôn ra cùng hình
+@export var random_shape: bool = false
 
 @export_group("Star")
 ## Kích thước sao lóe ở mũi (m)
@@ -44,14 +47,18 @@ extends Node3D
 @export var star_intensity: float = 2.5
 
 @export_group("Timing")
-## Thời gian mũi vệt quét hết cung (s); dùng khi hitbox không báo độ dài khoảng bật
-@export var sweep_time: float = 0.12
-## Quét đúng bằng khoảng hitbox bật (theo marker vung kiếm): vệt chạy cùng nhịp lưỡi kiếm
-@export var match_hitbox_window: bool = true
+## Thời gian mũi vệt quét hết cung (s, thời gian thật)
+@export var sweep_time: float = 0.05
+## Quét đúng bằng khoảng hitbox bật thay vì sweep_time. Tắt mặc định: khoảng bật đổi theo anim_speed
+## nên vệt dài ngắn khác nhau giữa các nhát
+@export var match_hitbox_window: bool = false
+## Phần quét chạy theo thời gian thật, không bị hitstop làm chậm: trúng hay hụt vệt đều vẽ trọn,
+## rồi mới đứng hình trong lúc hitstop (phần teo vẫn theo thời gian game)
+@export var sweep_ignores_time_scale: bool = true
 ## Thời gian lưỡi liềm teo hết sau khi quét xong (s)
-@export var fade_time: float = 0.14
+@export var fade_time: float = 0.1
 ## Lớp phụ chậm hơn lớp chính bấy nhiêu lần
-@export var back_layer_lag: float = 1.4
+@export var back_layer_lag: float = 1.15
 
 @export_group("Finisher")
 ## Đòn này (thường là đòn cuối combo) to hơn; để trống = không có đòn đặc biệt
@@ -70,6 +77,9 @@ var _age: float = 0.0
 var _current_sweep: float = 0.0
 var _direction: float = 1.0
 var _star_scale: float = 1.0
+## Độ nghiêng (độ) và độ cao (m) của nhát hiện tại: lấy từ SlashStyle của đòn nếu có
+var _tilt: float = 0.0
+var _height: float = 0.0
 var _sweeping: bool = false
 var _slash_seed: float = 0.0
 var _inner_radius: float = 0.0
@@ -116,7 +126,11 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_sync_facing()
-	_age += delta
+	var step := delta
+	# Đang quét: bù time_scale để hitstop không làm vệt đứng hình khi mới vẽ một đoạn
+	if sweep_ignores_time_scale and _age < _current_sweep * back_layer_lag and Engine.time_scale > 0.0:
+		step = minf(delta / Engine.time_scale, _current_sweep * back_layer_lag - _age)
+	_age += step
 	var head := _update_layer(_arc_material, _arc, _current_sweep, fade_time)
 	_update_layer(_back_material, _arc_back, _current_sweep * back_layer_lag, fade_time * back_layer_lag)
 	_update_layer(_glow_material, _arc_glow, _current_sweep, fade_time)
@@ -140,10 +154,7 @@ func _build_mesh_and_points() -> void:
 	_arc_back.mesh = mesh
 	_arc_glow.mesh = mesh
 	_arc_back.scale = Vector3(back_layer_scale, 1.0, back_layer_scale)
-	_arc.position.y = height
-	_arc_back.position.y = height - 0.01
-	_arc_glow.position.y = height + 0.01
-	_sparkles.position.y = height
+	_apply_height(height)
 	_sparkles.emission_shape = CPUParticles3D.EMISSION_SHAPE_DIRECTED_POINTS
 	_sparkles.emission_points = _build_arc_points(SPARKLE_POINTS, INNER_FLECK_T)
 	_fleck_normals[1.0] = _build_tangents(SPARKLE_POINTS, 1.0)
@@ -168,16 +179,12 @@ func _on_activated(attack: AttackData) -> void:
 	_fit_to_reach()
 	var window := hitbox.get_active_duration()
 	_current_sweep = window if match_hitbox_window and window > 0.0 else sweep_time
-	# Đòn khai báo chiều vung thì vệt quét cùng chiều lưỡi kiếm; không khai báo thì luân phiên như trước
-	_direction = float(signi(attack.slash_trail_direction)) if attack.slash_trail_direction != 0 else -_direction
-	_slash_seed = randf() * 10.0
+	_apply_attack_look(attack)
+	_slash_seed = randf() * 10.0 if random_shape else 0.0
 	_age = 0.0
 	_sweeping = true
-	var finisher := finisher_attack != null and attack == finisher_attack
-	scale = Vector3.ONE * (finisher_scale if finisher else 1.0)
-	_star_scale = finisher_star_scale if finisher else 1.0
 	_sync_facing()
-	var tilt := deg_to_rad(tilt_degrees) * _direction
+	var tilt := deg_to_rad(_tilt) * _direction
 	for node: Node3D in [_arc, _arc_back, _arc_glow, _sparkles]:
 		node.rotation.z = tilt
 	for material: ShaderMaterial in [_arc_material, _back_material, _glow_material]:
@@ -192,6 +199,33 @@ func _on_activated(attack: AttackData) -> void:
 	_sparkles.restart()
 	set_process(true)
 	_process(0.0)
+
+
+## Đòn có SlashStyle thì lấy chiều quét / nghiêng / độ cao / kích thước từ đó; không có thì giữ cách cũ
+## (chiều theo slash_trail_direction hoặc luân phiên, finisher_attack to hơn)
+func _apply_attack_look(attack: AttackData) -> void:
+	var style := attack.slash_style
+	if style:
+		_direction = float(signi(style.sweep_direction)) if style.sweep_direction != 0 else -_direction
+		_tilt = style.tilt_degrees
+		scale = Vector3.ONE * style.trail_scale
+		_star_scale = style.star_scale
+		_apply_height(height + style.height_offset)
+		return
+	_direction = float(signi(attack.slash_trail_direction)) if attack.slash_trail_direction != 0 else -_direction
+	_tilt = tilt_degrees
+	var finisher := finisher_attack != null and attack == finisher_attack
+	scale = Vector3.ONE * (finisher_scale if finisher else 1.0)
+	_star_scale = finisher_star_scale if finisher else 1.0
+	_apply_height(height)
+
+
+func _apply_height(value: float) -> void:
+	_height = value
+	_arc.position.y = value
+	_arc_back.position.y = value - 0.01
+	_arc_glow.position.y = value + 0.01
+	_sparkles.position.y = value
 
 
 func _sync_facing() -> void:
@@ -221,8 +255,8 @@ func _update_star(head: float) -> void:
 	var u_mesh := head if _direction > 0.0 else 1.0 - head
 	var angle := lerpf(-half, half, u_mesh)
 	var radius := lerpf(_inner_radius, _outer_radius, STAR_RADIUS_T)
-	var local := Basis(Vector3.BACK, deg_to_rad(tilt_degrees) * _direction) * (Vector3(sin(angle), 0.0, cos(angle)) * radius)
-	_star.position = local + Vector3.UP * height
+	var local := Basis(Vector3.BACK, deg_to_rad(_tilt) * _direction) * (Vector3(sin(angle), 0.0, cos(angle)) * radius)
+	_star.position = local + Vector3.UP * _height
 	_star.scale = Vector3.ONE * star_size * _star_scale * sin(PI * t)
 	_star_material.set_shader_parameter(&"spin", deg_to_rad(10.0) * _direction)
 

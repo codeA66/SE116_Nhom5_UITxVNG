@@ -10,10 +10,12 @@ extends Node3D
 
 @export_group("Cut Flash")
 @export var cut_length: float = 4.5
-@export var cut_thickness: float = 0.14
-@export var cut_time: float = 0.07
-## Lệch của nét cắt so với hướng đòn (độ, quanh trục đứng), dấu ngẫu nhiên
+@export var cut_thickness: float = 0.22
+@export var cut_time: float = 0.1
+## Lệch của nét cắt so với hướng đòn (độ, quanh trục đứng), dấu ngẫu nhiên; chỉ dùng khi play() không nhận hướng nét cắt
 @export var cut_angle_degrees: float = 70.0
+## Nghiêng nét cắt lên trên (cộng vào trục) để không nằm bẹt sát sàn khi nhìn từ trên
+@export var cut_lift: float = 0.3
 
 @export_group("Star")
 @export var star_size: float = 1.9
@@ -24,8 +26,8 @@ extends Node3D
 @export_group("Impact Lines")
 @export var line_speed_min: float = 16.0
 @export var line_speed_max: float = 26.0
-@export var line_length_min: float = 0.9
-@export var line_length_max: float = 1.5
+@export var line_length_min: float = 1.3
+@export var line_length_max: float = 2.1
 @export var line_spread_degrees: float = 60.0
 @export var lines_normal: int = 4
 @export var lines_strong: int = 7
@@ -40,8 +42,8 @@ extends Node3D
 @export_group("Sparks")
 @export var spark_speed_min: float = 4.0
 @export var spark_speed_max: float = 9.0
-@export var spark_length_min: float = 0.35
-@export var spark_length_max: float = 0.75
+@export var spark_length_min: float = 0.5
+@export var spark_length_max: float = 1.0
 
 ## Lúc t = 0 các lớp đã ở mức này của kích thước tối đa: hiện ngay frame trúng
 const START_SCALE := 0.45
@@ -83,20 +85,24 @@ func _process(delta: float) -> void:
 
 
 ## world_position: điểm trúng; direction: hướng đòn (đẩy lùi); color: màu tia lửa;
-## power: 1 = thường, > 1 = đòn mạnh / kết liễu (nhiều nét lực hơn, 2 vòng sóng)
-func play(world_position: Vector3, direction: Vector3, color: Color, effect_scale: float = 1.0, power: float = 1.0) -> void:
+## power: 1 = thường, > 1 = đòn mạnh / kết liễu (nhiều nét lực hơn, 2 vòng sóng).
+## cut_direction: hướng nét cắt (ngang) theo chiều vung của nhát; ZERO = lệch ngẫu nhiên cut_angle_degrees
+func play(world_position: Vector3, direction: Vector3, color: Color, effect_scale: float = 1.0, power: float = 1.0, cut_direction: Vector3 = Vector3.ZERO, cut_scale: float = 1.0) -> void:
 	_scale = maxf(effect_scale, 0.01)
 	_strong = power > 1.0
 	global_position = world_position
 	var dir := direction.normalized() if direction.length_squared() > 0.0001 else Vector3.UP
-	var flat := Vector3(dir.x, 0.0, dir.z)
-	var cut_axis := (flat if flat.length_squared() > 0.0001 else Vector3.RIGHT).normalized()
-	var sign_random := 1.0 if randf() < 0.5 else -1.0
-	cut_axis = cut_axis.rotated(Vector3.UP, deg_to_rad(cut_angle_degrees) * sign_random) + Vector3.UP * 0.3
-	cut_axis = cut_axis.normalized()
+	var cut_axis := Vector3(cut_direction.x, 0.0, cut_direction.z)
+	if cut_axis.length_squared() < 0.0001:
+		var flat := Vector3(dir.x, 0.0, dir.z)
+		cut_axis = (flat if flat.length_squared() > 0.0001 else Vector3.RIGHT).normalized()
+		var sign_random := 1.0 if randf() < 0.5 else -1.0
+		cut_axis = cut_axis.rotated(Vector3.UP, deg_to_rad(cut_angle_degrees) * sign_random)
+	cut_axis = (cut_axis.normalized() + Vector3.UP * cut_lift).normalized()
+	var cut_mul := maxf(cut_scale, 0.01)
 	_cut_material.set_shader_parameter(&"axis", cut_axis)
-	_cut_material.set_shader_parameter(&"length_m", cut_length * _scale * (1.25 if _strong else 1.0))
-	_cut_material.set_shader_parameter(&"thickness_m", cut_thickness * _scale)
+	_cut_material.set_shader_parameter(&"length_m", cut_length * _scale * cut_mul * (1.25 if _strong else 1.0))
+	_cut_material.set_shader_parameter(&"thickness_m", cut_thickness * _scale * cut_mul)
 	_star_spin = _screen_angle(world_position, cut_axis) + deg_to_rad(randf_range(-star_jitter_degrees, star_jitter_degrees))
 	_star_material.set_shader_parameter(&"spin", _star_spin)
 

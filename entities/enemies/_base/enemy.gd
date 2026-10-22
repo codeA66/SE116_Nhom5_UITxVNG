@@ -9,7 +9,7 @@ signal died(enemy: Enemy)
 @export var data: EnemyData
 ## Phủ lên model khi bị đánh trúng
 @export var hit_flash_material: Material
-@export var hit_flash_time: float = 0.1
+@export var hit_flash_time: float = 0.06
 ## Phủ lên model trong lúc lấy đà ra đòn: báo trước cho người chơi né
 @export var telegraph_material: Material
 

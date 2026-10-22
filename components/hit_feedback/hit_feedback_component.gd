@@ -31,8 +31,17 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 	var killed := hurtbox.health != null and hurtbox.health.is_dead()
 	var strong := killed or info.knockback.length() >= data.strong_knockback
 	var power := STRONG_POWER if strong else 1.0
+	var style := info.attack.slash_style if info.attack else null
+	if style:
+		power *= style.spray_power
 	var origin := hurtbox.global_position + Vector3.UP * data.hit_height
-	CombatFx.spawn_hit(origin, _direction(info, data.upward_bias), data.spark_color, data.spark_scale, power)
+	# Nét cắt theo chiều vung của nhát (SlashStyle); không có kiểu thì HitSpark tự chọn ngẫu nhiên như cũ
+	var cut_axis := Vector3.ZERO
+	var cut_scale := 1.0
+	if style:
+		cut_axis = info.direction.rotated(Vector3.UP, deg_to_rad(style.cut_angle_degrees))
+		cut_scale = style.cut_scale
+	CombatFx.spawn_hit(origin, _direction(info, data.upward_bias), data.spark_color, data.spark_scale, power, cut_axis, cut_scale)
 	if data.bleeds:
 		CombatFx.spawn_blood(origin, _direction(info, data.blood_upward_bias), data.blood_color, hurtbox.global_position.y, data.blood_scale * power, killed)
 	ScreenShake.add_trauma(data.trauma)
@@ -46,7 +55,12 @@ func _on_blocked(info: DamageInfo, _guard: HitGuard) -> void:
 	ScreenShake.add_trauma(data.blocked_trauma)
 
 
+## Lấy hướng đòn chứ không lấy knockback: đòn không đẩy vẫn văng đúng hướng. Đòn có SlashStyle thì
+## xoay hướng văng và hất thêm theo kiểu của nhát đó
 func _direction(info: DamageInfo, upward_bias: float) -> Vector3:
-	var direction := info.knockback
-	direction.y = 0.0
-	return direction.normalized() + Vector3.UP * upward_bias
+	var direction := info.direction
+	var style := info.attack.slash_style if info.attack else null
+	if style:
+		direction = style.spray_direction(direction)
+		upward_bias += style.spray_upward_bias
+	return direction + Vector3.UP * upward_bias
