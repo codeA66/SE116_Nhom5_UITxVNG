@@ -7,6 +7,7 @@ var _elapsed: float = 0.0
 func enter(_previous: StringName) -> void:
 	_elapsed = 0.0
 	cutscene.set_letterbox(1.0)
+	cutscene.notify_shot_reached()
 
 
 func physics_update(delta: float) -> void:

@@ -57,7 +57,8 @@ func detach(node: Node, new_parent: Node) -> void:
 	_active.remove_at(index)
 	if node.has_method(&"pool_detached"):
 		node.call(&"pool_detached")
-	node.reparent(new_parent, true)
+	# Gọi trễ: detach có thể chạy giữa callback vật lý (quái chết vì trúng đòn), lúc đó không được đổi cha vật va chạm
+	node.reparent.call_deferred(new_parent, true)
 
 
 ## Tổng số đối tượng pool đã tạo (kiểm tra không tạo thêm khi đủ)

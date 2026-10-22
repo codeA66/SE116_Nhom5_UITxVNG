@@ -3,6 +3,7 @@ extends State
 ## State của đống đá vụn: có sẵn tham chiếu jam và tên các state.
 
 const JAMMED := &"Jammed"
+const WAITING := &"Waiting"
 const BURSTING := &"Bursting"
 const CLEARED := &"Cleared"
 

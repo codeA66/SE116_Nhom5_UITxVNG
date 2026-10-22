@@ -9,6 +9,8 @@ extends Node3D
 
 signal started
 signal finished
+## Camera vừa tới khung hình nhìn mục tiêu (hết đoạn bay tới): vật cần diễn cho người chơi xem nghe signal này
+signal shot_reached
 
 @export var data: CameraCutsceneData
 ## Thứ camera hướng vào (ví dụ điểm boss quỳ)
@@ -20,6 +22,11 @@ signal finished
 @export var persistent_id: StringName
 ## Kích thước vùng kích hoạt (m), hộp đặt giữa đáy tại gốc node
 @export var trigger_size: Vector3 = Vector3(4.0, 4.0, 2.0)
+
+@export_group("Signal Trigger")
+## Chạy khi node này phát trigger_signal (không tham số) thay vì khi player bước vào vùng. Để trống = dùng vùng kích hoạt
+@export var trigger_source: Node
+@export var trigger_signal: StringName = &"unlock_started"
 
 var player: Player
 ## Camera của player lúc bắt đầu (để trả lại khi xong)
@@ -51,7 +58,14 @@ func _ready() -> void:
 		_trigger.monitoring = false
 		set_process(false)
 		return
-	_trigger.body_entered.connect(_on_body_entered)
+	if trigger_source:
+		_trigger.monitoring = false
+		if trigger_source.has_signal(trigger_signal):
+			trigger_source.connect(trigger_signal, _on_source_triggered, CONNECT_ONE_SHOT)
+		else:
+			push_error("%s: trigger_source không có signal '%s'" % [get_path(), trigger_signal])
+	else:
+		_trigger.body_entered.connect(_on_body_entered)
 	set_process(false)
 
 
@@ -112,6 +126,11 @@ func end() -> void:
 	finished.emit()
 
 
+## State Hold gọi khi camera tới khung hình: signal phát từ chính class khai báo nó
+func notify_shot_reached() -> void:
+	shot_reached.emit()
+
+
 func _set_hud_visible(shown: bool) -> void:
 	var hud := player.get_node_or_null("HUD") as CanvasLayer
 	if hud:
@@ -121,3 +140,13 @@ func _set_hud_visible(shown: bool) -> void:
 func _on_body_entered(body: Node3D) -> void:
 	if body is Player:
 		(state_machine.current_state as CameraCutsceneState).on_player_entered(body as Player)
+
+
+func _on_source_triggered() -> void:
+	# Camera đang dùng là camera của player (con của scene Player): owner của nó chính là player
+	var current := get_viewport().get_camera_3d()
+	var target_player := current.owner as Player if current else null
+	if target_player == null:
+		push_warning("%s: không tìm thấy player từ camera hiện tại, bỏ qua cutscene" % get_path())
+		return
+	(state_machine.current_state as CameraCutsceneState).on_player_entered(target_player)
