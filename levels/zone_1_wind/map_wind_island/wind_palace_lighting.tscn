@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Environment" path="res://levels/zone_1_wind/map_wind_island/wind_palace_environment.tres" id="1_qlm2p"]
+
+[node name="WindPalaceLighting" type="Node3D" unique_id=1496860166]
+
+[node name="Environment" type="WorldEnvironment" parent="." unique_id=1501548980]
+environment = ExtResource("1_qlm2p")
+
+[node name="MoonLight" type="DirectionalLight3D" parent="." unique_id=533160086]
+transform = Transform3D(0.7880108, 0.48514786, -0.37903908, 0, 0.6156615, 0.7880107, 0.6156615, -0.62096095, 0.4851479, 0, 0, 0)
+light_color = Color(1, 0.98, 0.94, 1)
+light_energy = 1.5
+shadow_enabled = true
+directional_shadow_max_distance = 80.0
