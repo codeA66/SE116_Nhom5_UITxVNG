@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[sub_resource type="Gradient" id="Grad"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0, 0, 0, 0.55, 0, 0, 0, 0.3, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex"]
+gradient = SubResource("Grad")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="Mat"]
+transparency = 1
+shading_mode = 0
+albedo_texture = SubResource("Tex")
+disable_receive_shadows = true
+
+[sub_resource type="QuadMesh" id="Quad"]
+material = SubResource("Mat")
+size = Vector2(1, 1)
+orientation = 1
+
+[node name="ContactShadow" type="MeshInstance3D"]
+editor_description = "Bóng tiếp xúc tĩnh dưới chân vật đứng yên (cột, bệ, chậu): renderer Compatibility không có SSAO. Không script, material dùng chung. Co giãn scale X/Z theo cỡ chân vật, đặt cao hơn sàn ~2 cm."
+cast_shadow = 0
+mesh = SubResource("Quad")

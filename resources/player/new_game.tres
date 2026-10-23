@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="NewGameData" format=3]
+
+[ext_resource type="Script" path="res://entities/player/new_game_data.gd" id="1_u26um"]
+[ext_resource type="Script" path="res://abilities/ability_data.gd" id="2_77kdm"]
+[ext_resource type="Resource" path="res://abilities/dash/dash.tres" id="3_wquuk"]
+
+[resource]
+script = ExtResource("1_u26um")
+starting_abilities = Array[ExtResource("2_77kdm")]([ExtResource("3_wquuk")])
