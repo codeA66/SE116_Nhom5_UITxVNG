@@ -37,10 +37,11 @@ func _ready() -> void:
 	add_child(_stains)
 
 
-## position: điểm trúng; direction: hướng tia bay; color: màu tia lửa; power > 1: đòn mạnh / kết liễu
-func spawn_hit(position: Vector3, direction: Vector3, color: Color = Color(1.0, 0.7, 0.25), effect_scale: float = 1.0, power: float = 1.0) -> void:
+## position: điểm trúng; direction: hướng tia bay; color: màu tia lửa; power > 1: đòn mạnh / kết liễu.
+## cut_axis: hướng nét cắt (ngang); ZERO = lệch ngẫu nhiên so với direction. cut_scale: nhân độ dài/dày nét cắt
+func spawn_hit(position: Vector3, direction: Vector3, color: Color = Color(1.0, 0.7, 0.25), effect_scale: float = 1.0, power: float = 1.0, cut_axis: Vector3 = Vector3.ZERO, cut_scale: float = 1.0) -> void:
 	var fx := _acquire_capped(_hit_pool, max_active_hits) as HitSpark
-	fx.play(position, direction, color, effect_scale, power)
+	fx.play(position, direction, color, effect_scale, power, cut_axis, cut_scale)
 
 
 ## position: chân quái

@@ -10,8 +10,8 @@ uniform vec4 core_color : source_color = vec4(0.9, 0.98, 1.0, 1.0);
 uniform float edge_intensity = 2.5;
 uniform float core_intensity = 3.5;
 // Bề dày dải sáng ngoài (theo UV.y) và phần lõi trắng của nó
-uniform float band_width = 0.2;
-uniform float core_width = 0.07;
+uniform float band_width = 0.13;
+uniform float core_width = 0.08;
 // Lưỡi gió bên trong
 uniform float blade_intensity = 1.8;
 // Số lưỡi (0..5) và độ dài mỗi lưỡi theo chiều quét (tỉ lệ cung)

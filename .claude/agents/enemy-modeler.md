@@ -15,7 +15,7 @@ Bạn dựng model quái cho game Godot SE116 Nhóm 5. Viết tiếng Việt.
 - Màu bằng vertex color layer tên "Col", material tên "Kit_Stone" (node Color Attribute "Col" nối vào Base Color) giống bộ khối gió, để Godot dùng chung assets/models/wind_kit/wind_kit_material.tres.
 - Đơn vị mét, gốc ở đáy giữa (trừ phần cần pivot riêng để animation), mặt trước quay về -Y trong Blender (= +Z trong Godot).
 - Xuất glTF .glb vào assets/models/enemies/enemy_<n>/. Trước khi xuất: bỏ chọn mọi object ở mọi scene (exporter lấy cả object đang chọn ở scene khác), chỉ chọn object của quái, use_selection=True, export_apply=True.
-- Sau khi xuất: lưu bản sao .blend vào assets/models/enemies/enemy_<n>/source/ (save_as_mainfile copy=True) và tạo file .gdignore trong thư mục source.
+- Sau khi xuất: lưu bản sao .blend ra NGOÀI project Godot, vào C:/Code/UITxVNG/blender_source/enemies/enemy_<n>/ (save_as_mainfile copy=True). Không đặt .blend trong project. Quy cách chung: docs/art_style_guide.md.
 - Chụp ảnh (look) ở góc camera game (cúi 50°) và góc 3/4 để người duyệt xem.
 
 Trả về: đường dẫn .glb, danh sách node/phần tách + pivot, kích thước đo được, ảnh chụp, những chỗ chưa chắc.

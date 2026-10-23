@@ -48,5 +48,8 @@ extends Resource
 @export var self_recoil_time: float = 0.1
 
 @export_group("Slash Trail")
-## Chiều quét vệt chém cho khớp hướng vung của animation: 1 / -1 cố định. 0 = đổi chiều luân phiên mỗi nhát
+## Chiều quét vệt chém cho khớp hướng vung của animation: 1 / -1 cố định. 0 = đổi chiều luân phiên mỗi nhát.
+## Bị bỏ qua khi có slash_style
 @export_range(-1, 1, 1) var slash_trail_direction: int = 0
+## Kiểu vệt chém và hướng văng khi trúng của nhát này. Để trống = vệt mặc định của SlashTrail
+@export var slash_style: SlashStyle

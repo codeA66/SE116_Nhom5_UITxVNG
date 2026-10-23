@@ -81,5 +81,9 @@ func _on_area_entered(area: Area3D) -> void:
 	var origin := owner as Node3D if owner is Node3D else self
 	var direction := hurtbox.global_position - origin.global_position
 	direction.y = 0.0
-	hurtbox.receive_hit(DamageInfo.new(attack.damage, attack.damage_type, direction.normalized() * attack.knockback, owner))
+	direction = direction.normalized()
+	var info := DamageInfo.new(attack.damage, attack.damage_type, direction * attack.knockback, owner)
+	info.direction = direction
+	info.attack = attack
+	hurtbox.receive_hit(info)
 	hit.emit(hurtbox)
