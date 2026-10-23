@@ -9,12 +9,18 @@ signal checkpoint_changed(zone_path: String, spawn_id: StringName)
 ## Toàn bộ tiến trình bị thay (đọc save, chơi lại từ đầu)
 signal progress_replaced
 
+const NEW_GAME: NewGameData = preload("res://resources/player/new_game.tres")
+
 var progress: PlayerProgress = PlayerProgress.new()
 
 var _player_health: int = -1
 ## Cờ chờ checkpoint (set_flag_on_checkpoint): chỉ ghi vào tiến trình khi chạm checkpoint mới;
 ## bị bỏ khi đổi khu, chết hay thoát game mà chưa chạm checkpoint
 var _pending_flags: Dictionary[StringName, bool] = {}
+
+
+func _ready() -> void:
+	_grant_starting_abilities()
 
 
 func get_weapon() -> WeaponData:
@@ -105,6 +111,7 @@ func replace_progress(new_progress: PlayerProgress) -> void:
 	# Tương thích tiến trình cũ chỉ có một weapon.
 	if progress.weapon:
 		_store_weapon(progress.weapon)
+	_grant_starting_abilities()
 	_pending_flags.clear()
 	reset_player_health()
 	progress_replaced.emit()
@@ -147,3 +154,10 @@ func set_player_health(value: int) -> void:
 
 func reset_player_health() -> void:
 	_player_health = -1
+
+
+## Kỹ năng khởi đầu luôn có, kể cả save cũ tạo trước khi thêm chúng. Không phát signal: không phải vừa nhặt
+func _grant_starting_abilities() -> void:
+	for ability in NEW_GAME.starting_abilities:
+		if ability and not has_ability(ability.id):
+			progress.abilities.append(ability)
