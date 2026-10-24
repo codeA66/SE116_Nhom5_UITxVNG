@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://objects/boat/boat.tscn" id="1_boat"]
+[ext_resource type="PackedScene" uid="uid://dwxwtn8hvwc3l" path="res://assets/generated/wind_ruins/gridmap/cloud_skiff_20261024/cloud_skiff_20261024_v01.glb" id="2_skiff"]
+
+[node name="CloudSkiff" instance=ExtResource("1_boat")]
+
+[node name="BoatVisual" parent="." index="2"]
+visible = false
+
+[node name="SkiffModel" parent="." instance=ExtResource("2_skiff")]
