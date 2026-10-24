@@ -1,6 +1,8 @@
 extends Node3D
 ## Thang hoàng gia giữ tầng trên cho tới khi cáo rời hẳn bệ.
 
+## Chỉ dùng làm tên tín hiệu chặn cắt cảnh tự chạy (cắt cảnh được gọi thẳng trong begin_trip); không phát thật
+@warning_ignore("unused_signal")
 signal trip_started
 signal arrived
 
@@ -40,6 +42,10 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	state_machine.physics_update(delta)
+
+## State Docked gọi khi thang lên tới nơi: signal phát từ chính class khai báo nó
+func notify_arrived() -> void:
+	arrived.emit()
 
 func is_docked() -> bool:
 	return state_machine.current_state.name == &"Docked"

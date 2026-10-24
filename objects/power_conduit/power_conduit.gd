@@ -54,13 +54,13 @@ func _build() -> void:
 		var length := a.distance_to(b)
 		if length < 0.01:
 			continue
-		var basis := Basis.looking_at(b - a, Vector3.UP)
+		var seg_basis := Basis.looking_at(b - a, Vector3.UP)
 		if groove_material:
 			var groove := _strip(width * 1.7, 0.012, length, groove_material)
-			groove.transform = Transform3D(basis, (a + b) * 0.5)
+			groove.transform = Transform3D(seg_basis, (a + b) * 0.5)
 			add_child(groove)
 		var pivot := Node3D.new()
-		pivot.transform = Transform3D(basis, a)
+		pivot.transform = Transform3D(seg_basis, a)
 		# Không đặt đúng 0: basis suy biến
 		pivot.scale.z = 0.001
 		add_child(pivot)
