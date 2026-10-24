@@ -1252,659 +1252,659 @@ instance_count = 6
 mesh = SubResource("ArrayMesh_rfdf0")
 buffer = PackedFloat32Array(1, 0, 0, -7.61, 0, 1, 0, 21.640001, 0, 0, 1, 7.955006, 1, 0, 0, -4.39, 0, 1, 0, 21.640001, 0, 0, 1, 7.955006, 1, 0, 0, -3.6100001, 0, 1, 0, 21.640001, 0, 0, 1, 7.955006, 1, 0, 0, -0.39, 0, 1, 0, 21.640001, 0, 0, 1, 7.955006, 1, 0, 0, 4.39, 0, 1, 0, 21.640001, 0, 0, 1, 7.955006, 1, 0, 0, 7.61, 0, 1, 0, 21.640001, 0, 0, 1, 7.955006)
 
-[node name="T2Room27BossGate" type="Node3D" unique_id=741218125]
+[node name="T2Room27BossGate" type="Node3D" unique_id=1923561438]
 
-[node name="World" type="Node3D" parent="." unique_id=1376521994]
+[node name="World" type="Node3D" parent="." unique_id=2128134459]
 
-[node name="P27_BossGate" type="StaticBody3D" parent="World" unique_id=632569033]
+[node name="P27_BossGate" type="StaticBody3D" parent="World" unique_id=1769647263]
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/P27_BossGate" unique_id=1970894690]
+[node name="Collision" type="CollisionShape3D" parent="World/P27_BossGate" unique_id=1653243819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.865, 0)
 shape = SubResource("BoxShape3D_kasju")
 
-[node name="WallT01" type="StaticBody3D" parent="World" unique_id=1951398376]
+[node name="WallT01" type="StaticBody3D" parent="World" unique_id=1861338738]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 24.02, -6.5)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT01" unique_id=859506965]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT01" unique_id=1606304784]
 shape = SubResource("BoxShape3D_uqxb2")
 
-[node name="WallT02" type="StaticBody3D" parent="World" unique_id=752538751]
+[node name="WallT02" type="StaticBody3D" parent="World" unique_id=1235165647]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 24.02, -6.5)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT02" unique_id=1125548753]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT02" unique_id=804802309]
 shape = SubResource("BoxShape3D_x64s2")
 
-[node name="WallT03" type="StaticBody3D" parent="World" unique_id=2090121380]
+[node name="WallT03" type="StaticBody3D" parent="World" unique_id=313635381]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 24.02, -6.5)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT03" unique_id=252503338]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT03" unique_id=1723413007]
 shape = SubResource("BoxShape3D_6ropn")
 
-[node name="WallT04" type="StaticBody3D" parent="World" unique_id=1196932805]
+[node name="WallT04" type="StaticBody3D" parent="World" unique_id=1298629393]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 24.02, -6.5)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT04" unique_id=1402940496]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT04" unique_id=561078437]
 shape = SubResource("BoxShape3D_th6ny")
 
-[node name="WallA05" type="StaticBody3D" parent="World" unique_id=445673969]
+[node name="WallA05" type="StaticBody3D" parent="World" unique_id=766709933]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 21.47, 7.850006)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallA05" unique_id=1336660094]
+[node name="Collision" type="CollisionShape3D" parent="World/WallA05" unique_id=1436444212]
 shape = SubResource("BoxShape3D_dwqst")
 
-[node name="WallA06" type="StaticBody3D" parent="World" unique_id=274993553]
+[node name="WallA06" type="StaticBody3D" parent="World" unique_id=147079889]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 21.47, 7.850006)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallA06" unique_id=1205772268]
+[node name="Collision" type="CollisionShape3D" parent="World/WallA06" unique_id=1626452170]
 shape = SubResource("BoxShape3D_ugdo5")
 
-[node name="WallA07" type="StaticBody3D" parent="World" unique_id=167075890]
+[node name="WallA07" type="StaticBody3D" parent="World" unique_id=1666416364]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 21.47, 7.850006)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallA07" unique_id=795247426]
+[node name="Collision" type="CollisionShape3D" parent="World/WallA07" unique_id=786134202]
 shape = SubResource("BoxShape3D_emf4n")
 
-[node name="WallT05" type="StaticBody3D" parent="World" unique_id=1982045026]
+[node name="WallT05" type="StaticBody3D" parent="World" unique_id=50488083]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5, 24.02, -6)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT05" unique_id=1187600082]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT05" unique_id=1102381235]
 shape = SubResource("BoxShape3D_sthi3")
 
-[node name="WallT06" type="StaticBody3D" parent="World" unique_id=1135505941]
+[node name="WallT06" type="StaticBody3D" parent="World" unique_id=78239708]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5, 24.02, -2)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT06" unique_id=1756900413]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT06" unique_id=515369634]
 shape = SubResource("BoxShape3D_832gp")
 
-[node name="WallT07" type="StaticBody3D" parent="World" unique_id=1365725606]
+[node name="WallT07" type="StaticBody3D" parent="World" unique_id=1572746104]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5, 24.02, 2)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT07" unique_id=417543114]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT07" unique_id=1526134139]
 shape = SubResource("BoxShape3D_brhji")
 
-[node name="WallT08" type="StaticBody3D" parent="World" unique_id=1117609873]
+[node name="WallT08" type="StaticBody3D" parent="World" unique_id=704761722]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6.5, 24.02, 6)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT08" unique_id=1480592348]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT08" unique_id=248882503]
 shape = SubResource("BoxShape3D_k21mw")
 
-[node name="WallT09" type="StaticBody3D" parent="World" unique_id=1389752931]
+[node name="WallT09" type="StaticBody3D" parent="World" unique_id=1500445050]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.5, 24.02, -6)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT09" unique_id=350250217]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT09" unique_id=1410364484]
 shape = SubResource("BoxShape3D_yfx24")
 
-[node name="WallT10" type="StaticBody3D" parent="World" unique_id=358517808]
+[node name="WallT10" type="StaticBody3D" parent="World" unique_id=1176461798]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.5, 24.02, -2)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT10" unique_id=97641309]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT10" unique_id=910381437]
 shape = SubResource("BoxShape3D_d154a")
 
-[node name="WallT11" type="StaticBody3D" parent="World" unique_id=1494043102]
+[node name="WallT11" type="StaticBody3D" parent="World" unique_id=868677723]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.5, 24.02, 2)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT11" unique_id=930613827]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT11" unique_id=1210756460]
 shape = SubResource("BoxShape3D_yf0lb")
 
-[node name="WallT12" type="StaticBody3D" parent="World" unique_id=870209303]
+[node name="WallT12" type="StaticBody3D" parent="World" unique_id=2030846191]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.5, 24.02, 6)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/WallT12" unique_id=505647947]
+[node name="Collision" type="CollisionShape3D" parent="World/WallT12" unique_id=1989401538]
 shape = SubResource("BoxShape3D_pk0oo")
 
-[node name="L01_2804" type="Node3D" parent="World" unique_id=108643954]
+[node name="L01_2800" type="Node3D" parent="World" unique_id=1996908255]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.02, -4)
 
-[node name="L01_Banner_Left" type="MeshInstance3D" parent="World/L01_2804" unique_id=1706906568]
+[node name="L01_Banner_Left" type="MeshInstance3D" parent="World/L01_2800" unique_id=584587763]
 mesh = SubResource("ArrayMesh_417n6")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@832" type="StaticBody3D" parent="World/L01_2804/L01_Banner_Left" unique_id=155193514]
+[node name="@StaticBody3D@832" type="StaticBody3D" parent="World/L01_2800/L01_Banner_Left" unique_id=1225226542]
 collision_mask = 0
 
-[node name="@CollisionShape3D@831" type="CollisionShape3D" parent="World/L01_2804/L01_Banner_Left/@StaticBody3D@832" unique_id=2103736173]
+[node name="@CollisionShape3D@831" type="CollisionShape3D" parent="World/L01_2800/L01_Banner_Left/@StaticBody3D@832" unique_id=1718384750]
 shape = SubResource("ConcavePolygonShape3D_m3sqk")
 
-[node name="L01_Banner_Right" type="MeshInstance3D" parent="World/L01_2804" unique_id=849080453]
+[node name="L01_Banner_Right" type="MeshInstance3D" parent="World/L01_2800" unique_id=1339229444]
 mesh = SubResource("ArrayMesh_w8hqn")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@834" type="StaticBody3D" parent="World/L01_2804/L01_Banner_Right" unique_id=1166959516]
+[node name="@StaticBody3D@834" type="StaticBody3D" parent="World/L01_2800/L01_Banner_Right" unique_id=1258930813]
 collision_mask = 0
 
-[node name="@CollisionShape3D@833" type="CollisionShape3D" parent="World/L01_2804/L01_Banner_Right/@StaticBody3D@834" unique_id=1183582356]
+[node name="@CollisionShape3D@833" type="CollisionShape3D" parent="World/L01_2800/L01_Banner_Right/@StaticBody3D@834" unique_id=1499818647]
 shape = SubResource("ConcavePolygonShape3D_e4sji")
 
-[node name="L01_BannerPole_Left" type="MeshInstance3D" parent="World/L01_2804" unique_id=780970393]
+[node name="L01_BannerPole_Left" type="MeshInstance3D" parent="World/L01_2800" unique_id=1454432986]
 mesh = SubResource("ArrayMesh_orwn2")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@836" type="StaticBody3D" parent="World/L01_2804/L01_BannerPole_Left" unique_id=1423563121]
+[node name="@StaticBody3D@836" type="StaticBody3D" parent="World/L01_2800/L01_BannerPole_Left" unique_id=1098093161]
 collision_mask = 0
 
-[node name="@CollisionShape3D@835" type="CollisionShape3D" parent="World/L01_2804/L01_BannerPole_Left/@StaticBody3D@836" unique_id=1269429879]
+[node name="@CollisionShape3D@835" type="CollisionShape3D" parent="World/L01_2800/L01_BannerPole_Left/@StaticBody3D@836" unique_id=1822026475]
 shape = SubResource("ConcavePolygonShape3D_5gnr1")
 
-[node name="L01_BannerPole_Right" type="MeshInstance3D" parent="World/L01_2804" unique_id=2011514568]
+[node name="L01_BannerPole_Right" type="MeshInstance3D" parent="World/L01_2800" unique_id=969158321]
 mesh = SubResource("ArrayMesh_s4jrm")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@838" type="StaticBody3D" parent="World/L01_2804/L01_BannerPole_Right" unique_id=1469133621]
+[node name="@StaticBody3D@838" type="StaticBody3D" parent="World/L01_2800/L01_BannerPole_Right" unique_id=2116813984]
 collision_mask = 0
 
-[node name="@CollisionShape3D@837" type="CollisionShape3D" parent="World/L01_2804/L01_BannerPole_Right/@StaticBody3D@838" unique_id=500875141]
+[node name="@CollisionShape3D@837" type="CollisionShape3D" parent="World/L01_2800/L01_BannerPole_Right/@StaticBody3D@838" unique_id=1882903814]
 shape = SubResource("ConcavePolygonShape3D_0kn7m")
 
-[node name="L01_BannerStaff_Left" type="MeshInstance3D" parent="World/L01_2804" unique_id=287596510]
+[node name="L01_BannerStaff_Left" type="MeshInstance3D" parent="World/L01_2800" unique_id=799244156]
 mesh = SubResource("ArrayMesh_2fg3r")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@840" type="StaticBody3D" parent="World/L01_2804/L01_BannerStaff_Left" unique_id=1856133508]
+[node name="@StaticBody3D@840" type="StaticBody3D" parent="World/L01_2800/L01_BannerStaff_Left" unique_id=1154229737]
 collision_mask = 0
 
-[node name="@CollisionShape3D@839" type="CollisionShape3D" parent="World/L01_2804/L01_BannerStaff_Left/@StaticBody3D@840" unique_id=1291653960]
+[node name="@CollisionShape3D@839" type="CollisionShape3D" parent="World/L01_2800/L01_BannerStaff_Left/@StaticBody3D@840" unique_id=1284380604]
 shape = SubResource("ConcavePolygonShape3D_yfwfv")
 
-[node name="L01_BannerStaff_Right" type="MeshInstance3D" parent="World/L01_2804" unique_id=993770197]
+[node name="L01_BannerStaff_Right" type="MeshInstance3D" parent="World/L01_2800" unique_id=395527146]
 mesh = SubResource("ArrayMesh_l4v2t")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@842" type="StaticBody3D" parent="World/L01_2804/L01_BannerStaff_Right" unique_id=1956021564]
+[node name="@StaticBody3D@842" type="StaticBody3D" parent="World/L01_2800/L01_BannerStaff_Right" unique_id=945830601]
 collision_mask = 0
 
-[node name="@CollisionShape3D@841" type="CollisionShape3D" parent="World/L01_2804/L01_BannerStaff_Right/@StaticBody3D@842" unique_id=1685228335]
+[node name="@CollisionShape3D@841" type="CollisionShape3D" parent="World/L01_2800/L01_BannerStaff_Right/@StaticBody3D@842" unique_id=1855221028]
 shape = SubResource("ConcavePolygonShape3D_tvj4q")
 
-[node name="L01_Crossbeam" type="MeshInstance3D" parent="World/L01_2804" unique_id=1689322184]
+[node name="L01_Crossbeam" type="MeshInstance3D" parent="World/L01_2800" unique_id=716646241]
 mesh = SubResource("ArrayMesh_7swli")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@844" type="StaticBody3D" parent="World/L01_2804/L01_Crossbeam" unique_id=2106031223]
+[node name="@StaticBody3D@844" type="StaticBody3D" parent="World/L01_2800/L01_Crossbeam" unique_id=1660013008]
 collision_mask = 0
 
-[node name="@CollisionShape3D@843" type="CollisionShape3D" parent="World/L01_2804/L01_Crossbeam/@StaticBody3D@844" unique_id=523739645]
+[node name="@CollisionShape3D@843" type="CollisionShape3D" parent="World/L01_2800/L01_Crossbeam/@StaticBody3D@844" unique_id=2096601288]
 shape = SubResource("ConcavePolygonShape3D_m0mmv")
 
-[node name="L01_F01_Emblem_Left_Back_1" type="MeshInstance3D" parent="World/L01_2804" unique_id=1731570367]
+[node name="L01_F01_Emblem_Left_Back_1" type="MeshInstance3D" parent="World/L01_2800" unique_id=114797753]
 mesh = SubResource("ArrayMesh_lm3b6")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@846" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Left_Back_1" unique_id=266181783]
+[node name="@StaticBody3D@846" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Left_Back_1" unique_id=1840971971]
 collision_mask = 0
 
-[node name="@CollisionShape3D@845" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Left_Back_1/@StaticBody3D@846" unique_id=801407822]
+[node name="@CollisionShape3D@845" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Left_Back_1/@StaticBody3D@846" unique_id=985279546]
 shape = SubResource("ConcavePolygonShape3D_xrtiv")
 
-[node name="L01_F01_Emblem_Left_Back_2" type="MeshInstance3D" parent="World/L01_2804" unique_id=249672715]
+[node name="L01_F01_Emblem_Left_Back_2" type="MeshInstance3D" parent="World/L01_2800" unique_id=17081162]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_ffmec")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@848" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Left_Back_2" unique_id=644386924]
+[node name="@StaticBody3D@848" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Left_Back_2" unique_id=911347269]
 collision_mask = 0
 
-[node name="@CollisionShape3D@847" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Left_Back_2/@StaticBody3D@848" unique_id=687335381]
+[node name="@CollisionShape3D@847" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Left_Back_2/@StaticBody3D@848" unique_id=1910384835]
 shape = SubResource("ConcavePolygonShape3D_vv257")
 
-[node name="L01_F01_Emblem_Left_Back_3" type="MeshInstance3D" parent="World/L01_2804" unique_id=1533905468]
+[node name="L01_F01_Emblem_Left_Back_3" type="MeshInstance3D" parent="World/L01_2800" unique_id=1931675393]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_i3j4k")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@850" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Left_Back_3" unique_id=997384088]
+[node name="@StaticBody3D@850" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Left_Back_3" unique_id=1760160242]
 collision_mask = 0
 
-[node name="@CollisionShape3D@849" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Left_Back_3/@StaticBody3D@850" unique_id=1140185566]
+[node name="@CollisionShape3D@849" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Left_Back_3/@StaticBody3D@850" unique_id=735953860]
 shape = SubResource("ConcavePolygonShape3D_t6ayb")
 
-[node name="L01_F01_Emblem_Left_Back_4" type="MeshInstance3D" parent="World/L01_2804" unique_id=882858349]
+[node name="L01_F01_Emblem_Left_Back_4" type="MeshInstance3D" parent="World/L01_2800" unique_id=1716020578]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_ivn3f")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@852" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Left_Back_4" unique_id=2134507584]
+[node name="@StaticBody3D@852" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Left_Back_4" unique_id=205575577]
 collision_mask = 0
 
-[node name="@CollisionShape3D@851" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Left_Back_4/@StaticBody3D@852" unique_id=1422602432]
+[node name="@CollisionShape3D@851" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Left_Back_4/@StaticBody3D@852" unique_id=1715632124]
 shape = SubResource("ConcavePolygonShape3D_snjwj")
 
-[node name="L01_F01_Emblem_Left_Front_1" type="MeshInstance3D" parent="World/L01_2804" unique_id=29320415]
+[node name="L01_F01_Emblem_Left_Front_1" type="MeshInstance3D" parent="World/L01_2800" unique_id=812651307]
 mesh = SubResource("ArrayMesh_w6vu6")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@854" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Left_Front_1" unique_id=1039362417]
+[node name="@StaticBody3D@854" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Left_Front_1" unique_id=502394748]
 collision_mask = 0
 
-[node name="@CollisionShape3D@853" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Left_Front_1/@StaticBody3D@854" unique_id=1113535173]
+[node name="@CollisionShape3D@853" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Left_Front_1/@StaticBody3D@854" unique_id=435889349]
 shape = SubResource("ConcavePolygonShape3D_v2hxx")
 
-[node name="L01_F01_Emblem_Left_Front_2" type="MeshInstance3D" parent="World/L01_2804" unique_id=1666911115]
+[node name="L01_F01_Emblem_Left_Front_2" type="MeshInstance3D" parent="World/L01_2800" unique_id=1226444732]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_hy4ul")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@856" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Left_Front_2" unique_id=1279481597]
+[node name="@StaticBody3D@856" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Left_Front_2" unique_id=527885257]
 collision_mask = 0
 
-[node name="@CollisionShape3D@855" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Left_Front_2/@StaticBody3D@856" unique_id=1885829132]
+[node name="@CollisionShape3D@855" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Left_Front_2/@StaticBody3D@856" unique_id=688439732]
 shape = SubResource("ConcavePolygonShape3D_oesvf")
 
-[node name="L01_F01_Emblem_Left_Front_3" type="MeshInstance3D" parent="World/L01_2804" unique_id=1349553394]
+[node name="L01_F01_Emblem_Left_Front_3" type="MeshInstance3D" parent="World/L01_2800" unique_id=210295526]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_pknoy")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@858" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Left_Front_3" unique_id=924761510]
+[node name="@StaticBody3D@858" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Left_Front_3" unique_id=1182417967]
 collision_mask = 0
 
-[node name="@CollisionShape3D@857" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Left_Front_3/@StaticBody3D@858" unique_id=42872335]
+[node name="@CollisionShape3D@857" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Left_Front_3/@StaticBody3D@858" unique_id=536269754]
 shape = SubResource("ConcavePolygonShape3D_r8syb")
 
-[node name="L01_F01_Emblem_Left_Front_4" type="MeshInstance3D" parent="World/L01_2804" unique_id=1231897981]
+[node name="L01_F01_Emblem_Left_Front_4" type="MeshInstance3D" parent="World/L01_2800" unique_id=1851800208]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_aojof")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@860" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Left_Front_4" unique_id=1810603365]
+[node name="@StaticBody3D@860" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Left_Front_4" unique_id=2021315542]
 collision_mask = 0
 
-[node name="@CollisionShape3D@859" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Left_Front_4/@StaticBody3D@860" unique_id=1117441200]
+[node name="@CollisionShape3D@859" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Left_Front_4/@StaticBody3D@860" unique_id=1990686741]
 shape = SubResource("ConcavePolygonShape3D_6p54q")
 
-[node name="L01_F01_Emblem_Right_Back_1" type="MeshInstance3D" parent="World/L01_2804" unique_id=516389788]
+[node name="L01_F01_Emblem_Right_Back_1" type="MeshInstance3D" parent="World/L01_2800" unique_id=1003083284]
 mesh = SubResource("ArrayMesh_ui2i8")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@862" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Right_Back_1" unique_id=918747210]
+[node name="@StaticBody3D@862" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Right_Back_1" unique_id=1838070028]
 collision_mask = 0
 
-[node name="@CollisionShape3D@861" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Right_Back_1/@StaticBody3D@862" unique_id=781343712]
+[node name="@CollisionShape3D@861" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Right_Back_1/@StaticBody3D@862" unique_id=129413874]
 shape = SubResource("ConcavePolygonShape3D_y518l")
 
-[node name="L01_F01_Emblem_Right_Back_2" type="MeshInstance3D" parent="World/L01_2804" unique_id=53773088]
+[node name="L01_F01_Emblem_Right_Back_2" type="MeshInstance3D" parent="World/L01_2800" unique_id=245694277]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_0xi3h")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@864" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Right_Back_2" unique_id=1201106775]
+[node name="@StaticBody3D@864" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Right_Back_2" unique_id=686461583]
 collision_mask = 0
 
-[node name="@CollisionShape3D@863" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Right_Back_2/@StaticBody3D@864" unique_id=2048872004]
+[node name="@CollisionShape3D@863" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Right_Back_2/@StaticBody3D@864" unique_id=1186785375]
 shape = SubResource("ConcavePolygonShape3D_qmx4w")
 
-[node name="L01_F01_Emblem_Right_Back_3" type="MeshInstance3D" parent="World/L01_2804" unique_id=27087602]
+[node name="L01_F01_Emblem_Right_Back_3" type="MeshInstance3D" parent="World/L01_2800" unique_id=884052458]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_y5lgd")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@866" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Right_Back_3" unique_id=287138797]
+[node name="@StaticBody3D@866" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Right_Back_3" unique_id=429014805]
 collision_mask = 0
 
-[node name="@CollisionShape3D@865" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Right_Back_3/@StaticBody3D@866" unique_id=1456711338]
+[node name="@CollisionShape3D@865" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Right_Back_3/@StaticBody3D@866" unique_id=487869107]
 shape = SubResource("ConcavePolygonShape3D_h33c0")
 
-[node name="L01_F01_Emblem_Right_Back_4" type="MeshInstance3D" parent="World/L01_2804" unique_id=1169864257]
+[node name="L01_F01_Emblem_Right_Back_4" type="MeshInstance3D" parent="World/L01_2800" unique_id=129367535]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_ncasa")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@868" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Right_Back_4" unique_id=1975112649]
+[node name="@StaticBody3D@868" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Right_Back_4" unique_id=727715231]
 collision_mask = 0
 
-[node name="@CollisionShape3D@867" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Right_Back_4/@StaticBody3D@868" unique_id=392971635]
+[node name="@CollisionShape3D@867" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Right_Back_4/@StaticBody3D@868" unique_id=1769401008]
 shape = SubResource("ConcavePolygonShape3D_kdqvu")
 
-[node name="L01_F01_Emblem_Right_Front_1" type="MeshInstance3D" parent="World/L01_2804" unique_id=1479987925]
+[node name="L01_F01_Emblem_Right_Front_1" type="MeshInstance3D" parent="World/L01_2800" unique_id=483616996]
 mesh = SubResource("ArrayMesh_a6f8l")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@870" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Right_Front_1" unique_id=931048867]
+[node name="@StaticBody3D@870" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Right_Front_1" unique_id=771036312]
 collision_mask = 0
 
-[node name="@CollisionShape3D@869" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Right_Front_1/@StaticBody3D@870" unique_id=1219197470]
+[node name="@CollisionShape3D@869" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Right_Front_1/@StaticBody3D@870" unique_id=317103358]
 shape = SubResource("ConcavePolygonShape3D_8oqcn")
 
-[node name="L01_F01_Emblem_Right_Front_2" type="MeshInstance3D" parent="World/L01_2804" unique_id=389986833]
+[node name="L01_F01_Emblem_Right_Front_2" type="MeshInstance3D" parent="World/L01_2800" unique_id=961946133]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_17o58")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@872" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Right_Front_2" unique_id=739579603]
+[node name="@StaticBody3D@872" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Right_Front_2" unique_id=74489657]
 collision_mask = 0
 
-[node name="@CollisionShape3D@871" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Right_Front_2/@StaticBody3D@872" unique_id=1585653524]
+[node name="@CollisionShape3D@871" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Right_Front_2/@StaticBody3D@872" unique_id=2033438540]
 shape = SubResource("ConcavePolygonShape3D_586y2")
 
-[node name="L01_F01_Emblem_Right_Front_3" type="MeshInstance3D" parent="World/L01_2804" unique_id=818747696]
+[node name="L01_F01_Emblem_Right_Front_3" type="MeshInstance3D" parent="World/L01_2800" unique_id=1525474240]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_tqlqn")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@874" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Right_Front_3" unique_id=1515999555]
+[node name="@StaticBody3D@874" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Right_Front_3" unique_id=1980770624]
 collision_mask = 0
 
-[node name="@CollisionShape3D@873" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Right_Front_3/@StaticBody3D@874" unique_id=1655426576]
+[node name="@CollisionShape3D@873" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Right_Front_3/@StaticBody3D@874" unique_id=1115929108]
 shape = SubResource("ConcavePolygonShape3D_wcu7g")
 
-[node name="L01_F01_Emblem_Right_Front_4" type="MeshInstance3D" parent="World/L01_2804" unique_id=549800711]
+[node name="L01_F01_Emblem_Right_Front_4" type="MeshInstance3D" parent="World/L01_2800" unique_id=1511541564]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_e5hi7")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@876" type="StaticBody3D" parent="World/L01_2804/L01_F01_Emblem_Right_Front_4" unique_id=862992050]
+[node name="@StaticBody3D@876" type="StaticBody3D" parent="World/L01_2800/L01_F01_Emblem_Right_Front_4" unique_id=94219366]
 collision_mask = 0
 
-[node name="@CollisionShape3D@875" type="CollisionShape3D" parent="World/L01_2804/L01_F01_Emblem_Right_Front_4/@StaticBody3D@876" unique_id=1925548458]
+[node name="@CollisionShape3D@875" type="CollisionShape3D" parent="World/L01_2800/L01_F01_Emblem_Right_Front_4/@StaticBody3D@876" unique_id=603944195]
 shape = SubResource("ConcavePolygonShape3D_dj1fe")
 
-[node name="L01_Left_BaseShoulder" type="MeshInstance3D" parent="World/L01_2804" unique_id=1110911227]
+[node name="L01_Left_BaseShoulder" type="MeshInstance3D" parent="World/L01_2800" unique_id=263632271]
 mesh = SubResource("ArrayMesh_x20ob")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@878" type="StaticBody3D" parent="World/L01_2804/L01_Left_BaseShoulder" unique_id=572302880]
+[node name="@StaticBody3D@878" type="StaticBody3D" parent="World/L01_2800/L01_Left_BaseShoulder" unique_id=244827637]
 collision_mask = 0
 
-[node name="@CollisionShape3D@877" type="CollisionShape3D" parent="World/L01_2804/L01_Left_BaseShoulder/@StaticBody3D@878" unique_id=380081063]
+[node name="@CollisionShape3D@877" type="CollisionShape3D" parent="World/L01_2800/L01_Left_BaseShoulder/@StaticBody3D@878" unique_id=1581665921]
 shape = SubResource("ConcavePolygonShape3D_arn42")
 
-[node name="L01_Left_FlaredCapital" type="MeshInstance3D" parent="World/L01_2804" unique_id=471338135]
+[node name="L01_Left_FlaredCapital" type="MeshInstance3D" parent="World/L01_2800" unique_id=53384377]
 mesh = SubResource("ArrayMesh_e0ek7")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@880" type="StaticBody3D" parent="World/L01_2804/L01_Left_FlaredCapital" unique_id=1373906365]
+[node name="@StaticBody3D@880" type="StaticBody3D" parent="World/L01_2800/L01_Left_FlaredCapital" unique_id=770007078]
 collision_mask = 0
 
-[node name="@CollisionShape3D@879" type="CollisionShape3D" parent="World/L01_2804/L01_Left_FlaredCapital/@StaticBody3D@880" unique_id=213738921]
+[node name="@CollisionShape3D@879" type="CollisionShape3D" parent="World/L01_2800/L01_Left_FlaredCapital/@StaticBody3D@880" unique_id=1036535357]
 shape = SubResource("ConcavePolygonShape3D_8lwcy")
 
-[node name="L01_Left_FootPlinth" type="MeshInstance3D" parent="World/L01_2804" unique_id=391151771]
+[node name="L01_Left_FootPlinth" type="MeshInstance3D" parent="World/L01_2800" unique_id=390558962]
 mesh = SubResource("ArrayMesh_lrpq1")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@882" type="StaticBody3D" parent="World/L01_2804/L01_Left_FootPlinth" unique_id=1654527179]
+[node name="@StaticBody3D@882" type="StaticBody3D" parent="World/L01_2800/L01_Left_FootPlinth" unique_id=972543454]
 collision_mask = 0
 
-[node name="@CollisionShape3D@881" type="CollisionShape3D" parent="World/L01_2804/L01_Left_FootPlinth/@StaticBody3D@882" unique_id=1201943395]
+[node name="@CollisionShape3D@881" type="CollisionShape3D" parent="World/L01_2800/L01_Left_FootPlinth/@StaticBody3D@882" unique_id=1434920730]
 shape = SubResource("ConcavePolygonShape3D_dm4en")
 
-[node name="L01_Left_OctagonalShaft" type="MeshInstance3D" parent="World/L01_2804" unique_id=1620463661]
+[node name="L01_Left_OctagonalShaft" type="MeshInstance3D" parent="World/L01_2800" unique_id=1629282205]
 mesh = SubResource("ArrayMesh_og2n5")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@884" type="StaticBody3D" parent="World/L01_2804/L01_Left_OctagonalShaft" unique_id=1182871236]
+[node name="@StaticBody3D@884" type="StaticBody3D" parent="World/L01_2800/L01_Left_OctagonalShaft" unique_id=259403344]
 collision_mask = 0
 
-[node name="@CollisionShape3D@883" type="CollisionShape3D" parent="World/L01_2804/L01_Left_OctagonalShaft/@StaticBody3D@884" unique_id=1467749270]
+[node name="@CollisionShape3D@883" type="CollisionShape3D" parent="World/L01_2800/L01_Left_OctagonalShaft/@StaticBody3D@884" unique_id=1090187081]
 shape = SubResource("ConcavePolygonShape3D_qemux")
 
-[node name="L01_Left_Pedestal" type="MeshInstance3D" parent="World/L01_2804" unique_id=1513376451]
+[node name="L01_Left_Pedestal" type="MeshInstance3D" parent="World/L01_2800" unique_id=812246588]
 mesh = SubResource("ArrayMesh_m8wkg")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@886" type="StaticBody3D" parent="World/L01_2804/L01_Left_Pedestal" unique_id=1909896679]
+[node name="@StaticBody3D@886" type="StaticBody3D" parent="World/L01_2800/L01_Left_Pedestal" unique_id=1741250540]
 collision_mask = 0
 
-[node name="@CollisionShape3D@885" type="CollisionShape3D" parent="World/L01_2804/L01_Left_Pedestal/@StaticBody3D@886" unique_id=214530588]
+[node name="@CollisionShape3D@885" type="CollisionShape3D" parent="World/L01_2800/L01_Left_Pedestal/@StaticBody3D@886" unique_id=755017518]
 shape = SubResource("ConcavePolygonShape3D_vok5s")
 
-[node name="L01_Left_UpperCollar" type="MeshInstance3D" parent="World/L01_2804" unique_id=104623627]
+[node name="L01_Left_UpperCollar" type="MeshInstance3D" parent="World/L01_2800" unique_id=1843590036]
 mesh = SubResource("ArrayMesh_iosjy")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@888" type="StaticBody3D" parent="World/L01_2804/L01_Left_UpperCollar" unique_id=1879570594]
+[node name="@StaticBody3D@888" type="StaticBody3D" parent="World/L01_2800/L01_Left_UpperCollar" unique_id=82206624]
 collision_mask = 0
 
-[node name="@CollisionShape3D@887" type="CollisionShape3D" parent="World/L01_2804/L01_Left_UpperCollar/@StaticBody3D@888" unique_id=1177680846]
+[node name="@CollisionShape3D@887" type="CollisionShape3D" parent="World/L01_2800/L01_Left_UpperCollar/@StaticBody3D@888" unique_id=1225798289]
 shape = SubResource("ConcavePolygonShape3D_w2yxf")
 
-[node name="L01_Right_BaseShoulder" type="MeshInstance3D" parent="World/L01_2804" unique_id=801075012]
+[node name="L01_Right_BaseShoulder" type="MeshInstance3D" parent="World/L01_2800" unique_id=5027119]
 mesh = SubResource("ArrayMesh_sditi")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@890" type="StaticBody3D" parent="World/L01_2804/L01_Right_BaseShoulder" unique_id=704166410]
+[node name="@StaticBody3D@890" type="StaticBody3D" parent="World/L01_2800/L01_Right_BaseShoulder" unique_id=2009821025]
 collision_mask = 0
 
-[node name="@CollisionShape3D@889" type="CollisionShape3D" parent="World/L01_2804/L01_Right_BaseShoulder/@StaticBody3D@890" unique_id=2111825566]
+[node name="@CollisionShape3D@889" type="CollisionShape3D" parent="World/L01_2800/L01_Right_BaseShoulder/@StaticBody3D@890" unique_id=1996174197]
 shape = SubResource("ConcavePolygonShape3D_6yugl")
 
-[node name="L01_Right_FlaredCapital" type="MeshInstance3D" parent="World/L01_2804" unique_id=1635115021]
+[node name="L01_Right_FlaredCapital" type="MeshInstance3D" parent="World/L01_2800" unique_id=926812104]
 mesh = SubResource("ArrayMesh_ndney")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@892" type="StaticBody3D" parent="World/L01_2804/L01_Right_FlaredCapital" unique_id=16612807]
+[node name="@StaticBody3D@892" type="StaticBody3D" parent="World/L01_2800/L01_Right_FlaredCapital" unique_id=885674854]
 collision_mask = 0
 
-[node name="@CollisionShape3D@891" type="CollisionShape3D" parent="World/L01_2804/L01_Right_FlaredCapital/@StaticBody3D@892" unique_id=1589188486]
+[node name="@CollisionShape3D@891" type="CollisionShape3D" parent="World/L01_2800/L01_Right_FlaredCapital/@StaticBody3D@892" unique_id=1780702467]
 shape = SubResource("ConcavePolygonShape3D_0421h")
 
-[node name="L01_Right_FootPlinth" type="MeshInstance3D" parent="World/L01_2804" unique_id=708682238]
+[node name="L01_Right_FootPlinth" type="MeshInstance3D" parent="World/L01_2800" unique_id=1867143219]
 mesh = SubResource("ArrayMesh_c8n0i")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@894" type="StaticBody3D" parent="World/L01_2804/L01_Right_FootPlinth" unique_id=1295956781]
+[node name="@StaticBody3D@894" type="StaticBody3D" parent="World/L01_2800/L01_Right_FootPlinth" unique_id=1309309708]
 collision_mask = 0
 
-[node name="@CollisionShape3D@893" type="CollisionShape3D" parent="World/L01_2804/L01_Right_FootPlinth/@StaticBody3D@894" unique_id=1826593590]
+[node name="@CollisionShape3D@893" type="CollisionShape3D" parent="World/L01_2800/L01_Right_FootPlinth/@StaticBody3D@894" unique_id=2074460617]
 shape = SubResource("ConcavePolygonShape3D_p1quj")
 
-[node name="L01_Right_OctagonalShaft" type="MeshInstance3D" parent="World/L01_2804" unique_id=484015322]
+[node name="L01_Right_OctagonalShaft" type="MeshInstance3D" parent="World/L01_2800" unique_id=428550097]
 mesh = SubResource("ArrayMesh_ncih2")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@896" type="StaticBody3D" parent="World/L01_2804/L01_Right_OctagonalShaft" unique_id=1930553295]
+[node name="@StaticBody3D@896" type="StaticBody3D" parent="World/L01_2800/L01_Right_OctagonalShaft" unique_id=1737719118]
 collision_mask = 0
 
-[node name="@CollisionShape3D@895" type="CollisionShape3D" parent="World/L01_2804/L01_Right_OctagonalShaft/@StaticBody3D@896" unique_id=847065215]
+[node name="@CollisionShape3D@895" type="CollisionShape3D" parent="World/L01_2800/L01_Right_OctagonalShaft/@StaticBody3D@896" unique_id=918311603]
 shape = SubResource("ConcavePolygonShape3D_sing3")
 
-[node name="L01_Right_Pedestal" type="MeshInstance3D" parent="World/L01_2804" unique_id=797849806]
+[node name="L01_Right_Pedestal" type="MeshInstance3D" parent="World/L01_2800" unique_id=1263111965]
 mesh = SubResource("ArrayMesh_jrdg5")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@898" type="StaticBody3D" parent="World/L01_2804/L01_Right_Pedestal" unique_id=2100833344]
+[node name="@StaticBody3D@898" type="StaticBody3D" parent="World/L01_2800/L01_Right_Pedestal" unique_id=1982068375]
 collision_mask = 0
 
-[node name="@CollisionShape3D@897" type="CollisionShape3D" parent="World/L01_2804/L01_Right_Pedestal/@StaticBody3D@898" unique_id=86357396]
+[node name="@CollisionShape3D@897" type="CollisionShape3D" parent="World/L01_2800/L01_Right_Pedestal/@StaticBody3D@898" unique_id=666192149]
 shape = SubResource("ConcavePolygonShape3D_j8rk8")
 
-[node name="L01_Right_UpperCollar" type="MeshInstance3D" parent="World/L01_2804" unique_id=249833269]
+[node name="L01_Right_UpperCollar" type="MeshInstance3D" parent="World/L01_2800" unique_id=80724860]
 mesh = SubResource("ArrayMesh_w673l")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@900" type="StaticBody3D" parent="World/L01_2804/L01_Right_UpperCollar" unique_id=1570532570]
+[node name="@StaticBody3D@900" type="StaticBody3D" parent="World/L01_2800/L01_Right_UpperCollar" unique_id=608829136]
 collision_mask = 0
 
-[node name="@CollisionShape3D@899" type="CollisionShape3D" parent="World/L01_2804/L01_Right_UpperCollar/@StaticBody3D@900" unique_id=540968605]
+[node name="@CollisionShape3D@899" type="CollisionShape3D" parent="World/L01_2800/L01_Right_UpperCollar/@StaticBody3D@900" unique_id=1284507670]
 shape = SubResource("ConcavePolygonShape3D_i6v6s")
 
-[node name="L01_Roof_Center" type="MeshInstance3D" parent="World/L01_2804" unique_id=594241414]
+[node name="L01_Roof_Center" type="MeshInstance3D" parent="World/L01_2800" unique_id=1969256493]
 mesh = SubResource("ArrayMesh_bu77q")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@902" type="StaticBody3D" parent="World/L01_2804/L01_Roof_Center" unique_id=1667698284]
+[node name="@StaticBody3D@902" type="StaticBody3D" parent="World/L01_2800/L01_Roof_Center" unique_id=1849889907]
 collision_mask = 0
 
-[node name="@CollisionShape3D@901" type="CollisionShape3D" parent="World/L01_2804/L01_Roof_Center/@StaticBody3D@902" unique_id=1293811499]
+[node name="@CollisionShape3D@901" type="CollisionShape3D" parent="World/L01_2800/L01_Roof_Center/@StaticBody3D@902" unique_id=1461659512]
 shape = SubResource("ConcavePolygonShape3D_6lhg2")
 
-[node name="L01_Roof_Left_End" type="MeshInstance3D" parent="World/L01_2804" unique_id=688281543]
+[node name="L01_Roof_Left_End" type="MeshInstance3D" parent="World/L01_2800" unique_id=1874792168]
 mesh = SubResource("ArrayMesh_eq5r5")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@904" type="StaticBody3D" parent="World/L01_2804/L01_Roof_Left_End" unique_id=802115935]
+[node name="@StaticBody3D@904" type="StaticBody3D" parent="World/L01_2800/L01_Roof_Left_End" unique_id=1635777728]
 collision_mask = 0
 
-[node name="@CollisionShape3D@903" type="CollisionShape3D" parent="World/L01_2804/L01_Roof_Left_End/@StaticBody3D@904" unique_id=681147667]
+[node name="@CollisionShape3D@903" type="CollisionShape3D" parent="World/L01_2800/L01_Roof_Left_End/@StaticBody3D@904" unique_id=1329940976]
 shape = SubResource("ConcavePolygonShape3D_d2atp")
 
-[node name="L01_Roof_Right_Back" type="MeshInstance3D" parent="World/L01_2804" unique_id=1155851728]
+[node name="L01_Roof_Right_Back" type="MeshInstance3D" parent="World/L01_2800" unique_id=260093173]
 mesh = SubResource("ArrayMesh_0ds7x")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@906" type="StaticBody3D" parent="World/L01_2804/L01_Roof_Right_Back" unique_id=1479111197]
+[node name="@StaticBody3D@906" type="StaticBody3D" parent="World/L01_2800/L01_Roof_Right_Back" unique_id=1146176418]
 collision_mask = 0
 
-[node name="@CollisionShape3D@905" type="CollisionShape3D" parent="World/L01_2804/L01_Roof_Right_Back/@StaticBody3D@906" unique_id=1035994997]
+[node name="@CollisionShape3D@905" type="CollisionShape3D" parent="World/L01_2800/L01_Roof_Right_Back/@StaticBody3D@906" unique_id=1271867703]
 shape = SubResource("ConcavePolygonShape3D_ntbpl")
 
-[node name="L01_Roof_Right_Front" type="MeshInstance3D" parent="World/L01_2804" unique_id=246714892]
+[node name="L01_Roof_Right_Front" type="MeshInstance3D" parent="World/L01_2800" unique_id=2100418674]
 mesh = SubResource("ArrayMesh_ry2tr")
 surface_material_override/0 = SubResource("StandardMaterial3D_bu328")
 
-[node name="@StaticBody3D@908" type="StaticBody3D" parent="World/L01_2804/L01_Roof_Right_Front" unique_id=2122937644]
+[node name="@StaticBody3D@908" type="StaticBody3D" parent="World/L01_2800/L01_Roof_Right_Front" unique_id=1596858684]
 collision_mask = 0
 
-[node name="@CollisionShape3D@907" type="CollisionShape3D" parent="World/L01_2804/L01_Roof_Right_Front/@StaticBody3D@908" unique_id=765879030]
+[node name="@CollisionShape3D@907" type="CollisionShape3D" parent="World/L01_2800/L01_Roof_Right_Front/@StaticBody3D@908" unique_id=798600318]
 shape = SubResource("ConcavePolygonShape3D_lj05c")
 
-[node name="F01_2805" type="Node3D" parent="World" unique_id=1585626810]
+[node name="F01_2801" type="Node3D" parent="World" unique_id=376388985]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 21.02, -2)
 
-[node name="Cloth_Wind_Animated" type="MeshInstance3D" parent="World/F01_2805" unique_id=1232723612]
+[node name="Cloth_Wind_Animated" type="MeshInstance3D" parent="World/F01_2801" unique_id=1979151267]
 material_override = ExtResource("1_jxpug")
 mesh = SubResource("ArrayMesh_tyc0n")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Crossbar" type="MeshInstance3D" parent="World/F01_2805" unique_id=1514542934]
+[node name="Crossbar" type="MeshInstance3D" parent="World/F01_2801" unique_id=1657184852]
 mesh = SubResource("ArrayMesh_yg8mj")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Crossbar_End_1" type="MeshInstance3D" parent="World/F01_2805" unique_id=1431127399]
+[node name="Crossbar_End_1" type="MeshInstance3D" parent="World/F01_2801" unique_id=811434924]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_vj0b0")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Crossbar_End_-1" type="MeshInstance3D" parent="World/F01_2805" unique_id=1518356823]
+[node name="Crossbar_End_-1" type="MeshInstance3D" parent="World/F01_2801" unique_id=2112960778]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_dnwwk")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Foot_Collar" type="MeshInstance3D" parent="World/F01_2805" unique_id=795181414]
+[node name="Foot_Collar" type="MeshInstance3D" parent="World/F01_2801" unique_id=1332512821]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_gvq4p")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Foot_Stone" type="MeshInstance3D" parent="World/F01_2805" unique_id=903446317]
+[node name="Foot_Stone" type="MeshInstance3D" parent="World/F01_2801" unique_id=612821642]
 mesh = SubResource("ArrayMesh_x3dns")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Pole_Octagonal" type="MeshInstance3D" parent="World/F01_2805" unique_id=329958117]
+[node name="Pole_Octagonal" type="MeshInstance3D" parent="World/F01_2801" unique_id=342060588]
 mesh = SubResource("ArrayMesh_twfsi")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Upper_Collar" type="MeshInstance3D" parent="World/F01_2805" unique_id=1742225424]
+[node name="Upper_Collar" type="MeshInstance3D" parent="World/F01_2801" unique_id=1342208926]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_fej4g")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="F01_2806" type="Node3D" parent="World" unique_id=1595508348]
+[node name="F01_2802" type="Node3D" parent="World" unique_id=761020072]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 21.02, -2)
 
-[node name="Cloth_Wind_Animated" type="MeshInstance3D" parent="World/F01_2806" unique_id=539443439]
+[node name="Cloth_Wind_Animated" type="MeshInstance3D" parent="World/F01_2802" unique_id=983046977]
 material_override = ExtResource("1_jxpug")
 mesh = SubResource("ArrayMesh_tyc0n")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Crossbar" type="MeshInstance3D" parent="World/F01_2806" unique_id=261190586]
+[node name="Crossbar" type="MeshInstance3D" parent="World/F01_2802" unique_id=2070881487]
 mesh = SubResource("ArrayMesh_yg8mj")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Crossbar_End_1" type="MeshInstance3D" parent="World/F01_2806" unique_id=2107826734]
+[node name="Crossbar_End_1" type="MeshInstance3D" parent="World/F01_2802" unique_id=1267452268]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_vj0b0")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Crossbar_End_-1" type="MeshInstance3D" parent="World/F01_2806" unique_id=1233248666]
+[node name="Crossbar_End_-1" type="MeshInstance3D" parent="World/F01_2802" unique_id=1448423718]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_dnwwk")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Foot_Collar" type="MeshInstance3D" parent="World/F01_2806" unique_id=331119389]
+[node name="Foot_Collar" type="MeshInstance3D" parent="World/F01_2802" unique_id=1319945286]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_gvq4p")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Foot_Stone" type="MeshInstance3D" parent="World/F01_2806" unique_id=1251599627]
+[node name="Foot_Stone" type="MeshInstance3D" parent="World/F01_2802" unique_id=1849602403]
 mesh = SubResource("ArrayMesh_x3dns")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Pole_Octagonal" type="MeshInstance3D" parent="World/F01_2806" unique_id=1247111034]
+[node name="Pole_Octagonal" type="MeshInstance3D" parent="World/F01_2802" unique_id=1956091205]
 mesh = SubResource("ArrayMesh_twfsi")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="Upper_Collar" type="MeshInstance3D" parent="World/F01_2806" unique_id=1929415039]
+[node name="Upper_Collar" type="MeshInstance3D" parent="World/F01_2802" unique_id=1152185876]
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_fej4g")
 surface_material_override/0 = SubResource("StandardMaterial3D_uyx4i")
 
-[node name="RockBacking" type="MultiMeshInstance3D" parent="World" unique_id=478094284]
+[node name="RockBacking" type="MultiMeshInstance3D" parent="World" unique_id=198412595]
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_77ltt")
 
-[node name="TerrainBatch" type="MultiMeshInstance3D" parent="World" unique_id=1541742474]
+[node name="TerrainBatch" type="MultiMeshInstance3D" parent="World" unique_id=91846325]
 material_override = SubResource("StandardMaterial3D_l6e4a")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_wut6j")
 
-[node name="TerrainBatch2" type="MultiMeshInstance3D" parent="World" unique_id=880066859]
+[node name="TerrainBatch2" type="MultiMeshInstance3D" parent="World" unique_id=29098299]
 material_override = SubResource("StandardMaterial3D_pr3bj")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_pcevx")
 
-[node name="TerrainBatch3" type="MultiMeshInstance3D" parent="World" unique_id=298917294]
+[node name="TerrainBatch3" type="MultiMeshInstance3D" parent="World" unique_id=412434358]
 material_override = SubResource("StandardMaterial3D_eeww2")
 multimesh = SubResource("MultiMesh_7sx1i")
 
-[node name="TerrainBatch4" type="MultiMeshInstance3D" parent="World" unique_id=1042957791]
+[node name="TerrainBatch4" type="MultiMeshInstance3D" parent="World" unique_id=1398681401]
 material_override = SubResource("StandardMaterial3D_aekbw")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_f3lpt")
 
-[node name="TerrainBatch5" type="MultiMeshInstance3D" parent="World" unique_id=1244468532]
+[node name="TerrainBatch5" type="MultiMeshInstance3D" parent="World" unique_id=242251763]
 material_override = SubResource("StandardMaterial3D_aekbw")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_kvmk3")
 
-[node name="TerrainBatch6" type="MultiMeshInstance3D" parent="World" unique_id=1907582680]
+[node name="TerrainBatch6" type="MultiMeshInstance3D" parent="World" unique_id=1629931341]
 material_override = SubResource("StandardMaterial3D_aekbw")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_hs5f8")
 
-[node name="TerrainBatch7" type="MultiMeshInstance3D" parent="World" unique_id=435661426]
+[node name="TerrainBatch7" type="MultiMeshInstance3D" parent="World" unique_id=381251314]
 material_override = SubResource("StandardMaterial3D_aekbw")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_ugt50")
 
-[node name="TerrainBatch8" type="MultiMeshInstance3D" parent="World" unique_id=1838841792]
+[node name="TerrainBatch8" type="MultiMeshInstance3D" parent="World" unique_id=1332427047]
 material_override = SubResource("StandardMaterial3D_aekbw")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_255ku")
 
-[node name="TerrainBatch9" type="MultiMeshInstance3D" parent="World" unique_id=2066482893]
+[node name="TerrainBatch9" type="MultiMeshInstance3D" parent="World" unique_id=1480396540]
 material_override = SubResource("StandardMaterial3D_aekbw")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_jcaeo")
 
-[node name="BossEntry" type="Marker3D" parent="." unique_id=768930994]
+[node name="BossEntry" type="Marker3D" parent="." unique_id=1319126949]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.02, -2)
 
-[node name="Test27" type="Marker3D" parent="." unique_id=303008126]
+[node name="Test27" type="Marker3D" parent="." unique_id=1127553914]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.12, 4)
 script = ExtResource("2_qkqja")
 spawn_id = &"test_27"
