@@ -12,6 +12,8 @@ extends Resource
 @export var slow_distance: float = 4.0
 ## Tốc độ nhỏ nhất khi đang cập bến: không đứng khựng trước bến
 @export var min_speed: float = 0.6
+## Độ nhanh mũi thuyền xoay theo hướng đường bay. Nhỏ = xoay êm (đỡ chao ở chỗ cong), lớn = bám sát đường
+@export var turn_response: float = 2.5
 
 @export_group("Boarding")
 ## Người chơi đứng trên boong (chạm sàn) đủ bấy nhiêu giây thì thuyền cất cánh

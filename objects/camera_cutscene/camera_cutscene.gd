@@ -82,13 +82,13 @@ func _process(delta: float) -> void:
 
 ## Điểm camera nhìn vào
 func get_look_point() -> Vector3:
-	return focus_target.global_position + Vector3.UP * data.look_height
+	return _focus_position() + Vector3.UP * data.look_height
 
 
 ## Transform camera tại khung hình, xoay quanh mục tiêu orbit_degrees theo trục đứng
 func get_shot_transform(orbit_degrees: float) -> Transform3D:
 	var offset := data.shot_offset.rotated(Vector3.UP, deg_to_rad(orbit_degrees))
-	var eye := focus_target.global_position + offset
+	var eye := _focus_position() + offset
 	return Transform3D(Basis.IDENTITY, eye).looking_at(get_look_point(), Vector3.UP)
 
 
@@ -150,3 +150,9 @@ func _on_source_triggered() -> void:
 		push_warning("%s: không tìm thấy player từ camera hiện tại, bỏ qua cutscene" % get_path())
 		return
 	(state_machine.current_state as CameraCutsceneState).on_player_entered(target_player)
+
+
+## Vị trí mục tiêu đã nội suy vật lý: mục tiêu di chuyển theo nhịp vật lý (thuyền, thang) mà camera chạy theo khung hình;
+## đọc vị trí thô thì camera nhích từng nấc (giật). Tắt nội suy thì hàm này trả đúng vị trí thường
+func _focus_position() -> Vector3:
+	return focus_target.get_global_transform_interpolated().origin

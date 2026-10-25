@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/_base/tier_zone.gd" id="1_tier"]
+
+[sub_resource type="BoxShape3D" id="ZoneShape"]
+size = Vector3(10, 10, 10)
+
+[node name="TierZone" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1_tier")
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+shape = SubResource("ZoneShape")

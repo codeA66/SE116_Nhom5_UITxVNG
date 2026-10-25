@@ -1,0 +1,90 @@
+WIND PALACE V1 — BÀN GIAO ART R2
+Thời điểm ghi: 2026-10-25T01:41:29.451076+00:00
+
+HOÀN THÀNH ĐỢT SỬA TOÀN BỘ 45 MODEL.
+Đã sửa: 45 GLB tại đường dẫn và tên file hiện có. Thêm mới trong đợt R2: không.
+ĐỔI KÍCH THƯỚC: KHÔNG. ĐỔI GỐC TỌA ĐỘ: KHÔNG so với bản sao ngay trước Art R2.
+Root đáy giữa được giữ nguyên; tên/node path, transform và pivot các phần chuyển động giữ nguyên.
+Bounds xuất GLB trước/sau: sai khác lớn nhất 0 m. Audit đáy giữa trong Godot: 45/45 đạt.
+
+KÍCH THƯỚC CẦN GIỮ KHI DỰNG MAP
+- stair_straight_3m.glb: mặt bước trên cùng cao 2 m; chiều chạy 4 m, KHÔNG ĐỔI.
+  Tên file 3m là tên cũ được giữ nguyên. Bounds tổng gồm cả thành cầu thang, không đồng nghĩa mặt bước.
+- wall_straight_4m.glb: thân tường cao 4 m; dày 0,69 m, KHÔNG ĐỔI.
+  Tổng chiều cao gồm phào là 4,08 m; số này ĐÃ CÓ TRƯỚC R2. Không sửa collider/bố cục thành 4 m tổng.
+- AssemblyAnchor và legacy_placement_offset_godot được giữ nguyên như bản trước R2.
+
+DANH SÁCH GLB ĐÃ SỬA — kích thước rộng X × cao Y × sâu Z, đơn vị mét, Godot
+Mỗi dòng ghi bounds tổng trước → sau. Tất cả giữ nguyên origin.
+01. arch_doorway_3m.glb | 3.820000 × 4.121894 × 0.720000 → 3.820000 × 4.121894 × 0.720000 | kích thước/origin: KHÔNG ĐỔI
+02. arch_window_2m.glb | 2.720000 × 4.080250 × 0.850000 → 2.720000 × 4.080250 × 0.850000 | kích thước/origin: KHÔNG ĐỔI
+03. archive_table.glb | 2.800000 × 1.130000 × 1.200000 → 2.800000 × 1.130000 × 1.200000 | kích thước/origin: KHÔNG ĐỔI
+04. balcony_4m.glb | 4.000000 × 2.020000 × 2.050000 → 4.000000 × 2.020000 × 2.050000 | kích thước/origin: KHÔNG ĐỔI
+05. balustrade_2m.glb | 2.000000 × 1.120000 × 0.400000 → 2.000000 × 1.120000 × 0.400000 | kích thước/origin: KHÔNG ĐỔI
+06. balustrade_4m.glb | 4.000000 × 1.120000 × 0.400000 → 4.000000 × 1.120000 × 0.400000 | kích thước/origin: KHÔNG ĐỔI
+07. balustrade_corner_2m.glb | 2.200000 × 1.120000 × 2.200000 → 2.200000 × 1.120000 × 2.200000 | kích thước/origin: KHÔNG ĐỔI
+08. banner_hanging.glb | 1.300000 × 2.870000 × 0.260000 → 1.300000 × 2.870000 × 0.260000 | kích thước/origin: KHÔNG ĐỔI
+09. bench_2m.glb | 2.000000 × 0.680000 × 0.600000 → 2.000000 × 0.680000 × 0.600000 | kích thước/origin: KHÔNG ĐỔI
+10. bookcase_tall.glb | 2.480000 × 3.500000 × 0.760000 → 2.480000 × 3.500000 × 0.760000 | kích thước/origin: KHÔNG ĐỔI
+11. boulder_socket_visual.glb | 1.700000 × 0.260000 × 1.700000 → 1.700000 × 0.260000 × 1.700000 | kích thước/origin: KHÔNG ĐỔI
+12. bridge_rotating_visual.glb | 3.000000 × 1.120000 × 6.000000 → 3.000000 × 1.120000 × 6.000000 | kích thước/origin: KHÔNG ĐỔI
+13. bridge_segment_4m.glb | 3.000000 × 0.430000 × 4.000000 → 3.000000 × 0.430000 × 4.000000 | kích thước/origin: KHÔNG ĐỔI
+14. cloth_runner_4m.glb | 1.800000 × 0.027000 × 4.000000 → 1.800000 × 0.027000 × 4.000000 | kích thước/origin: KHÔNG ĐỔI
+15. door_double.glb | 2.730000 × 3.400000 × 0.370000 → 2.730000 × 3.400000 × 0.370000 | kích thước/origin: KHÔNG ĐỔI
+16. floor_2m.glb | 2.000000 × 0.320000 × 2.000000 → 2.000000 × 0.320000 × 2.000000 | kích thước/origin: KHÔNG ĐỔI
+17. floor_4m.glb | 4.000000 × 0.320000 × 4.000000 → 4.000000 × 0.320000 × 4.000000 | kích thước/origin: KHÔNG ĐỔI
+18. floor_border_4m.glb | 4.000000 × 0.211000 × 4.000000 → 4.000000 × 0.211000 × 4.000000 | kích thước/origin: KHÔNG ĐỔI
+19. floor_broken_4m.glb | 4.000000 × 0.000000 × 4.000000 → 4.000000 × 0.000000 × 4.000000 | kích thước/origin: KHÔNG ĐỔI
+20. landing_4m.glb | 4.000000 × 2.000000 × 4.000000 → 4.000000 × 2.000000 × 4.000000 | kích thước/origin: KHÔNG ĐỔI
+21. lever_wind.glb | 0.900000 × 1.270000 × 0.800000 → 0.900000 × 1.270000 × 0.800000 | kích thước/origin: KHÔNG ĐỔI
+22. lower_arch_foundation_6m.glb | 6.000000 × 5.000000 × 1.300000 → 6.000000 × 5.000000 × 1.300000 | kích thước/origin: KHÔNG ĐỔI
+23. pillar_octagonal_4m.glb | 1.160000 × 4.190000 × 1.160000 → 1.160000 × 4.190000 × 1.160000 | kích thước/origin: KHÔNG ĐỔI
+24. pillar_square_4m.glb | 1.050000 × 4.180000 × 1.050000 → 1.050000 × 4.180000 × 1.050000 | kích thước/origin: KHÔNG ĐỔI
+25. rubble_cluster.glb | 1.340915 × 0.250000 × 0.779218 → 1.340915 × 0.250000 × 0.779218 | kích thước/origin: KHÔNG ĐỔI
+26. shortcut_grille.glb | 3.300000 × 3.400000 × 0.400000 → 3.300000 × 3.400000 × 0.400000 | kích thước/origin: KHÔNG ĐỔI
+27. stair_straight_3m.glb | 3.400000 × 2.400000 × 4.000000 → 3.400000 × 2.400000 × 4.000000 | kích thước/origin: KHÔNG ĐỔI
+28. stair_turn_landing.glb | 4.290000 × 2.300000 × 4.400000 → 4.290000 × 2.300000 × 4.400000 | kích thước/origin: KHÔNG ĐỔI
+29. standing_lantern.glb | 0.720000 × 2.540000 × 0.720000 → 0.720000 × 2.540000 × 0.720000 | kích thước/origin: KHÔNG ĐỔI
+30. treasure_chest.glb | 1.400000 × 1.015000 × 0.960000 → 1.400000 × 1.015000 × 0.960000 | kích thước/origin: KHÔNG ĐỔI
+31. upper_gallery_l_6m.glb | 6.100000 × 1.360000 × 6.100000 → 6.100000 × 1.360000 × 6.100000 | kích thước/origin: KHÔNG ĐỔI
+32. upper_gallery_l_entry_6m.glb | 6.100000 × 1.360000 × 6.100000 → 6.100000 × 1.360000 × 6.100000 | kích thước/origin: KHÔNG ĐỔI
+33. urn_small.glb | 0.600000 × 0.590000 × 0.600000 → 0.600000 × 0.590000 × 0.600000 | kích thước/origin: KHÔNG ĐỔI
+34. urn_tall.glb | 0.840000 × 1.220000 × 0.840000 → 0.840000 × 1.220000 × 0.840000 | kích thước/origin: KHÔNG ĐỔI
+35. wall_corner_4m.glb | 4.090000 × 4.080000 × 3.880000 → 4.090000 × 4.080000 × 3.880000 | kích thước/origin: KHÔNG ĐỔI
+36. wall_door_open_6m.glb | 6.000000 × 5.100000 × 0.780000 → 6.000000 × 5.100000 × 0.780000 | kích thước/origin: KHÔNG ĐỔI
+37. wall_lantern.glb | 0.600000 × 0.810000 × 0.819808 → 0.600000 × 0.810000 × 0.819808 | kích thước/origin: KHÔNG ĐỔI
+38. wall_low_4m.glb | 4.000000 × 1.330000 × 0.690000 → 4.000000 × 1.330000 × 0.690000 | kích thước/origin: KHÔNG ĐỔI
+39. wall_straight_4m.glb | 4.000000 × 4.080000 × 0.690000 → 4.000000 × 4.080000 × 0.690000 | kích thước/origin: KHÔNG ĐỔI
+40. wall_window_open_6m.glb | 6.000000 × 5.100000 × 0.860000 → 6.000000 × 5.100000 × 0.860000 | kích thước/origin: KHÔNG ĐỔI
+41. wind_boulder_visual.glb | 1.340000 × 1.250000 × 1.340000 → 1.340000 × 1.250000 × 1.340000 | kích thước/origin: KHÔNG ĐỔI
+42. wind_charger_visual.glb | 1.527351 × 2.763675 × 1.200000 → 1.527351 × 2.763675 × 1.200000 | kích thước/origin: KHÔNG ĐỔI
+43. wind_key_pedestal.glb | 1.300000 × 1.495000 × 1.300000 → 1.300000 × 1.495000 × 1.300000 | kích thước/origin: KHÔNG ĐỔI
+44. wind_lift_palace_visual.glb | 3.600000 × 5.230000 × 3.600000 → 3.600000 × 5.230000 × 3.600000 | kích thước/origin: KHÔNG ĐỔI
+45. wind_vent_wall.glb | 3.000000 × 3.500000 × 0.662500 → 3.000000 × 3.500000 × 0.662500 | kích thước/origin: KHÔNG ĐỔI
+
+NỘI DUNG SỬA
+Cột thuôn và đầu/chân cột nhiều cấp; lan can con tiện; vòm liền khối, hốc vòm tường;
+sàn đá mảng lớn; khung giá sách, bàn/ghế, bình rỗng, lồng đèn, vải và cánh gió.
+Vertex color, shading phẳng, palette đã chốt. Cyan emission chỉ dành cho phần tương tác.
+Các model còn lại được tinh chỉnh cạnh/hình khối trong bounds cũ.
+
+KIỂM TRA VÀ GIỚI HẠN
+Godot 4.7.2 GL Compatibility / NVIDIA MX230; đã xem ảnh màu, silhouette và ảnh trắng đen từ renderer thật.
+97/97 kiểm tra hành vi đạt: 22 chuyển động + 20 tích hợp + 19 cầu thang/camera + 36 khám phá.
+45/45 audit GLB và origin đạt; tổng 28.482 tam giác. File nguồn Blender đã lưu, health audit không có lỗi.
+Đây là kiểm tra scene QA của kit; chưa nghiệm thu toàn bộ map đang do Claude xây hoặc toàn bộ game.
+Độ giống hướng art Death’s Door và duyệt mỹ thuật cuối cùng cần đánh giá bằng hình ảnh của người dùng.
+
+FILE NGUỒN VÀ BÁO CÁO
+Blend: C:/Code/UITxVNG/Foxy_Art_Source/wind_palace_v1/wind_palace_kit_v1.blend
+Bản sao trước R2: C:/Code/UITxVNG/Foxy_Art_Source/wind_palace_v1/before_art_r2/
+Đối chiếu GLB + SHA-256: output/wind_palace/qa/art_r2_glb_compatibility.json
+Audit export: output/wind_palace/qa/glb_audit_latest.json
+Ảnh trước/sau: output/wind_palace/qa/art_corner_comparison.png
+Ảnh map mẫu: output/wind_palace/qa/palace_exploration_overview.png và bản _grayscale.png
+Danh mục: output/wind_palace/qa/palace_catalog_contact_sheet.png và bản _grayscale.png
+
+CHO BUILDER
+Reimport các GLB và chạy lại builder/nạp lại PackedScene cache để nhận model mới.
+Không cần đổi bố cục vì đợt R2 không đổi tên, kích thước, root origin hoặc pivot chuyển động.
+Không sửa scene map hoặc code builder của Claude trong đợt này.

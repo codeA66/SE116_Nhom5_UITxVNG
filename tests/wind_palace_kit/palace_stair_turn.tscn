@@ -1,0 +1,73 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/wind_palace_v1/stair_turn_landing.glb" id="1"]
+
+[sub_resource type="BoxShape3D" id="S0"]
+size = Vector3(2, 1, 2.6)
+
+[sub_resource type="BoxShape3D" id="S1"]
+size = Vector3(0.4, 2, 2)
+
+[sub_resource type="BoxShape3D" id="S2"]
+size = Vector3(0.18, 1.2, 0.18)
+
+[sub_resource type="BoxShape3D" id="S3"]
+size = Vector3(0.18, 1.2, 0.18)
+
+[sub_resource type="BoxShape3D" id="S4"]
+size = Vector3(0.2, 2.3, 0.2)
+
+[sub_resource type="BoxShape3D" id="S5"]
+size = Vector3(0.2, 2.3, 0.2)
+
+[sub_resource type="BoxShape3D" id="S6"]
+size = Vector3(0.2, 2.3, 0.2)
+
+[sub_resource type="ConvexPolygonShape3D" id="Ramp0"]
+points = PackedVector3Array(-2.5, 0, 2.4, -2.5, 1, 0.4, -2.5, 0, 0.4, -0.5, 0, 2.4, -0.5, 1, 0.4, -0.5, 0, 0.4)
+
+[sub_resource type="ConvexPolygonShape3D" id="Ramp1"]
+points = PackedVector3Array(-0.9, 0, -2.2, -0.9, 1, -2.2, 1.1, 2, -2.2, 1.1, 0, -2.2, -0.9, 0, -0.2, -0.9, 1, -0.2, 1.1, 2, -0.2, 1.1, 0, -0.2)
+
+[node name="PalaceModule" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1")]
+position = Vector3(-0.54500002, 0.0, -0.20000005)
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Shape0" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-1.5, 0.5, -0.9)
+shape = SubResource("S0")
+
+[node name="Shape1" type="CollisionShape3D" parent="Collision"]
+position = Vector3(1.3, 1, -1.2)
+shape = SubResource("S1")
+
+[node name="Shape2" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-2.6, 0.6, 1.9)
+shape = SubResource("S2")
+
+[node name="Shape3" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-0.4, 0.6, 1.9)
+shape = SubResource("S3")
+
+[node name="Shape4" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-2.5, 1.15, -2.3)
+shape = SubResource("S4")
+
+[node name="Shape5" type="CollisionShape3D" parent="Collision"]
+position = Vector3(1.5, 1.15, -2.3)
+shape = SubResource("S5")
+
+[node name="Shape6" type="CollisionShape3D" parent="Collision"]
+position = Vector3(1.5, 1.15, -0.1)
+shape = SubResource("S6")
+
+[node name="Ramp0" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Ramp0")
+
+[node name="Ramp1" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Ramp1")
+

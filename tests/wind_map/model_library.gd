@@ -1,6 +1,9 @@
 extends RefCounted
 ## Dùng bản sao model, giữ nguyên nguồn GLB và material nhập của project.
 
+const PALACE_PREFIX := "PAL:"
+const PALACE_DIR := "res://assets/models/wind_palace_v1/"
+
 var paths: Dictionary = {}
 var _templates: Dictionary = {}
 
@@ -16,6 +19,14 @@ func _init() -> void:
 func make(code: String, variant: String = "intact") -> Node3D:
 	var key: String = code + ":" + variant
 	if _templates.has(key):
+		return (_templates[key] as Node3D).duplicate() as Node3D
+	# Bộ cung điện: dùng bản import của Godot để giữ vật liệu chung do palace_import.gd gán (vertex color, đèn phát sáng)
+	if code.begins_with(PALACE_PREFIX):
+		var scene := load(PALACE_DIR + code.trim_prefix(PALACE_PREFIX) + ".glb") as PackedScene
+		if scene == null:
+			push_warning("Map mới: thiếu model cung điện %s" % code)
+			return null
+		_templates[key] = scene.instantiate() as Node3D
 		return (_templates[key] as Node3D).duplicate() as Node3D
 	if not paths.has(code):
 		push_warning("Map mới: model chưa xuất xong %s" % code)
