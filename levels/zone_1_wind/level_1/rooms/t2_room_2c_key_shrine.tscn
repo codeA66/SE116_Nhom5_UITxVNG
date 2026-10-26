@@ -294,171 +294,171 @@ instance_count = 3
 mesh = SubResource("ArrayMesh_ufs13")
 buffer = PackedFloat32Array(0.26749888, 0, 0.9635582, 4.5027256, 0, 1, 0, 21.570002, -0.9635582, 0, 0.26749888, -8.399994, -0.72593224, 0, -0.68776625, 4.4417076, 0, 1, 0, 21.570002, 0.68776625, 0, -0.72593224, 8.400009, 0.97658765, 0, 0.21511999, -8.4, 0, 1, 0, 21.570002, -0.21511999, 0, 0.97658765, -0.7407379)
 
-[node name="T2Room2cKeyShrine" type="Node3D" unique_id=1548873207]
+[node name="T2Room2cKeyShrine" type="Node3D" unique_id=611776919]
 
-[node name="World" type="Node3D" parent="." unique_id=141903459]
+[node name="World" type="Node3D" parent="." unique_id=91593456]
 
-[node name="P2C_KeyShrine" type="StaticBody3D" parent="World" unique_id=1958162601]
+[node name="P2C_KeyShrine" type="StaticBody3D" parent="World" unique_id=1602341653]
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/P2C_KeyShrine" unique_id=116497926]
+[node name="Collision" type="CollisionShape3D" parent="World/P2C_KeyShrine" unique_id=1899617658]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.14, 0)
 shape = SubResource("BoxShape3D_y5726")
 
-[node name="PalaceWall" type="StaticBody3D" parent="World" unique_id=1588044084]
+[node name="PalaceWall" type="StaticBody3D" parent="World" unique_id=1339463493]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 22.18, -11.800003)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall" unique_id=603988285]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall" unique_id=1625302759]
 shape = SubResource("BoxShape3D_7sfco")
 
-[node name="PalaceWall2" type="StaticBody3D" parent="World" unique_id=1142072426]
+[node name="PalaceWall2" type="StaticBody3D" parent="World" unique_id=734496405]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 25.7, -11.654999)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall2" unique_id=943880546]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall2" unique_id=1519734026]
 shape = SubResource("BoxShape3D_y7dfo")
 
 [node name="PAL_wall_lantern_3893" type="Node3D" parent="World" unique_id=1445316884 instance=ExtResource("1_q76br")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 23.82, -10.889999)
 
-[node name="PalaceWall3" type="StaticBody3D" parent="World" unique_id=1012417002]
+[node name="PalaceWall3" type="StaticBody3D" parent="World" unique_id=2020105829]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 25.7, -11.654999)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall3" unique_id=1904702969]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall3" unique_id=1015594749]
 shape = SubResource("BoxShape3D_w38jy")
 
-[node name="PalaceWall4" type="StaticBody3D" parent="World" unique_id=971627289]
+[node name="PalaceWall4" type="StaticBody3D" parent="World" unique_id=743856259]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 25.7, -11.654999)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall4" unique_id=308715689]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall4" unique_id=1698582730]
 shape = SubResource("BoxShape3D_e2i0g")
 
 [node name="PAL_banner_hanging_3898" type="Node3D" parent="World" unique_id=1709391059 instance=ExtResource("2_rsw2k")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 23.02, -11.169998)
 
-[node name="PalaceWall5" type="StaticBody3D" parent="World" unique_id=1903983599]
+[node name="PalaceWall5" type="StaticBody3D" parent="World" unique_id=452008852]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 25.7, -11.654999)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall5" unique_id=869758825]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall5" unique_id=996872202]
 shape = SubResource("BoxShape3D_yk6jn")
 
-[node name="PAL_wall_lantern_3901" type="Node3D" parent="World" unique_id=897151637 instance=ExtResource("1_q76br")]
+[node name="PAL_wall_lantern_3901" type="Node3D" parent="World" unique_id=316633778 instance=ExtResource("1_q76br")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 23.82, -10.889999)
 
-[node name="PalaceWall6" type="StaticBody3D" parent="World" unique_id=571892350]
+[node name="PalaceWall6" type="StaticBody3D" parent="World" unique_id=1683140887]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 25.7, -11.654999)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall6" unique_id=809406207]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall6" unique_id=1625568630]
 shape = SubResource("BoxShape3D_bsfbt")
 
-[node name="PalaceWall7" type="StaticBody3D" parent="World" unique_id=736460882]
+[node name="PalaceWall7" type="StaticBody3D" parent="World" unique_id=1208472950]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 22.18, 11.800003)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall7" unique_id=174418813]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall7" unique_id=1324685978]
 shape = SubResource("BoxShape3D_w3tyg")
 
-[node name="PalaceWall8" type="StaticBody3D" parent="World" unique_id=881502891]
+[node name="PalaceWall8" type="StaticBody3D" parent="World" unique_id=172628114]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 22.18, 11.800003)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall8" unique_id=1525681472]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall8" unique_id=1630737543]
 shape = SubResource("BoxShape3D_to630")
 
-[node name="PalaceWall9" type="StaticBody3D" parent="World" unique_id=867561635]
+[node name="PalaceWall9" type="StaticBody3D" parent="World" unique_id=1117217821]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 22.18, 11.800003)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall9" unique_id=1296956639]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall9" unique_id=1748717437]
 shape = SubResource("BoxShape3D_n7g1b")
 
-[node name="PalaceWall10" type="StaticBody3D" parent="World" unique_id=239688748]
+[node name="PalaceWall10" type="StaticBody3D" parent="World" unique_id=145055330]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 22.18, 11.800003)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall10" unique_id=498117957]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall10" unique_id=504534333]
 shape = SubResource("BoxShape3D_whimk")
 
-[node name="PalaceWall11" type="StaticBody3D" parent="World" unique_id=2044885375]
+[node name="PalaceWall11" type="StaticBody3D" parent="World" unique_id=1109425078]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -11.8, 22.18, -10)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall11" unique_id=1978535502]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall11" unique_id=1334912036]
 shape = SubResource("BoxShape3D_xkj10")
 
-[node name="PalaceWall12" type="StaticBody3D" parent="World" unique_id=1564855213]
+[node name="PalaceWall12" type="StaticBody3D" parent="World" unique_id=1878776362]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -11.8, 22.18, -6)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall12" unique_id=673905840]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall12" unique_id=275502452]
 shape = SubResource("BoxShape3D_eetd7")
 
-[node name="PalaceWall13" type="StaticBody3D" parent="World" unique_id=794868660]
+[node name="PalaceWall13" type="StaticBody3D" parent="World" unique_id=1317196067]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -11.8, 22.18, -2)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall13" unique_id=333746104]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall13" unique_id=233328265]
 shape = SubResource("BoxShape3D_2xa2h")
 
-[node name="PalaceWall14" type="StaticBody3D" parent="World" unique_id=1275379973]
+[node name="PalaceWall14" type="StaticBody3D" parent="World" unique_id=1979234345]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -11.8, 22.18, 2)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall14" unique_id=59097333]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall14" unique_id=197851018]
 shape = SubResource("BoxShape3D_j1sfa")
 
-[node name="PalaceWall15" type="StaticBody3D" parent="World" unique_id=1534499736]
+[node name="PalaceWall15" type="StaticBody3D" parent="World" unique_id=1984892371]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -11.8, 22.18, 6)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall15" unique_id=703853688]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall15" unique_id=1511531184]
 shape = SubResource("BoxShape3D_cg53f")
 
-[node name="PalaceWall16" type="StaticBody3D" parent="World" unique_id=1602666422]
+[node name="PalaceWall16" type="StaticBody3D" parent="World" unique_id=488701281]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -11.8, 22.18, 10)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall16" unique_id=1974773294]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall16" unique_id=515188638]
 shape = SubResource("BoxShape3D_wbxjr")
 
-[node name="PalaceWall17" type="StaticBody3D" parent="World" unique_id=214393816]
+[node name="PalaceWall17" type="StaticBody3D" parent="World" unique_id=487124723]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.799999, 22.18, -10)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall17" unique_id=1533921256]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall17" unique_id=1256416932]
 shape = SubResource("BoxShape3D_fgjl3")
 
-[node name="PalaceWall18" type="StaticBody3D" parent="World" unique_id=1648407575]
+[node name="PalaceWall18" type="StaticBody3D" parent="World" unique_id=1258254764]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.799999, 22.18, -6)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall18" unique_id=1598158331]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall18" unique_id=572554996]
 shape = SubResource("BoxShape3D_u4k6w")
 
-[node name="PalaceWall19" type="StaticBody3D" parent="World" unique_id=1044946247]
+[node name="PalaceWall19" type="StaticBody3D" parent="World" unique_id=1899729206]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.799999, 22.18, 2)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall19" unique_id=724809460]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall19" unique_id=786787597]
 shape = SubResource("BoxShape3D_38645")
 
-[node name="PalaceWall20" type="StaticBody3D" parent="World" unique_id=2139096876]
+[node name="PalaceWall20" type="StaticBody3D" parent="World" unique_id=2004344012]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.799999, 22.18, 6)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall20" unique_id=1116762168]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall20" unique_id=915556607]
 shape = SubResource("BoxShape3D_eakyj")
 
-[node name="PalaceWall21" type="StaticBody3D" parent="World" unique_id=995212815]
+[node name="PalaceWall21" type="StaticBody3D" parent="World" unique_id=2029955418]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.799999, 22.18, 10)
 collision_mask = 0
 
-[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall21" unique_id=1699138269]
+[node name="Collision" type="CollisionShape3D" parent="World/PalaceWall21" unique_id=1951121532]
 shape = SubResource("BoxShape3D_tdlcc")
 
 [node name="PAL_wind_key_pedestal_3919" type="Node3D" parent="World" unique_id=827647733 instance=ExtResource("3_qnpal")]
@@ -470,52 +470,52 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.62, -8.5)
 [node name="PAL_standing_lantern_3921" type="Node3D" parent="World" unique_id=1847718359 instance=ExtResource("5_x77vh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 21.62, -7)
 
-[node name="PAL_standing_lantern_3922" type="Node3D" parent="World" unique_id=1735358831 instance=ExtResource("5_x77vh")]
+[node name="PAL_standing_lantern_3922" type="Node3D" parent="World" unique_id=293405374 instance=ExtResource("5_x77vh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 21.62, -7)
 
 [node name="PAL_urn_tall_3923" type="Node3D" parent="World" unique_id=630190443 instance=ExtResource("6_tw3k0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 21.62, 6)
 
-[node name="RockBacking" type="MultiMeshInstance3D" parent="World" unique_id=988444558]
+[node name="RockBacking" type="MultiMeshInstance3D" parent="World" unique_id=1302410272]
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_oy8ta")
 
-[node name="TerrainBatch" type="MultiMeshInstance3D" parent="World" unique_id=849150783]
+[node name="TerrainBatch" type="MultiMeshInstance3D" parent="World" unique_id=1555359649]
 material_override = SubResource("StandardMaterial3D_q7vq2")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_duftr")
 
-[node name="TerrainBatch2" type="MultiMeshInstance3D" parent="World" unique_id=976257070]
+[node name="TerrainBatch2" type="MultiMeshInstance3D" parent="World" unique_id=1054723958]
 material_override = ExtResource("7_mgifj")
 multimesh = SubResource("MultiMesh_hchfd")
 
-[node name="TerrainBatch3" type="MultiMeshInstance3D" parent="World" unique_id=48587969]
+[node name="TerrainBatch3" type="MultiMeshInstance3D" parent="World" unique_id=1585632662]
 material_override = ExtResource("7_mgifj")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_81ggj")
 
-[node name="TerrainBatch4" type="MultiMeshInstance3D" parent="World" unique_id=1005440082]
+[node name="TerrainBatch4" type="MultiMeshInstance3D" parent="World" unique_id=1194713892]
 material_override = ExtResource("7_mgifj")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_qj5ji")
 
-[node name="TerrainBatch5" type="MultiMeshInstance3D" parent="World" unique_id=112419452]
+[node name="TerrainBatch5" type="MultiMeshInstance3D" parent="World" unique_id=275850976]
 material_override = ExtResource("7_mgifj")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_18u2w")
 
-[node name="ShrineKey" parent="." unique_id=1997522333 instance=ExtResource("8_kvkgh")]
+[node name="ShrineKey" parent="." unique_id=1773128686 instance=ExtResource("8_kvkgh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.62, -3.399994)
 key_id = &"level_1.t2_key"
 persistent_id = &"level_1.t2_key_picked"
 
-[node name="LampLight" parent="." unique_id=450049284 instance=ExtResource("9_nvseb")]
+[node name="LampLight" parent="." unique_id=1829552414 instance=ExtResource("9_nvseb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 23.62, -7)
 
-[node name="LampLight2" parent="." unique_id=1269297038 instance=ExtResource("9_nvseb")]
+[node name="LampLight2" parent="." unique_id=50208027 instance=ExtResource("9_nvseb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 23.62, -7)
 
-[node name="Test2c" type="Marker3D" parent="." unique_id=1879291966]
+[node name="Test2c" type="Marker3D" parent="." unique_id=264992220]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.720001, 4)
 script = ExtResource("10_bo68u")
 spawn_id = &"test_2c"
