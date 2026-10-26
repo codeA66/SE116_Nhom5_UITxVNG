@@ -7,6 +7,13 @@
 [sub_resource type="BoxShape3D" id="PostShape"]
 size = Vector3(0.72, 4.4, 0.72)
 
+[sub_resource type="Gradient" id="DustFade"]
+offsets = PackedFloat32Array(0, 0.12, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.9, 1, 1, 1, 0.55, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="DustFadeTexture"]
+gradient = SubResource("DustFade")
+
 [sub_resource type="ParticleProcessMaterial" id="DustProcess"]
 emission_shape = 3
 emission_box_extents = Vector3(1.8, 0.1, 0.5)
@@ -18,18 +25,53 @@ gravity = Vector3(0, -0.4, 0)
 scale_min = 0.6
 scale_max = 1.4
 color = Color(0.55, 0.6, 0.62, 0.55)
+color_ramp = SubResource("DustFadeTexture")
 
-[sub_resource type="StandardMaterial3D" id="DustMat"]
-transparency = 1
-shading_mode = 0
-vertex_color_use_as_albedo = true
-billboard_mode = 3
+[sub_resource type="Shader" id="DustShader"]
+code = "shader_type spatial;
+render_mode unshaded, blend_mix, depth_draw_never, cull_disabled;
+uniform sampler2D scene_depth : hint_depth_texture, repeat_disable, filter_nearest;
+
+float noise_hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+float soft_noise(vec2 p) {
+    vec2 cell = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(noise_hash(cell), noise_hash(cell + vec2(1.0, 0.0)), f.x),
+               mix(noise_hash(cell + vec2(0.0, 1.0)), noise_hash(cell + vec2(1.0, 1.0)), f.x), f.y);
+}
+
+void vertex() {
+    // Billboard giữ nguyên kích thước từng hạt do hệ particle cấp.
+    vec3 size = vec3(length(MODEL_MATRIX[0].xyz), length(MODEL_MATRIX[1].xyz), length(MODEL_MATRIX[2].xyz));
+    MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0] * size.x,
+        INV_VIEW_MATRIX[1] * size.y, INV_VIEW_MATRIX[2] * size.z, MODEL_MATRIX[3]);
+}
+
+void fragment() {
+    vec2 p = UV - vec2(0.5);
+    float grain = soft_noise(UV * 5.0 + vec2(2.3, 7.1));
+    float cloud = 1.0 - smoothstep(0.12, 0.47, length(p) + (grain - 0.5) * 0.12);
+    float depth = textureLod(scene_depth, SCREEN_UV, 0.0).r;
+    // GL Compatibility dùng NDC z trong khoảng -1..1.
+    vec4 behind = INV_PROJECTION_MATRIX * vec4(vec3(SCREEN_UV, depth) * 2.0 - 1.0, 1.0);
+    float intersection_fade = smoothstep(0.0, 0.35, -behind.z / behind.w + VERTEX.z);
+    ALBEDO = COLOR.rgb * mix(0.85, 1.0, grain);
+    ALPHA = COLOR.a * cloud * mix(0.5, 0.9, grain) * intersection_fade;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="DustMat"]
+shader = SubResource("DustShader")
 
 [sub_resource type="QuadMesh" id="DustQuad"]
 material = SubResource("DustMat")
 size = Vector2(0.5, 0.5)
 
-[node name="WindStoneGate" instance=ExtResource("1_gate")]
+[node name="WindStoneGate" node_paths=PackedStringArray("flash_light", "dust", "open_sound") instance=ExtResource("1_gate")]
 open_time = 2.6
 sink_depth = 4.0
 flash_light = NodePath("Visual/EmblemGlow")
@@ -70,7 +112,7 @@ light_energy = 1.4
 omni_range = 3.5
 
 [node name="Dust" type="GPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0.9)
 emitting = false
 amount = 24
 lifetime = 1.6

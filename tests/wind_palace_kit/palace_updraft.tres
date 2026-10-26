@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="WindData" format=3]
+
+[ext_resource type="Script" path="res://objects/wind_zone/wind_data.gd" id="1"]
+[ext_resource type="Resource" path="res://tests/wind_palace_kit/palace_updraft_style.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+strength = 7.0
+vfx_style = ExtResource("2")

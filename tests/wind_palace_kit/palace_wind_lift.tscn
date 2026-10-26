@@ -1,0 +1,137 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/wind_lift/wind_lift.gd" id="1_wjh2e"]
+[ext_resource type="Resource" path="res://resources/wind_lift/wind_lift_default.tres" id="2_6sevh"]
+[ext_resource type="PackedScene" path="res://assets/models/wind_palace_v1/wind_lift_palace_visual.glb" id="3_xau3i"]
+[ext_resource type="Material" path="res://assets/materials/ruin_stone.tres" id="4_tli6n"]
+[ext_resource type="PackedScene" path="res://objects/wind_zone/wind_zone.tscn" id="5_af7p1"]
+[ext_resource type="Resource" path="res://tests/wind_palace_kit/palace_updraft.tres" id="6_1qls6"]
+[ext_resource type="Script" path="res://components/state_machine/state_machine.gd" id="7_rav6n"]
+[ext_resource type="Script" path="res://objects/wind_lift/states/lowered.gd" id="8_8c4vb"]
+[ext_resource type="Script" path="res://objects/wind_lift/states/rising.gd" id="9_i25hg"]
+[ext_resource type="Script" path="res://objects/wind_lift/states/raised.gd" id="10_ivu05"]
+[ext_resource type="Script" path="res://objects/wind_lift/states/falling.gd" id="11_0yg4l"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lem0u"]
+size = Vector3(0.22, 5.1, 0.22)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wt1ou"]
+size = Vector3(0.22, 5.1, 0.22)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_syys5"]
+height = 0.31
+radius = 1.26
+
+[sub_resource type="ConvexPolygonShape3D" id="CylinderShape3D_583i8"]
+points = PackedVector3Array(1.480000, -0.110000, 0.000000, 1.046518, -0.110000, 1.046518, 0.000000, -0.110000, 1.480000, -1.046518, -0.110000, 1.046518, -1.480000, -0.110000, 0.000000, -1.046518, -0.110000, -1.046518, -0.000000, -0.110000, -1.480000, 1.046518, -0.110000, -1.046518, 1.480000, 0.110000, 0.000000, 1.046518, 0.110000, 1.046518, 0.000000, 0.110000, 1.480000, -1.046518, 0.110000, 1.046518, -1.480000, 0.110000, 0.000000, -1.046518, 0.110000, -1.046518, -0.000000, 0.110000, -1.480000, 1.046518, 0.110000, -1.046518)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_18wx3"]
+size = Vector3(0.22, 0.75, 1.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_50oov"]
+size = Vector3(0.22, 0.75, 1.7)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_amy6d"]
+points = PackedVector3Array(-1.2, 0, 5.3, 1.2, 0, 5.3, -1.2, 1.395, 2, 1.2, 1.395, 2, -1.2, 1.395, 1.5, 1.2, 1.395, 1.5, -1.2, 0, 1.5, 1.2, 0, 1.5)
+
+[sub_resource type="PrismMesh" id="PrismMesh_u11lq"]
+left_to_right = 1.0
+size = Vector3(3.3, 1.395, 2.4)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_vavv8"]
+height = 0.3
+radius = 1.5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_glj4s"]
+size = Vector3(2.6, 2.6, 0.15)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lca7s"]
+size = Vector3(3.2, 2.6, 0.15)
+
+[node name="WindLift" type="Node3D"]
+script = ExtResource("1_wjh2e")
+data = ExtResource("2_6sevh")
+
+[node name="Model" parent="." instance=ExtResource("3_xau3i")]
+
+[node name="Frame" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Pillar" type="CollisionShape3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.55, 2.55, -1.55)
+shape = SubResource("BoxShape3D_lem0u")
+
+[node name="Pillar2" type="CollisionShape3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.55, 2.55, -1.55)
+shape = SubResource("BoxShape3D_wt1ou")
+
+[node name="Outlet" type="CollisionShape3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.155, 0)
+shape = SubResource("CylinderShape3D_syys5")
+
+[node name="Pillar3" type="CollisionShape3D" parent="Frame"]
+position = Vector3(-1.55, 2.55, 1.55)
+shape = SubResource("BoxShape3D_lem0u")
+
+[node name="Pillar4" type="CollisionShape3D" parent="Frame"]
+position = Vector3(1.55, 2.55, 1.55)
+shape = SubResource("BoxShape3D_lem0u")
+
+[node name="Platform" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+collision_mask = 0
+
+[node name="Deck" type="CollisionShape3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("CylinderShape3D_583i8")
+
+[node name="ModelFollow" type="RemoteTransform3D" parent="Platform"]
+update_rotation = false
+update_scale = false
+
+[node name="Ramp" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="UnderGuard" type="StaticBody3D" parent="."]
+collision_layer = 256
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="UnderGuard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+shape = SubResource("CylinderShape3D_vavv8")
+
+[node name="Gates" type="StaticBody3D" parent="."]
+collision_layer = 256
+collision_mask = 0
+
+[node name="BottomGate" type="CollisionShape3D" parent="Gates"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 1.65)
+shape = SubResource("BoxShape3D_glj4s")
+
+[node name="TopGate" type="CollisionShape3D" parent="Gates"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.65, -1.65)
+shape = SubResource("BoxShape3D_lca7s")
+
+[node name="WindColumn" parent="." instance=ExtResource("5_af7p1")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 2.45, 0)
+visible = false
+collision_layer = 0
+data = ExtResource("6_1qls6")
+size = Vector3(2.4, 2.4, 4.4)
+fade_toward_end = true
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("7_rav6n")
+initial_state = NodePath("Lowered")
+
+[node name="Lowered" type="Node" parent="StateMachine"]
+script = ExtResource("8_8c4vb")
+
+[node name="Rising" type="Node" parent="StateMachine"]
+script = ExtResource("9_i25hg")
+
+[node name="Raised" type="Node" parent="StateMachine"]
+script = ExtResource("10_ivu05")
+
+[node name="Falling" type="Node" parent="StateMachine"]
+script = ExtResource("11_0yg4l")

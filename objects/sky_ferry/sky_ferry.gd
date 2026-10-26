@@ -28,6 +28,8 @@ var route: Path3D
 var offset: float = 0.0
 
 var _bob_time: float = 0.0
+## Hướng mũi hiện tại (mặt phẳng ngang), xoay dần về hướng đường bay
+var _heading: Vector3 = Vector3.FORWARD
 var _passengers: Array[Player] = []
 
 @onready var state_machine: StateMachine = $StateMachine
@@ -55,8 +57,9 @@ func _physics_process(delta: float) -> void:
 	state_machine.physics_update(delta)
 
 
-## Đặt thuyền lên đường bay ở vị trí at (m), mũi theo hướng bay; bob cộng thêm độ cao nhấp nhô
-func follow(on_route: Path3D, at: float, bob: float = 0.0) -> void:
+## Đặt thuyền lên đường bay ở vị trí at (m), mũi theo hướng bay; bob cộng thêm độ cao nhấp nhô.
+## turn_delta > 0: mũi xoay dần về hướng mới (không giật ở chỗ cong); = 0: đặt thẳng hướng (lúc bắt đầu đường bay)
+func follow(on_route: Path3D, at: float, bob: float = 0.0, turn_delta: float = 0.0) -> void:
 	route = on_route
 	offset = clampf(at, 0.0, route_length())
 	var curve := route.curve
@@ -66,8 +69,16 @@ func follow(on_route: Path3D, at: float, bob: float = 0.0) -> void:
 	var forward := route.to_global(curve.sample_baked(ahead)) - route.to_global(curve.sample_baked(behind))
 	forward.y = 0.0
 	if forward.length_squared() < 0.0001:
-		forward = -global_basis.z
-	global_transform = Transform3D(Basis.looking_at(-forward.normalized(), Vector3.UP), point + Vector3(0, bob, 0))
+		forward = _heading
+	forward = forward.normalized()
+	if turn_delta > 0.0 and _heading.length_squared() > 0.0:
+		# Nội suy góc yaw thay vì Vector3.slerp: slerp tự tính trục xoay, hai hướng gần trùng/ngược nhau cho trục
+		# lệch chuẩn (báo lỗi mỗi frame). Mũi thuyền chỉ xoay quanh trục đứng nên lerp_angle là đủ
+		var yaw := lerp_angle(atan2(_heading.x, _heading.z), atan2(forward.x, forward.z), 1.0 - exp(-data.turn_response * turn_delta))
+		_heading = Vector3(sin(yaw), 0.0, cos(yaw))
+	else:
+		_heading = forward
+	global_transform = Transform3D(Basis.looking_at(-_heading, Vector3.UP), point + Vector3(0, bob, 0))
 
 
 func route_length() -> float:
@@ -84,14 +95,14 @@ func fly(max_speed: float, delta: float) -> bool:
 	if remaining() < data.slow_distance:
 		target = maxf(max_speed * remaining() / data.slow_distance, data.min_speed)
 	speed = move_toward(speed, target, data.acceleration * delta)
-	follow(route, offset + speed * delta)
+	follow(route, offset + speed * delta, 0.0, delta)
 	return remaining() <= 0.01
 
 
 ## Nhấp nhô tại chỗ (đậu bến)
 func hover(delta: float) -> void:
 	_bob_time += delta
-	follow(route, offset, sin(_bob_time * data.bob_speed) * data.bob_amplitude)
+	follow(route, offset, sin(_bob_time * data.bob_speed) * data.bob_amplitude, delta)
 
 
 func set_present(present: bool) -> void:

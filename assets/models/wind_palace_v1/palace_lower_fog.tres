@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://assets/models/wind_palace_v1/palace_lower_fog.gdshader" id="1"]
+
+[sub_resource type="ShaderMaterial" id="Haze"]
+shader = ExtResource("1")
+
+[resource]
+vertex_color_use_as_albedo = true
+vertex_color_is_srgb = false
+roughness = 0.88
+cull_mode = 2
+next_pass = SubResource("Haze")

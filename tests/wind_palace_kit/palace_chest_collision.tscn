@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/wind_palace_v1/treasure_chest.glb" id="1"]
+
+[sub_resource type="BoxShape3D" id="S0"]
+size = Vector3(1.3, 0.8, 0.8)
+
+[node name="PalaceModule" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1")]
+position = Vector3(0.0, 0.0, 0.01000001)
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Shape0" type="CollisionShape3D" parent="Collision"]
+position = Vector3(0, 0.4, 0)
+shape = SubResource("S0")
+

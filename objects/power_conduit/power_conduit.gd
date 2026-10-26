@@ -6,6 +6,9 @@ extends Node3D
 ## (gán node này vào ô Sources của cổng thay cho nguồn gốc). Chỉ nghe đúng nguồn được gán.
 
 signal activated
+signal deactivated
+## Bàn đạp truyền trạng thái ngay; vệt sáng chỉ là phản hồi hình ảnh.
+@export var follow_source: bool = false
 
 ## Nguồn bật dòng sáng: node có signal "activated" và hàm is_active()
 @export var source: Node
@@ -24,6 +27,7 @@ signal activated
 @export_range(0.1, 5.0, 0.1) var peek_hold: float = 1.6
 
 var _active: bool = false
+var _flow_tween: Tween
 ## Mỗi đoạn một trục xoay đặt ở đầu đoạn: kéo dài trục z từ 0 lên 1 là vệt sáng lan dọc đoạn
 var _pivots: Array[Node3D] = []
 var _lengths: Array[float] = []
@@ -35,6 +39,13 @@ func _ready() -> void:
 		push_error("%s: nguồn %s không có signal activated / hàm is_active()" % [get_path(), source])
 		return
 	# Đã bật từ lần chơi trước (đọc save): sáng sẵn, không chạy lại hiệu ứng
+	if follow_source:
+		source.connect(&"activated", _follow_activation)
+		if source.has_signal(&"deactivated"):
+			source.connect(&"deactivated", _release)
+		if source.call(&"is_active"):
+			_follow_activation()
+		return
 	if source.call(&"is_active"):
 		for pivot in _pivots:
 			pivot.scale.z = 1.0
@@ -87,13 +98,34 @@ func _run() -> void:
 	var total := 0.0
 	for length in _lengths:
 		total += length
-	var tween := create_tween()
+	if _flow_tween:
+		_flow_tween.kill()
+	_flow_tween = create_tween()
 	for i in _pivots.size():
 		var t := travel_time * _lengths[i] / maxf(total, 0.01)
-		tween.tween_property(_pivots[i], "scale:z", 1.0, t)
-	tween.finished.connect(_arrive)
+		_flow_tween.tween_property(_pivots[i], "scale:z", 1.0, t)
+	if not follow_source:
+		_flow_tween.finished.connect(_arrive)
 
 
 func _arrive() -> void:
 	_active = true
 	activated.emit()
+
+
+func _follow_activation() -> void:
+	if _active:
+		return
+	_active = true
+	activated.emit()
+	_run()
+
+
+func _release() -> void:
+	if _flow_tween:
+		_flow_tween.kill()
+	for pivot in _pivots:
+		pivot.scale.z = 0.001
+	if _active:
+		_active = false
+		deactivated.emit()

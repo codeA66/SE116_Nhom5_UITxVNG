@@ -1,7 +1,7 @@
 @tool
 class_name KeyPickup
 extends Pickup
-## Chìa khóa nằm trên bệ: nhặt là có chìa (lưu bằng cờ key_id). Ổ khóa KeyLock cùng key_id mới mở được.
+## Chìa khóa nằm trên bệ: nhặt là có chìa (lưu bằng cờ key_id). Cửa có ổ khóa (RedKeyDoor) cùng key_id mới mở được.
 ## Mỗi cặp chìa - ổ có key_id riêng nên map có nhiều cặp không lẫn nhau.
 
 ## Định danh chìa, ví dụ "level_1.tier2_key"; ổ khóa dùng đúng tên này

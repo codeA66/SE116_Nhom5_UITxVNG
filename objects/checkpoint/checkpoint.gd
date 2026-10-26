@@ -20,15 +20,35 @@ extends Node3D
 @onready var _visual: WindShrineVisual = $WindShrineVisual
 
 
+## Nghe GameState chỉ khi đang ở trong cây (vào lại cây thì nối lại)
+func _enter_tree() -> void:
+	if Engine.is_editor_hint():
+		return
+	if not GameState.checkpoint_changed.is_connected(_on_checkpoint_changed):
+		GameState.checkpoint_changed.connect(_on_checkpoint_changed)
+	if not GameState.progress_replaced.is_connected(_on_progress_replaced):
+		GameState.progress_replaced.connect(_on_progress_replaced)
+
+
 func _ready() -> void:
 	_spawn.spawn_id = checkpoint_id
 	set_process(false)
 	if Engine.is_editor_hint():
 		return
 	_trigger.body_entered.connect(_on_body_entered)
-	GameState.checkpoint_changed.connect(_on_checkpoint_changed)
-	GameState.progress_replaced.connect(_on_progress_replaced)
 	_update_visual(true)
+
+
+## Đổi khu / hồi sinh: scene cũ rời cây trước, cuối frame mới bị xoá. Không ngắt tín hiệu thì checkpoint cũ
+## (đã ra khỏi cây) vẫn nhận checkpoint_changed khi player chạm checkpoint ở scene mới -> get_tree() = null
+func _exit_tree() -> void:
+	# @tool: trong editor GameState không chạy script game, không có signal để ngắt
+	if Engine.is_editor_hint():
+		return
+	if GameState.checkpoint_changed.is_connected(_on_checkpoint_changed):
+		GameState.checkpoint_changed.disconnect(_on_checkpoint_changed)
+	if GameState.progress_replaced.is_connected(_on_progress_replaced):
+		GameState.progress_replaced.disconnect(_on_progress_replaced)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -55,6 +75,9 @@ func _on_progress_replaced() -> void:
 
 
 func _update_visual(immediate: bool = false) -> void:
+	# Signal nối từ _enter_tree nên có thể tới trước _ready (nạp save lúc vào khu); _ready tự cập nhật sau
+	if not is_node_ready():
+		return
 	_visual.set_active(is_active(), active_material, crystal_spin_speed, immediate)
 
 

@@ -324,6 +324,9 @@ func start_red_flash(duration: float) -> void:
 
 ## Về chỗ đứng an toàn gần nhất (rơi vực, trúng bẫy). stunned = choáng tại chỗ như bị đánh
 func return_to_safe_ground(stunned: bool = false) -> void:
+	# Lưới cứu rơi không được ngắt state Dead trước khi hồi sinh tại checkpoint.
+	if health.is_dead():
+		return
 	teleport(_last_safe_position, get_facing_direction())
 	_hurtbox.set_invincible(recovery_invincibility)
 	if stunned:
