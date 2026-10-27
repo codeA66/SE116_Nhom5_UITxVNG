@@ -67,7 +67,10 @@ var _lethal_flash_pending: bool = false
 var _flash_material: StandardMaterial3D
 var _model_meshes: Array[MeshInstance3D] = []
 var _flash_tween: Tween
+## Bảng UI đang mở và dùng chuột (tủ đồ): chuột trái cũng là nút đánh nên phải bỏ qua, nếu không kéo thả sẽ chém
+var _attack_blocked_by_ui: bool = false
 
+@onready var energy: EnergyComponent = $EnergyComponent
 @onready var hitbox: HitboxComponent = $Model/Hitbox
 @onready var wind_blast: WindBlastArea = $Model/WindBlastArea
 @onready var interactor: InteractorComponent = $Interactor
@@ -91,6 +94,11 @@ func _ready() -> void:
 	var kept_health := GameState.get_player_health()
 	if kept_health > 0:
 		health.set_current_health(kept_health)
+	# Năng lượng cũng giữ qua các lần chuyển khu
+	var kept_energy := GameState.get_player_energy()
+	if kept_energy >= 0:
+		energy.set_current(kept_energy)
+	energy.energy_changed.connect(_on_energy_changed)
 	health.health_changed.connect(_on_health_changed)
 	health.died.connect(_on_died)
 	_hurtbox.hurt.connect(_on_hurt)
@@ -165,9 +173,31 @@ func has_weapon() -> bool:
 	return get_weapon() != null
 
 
-## Đúng khi đang cầm vũ khí và có lệnh đánh trong buffer
+## Đúng khi đang cầm vũ khí, có lệnh đánh trong buffer và đủ năng lượng (cung tiêu năng lượng mỗi phát)
 func can_attack() -> bool:
-	return has_weapon() and not get_weapon().combo.is_empty() and _attack_buffer_timer > 0.0
+	return has_weapon() and not get_weapon().combo.is_empty() and _attack_buffer_timer > 0.0 \
+		and energy.can_spend(get_weapon().energy_cost)
+
+
+## Buff ghép của vũ khí đang cầm; null nếu chưa ghép
+func get_fusion() -> FusionData:
+	return GameState.get_active_fusion()
+
+
+## State Attack báo hitbox cận chiến vừa bật: chạy các buff nguyên tố của vũ khí (nhát cuối phóng gió, phản đạn...)
+func notify_melee_active(attack: AttackData, combo_index: int, combo_size: int, direction: Vector3, active_time: float) -> void:
+	var fusion := get_fusion()
+	if fusion == null:
+		return
+	for effect in fusion.effects:
+		effect.on_melee_active(self, attack, combo_index, combo_size, direction, active_time)
+
+
+## Bảng UI dùng chuột đang mở thì không nhận nút đánh (chuột trái)
+func set_attack_blocked_by_ui(blocked: bool) -> void:
+	_attack_blocked_by_ui = blocked
+	if blocked:
+		_attack_buffer_timer = 0.0
 
 
 func consume_attack_input() -> void:
@@ -217,12 +247,23 @@ func _update_weapon_selection() -> void:
 
 
 func shoot_arrow(weapon: WeaponData, attack: AttackData, direction: Vector3) -> void:
+	if not energy.spend(weapon.energy_cost):
+		return
 	var arrow := weapon.projectile_scene.instantiate() as ArrowProjectile
 	get_parent().add_child(arrow)
 	arrow.global_position = _arrow_spawn.global_position
 	# Quét từ thân tới đầu tên trong frame đầu để không bắn xuyên tường sát người.
 	var origin := global_position + Vector3.UP * _arrow_spawn.position.y
 	arrow.launch(attack, weapon.projectile_speed, weapon.projectile_lifetime, direction, self, origin)
+	# Buff nguyên tố của cung (hố hút...) chạy khi tên trúng; chỉ nối khi đang ghép
+	var fusion := get_fusion()
+	if fusion and not fusion.effects.is_empty():
+		arrow.impacted.connect(_on_arrow_impacted.bind(fusion))
+
+
+func _on_arrow_impacted(position: Vector3, direction: Vector3, fusion: FusionData) -> void:
+	for effect in fusion.effects:
+		effect.on_projectile_impact(self, position, direction)
 
 
 func unlock_ability(ability: AbilityData) -> void:
@@ -256,14 +297,23 @@ func start_dash() -> DashData:
 	return dash
 
 
-## Đúng khi đã mở khóa kỹ năng gió, có lệnh trong buffer và hết cooldown
+## Đúng khi kỹ năng gió dùng được (đã mở khóa, không đang ghép vào vũ khí), có lệnh trong buffer,
+## hết cooldown và đủ năng lượng
 func can_wind_blast() -> bool:
-	return has_ability(WindBlastData.ID) and _wind_blast_buffer_timer > 0.0 and _wind_blast_cooldown_timer <= 0.0
+	if not is_skill_available(WindBlastData.ID) or _wind_blast_buffer_timer <= 0.0 or _wind_blast_cooldown_timer > 0.0:
+		return false
+	return energy.can_spend(get_ability(WindBlastData.ID).energy_cost)
 
 
-## Gọi khi vào state WindBlast: tiêu input, tính cooldown
+## Kỹ năng đã mở khóa và nguyên tố của nó không đang ghép vào vũ khí
+func is_skill_available(id: StringName) -> bool:
+	return has_ability(id) and not GameState.is_ability_fused(id)
+
+
+## Gọi khi vào state WindBlast: tiêu input, tính cooldown, trừ năng lượng
 func start_wind_blast() -> WindBlastData:
 	var data := get_ability(WindBlastData.ID) as WindBlastData
+	energy.spend(data.energy_cost)
 	_wind_blast_buffer_timer = 0.0
 	_wind_blast_cooldown_timer = data.duration + data.cooldown
 	return data
@@ -377,7 +427,11 @@ func _pre_state_update(delta: float) -> void:
 		_coyote_timer -= delta
 
 	_jump_buffer_timer = _update_buffer(&"jump", _jump_buffer_timer, jump_buffer_time, delta)
-	_attack_buffer_timer = _update_buffer(&"attack", _attack_buffer_timer, attack_buffer_time, delta)
+	if _attack_blocked_by_ui:
+		_attack_buffer_timer = 0.0
+	else:
+		_attack_buffer_timer = _update_buffer(&"attack", _attack_buffer_timer, attack_buffer_time, delta)
+	_report_unaffordable_input()
 	_dash_buffer_timer = _update_buffer(&"dash", _dash_buffer_timer, dash_buffer_time, delta)
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
 	_wind_blast_buffer_timer = _update_buffer(&"skill", _wind_blast_buffer_timer, wind_blast_buffer_time, delta)
@@ -417,6 +471,23 @@ func _on_died() -> void:
 
 func _on_health_changed(current: int, _max_value: int) -> void:
 	GameState.set_player_health(current)
+
+
+func _on_energy_changed(current: int, _max_value: int) -> void:
+	GameState.set_player_energy(current)
+
+
+## Bấm cung / kỹ năng mà thiếu năng lượng: báo một lần lúc bấm (HUD nháy, âm báo), không báo mỗi frame
+func _report_unaffordable_input() -> void:
+	if not controls_enabled:
+		return
+	if not _attack_blocked_by_ui and Input.is_action_just_pressed(&"attack") and has_weapon() \
+			and not energy.can_spend(get_weapon().energy_cost):
+		energy.notify_insufficient(get_weapon().energy_cost)
+	if Input.is_action_just_pressed(&"skill") and is_skill_available(WindBlastData.ID):
+		var cost := get_ability(WindBlastData.ID).energy_cost
+		if not energy.can_spend(cost):
+			energy.notify_insufficient(cost)
 
 
 func _start_blink(duration: float) -> void:

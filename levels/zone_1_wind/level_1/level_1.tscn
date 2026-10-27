@@ -48,12 +48,12 @@ size = Vector2(700, 700)
 [sub_resource type="BoxShape3D" id="BoxShape3D_11p2m"]
 size = Vector3(110, 28, 124)
 
-[node name="Level1" type="Node3D" unique_id=539494795]
+[node name="Level1" type="Node3D" unique_id=1419544542]
 script = ExtResource("1_82lrw")
 
 [node name="Lighting" parent="." unique_id=1496860166 instance=ExtResource("2_5r1qf")]
 
-[node name="CloudSea" type="MeshInstance3D" parent="." unique_id=1673956896]
+[node name="CloudSea" type="MeshInstance3D" parent="." unique_id=1333227365]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -9, -40)
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_riknd")
@@ -70,98 +70,98 @@ transform = Transform3D(-0.8239016, 0, 1.1318948, 0, 1.4, 0, -1.1318948, 0, -0.8
 [node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland2" index="0" unique_id=596526991]
 cast_shadow = 0
 
-[node name="BackgroundIsland3" parent="." unique_id=401109028 instance=ExtResource("4_xudqy")]
+[node name="BackgroundIsland3" parent="." unique_id=437858553 instance=ExtResource("4_xudqy")]
 transform = Transform3D(-0.84973663, 0, -0.9838432, 0, 1.3, 0, 0.9838432, 0, -0.84973663, -70, -12, 75)
 
 [node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland3" index="0" unique_id=1599168746]
 cast_shadow = 0
 
-[node name="BackgroundIsland4" parent="." unique_id=347686245 instance=ExtResource("5_t4n2c")]
+[node name="BackgroundIsland4" parent="." unique_id=312716818 instance=ExtResource("5_t4n2c")]
 transform = Transform3D(0.32099867, 0, 1.1562699, 0, 1.2, 0, -1.1562699, 0, 0.32099867, 100, -10, 70)
 
 [node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland4" index="0" unique_id=596526991]
 cast_shadow = 0
 
-[node name="BackgroundIsland5" parent="." unique_id=1861761202 instance=ExtResource("4_xudqy")]
+[node name="BackgroundIsland5" parent="." unique_id=276255606 instance=ExtResource("4_xudqy")]
 transform = Transform3D(-1.5986162, 0, 0.066529214, 0, 1.6, 0, -0.066529214, 0, -1.5986162, 10, -14, -150)
 
 [node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland5" index="0" unique_id=1599168746]
 cast_shadow = 0
 
-[node name="BackgroundIsland6" parent="." unique_id=461969871 instance=ExtResource("5_t4n2c")]
+[node name="BackgroundIsland6" parent="." unique_id=1356314749 instance=ExtResource("5_t4n2c")]
 transform = Transform3D(0.31202844, 0, -1.0548167, 0, 1.1, 0, 1.0548167, 0, 0.31202844, -100, -6, -110)
 
 [node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland6" index="0" unique_id=596526991]
 cast_shadow = 0
 
-[node name="SafetyNet" parent="." unique_id=1972369464 instance=ExtResource("6_u0yyv")]
+[node name="SafetyNet" parent="." unique_id=548147753 instance=ExtResource("6_u0yyv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -14, -40)
 size = Vector3(400, 2, 400)
 
-[node name="Rooms" type="Node3D" parent="." unique_id=1771214742]
+[node name="Rooms" type="Node3D" parent="." unique_id=115317151]
 
-[node name="Tier1" type="Node3D" parent="Rooms" unique_id=946815257]
+[node name="Tier1" type="Node3D" parent="Rooms" unique_id=1458844962]
 
-[node name="Room01Dock" parent="Rooms/Tier1" unique_id=661508180 instance=ExtResource("7_272vo")]
+[node name="Room01Dock" parent="Rooms/Tier1" unique_id=1425730384 instance=ExtResource("7_272vo")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18)
 
-[node name="Room02Foyer" parent="Rooms/Tier1" unique_id=1872248516 instance=ExtResource("8_p8727")]
+[node name="Room02Foyer" parent="Rooms/Tier1" unique_id=257534146 instance=ExtResource("8_p8727")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -2)
 
-[node name="Room03BannerCorridor" parent="Rooms/Tier1" unique_id=716153002 instance=ExtResource("9_kxfex")]
+[node name="Room03BannerCorridor" parent="Rooms/Tier1" unique_id=1549526582 instance=ExtResource("9_kxfex")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, -2)
 
-[node name="Room04GuardHall" parent="Rooms/Tier1" unique_id=2126874951 instance=ExtResource("10_ujoiv")]
+[node name="Room04GuardHall" parent="Rooms/Tier1" unique_id=1484950155 instance=ExtResource("10_ujoiv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -56)
 
-[node name="Room05InnerGarden" parent="Rooms/Tier1" unique_id=224117841 instance=ExtResource("11_mabmk")]
+[node name="Room05InnerGarden" parent="Rooms/Tier1" unique_id=1774786892 instance=ExtResource("11_mabmk")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -44)
 
-[node name="Room06TowerBase" parent="Rooms/Tier1" unique_id=383407604 instance=ExtResource("12_4do2m")]
+[node name="Room06TowerBase" parent="Rooms/Tier1" unique_id=1205311196 instance=ExtResource("12_4do2m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -74)
 
-[node name="Room07SailStorage" parent="Rooms/Tier1" unique_id=622867539 instance=ExtResource("13_p4kwa")]
+[node name="Room07SailStorage" parent="Rooms/Tier1" unique_id=129376739 instance=ExtResource("13_p4kwa")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -76)
 
-[node name="Room08RelicRoom" parent="Rooms/Tier1" unique_id=1952320422 instance=ExtResource("14_hja6v")]
+[node name="Room08RelicRoom" parent="Rooms/Tier1" unique_id=1177020253 instance=ExtResource("14_hja6v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 0, -28)
 
-[node name="Room09GrandStair" parent="Rooms/Tier1" unique_id=736212134 instance=ExtResource("15_j7cxw")]
+[node name="Room09GrandStair" parent="Rooms/Tier1" unique_id=122685875 instance=ExtResource("15_j7cxw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -60)
 
-[node name="Room10Tier2Gate" parent="Rooms/Tier1" unique_id=1080500419 instance=ExtResource("16_hgbn6")]
+[node name="Room10Tier2Gate" parent="Rooms/Tier1" unique_id=436586648 instance=ExtResource("16_hgbn6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -92)
 
-[node name="Tier2" type="Node3D" parent="Rooms" unique_id=1396845565]
+[node name="Tier2" type="Node3D" parent="Rooms" unique_id=1815724543]
 
-[node name="T2Room22Crossroads" parent="Rooms/Tier2" unique_id=1050063107 instance=ExtResource("17_k8hea")]
+[node name="T2Room22Crossroads" parent="Rooms/Tier2" unique_id=956072809 instance=ExtResource("17_k8hea")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -152)
 
-[node name="T2Room23Watchtower" parent="Rooms/Tier2" unique_id=1559316829 instance=ExtResource("18_fk1gq")]
+[node name="T2Room23Watchtower" parent="Rooms/Tier2" unique_id=992942346 instance=ExtResource("18_fk1gq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -152)
 
-[node name="T2Room24Rampart" parent="Rooms/Tier2" unique_id=395941086 instance=ExtResource("19_gcewd")]
+[node name="T2Room24Rampart" parent="Rooms/Tier2" unique_id=1455198806 instance=ExtResource("19_gcewd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -176)
 
-[node name="T2Room25Arena" parent="Rooms/Tier2" unique_id=115065718 instance=ExtResource("20_gic63")]
+[node name="T2Room25Arena" parent="Rooms/Tier2" unique_id=1139162553 instance=ExtResource("20_gic63")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -202)
 
-[node name="T2Room26Treasure" parent="Rooms/Tier2" unique_id=384024562 instance=ExtResource("21_aliqb")]
+[node name="T2Room26Treasure" parent="Rooms/Tier2" unique_id=890481376 instance=ExtResource("21_aliqb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 0, -204)
 
-[node name="T2Room27BossGate" parent="Rooms/Tier2" unique_id=804080754 instance=ExtResource("22_1w4y3")]
+[node name="T2Room27BossGate" parent="Rooms/Tier2" unique_id=963691073 instance=ExtResource("22_1w4y3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -224)
 
-[node name="T2Room2aWindCourt" parent="Rooms/Tier2" unique_id=1745964711 instance=ExtResource("23_1stda")]
+[node name="T2Room2aWindCourt" parent="Rooms/Tier2" unique_id=1417060489 instance=ExtResource("23_1stda")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -152)
 
-[node name="T2Room2bPuzzleCourt" parent="Rooms/Tier2" unique_id=2059698745 instance=ExtResource("24_1asvm")]
+[node name="T2Room2bPuzzleCourt" parent="Rooms/Tier2" unique_id=845121246 instance=ExtResource("24_1asvm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -176)
 
-[node name="T2Room2cKeyShrine" parent="Rooms/Tier2" unique_id=611776919 instance=ExtResource("25_y68c7")]
+[node name="T2Room2cKeyShrine" parent="Rooms/Tier2" unique_id=103261961 instance=ExtResource("25_y68c7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -176)
 
-[node name="Tier2Zone" parent="." unique_id=366390644 node_paths=PackedStringArray("hide_when_inside", "sun") instance=ExtResource("26_w3hun")]
+[node name="Tier2Zone" parent="." unique_id=950059211 node_paths=PackedStringArray("hide_when_inside", "sun") instance=ExtResource("26_w3hun")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 26, -180)
 hide_when_inside = [NodePath("../Rooms/Tier1/Room01Dock"), NodePath("../Rooms/Tier1/Room02Foyer"), NodePath("../Rooms/Tier1/Room03BannerCorridor"), NodePath("../Rooms/Tier1/Room04GuardHall"), NodePath("../Rooms/Tier1/Room05InnerGarden"), NodePath("../Rooms/Tier1/Room06TowerBase"), NodePath("../Rooms/Tier1/Room07SailStorage"), NodePath("../Rooms/Tier1/Room08RelicRoom"), NodePath("../Rooms/Tier1/Room09GrandStair")]
 sun = NodePath("../Lighting/MoonLight")
@@ -169,7 +169,7 @@ sun = NodePath("../Lighting/MoonLight")
 [node name="Shape" parent="Tier2Zone" index="0"]
 shape = SubResource("BoxShape3D_11p2m")
 
-[node name="AmbientWind" parent="." unique_id=1530441350 instance=ExtResource("27_t5yoq")]
+[node name="AmbientWind" parent="." unique_id=999154792 instance=ExtResource("27_t5yoq")]
 wind_direction = Vector3(0.6, 0, -1)
 
 [connection signal="player_spawned" from="." to="AmbientWind" method="set_follow_target"]

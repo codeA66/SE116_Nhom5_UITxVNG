@@ -6,3 +6,5 @@ extends Resource
 ## Định danh duy nhất, nhân vật dùng để kiểm tra đã mở khóa chưa
 @export var id: StringName
 @export var display_name: String = ""
+## Số ô năng lượng mỗi lần dùng (0 = miễn phí, ví dụ Dash)
+@export_range(0, 20) var energy_cost: int = 0

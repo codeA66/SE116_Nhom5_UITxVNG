@@ -210,6 +210,10 @@ func _pressure_color(pressed: bool) -> void:
 
 
 func _pressure_feedback(pressed: bool) -> void:
+	# Phòng đang bị gỡ (chết, hồi sinh, đổi khu): đá rời ổ làm cổng "đóng" nhưng cổng đã ra khỏi cây,
+	# không phát được tiếng / tween nữa. Trạng thái cổng vẫn đổi bình thường, chỉ bỏ hiệu ứng
+	if not is_inside_tree():
+		return
 	ScreenShake.add_trauma(open_trauma if pressed else close_trauma)
 	if dust:
 		dust.restart()

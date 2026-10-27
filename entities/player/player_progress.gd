@@ -7,6 +7,8 @@ extends Resource
 ## Danh sách đã nhặt; weapon phía trên chỉ là vũ khí đang chọn.
 @export var weapons: Array[WeaponData] = []
 @export var abilities: Array[AbilityData] = []
+## Nguyên tố đang ghép vào từng ô vũ khí: WeaponData.Slot -> id nguyên tố. Không có khóa = chưa ghép
+@export var fusions: Dictionary[int, StringName] = {}
 ## Cờ thế giới theo persistent_id, ví dụ "test_movement.sword_pickup" = vật đã nhặt
 @export var flags: Dictionary[StringName, bool] = {}
 

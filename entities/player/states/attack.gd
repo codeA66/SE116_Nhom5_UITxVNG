@@ -12,6 +12,8 @@ var _active_start: float = 0.0
 var _active_end: float = 0.0
 ## Mốc (giây trong đòn) bắt đầu bật lùi vì chém trúng; < 0 = đòn này chưa trúng
 var _recoil_start: float = -1.0
+## Nhát này đã nạp năng lượng chưa (một nhát trúng nhiều mục tiêu chỉ nạp một lần)
+var _energy_gained: bool = false
 
 ## Nhớ nhát kế sau khi rời đòn: đang đi mà đòn bị hủy để chạy thì bấm tiếp vẫn nối combo
 @onready var _combo: ComboTracker = $ComboTracker
@@ -68,6 +70,7 @@ func _start_attack() -> void:
 	_elapsed = 0.0
 	_hitbox_used = false
 	_recoil_start = -1.0
+	_energy_gained = false
 
 	# Chém theo con trỏ chuột giống Wind Blast; không có chuột (tay cầm, headless) thì theo phím + soft-lock
 	_lunge_direction = player.get_mouse_aim_direction()
@@ -124,11 +127,16 @@ func _update_hitbox() -> void:
 	if in_window and not _hitbox_used:
 		player.hitbox.activate(_attack, _active_end - _active_start)
 		_hitbox_used = true
+		player.notify_melee_active(_attack, _combo_index, _weapon.combo.size(), _lunge_direction, _active_end - _active_start)
 	elif not in_window and player.hitbox.is_active():
 		player.hitbox.deactivate()
 
 
 func _on_hit(_target: HurtboxComponent) -> void:
+	# Đánh thường trúng thì nạp năng lượng, mỗi nhát một lần dù trúng bao nhiêu mục tiêu
+	if not _energy_gained:
+		_energy_gained = true
+		player.energy.gain_from_hit()
 	# Trúng nhiều mục tiêu trong một nhát chỉ bật lùi một lần
 	if _attack.self_recoil_speed > 0.0 and _recoil_start < 0.0:
 		_recoil_start = _elapsed

@@ -16,6 +16,9 @@ enum Slot { SWORD, BOW }
 ## Chuỗi đòn combo, chạy lần lượt từ đầu
 @export var combo: Array[AttackData] = []
 
+## Số ô năng lượng mỗi đòn (cung tiêu, kiếm không tiêu mà nạp khi trúng)
+@export_range(0, 20) var energy_cost: int = 0
+
 @export_group("Projectile")
 ## Để trống cho cận chiến; có scene thì Attack phóng đạn ở active_start.
 @export var projectile_scene: PackedScene

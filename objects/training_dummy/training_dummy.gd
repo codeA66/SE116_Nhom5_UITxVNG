@@ -1,8 +1,13 @@
 class_name TrainingDummy
 extends CharacterBody3D
-## Hình nộm tập đánh: nhận đòn, nháy sáng, bị đẩy lùi, chịu gió.
+## Hình nộm tập đánh: nhận đòn, nháy sáng. Mặc định đứng yên (không bị chém bay, không bị gió thổi) để làm
+## trạm nạp năng lượng ổn định: chém trúng là player +1 ô. Bật knockback_enabled / wind_enabled khi cần thử đòn đẩy.
 ## Hết máu thì hồi lại tại chỗ; rơi vào vùng chết thì biến mất rồi xuất hiện lại ở vị trí ban đầu.
 
+## Bị đòn đánh đẩy lùi
+@export var knockback_enabled: bool = false
+## Bị gió (vùng gió, cú thổi) đẩy đi
+@export var wind_enabled: bool = false
 @export var knockback_friction: float = 25.0
 @export var flash_material: Material
 @export var flash_time: float = 0.1
@@ -23,6 +28,9 @@ func _ready() -> void:
 	_health.health_changed.connect(_on_health_changed)
 	_health.died.connect(_on_died)
 	_on_health_changed(_health.current_health, _health.max_health)
+	_wind_receiver.enabled = wind_enabled
+	# Không bị đẩy kiểu nào thì đứng yên tại chỗ: khỏi chạy vật lý mỗi frame
+	set_physics_process(knockback_enabled or wind_enabled)
 
 
 func _physics_process(delta: float) -> void:
@@ -56,12 +64,13 @@ func on_lethal_zone_entered(red_flash: bool = false) -> void:
 
 func _set_present(present: bool) -> void:
 	visible = present
-	set_physics_process(present)
+	set_physics_process(present and (knockback_enabled or wind_enabled))
 	_hurtbox.set_deferred(&"monitorable", present)
 
 
 func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
-	velocity += info.knockback
+	if knockback_enabled:
+		velocity += info.knockback
 	_flash()
 
 
