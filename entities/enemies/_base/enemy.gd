@@ -116,6 +116,10 @@ func start_attack_cooldown() -> void:
 	_attack_cooldown_left = data.attack_cooldown
 
 
+func resists_knockback() -> bool:
+	return false
+
+
 func set_telegraph(on: bool) -> void:
 	_set_overlay(telegraph_material if on else null)
 
@@ -171,7 +175,7 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 	if info.source is Node3D and target == null:
 		target = info.source as Node3D
 	_flash_hit()
-	if is_dead():
+	if is_dead() or resists_knockback():
 		return
 	if data.stagger_on_hit:
 		state_machine.transition_to(EnemyState.HURT)

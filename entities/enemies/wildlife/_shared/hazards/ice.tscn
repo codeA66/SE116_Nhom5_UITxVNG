@@ -1,5 +1,5 @@
 [gd_scene format=3]
-[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_hazard.gd" id="hazard"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/ice_hazard.gd" id="hazard"]
 [ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="hitbox"]
 [ext_resource type="PackedScene" path="res://assets/vfx/enemies/ice_spike/ice_spike.tscn" id="visual"]
 [ext_resource type="Script" path="res://assets/vfx/enemies/ice_spike/ice_spike_style.gd" id="style"]
@@ -15,11 +15,8 @@ size = Vector3(3.0, 2.1, 0.1)
 [node name="Ice" type="Node3D"]
 script = ExtResource("hazard")
 active_start = 0.05
-active_end = 3.35
+active_end = 3.63
 lifetime = 4.4
-growing_ice = true
-ice_length = 7.7
-ice_growth_time = 0.65
 [node name="Visual" parent="." instance=ExtResource("visual")]
 scale = Vector3(0.7, 0.7, 1.2)
 rotation = Vector3(0, -1.5707963, 0)

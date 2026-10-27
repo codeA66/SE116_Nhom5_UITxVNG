@@ -40,6 +40,7 @@ func _pre_state_update(delta: float) -> void:
 		_battle_buff_left = maxf(_battle_buff_left - delta, 0.0)
 		if _battle_buff_left <= 0.0:
 			movement.max_speed = _base_move_speed
+			if wind_receiver != null: wind_receiver.set_push_immunity(false)
 			if battle_aura != null: battle_aura.set_buff(false)
 
 func play_anim(clip: StringName) -> void:
@@ -53,6 +54,9 @@ func play_action(clip: StringName, speed: float = 1.0, blend: float = -1.0) -> v
 func battle_buff_active() -> bool:
 	return _battle_buff_left > 0.0
 
+func resists_knockback() -> bool:
+	return battle_buff_active()
+
 func battle_attack_scale() -> float:
 	return 1.12 if battle_buff_active() else 1.0
 
@@ -60,6 +64,7 @@ func apply_battle_buff(duration: float = 10.0) -> void:
 	if is_dead(): return
 	_battle_buff_left = maxf(duration, 0.0)
 	movement.max_speed = _base_move_speed * 1.12
+	if wind_receiver != null: wind_receiver.set_push_immunity(true)
 	if battle_aura == null:
 		battle_aura = MonkeyBattleAura.new()
 		add_child(battle_aura)
@@ -116,6 +121,7 @@ func complete_skill(skill: EnemySkillData, completed: bool) -> void:
 
 func root_offset(skill: EnemySkillData, elapsed: float) -> float:
 	var clip: Animation = _anim.get_animation(skill.animation)
+	if not clip.has_meta(&"root_forward_curve"): return 0.0
 	var motion: Curve = clip.get_meta(&"root_forward_curve", null) as Curve
 	if motion == null: return 0.0
 	return motion.sample(clampf(elapsed * skill.anim_speed / maxf(clip.length, 0.001), 0.0, 1.0)) * wildlife.model_scale
@@ -162,6 +168,7 @@ func _on_target_entered(body: Node3D) -> void:
 func _cancel_effects(_enemy: Enemy) -> void:
 	emitter.cancel_all()
 	_battle_buff_left = 0.0
+	if wind_receiver != null: wind_receiver.set_push_immunity(false)
 	if battle_aura != null: battle_aura.hide()
 
 func _map_animation(clip: StringName) -> StringName:

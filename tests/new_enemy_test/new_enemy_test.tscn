@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/armored_polar_bear/armored_polar_bear.tscn" id="bear"]
 [ext_resource type="PackedScene" path="res://entities/enemies/monkey_chieftain/monkey_chieftain.tscn" id="chief"]
 [ext_resource type="PackedScene" path="res://entities/enemies/monkey_grunt/monkey_grunt.tscn" id="grunt"]
+[ext_resource type="PackedScene" path="res://entities/enemies/werewolf/werewolf.tscn" id="wolf"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/monkey_squad.gd" id="squad"]
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
 sky_top_color = Color(0.12, 0.23, 0.36, 1)
@@ -63,6 +64,8 @@ preview_sword = true
 preview_dash = true
 [node name="ArmoredPolarBear" parent="." instance=ExtResource("bear")]
 position = Vector3(-10, 0.05, -5)
+[node name="Werewolf" parent="." instance=ExtResource("wolf")]
+position = Vector3(-5, 0.05, 7)
 [node name="MonkeySquad" type="Node3D" parent="." node_paths=PackedStringArray("leader", "members")]
 script = ExtResource("squad")
 leader = NodePath("Chieftain")

@@ -18,6 +18,7 @@ const WALL_NORMAL_MAX_Y := 0.7
 @export var push_decay: float = 20.0
 
 var enabled: bool = true
+var _push_immune: bool = false
 
 ## Vận tốc trôi còn lại từ cú thổi, giảm dần về 0
 var _push_velocity: Vector3 = Vector3.ZERO
@@ -44,9 +45,14 @@ func is_being_pushed() -> bool:
 	return not _push_velocity.is_zero_approx()
 
 
+func set_push_immunity(immune: bool) -> void:
+	_push_immune = immune
+	if immune: _push_velocity = Vector3.ZERO
+
+
 ## Gọi từ cú thổi: cộng vận tốc trôi, đi chung đường với gió vùng nên không xuyên tường
 func push(impulse: Vector3) -> void:
-	if not enabled:
+	if not enabled or _push_immune:
 		return
 	_push_velocity += impulse * wind_multiplier
 	pushed.emit(impulse)

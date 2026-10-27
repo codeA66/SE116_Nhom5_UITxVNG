@@ -6,12 +6,8 @@ signal finished
 @export var active_start: float = 1.0
 @export var active_end: float = 1.4
 @export var lifetime: float = 3.2
-@export var growing_ice: bool = false
-@export var ice_length: float = 4.9
-@export var ice_growth_time: float = 1.0
 @export var knock_up: float = 0.0
 @export var follow_duration: float = 0.0
-@export var gentle_pull_speed: float = 0.0
 var follow_target: Node3D
 var age: float = 0.0
 var running: bool = false
@@ -37,6 +33,7 @@ func start(skill: EnemySkillData, at: Vector3, facing: Vector3) -> void:
 	running = true
 	visible = true
 	visual.call(&"seek", 0.0)
+	_update_hitbox()
 	set_physics_process(true)
 
 func pool_acquired() -> void:
@@ -64,30 +61,15 @@ func _physics_process(delta: float) -> void:
 		global_position.x = follow_target.global_position.x
 		global_position.z = follow_target.global_position.z
 	visual.call(&"seek", age)
-	if growing_ice:
-		var box: BoxShape3D = _shape.shape as BoxShape3D
-		var depth: float = maxf(0.1, ice_length * clampf(age / ice_growth_time, 0.0, 1.0))
-		box.size.z = depth
-		_shape.position.z = depth * 0.5
+	_update_hitbox()
 	if age >= active_start and not _activated:
 		_activated = true
 		hitbox.activate(_skill, active_end - active_start)
 	if age >= active_end and hitbox.is_active(): hitbox.deactivate()
-	if gentle_pull_speed > 0.0 and hitbox.is_active(): _pull_overlapping_bodies(delta)
 	if age >= lifetime: cancel()
 
-func _pull_overlapping_bodies(delta: float) -> void:
-	# Hitbox activation enables Area monitoring deferred, after this physics callback.
-	if not hitbox.monitoring: return
-	for area: Area3D in hitbox.get_overlapping_areas():
-		var hurt: HurtboxComponent = area as HurtboxComponent
-		if hurt == null: continue
-		var body: CharacterBody3D = hurt.owner as CharacterBody3D
-		if body == null: continue
-		var to_center: Vector3 = global_position - body.global_position
-		to_center.y = 0.0
-		if to_center.length() > 0.45:
-			body.move_and_collide(to_center.normalized() * gentle_pull_speed * delta)
+func _update_hitbox() -> void:
+	pass
 
 func _on_hit(hurtbox: HurtboxComponent) -> void:
 	if knock_up <= 0.0: return

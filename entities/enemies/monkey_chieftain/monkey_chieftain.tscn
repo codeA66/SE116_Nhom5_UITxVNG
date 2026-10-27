@@ -21,7 +21,7 @@ radius = 0.54
 height = 2.35
 [sub_resource type="BoxShape3D" id="Hit"]
 resource_local_to_scene = true
-size = Vector3(1.5, 1.8, 2.2)
+size = Vector3(1.9, 2.1, 2.6)
 [node name="MonkeyChieftain" groups=["enemies"] instance=ExtResource("base")]
 script = ExtResource("script")
 data = ExtResource("data")
@@ -37,7 +37,7 @@ visible = false
 [node name="Rig" parent="Model/Visual" instance=ExtResource("rig")]
 scale = Vector3(0.42, 0.42, 0.42)
 [node name="CollisionShape3D" parent="Model/Hitbox" index="0"]
-position = Vector3(0, 1.0575, 0.9)
+position = Vector3(0, 1.0575, 1.1)
 shape = SubResource("Hit")
 [node name="AnimationPlayer" parent="." index="2"]
 callback_mode_process = 0

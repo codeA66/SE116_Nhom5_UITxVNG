@@ -1,9 +1,9 @@
 class_name MonkeyChieftain
 extends WildEnemy
-## Vỗ ngực là buff 10 giây, hồi 30 giây; các cú vỗ phát sóng âm trong không gian.
+## Vỗ ngực là buff 10 giây, hồi 20 giây; các cú vỗ phát sóng âm trong không gian.
 @export var battlecry_radius: float = 8.0
 @export var battlecry_duration: float = 10.0
-@export var battlecry_cooldown: float = 30.0
+@export var battlecry_cooldown: float = 20.0
 var _battlecry_left: float = 0.0
 var _display_elapsed: float = 0.0
 var _buff_applied: bool = false
