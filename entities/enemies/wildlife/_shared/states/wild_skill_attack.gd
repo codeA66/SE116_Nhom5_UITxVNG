@@ -9,18 +9,21 @@ var _hit_started: bool = false
 var _effect_started: bool = false
 var _completed: bool = false
 var _effect: EnemyHazard
+var _speed_scale: float = 1.0
 
 func enter(_previous: StringName) -> void:
 	_actor = enemy as WildEnemy
 	_skill = _actor.pending_skill
 	assert(_skill != null)
 	_elapsed = 0.0; _hit_started = false; _effect_started = false; _completed = false; _effect = null
+	# Snapshot speed for the full attack: a buff expiring mid-swing cannot desync the hit.
+	_speed_scale = _actor.battle_attack_scale()
 	_facing = _actor.direction_to_target()
 	if _facing.is_zero_approx(): _facing = _actor.get_facing_direction()
 	_actor.face_instantly(_facing)
 	_actor.velocity.x = 0.0; _actor.velocity.z = 0.0
 	_actor.set_telegraph(true)
-	_actor.play_action(_skill.animation, _skill.anim_speed, 0.05)
+	_actor.play_action(_skill.animation, _skill.anim_speed * _speed_scale, 0.05)
 	_actor.skill_started.emit(_skill)
 	if _skill.effect_on_start: _spawn_effect()
 
@@ -33,7 +36,7 @@ func exit() -> void:
 
 func physics_update(delta: float) -> void:
 	var previous: float = _elapsed
-	_elapsed += delta
+	_elapsed += delta * _speed_scale
 	_actor.apply_gravity(delta)
 	_update_aim(previous, delta)
 	if _elapsed >= _skill.windup_end:
@@ -41,7 +44,7 @@ func physics_update(delta: float) -> void:
 		if not _effect_started and not _skill.effect_after_animation and _skill.effect_scene != null: _spawn_effect()
 	if _skill.melee_enabled and _elapsed >= _skill.active_start and not _hit_started:
 		_hit_started = true
-		_actor.hitbox.activate(_skill, _skill.active_end - _skill.active_start)
+		_actor.hitbox.activate(_skill, (_skill.active_end - _skill.active_start) / _speed_scale)
 	if _elapsed >= _skill.active_end and _actor.hitbox.is_active(): _actor.hitbox.deactivate()
 	_apply_motion(previous, delta)
 	if _elapsed >= _skill.duration:

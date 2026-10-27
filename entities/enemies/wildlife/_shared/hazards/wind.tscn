@@ -9,11 +9,13 @@ height = 3.0
 [node name="Wind" type="Node3D"]
 script = ExtResource("hazard")
 active_start = 0.966667
-active_end = 1.366667
-lifetime = 3.166667
+active_end = 5.166667
+lifetime = 5.166667
 knock_up = 7.0
+gentle_pull_speed = 0.35
 [node name="Visual" parent="." instance=ExtResource("visual")]
 scale = Vector3(1.2, 0.6, 1.2)
+tail_duration = 4.2
 
 
 [node name="Hitbox" type="Area3D" parent="."]

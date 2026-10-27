@@ -3,19 +3,14 @@ extends Node3D
 @export var training_mode: bool = true
 @onready var player: FoxyPlayer = $Player
 @onready var overview: Camera3D = $OverviewCamera
-@onready var status: Label = $HUD/Panel/Margin/VBox/Status
-@onready var training: CheckButton = $HUD/Panel/Margin/VBox/Training
+@onready var training: CheckButton = $HUD/Training
 var _overview: bool = false
 var _hits: int = 0
 
 func _ready() -> void:
 	training.button_pressed = training_mode
 	training.toggled.connect(_set_training)
-	$HUD/Panel/Margin/VBox/Reset.pressed.connect(_reset)
-	$HUD/Panel/Margin/VBox/View.pressed.connect(_toggle_view)
 	player.health.damaged.connect(_on_damaged)
-	player.health.health_changed.connect(_refresh_health)
-	_refresh_health(player.health.current_health, player.health.max_health)
 	# Tùy chọn dòng lệnh cho ảnh QA; người chơi vẫn dùng camera đi theo mặc định.
 	if "--enemy-overview" in OS.get_cmdline_user_args(): _toggle_view()
 
@@ -32,10 +27,6 @@ func _set_training(enabled: bool) -> void:
 func _on_damaged(_amount: int) -> void:
 	_hits += 1
 	if training_mode: player.health.heal_full()
-	_refresh_health(player.health.current_health, player.health.max_health)
-
-func _refresh_health(current: int, maximum: int) -> void:
-	status.text = "HP %d / %d  |  Đã trúng đòn: %d" % [current, maximum, _hits]
 
 func _toggle_view() -> void:
 	_overview = not _overview

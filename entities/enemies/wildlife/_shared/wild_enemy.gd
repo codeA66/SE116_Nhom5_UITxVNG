@@ -11,6 +11,10 @@ var _cooldowns: Dictionary[StringName, float] = {}
 var _alert_done: bool = false
 var _announced: bool = false
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var _returning_home: bool = false
+var _battle_buff_left: float = 0.0
+var _base_move_speed: float = 0.0
+var battle_aura: MonkeyBattleAura
 
 @onready var emitter: EnemySkillEmitter = $SkillEmitter
 
@@ -21,6 +25,9 @@ func _ready() -> void:
 	for skill: EnemySkillData in wildlife.skills:
 		_cooldowns[skill.skill_id] = 0.0
 	super()
+	# Runtime movement belongs to this actor; buffs must not edit shared .tres data.
+	movement = movement.duplicate(true) as MovementStats
+	_base_move_speed = movement.max_speed
 	sensor.target_entered.connect(_announce_target)
 	died.connect(_cancel_effects)
 	play_anim(&"Idle")
@@ -29,12 +36,38 @@ func _pre_state_update(delta: float) -> void:
 	super(delta)
 	for skill: EnemySkillData in wildlife.skills:
 		_cooldowns[skill.skill_id] = maxf(_cooldowns[skill.skill_id] - delta, 0.0)
+	if _battle_buff_left > 0.0:
+		_battle_buff_left = maxf(_battle_buff_left - delta, 0.0)
+		if _battle_buff_left <= 0.0:
+			movement.max_speed = _base_move_speed
+			if battle_aura != null: battle_aura.set_buff(false)
 
 func play_anim(clip: StringName) -> void:
+	_anim.speed_scale = 1.12 if battle_buff_active() and clip in [&"Walk", &"Run"] else 1.0
 	super(_map_animation(clip))
 
 func play_action(clip: StringName, speed: float = 1.0, blend: float = -1.0) -> void:
+	_anim.speed_scale = 1.0
 	super(_map_animation(clip), speed, blend)
+
+func battle_buff_active() -> bool:
+	return _battle_buff_left > 0.0
+
+func battle_attack_scale() -> float:
+	return 1.12 if battle_buff_active() else 1.0
+
+func apply_battle_buff(duration: float = 10.0) -> void:
+	if is_dead(): return
+	_battle_buff_left = maxf(duration, 0.0)
+	movement.max_speed = _base_move_speed * 1.12
+	if battle_aura == null:
+		battle_aura = MonkeyBattleAura.new()
+		add_child(battle_aura)
+	battle_aura.set_buff(true)
+
+func start_attack_cooldown() -> void:
+	super()
+	if battle_buff_active(): _attack_cooldown_left *= 0.88
 
 func animation_player() -> AnimationPlayer:
 	return _anim
@@ -76,7 +109,7 @@ func begin_skill(skill: EnemySkillData) -> void:
 	state_machine.transition_to(skill.state)
 
 func complete_skill(skill: EnemySkillData, completed: bool) -> void:
-	_cooldowns[skill.skill_id] = maxf(0.0, skill.cooldown)
+	_cooldowns[skill.skill_id] = maxf(0.0, skill.cooldown) * (0.88 if battle_buff_active() else 1.0)
 	start_attack_cooldown()
 	skill_finished.emit(skill, completed)
 	pending_skill = null
@@ -88,16 +121,20 @@ func root_offset(skill: EnemySkillData, elapsed: float) -> float:
 	return motion.sample(clampf(elapsed * skill.anim_speed / maxf(clip.length, 0.001), 0.0, 1.0)) * wildlife.model_scale
 
 func receive_rally(player: Node3D) -> void:
-	if is_dead() or not is_instance_valid(player): return
+	if is_dead() or not is_instance_valid(player) or _returning_home: return
 	target = player
 	_announce_target(player)
 
 func forget_target() -> void:
+	_returning_home = distance_from_home() > data.patrol_radius + 0.5
 	super()
 	_alert_done = false
 	_announced = false
 
 func reacquire_target() -> void:
+	if _returning_home:
+		if distance_from_home() > data.patrol_radius + 0.2: return
+		_returning_home = false
 	# Signal rời Area có thể đến sau một physics frame: không nhận lại mục tiêu đã xa.
 	if has_target():
 		if should_give_up_chase(): forget_target()
@@ -119,8 +156,13 @@ func _announce_target(player: Node3D) -> void:
 	_announced = true
 	engaged.emit(player)
 
+func _on_target_entered(body: Node3D) -> void:
+	if not _returning_home: super(body)
+
 func _cancel_effects(_enemy: Enemy) -> void:
 	emitter.cancel_all()
+	_battle_buff_left = 0.0
+	if battle_aura != null: battle_aura.hide()
 
 func _map_animation(clip: StringName) -> StringName:
 	if wildlife == null: return clip

@@ -7,16 +7,16 @@
 script = ExtResource("style")
 path_length = 11.0
 growth_time = 0.5
-shatter_time = 1.35
-duration = 2.4
+shatter_time = 3.35
+duration = 4.4
 [sub_resource type="BoxShape3D" id="Shape"]
 resource_local_to_scene = true
 size = Vector3(3.0, 2.1, 0.1)
 [node name="Ice" type="Node3D"]
 script = ExtResource("hazard")
 active_start = 0.05
-active_end = 1.35
-lifetime = 2.4
+active_end = 3.35
+lifetime = 4.4
 growing_ice = true
 ice_length = 7.7
 ice_growth_time = 0.65

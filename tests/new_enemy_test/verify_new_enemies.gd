@@ -33,6 +33,8 @@ func _run() -> void:
 	await _revised_ranges_and_windup()
 	await _crowd_collisions()
 	await _tuning_and_interruptions()
+	await _battlecry_and_lingering_hazards()
+	await _leash_stability()
 	await _playable_squad()
 	print("NEW_ENEMY_TEST_RESULT checks=%d failures=%d" % [_checks, _failures])
 	get_tree().quit(0 if _failures == 0 else 1)
@@ -109,13 +111,13 @@ func _monkey_combat() -> void:
 	_check(await _wait_state(actor, &"Watch"), "grunt enters cooldown after completed attack")
 	var at: Vector3 = actor.position
 	_dummy.position = at + Vector3(3, 0, 1)
-	await _seconds(1.0)
-	_check(actor.position.distance_to(at) > .4, "grunt walks closer during cooldown")
+	await _seconds(.2)
+	_check(actor.position.distance_to(at) > .05, "grunt walks closer during cooldown")
 	_check(actor.get_facing_direction().dot(actor.direction_to_target()) > .98, "grunt faces moving player during cooldown")
 	_check(actor.animation_player().current_animation == actor.wildlife.walk_animation, "grunt uses walk while recovering nearby")
 	_dummy.position = actor.position + Vector3(0, 0, 1)
 	_check(await _wait_state(actor, &"SkillAttack", 400), "grunt attacks again after cooldown")
-	_check(_next_start - _last_finish >= 119 and _next_start - _last_finish <= 124, "grunt waits two seconds after attack end")
+	_check(_next_start - _last_finish >= 29 and _next_start - _last_finish <= 34, "grunt waits half a second after attack end")
 	_check(_health.current_health < _health.max_health, "monkey melee applies real hurtbox damage")
 	_check(actor.movement.max_speed == 6.0, "grunt run matches player speed without exceeding it")
 	_dummy.position = actor.position + Vector3(0, 0, 9)
@@ -148,7 +150,8 @@ func _chief_display_and_root() -> void:
 	_check(await _wait_state(actor, &"Display", 30), "chief chest-beats on detection")
 	_check(actor.animation_player().current_animation == &"Gorilla_ChestBeat_Roar", "chief plays original chestbeat roar")
 	await _seconds(4.7)
-	_check(not actor.alert_pending(), "chief roars once per engagement")
+	_check(not actor.alert_pending(), "chief does not repeat battlecry during its cooldown")
+	actor.set(&"_battle_buff_left", 0.0); actor.movement.max_speed = 6.0
 	actor.set_physics_process(false)
 	actor.state_machine.transition_to(&"Idle")
 	actor.position = Vector3.ZERO; actor.velocity = Vector3.ZERO; actor.home_position = Vector3.ZERO
@@ -184,7 +187,7 @@ func _chief_display_and_root() -> void:
 	_check(actor.hitbox.is_active() and actor.position.distance_to(locked_landing) < .08, "chief reaches landing point exactly when claw hitbox activates")
 	_check(actor.position.length() > 4.0, "chief leaps several meters rather than original short root step")
 	await _wait_state(actor, &"Watch")
-	_check(actor.attack_cooldown_remaining() > 1.9, "chief attack starts two-second recovery")
+	_check(actor.attack_cooldown_remaining() > .9, "chief attack starts one-second recovery")
 	_dummy.velocity = Vector3.ZERO
 	_dummy.position = Vector3(40, 0, 40)
 	await _seconds(4)
@@ -250,11 +253,11 @@ func _hazard_collisions() -> void:
 	var at: Vector3 = hazard.global_position
 	var health_before: int = _health.current_health
 	await _seconds(.9)
-	_check(_health.current_health == health_before and not hazard.hitbox.is_active(), "delayed claw cannot damage during one-second warning")
+	_check(_health.current_health == health_before and not hazard.hitbox.is_active(), "delayed claw cannot damage during 1.5-second warning")
 	actor.position.x += 4
 	_check(hazard.global_position.distance_to(at) < .01, "pooled warning keeps world position when caster moves")
-	await _seconds(.25)
-	_check(_health.current_health == health_before - skill.damage, "delayed claw deals damage after one second")
+	await _seconds(.65)
+	_check(_health.current_health == health_before - skill.damage, "delayed claw deals damage after 1.5 seconds")
 	await _seconds(.25)
 	_check(_health.current_health == health_before - skill.damage, "one damage application per magic claw cast")
 	await _seconds(1.0)
@@ -263,7 +266,7 @@ func _hazard_collisions() -> void:
 	_dummy.position = Vector3(0, 0, 4)
 	hazard = actor.emitter.emit_skill(skill, Vector3.BACK)
 	health_before = _health.current_health
-	await _seconds(.5); _dummy.position.x += 5
+	await _seconds(.6); _dummy.position.x += 5
 	await _seconds(2.2)
 	_check(_health.current_health == health_before, "moving out of warning avoids magic claw")
 	actor.emitter.cancel_all(); await _frames(2)
@@ -321,7 +324,7 @@ func _playable_squad() -> void:
 	bear.target = player
 	var effect: EnemyHazard = bear.emitter.emit_skill(bear.wildlife.skills[2], Vector3.BACK)
 	effect.set_physics_process(false)
-	effect.visual.call(&"seek", 1.12)
+	effect.visual.call(&"seek", 1.62)
 	var overlay: ClawScreenOverlay = effect.visual.get("overlay") as ClawScreenOverlay
 	var first_rect: Rect2 = overlay.screen_rect()
 	_check(overlay.overlay_visible() and first_rect.size.x > 20.0, "magic claw appears on screen overlay at world warning position")
@@ -356,9 +359,9 @@ func _revised_ranges_and_windup() -> void:
 	_dummy.position = Vector3(0, 0, 4)
 	health_before = _health.current_health
 	hazard = actor.emitter.emit_skill(actor.wildlife.skills[2], Vector3.BACK)
-	await _seconds(.2); _dummy.position.x = 1.9
-	await _seconds(.95)
-	_check(_health.current_health < health_before, "expanded magic claw hits beyond old radius after 1s")
+	await _seconds(.6); _dummy.position.x = 1.9
+	await _seconds(1.0)
+	_check(_health.current_health < health_before, "expanded magic claw hits beyond old radius after 1.5s")
 	actor.emitter.cancel_all(); await _frames(2)
 	_dummy.position = Vector3(1.2, 0, 7)
 	health_before = _health.current_health
@@ -376,8 +379,12 @@ func _crowd_collisions() -> void:
 		actor.position = starts[i]
 		_arena.add_child(actor); actors.append(actor)
 		if actor is WildEnemy: actor.set(&"_alert_done", true)
+		if actor is MonkeyChieftain: actor.set(&"_battlecry_left", 30.0)
 	await _frames(5)
 	_dummy.position = Vector3(0, 0, 4)
+	# Enemy1 starts just outside its sensor; set the same combat target for every
+	# participant so random patrol cannot decide whether it joins this crowd trial.
+	for actor: Enemy in actors: actor.target = _dummy
 	var clearance: float = INF
 	var all_masks: bool = true
 	for actor: Enemy in actors: all_masks = all_masks and actor.get_collision_mask_value(3)
@@ -413,7 +420,7 @@ func _tuning_and_interruptions() -> void:
 	var damage: DamageInfo = DamageInfo.new(1, DamageInfo.Type.PHYSICAL, Vector3.ZERO, _dummy)
 	actor.hurtbox.receive_hit(damage); await _frames(2)
 	_check(actor.state_machine.current_state.name == &"Hurt" and not actor.hitbox.is_active(), "hurt interrupts grunt windup and disables its hitbox")
-	_check(actor.attack_cooldown_remaining() > 1.8, "interrupted grunt attack still starts recovery cooldown")
+	_check(actor.attack_cooldown_remaining() > .4, "interrupted grunt attack still starts half-second recovery")
 	await _dispose(actor)
 	actor = _spawn(CHIEF); await _frames(3); actor.set_physics_process(false)
 	_dummy.position = Vector3(0, 0, 8); _dummy.velocity = Vector3(40, 0, 0); actor.target = _dummy
@@ -433,3 +440,82 @@ func _tuning_and_interruptions() -> void:
 	var second_radius: float = ((second.spacing.get_node("CollisionShape3D") as CollisionShape3D).shape as SphereShape3D).radius
 	_check(absf(first_radius - .15) < .001 and absf(second_radius - 3.0) < .001, "spacing radius small/large updates independent per-enemy shapes")
 	await _dispose(first); await _dispose(second)
+
+func _battlecry_and_lingering_hazards() -> void:
+	var chief: MonkeyChieftain = _spawn(CHIEF) as MonkeyChieftain
+	var near: MonkeyGrunt = _spawn(GRUNT) as MonkeyGrunt
+	var far: MonkeyGrunt = _spawn(GRUNT) as MonkeyGrunt
+	near.position = Vector3(3, 0, 0); far.position = Vector3(14, 0, 0)
+	await _frames(4)
+	_dummy.position = Vector3(0, 0, 4); chief.target = _dummy
+	chief.state_machine.transition_to(&"Display")
+	near.set_physics_process(false); far.set_physics_process(false)
+	await _seconds(1.0)
+	_check(chief.battle_buff_active() and near.battle_buff_active(), "battlecry buffs leader and nearby grunt")
+	_check(not far.battle_buff_active(), "battlecry leaves out-of-range grunt unbuffed")
+	_check(absf(chief.movement.max_speed - 6.72) < .001 and absf(near.movement.max_speed - 6.72) < .001, "battlecry raises speed by a modest twelve percent")
+	_check(absf(near.battle_attack_scale() - 1.12) < .001, "battlecry accelerates attack clock and animation equally")
+	_check(not chief.alert_pending() and chief.get(&"_battlecry_left") > 28.0, "battlecry starts thirty-second cooldown")
+	chief.set_physics_process(false); chief.state_machine.transition_to(&"Idle")
+	chief.apply_battle_buff(); chief._pre_state_update(9.99)
+	_check(chief.battle_buff_active(), "battlecry buff lasts the full ten seconds")
+	chief._pre_state_update(.02)
+	_check(not chief.battle_buff_active() and absf(chief.movement.max_speed-6.0)<.001, "buff expiry restores original runtime movement stats")
+	_check(not chief.alert_pending(), "leader cannot chestbeat again just because ten-second buff expired")
+	chief._pre_state_update(20.0)
+	_check(chief.alert_pending(), "battlecry becomes available again after thirty seconds")
+	var swing: EnemySkillData = near.wildlife.skills[0]
+	near.target = _dummy; near.begin_skill(swing)
+	near._pre_state_update(11.0)
+	_check(absf(near.state_machine.current_state.get(&"_speed_scale")-1.12)<.001, "attack keeps its captured timing when buff expires mid-swing")
+	_check(absf(near.data.movement.max_speed-6.0)<.001, "buff never mutates shared movement resource")
+	await _dispose(chief); await _dispose(near); await _dispose(far)
+	var bear: WildEnemy = _spawn(BEAR); await _frames(3)
+	bear.set_physics_process(false); bear.sensor.monitoring = false
+	_dummy.position = Vector3(0, 0, 4); bear.target = _dummy
+	var hazard: EnemyHazard = bear.emitter.emit_skill(bear.wildlife.skills[2],Vector3.BACK)
+	await _seconds(.2); _dummy.position.x = 1.0
+	await _seconds(.15)
+	_check(absf(hazard.global_position.x-1.0)<.01, "claw warning immediately follows player for first half second")
+	await _seconds(.25); var locked: Vector3 = hazard.global_position
+	_dummy.position.x = 5.0; await _seconds(.15)
+	_check(hazard.global_position.distance_to(locked)<.01, "claw warning locks its position after half second")
+	_check(not hazard.hitbox.is_active(), "claw follow phase never enables damage")
+	bear.emitter.cancel_all(); await _frames(3)
+	_dummy.position = Vector3(0, 0, 4)
+	hazard = bear.emitter.emit_skill(bear.wildlife.skills[1],Vector3.BACK)
+	_dummy.position.x = 6.0
+	await _seconds(3.6)
+	_check(hazard.running and hazard.hitbox.is_active(), "wind still has VFX and collision in extended lingering phase")
+	var health_before: int = _health.current_health
+	_dummy.position = hazard.global_position + Vector3(1.5,0,0); _dummy.velocity = Vector3.ZERO
+	await _seconds(.15)
+	_check(_health.current_health < health_before, "walking into lingering wind still damages player")
+	var before_pull: float = absf(_dummy.position.x-hazard.position.x)
+	await _seconds(.4)
+	_check(absf(_dummy.position.x-hazard.position.x)<before_pull-.05, "lingering wind pulls gently toward its center")
+	bear.emitter.cancel_all(); await _frames(3)
+	_dummy.position = Vector3(8,0,4)
+	hazard = bear.emitter.emit_skill(bear.wildlife.skills[0],Vector3.BACK)
+	await _seconds(2.5)
+	_check(hazard.running and hazard.hitbox.is_active(), "ice crystals and collision persist for two added seconds")
+	health_before = _health.current_health; _dummy.position = Vector3(0,0,4)
+	await _seconds(.15)
+	_check(_health.current_health < health_before, "late entry into lingering ice deals damage")
+	bear.emitter.cancel_all(); await _dispose(bear)
+
+func _leash_stability() -> void:
+	var actor: WildEnemy = _spawn(GRUNT); await _frames(3)
+	actor.position = Vector3(0,0,18.1); actor.home_position = Vector3.ZERO
+	_dummy.position = Vector3(0,0,19); actor.target = _dummy
+	actor.state_machine.transition_to(&"WildChase")
+	await _frames(3)
+	var transitions: Array[int] = [0]
+	actor.state_machine.state_changed.connect(func(_from: StringName,_to: StringName) -> void: transitions[0]+=1)
+	await _seconds(1.5)
+	_check(not actor.has_target() and actor.state_machine.current_state.name==&"Patrol", "enemy returns home rather than reacquiring at leash boundary")
+	_check(transitions[0]<=1, "no frame-by-frame patrol/chase animation jitter at leash boundary")
+	actor.teleport(Vector3.ZERO); _dummy.position=Vector3(0,0,3)
+	await _frames(5)
+	_check(actor.has_target(), "enemy can reacquire player normally after reaching home")
+	await _dispose(actor)

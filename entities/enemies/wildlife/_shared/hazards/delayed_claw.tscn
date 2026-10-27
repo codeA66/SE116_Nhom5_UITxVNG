@@ -8,14 +8,15 @@ radius = 2.2
 height = 2.6
 [node name="DelayedClaw" type="Node3D"]
 script = ExtResource("hazard")
-active_start = 1.0
-active_end = 1.3
-lifetime = 2.2
+follow_duration = 0.5
+active_start = 1.5
+active_end = 1.8
+lifetime = 2.7
 
 [node name="Visual" parent="." instance=ExtResource("visual")]
 scale = Vector3(1.1, 1.1, 1.1)
 
-telegraph_duration = 1.0
+telegraph_duration = 1.5
 screen_overlay = true
 overlay_radius = 2.4
 

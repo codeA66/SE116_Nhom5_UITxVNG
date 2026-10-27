@@ -82,64 +82,16 @@ projection = 1
 size = 30.0
 far = 100.0
 
-[node name="BearLabel" type="Label3D" parent="."]
-position = Vector3(-10, 0.05, -10)
-rotation_degrees = Vector3(-90, 0, 0)
-text = "POLAR BEAR  /  Wind · Ice · Delayed Claw"
-font_size = 48
-pixel_size = 0.009
-modulate = Color(0.65, 0.9, 1, 1)
-outline_size = 6
-
-[node name="MonkeyLabel" type="Label3D" parent="."]
-position = Vector3(6, 0.05, -13)
-rotation_degrees = Vector3(-90, 0, 0)
-text = "MONKEY SQUAD  /  Chief + 3 Grunts"
-font_size = 48
-pixel_size = 0.009
-modulate = Color(1, 0.78, 0.46, 1)
-outline_size = 6
-
-[node name="SpawnLabel" type="Label3D" parent="."]
-position = Vector3(0, 0.05, 15)
-rotation_degrees = Vector3(-90, 0, 0)
-text = "START  /  Approach either group"
-font_size = 48
-pixel_size = 0.009
-modulate = Color(0.65, 1, 0.75, 1)
-outline_size = 6
-
 [node name="HUD" type="CanvasLayer" parent="."]
-[node name="Panel" type="PanelContainer" parent="HUD"]
+[node name="Training" type="CheckButton" parent="HUD"]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -420.0
-offset_top = -325.0
+offset_left = -155.0
+offset_top = -55.0
 offset_right = -16.0
 offset_bottom = -16.0
-[node name="Margin" type="MarginContainer" parent="HUD/Panel"]
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_bottom = 10
-[node name="VBox" type="VBoxContainer" parent="HUD/Panel/Margin"]
-theme_override_constants/separation = 6
-[node name="Title" type="Label" parent="HUD/Panel/Margin/VBox"]
-theme_override_font_sizes/font_size = 22
-text = "NEW ENEMY TEST"
-[node name="Instructions" type="Label" parent="HUD/Panel/Margin/VBox"]
-text = "WASD: di chuyển · J / chuột trái: đánh
-Space: nhảy · Shift: dash · Tab: camera
-R: đặt lại toàn bộ trận thử"
-[node name="Status" type="Label" parent="HUD/Panel/Margin/VBox"]
-text = "HP"
-[node name="Training" type="CheckButton" parent="HUD/Panel/Margin/VBox"]
-text = "Hồi máu sau mỗi lần trúng đòn (tập né)"
+text = "Bất tử"
 button_pressed = true
-[node name="View" type="Button" parent="HUD/Panel/Margin/VBox"]
-text = "Đổi camera (Tab)"
-[node name="Reset" type="Button" parent="HUD/Panel/Margin/VBox"]
-text = "Đặt lại trận thử (R)"

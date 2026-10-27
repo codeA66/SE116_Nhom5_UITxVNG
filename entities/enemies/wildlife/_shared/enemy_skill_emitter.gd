@@ -30,6 +30,7 @@ func emit_skill(skill: EnemySkillData, facing: Vector3) -> EnemyHazard:
 	var floor_hit: Dictionary = _actor.get_world_3d().direct_space_state.intersect_ray(query)
 	if not floor_hit.is_empty(): at.y = (floor_hit["position"] as Vector3).y
 	hazard.start(skill, at, facing)
+	if hazard.follow_duration > 0.0 and _actor.has_target(): hazard.follow_target = _actor.target
 	hazard_spawned.emit(hazard, skill)
 	return hazard
 

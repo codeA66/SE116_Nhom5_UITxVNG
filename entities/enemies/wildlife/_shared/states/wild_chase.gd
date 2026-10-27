@@ -4,7 +4,7 @@ var _actor: WildEnemy
 
 func enter(_previous: StringName) -> void:
 	_actor = enemy as WildEnemy
-	_actor.play_anim(ANIM_RUN)
+	# Decide the next clip in physics_update; a skill may begin immediately.
 
 func physics_update(delta: float) -> void:
 	_actor.apply_gravity(delta)

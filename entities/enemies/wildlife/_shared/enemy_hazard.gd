@@ -10,6 +10,9 @@ signal finished
 @export var ice_length: float = 4.9
 @export var ice_growth_time: float = 1.0
 @export var knock_up: float = 0.0
+@export var follow_duration: float = 0.0
+@export var gentle_pull_speed: float = 0.0
+var follow_target: Node3D
 var age: float = 0.0
 var running: bool = false
 var _activated: bool = false
@@ -46,6 +49,7 @@ func pool_released() -> void:
 	hitbox.deactivate()
 	visual.call(&"seek", -1.0)
 	_skill = null
+	follow_target = null
 
 func cancel() -> void:
 	if not running: return
@@ -56,6 +60,9 @@ func cancel() -> void:
 func _physics_process(delta: float) -> void:
 	if not running: return
 	age += delta
+	if age <= follow_duration and is_instance_valid(follow_target):
+		global_position.x = follow_target.global_position.x
+		global_position.z = follow_target.global_position.z
 	visual.call(&"seek", age)
 	if growing_ice:
 		var box: BoxShape3D = _shape.shape as BoxShape3D
@@ -66,7 +73,21 @@ func _physics_process(delta: float) -> void:
 		_activated = true
 		hitbox.activate(_skill, active_end - active_start)
 	if age >= active_end and hitbox.is_active(): hitbox.deactivate()
+	if gentle_pull_speed > 0.0 and hitbox.is_active(): _pull_overlapping_bodies(delta)
 	if age >= lifetime: cancel()
+
+func _pull_overlapping_bodies(delta: float) -> void:
+	# Hitbox activation enables Area monitoring deferred, after this physics callback.
+	if not hitbox.monitoring: return
+	for area: Area3D in hitbox.get_overlapping_areas():
+		var hurt: HurtboxComponent = area as HurtboxComponent
+		if hurt == null: continue
+		var body: CharacterBody3D = hurt.owner as CharacterBody3D
+		if body == null: continue
+		var to_center: Vector3 = global_position - body.global_position
+		to_center.y = 0.0
+		if to_center.length() > 0.45:
+			body.move_and_collide(to_center.normalized() * gentle_pull_speed * delta)
 
 func _on_hit(hurtbox: HurtboxComponent) -> void:
 	if knock_up <= 0.0: return

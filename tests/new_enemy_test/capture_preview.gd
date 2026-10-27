@@ -33,6 +33,10 @@ func _capture() -> void:
 	for layer: Node in player.find_children("*", "CanvasLayer", true, false): (layer as CanvasLayer).hide()
 	await _shot("new_enemy_models_preview")
 	# Render cả ba shader VFX để bắt lỗi chỉ xuất hiện trên renderer thật.
+	chief.apply_battle_buff(); grunt.apply_battle_buff()
+	chief.battle_aura.set_chant(true)
+	chief.battle_aura.set(&"_chant_age", 1.1)
+	await _shot("new_enemy_monkey_buff_preview")
 	chief.hide(); grunt.hide(); player.position = Vector3(-1, 0, 2)
 	camera.position = Vector3(8, 8, 14); camera.size = 15; camera.look_at(Vector3(0, 0, 1))
 	for skill: EnemySkillData in bear.wildlife.skills:
@@ -42,10 +46,13 @@ func _capture() -> void:
 		hazard.visual.call(&"seek", .75 if skill.skill_id == &"ice" else (1.2 if skill.skill_id == &"wind" else .65))
 		await _shot("new_enemy_" + String(skill.skill_id) + "_preview")
 		if skill.skill_id == &"claw":
-			hazard.visual.call(&"seek", 1.12)
+			hazard.visual.call(&"seek", 1.64)
 			await _shot("new_enemy_claw_impact_preview")
 			camera.position = Vector3(12, 12, 0); camera.look_at(Vector3(0, 0, 1))
 			await _shot("new_enemy_claw_side_camera")
+		if skill.skill_id in [&"wind", &"ice"]:
+			hazard.visual.call(&"seek", 3.0)
+			await _shot("new_enemy_" + String(skill.skill_id) + "_lingering")
 		bear.emitter.cancel_all()
 	player.hide(); bear.position = Vector3.ZERO
 	camera.position = Vector3(4, 3.0, 7); camera.size = 6; camera.look_at(Vector3(0, 1.3, 0))
