@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="FusionData" format=3]
+
+[ext_resource type="Script" path="res://abilities/fusion/fusion_data.gd" id="1_fusion"]
+[ext_resource type="Resource" path="res://resources/fusion/wind.tres" id="2_wind"]
+[ext_resource type="Script" path="res://abilities/fusion/fusion_effect.gd" id="3_effect_base"]
+[ext_resource type="Script" path="res://abilities/fusion/effects/finisher_wave_effect.gd" id="4_finisher"]
+[ext_resource type="Script" path="res://abilities/fusion/effects/reflect_projectiles_effect.gd" id="5_reflect"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/moves/wind_sword_wave.tscn" id="6_wave"]
+[ext_resource type="Resource" path="res://resources/fusion/fusion_wind_sword_attack.tres" id="7_attack"]
+
+[sub_resource type="Resource" id="FinisherWave"]
+script = ExtResource("4_finisher")
+move_scene = ExtResource("6_wave")
+attack = ExtResource("7_attack")
+
+[sub_resource type="Resource" id="Reflect"]
+script = ExtResource("5_reflect")
+
+[resource]
+script = ExtResource("1_fusion")
+weapon_slot = 0
+element = ExtResource("2_wind")
+display_name = "Kiếm Gió"
+description = "Nhát cuối của combo phóng thêm một lưỡi liềm gió bay xa ~5 m. Mọi nhát chém đánh bật được đạn của quái."
+effects = Array[ExtResource("3_effect_base")]([SubResource("FinisherWave"), SubResource("Reflect")])

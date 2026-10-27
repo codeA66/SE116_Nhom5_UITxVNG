@@ -82,3 +82,9 @@ func _draw() -> void:
 			draw_polyline(outline, Color(accent_color, 0.07), width, true)
 	draw_colored_polygon(points, Color("173545") if selected else Color(0.035, 0.065, 0.10, 0.88))
 	draw_polyline(outline, accent_color if selected else Color("4d6376"), 2.0, true)
+	# Huy hiệu nguyên tố đang ghép: chấm màu ở góc dưới phải ô
+	var element := GameState.get_fused_element(slot) if not Engine.is_editor_hint() else null
+	if element:
+		var badge := center + Vector2(radius * 0.72, radius * 0.72)
+		draw_circle(badge, 8.0, Color(0.03, 0.05, 0.08))
+		draw_circle(badge, 6.0, element.color)

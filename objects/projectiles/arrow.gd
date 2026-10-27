@@ -2,6 +2,9 @@ class_name ArrowProjectile
 extends Node3D
 ## Tên bay thẳng theo +Z. Quét cả đoạn đường mỗi physics frame để không xuyên vật mỏng.
 
+## Tên trúng thứ gì đó (quái hoặc tường) tại position: buff nguyên tố của cung nghe signal này
+signal impacted(position: Vector3, direction: Vector3)
+
 @export_flags_3d_physics var collision_mask: int = 5 # world + enemy
 
 var _attack: AttackData
@@ -43,6 +46,8 @@ func _physics_process(delta: float) -> void:
 		if hurtbox:
 			var source: Node = _source if is_instance_valid(_source) else null
 			hurtbox.receive_hit(DamageInfo.new(_attack.damage, _attack.damage_type, _velocity.normalized() * _attack.knockback, source))
+		# Lùi một chút khỏi điểm trúng để vật nở ra (hố hút) không lọt vào trong tường
+		impacted.emit((result["position"] as Vector3) - _velocity.normalized() * 0.3, _velocity.normalized())
 		queue_free()
 		return
 	global_position = next

@@ -30,6 +30,10 @@
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_blast_cone.tscn" id="35_windcone"]
 [ext_resource type="PackedScene" path="res://components/movement_dust/movement_dust.tscn" id="36_dust"]
 [ext_resource type="Script" path="res://components/combo_tracker/combo_tracker.gd" id="37_combo"]
+[ext_resource type="Script" path="res://components/energy/energy_component.gd" id="38_energy"]
+[ext_resource type="Resource" path="res://resources/player/energy.tres" id="39_energydata"]
+[ext_resource type="PackedScene" path="res://ui/hud/energy_bar.tscn" id="43_energybar"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/inventory_menu.tscn" id="44_inventory"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -71,6 +75,10 @@ external_skeleton = NodePath("../Model/Visual/Foxy/Foxy_Rig/Skeleton3D")
 [node name="HealthComponent" parent="."]
 max_health = 5
 
+[node name="EnergyComponent" type="Node" parent="."]
+script = ExtResource("38_energy")
+data = ExtResource("39_energydata")
+
 [node name="HurtboxComponent" parent="."]
 collision_layer = 2
 invincibility_time = 0.5
@@ -91,6 +99,12 @@ shape = SubResource("SphereShape3D_interact")
 
 [node name="HealthBar" parent="HUD" node_paths=PackedStringArray("health") instance=ExtResource("25_hpbar")]
 health = NodePath("../../HealthComponent")
+
+[node name="EnergyBar" parent="HUD" node_paths=PackedStringArray("energy") instance=ExtResource("43_energybar")]
+energy = NodePath("../../EnergyComponent")
+
+[node name="InventoryMenu" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("44_inventory")]
+player = NodePath("../..")
 
 [node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor") instance=ExtResource("18_prompt")]
 interactor = NodePath("../../Interactor")

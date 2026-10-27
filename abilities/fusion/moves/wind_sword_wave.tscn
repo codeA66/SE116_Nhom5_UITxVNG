@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://abilities/fusion/moves/wind_sword_wave.gd" id="1_wave"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/vfx/fusion_impact_pool.tscn" id="2_pool"]
+
+[node name="WindSwordWave" type="Node3D"]
+script = ExtResource("1_wave")
+wave_count = 1
+speed = 15.0
+max_distance = 5.0
+wave_size = Vector3(2.2, 1.2, 0.6)
+inner_radius = 0.9
+outer_radius = 1.5
+arc_degrees = 120.0
+linger = 0.4
+
+[node name="ImpactPool" parent="." instance=ExtResource("2_pool")]
