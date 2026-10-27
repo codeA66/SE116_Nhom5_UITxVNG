@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/enemies/dark_claw/dark_claw.gd" id="1"]
+[ext_resource type="Resource" path="res://assets/vfx/enemies/dark_claw/dark_claw_default.tres" id="2"]
+
+[node name="DarkClaw" type="Node3D"]
+script = ExtResource("1")
+style = ExtResource("2")
+
+[node name="Core" type="Node3D" parent="."]
+[node name="Glow" type="Node3D" parent="."]
+[node name="Smoke" type="Node3D" parent="."]
+[node name="Embers" type="Node3D" parent="."]
+[node name="Streaks" type="Node3D" parent="."]
+[node name="Aura" type="Node3D" parent="."]

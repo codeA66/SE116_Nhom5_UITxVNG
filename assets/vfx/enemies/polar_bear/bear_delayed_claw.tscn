@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://assets/vfx/enemies/polar_bear/bear_delayed_claw.gd" id="1"]
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/dark_claw/dark_claw.tscn" id="2"]
+[node name="BearDelayedClaw" type="Node3D"]
+script = ExtResource("1")
+[node name="Telegraph" type="Node3D" parent="."]
+[node name="DarkClaw" parent="." instance=ExtResource("2")]

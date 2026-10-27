@@ -1,0 +1,27 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_hazard.gd" id="hazard"]
+[ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="hitbox"]
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/wind_slam/wind_slam.tscn" id="visual"]
+[sub_resource type="CylinderShape3D" id="Shape"]
+resource_local_to_scene = true
+radius = 1.45
+height = 3.0
+[node name="Wind" type="Node3D"]
+script = ExtResource("hazard")
+active_start = 0.966667
+active_end = 1.366667
+lifetime = 3.166667
+knock_up = 7.0
+[node name="Visual" parent="." instance=ExtResource("visual")]
+scale = Vector3(0.6, 0.6, 0.6)
+
+
+[node name="Hitbox" type="Area3D" parent="."]
+collision_layer = 16
+collision_mask = 2
+monitoring = false
+monitorable = false
+script = ExtResource("hitbox")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+position = Vector3(0, 1.5, 0)
+shape = SubResource("Shape")

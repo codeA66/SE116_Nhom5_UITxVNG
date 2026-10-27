@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemySkillData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_skill_data.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+skill_id = &"slash_02"
+animation = &"Monkey_Grunt_Lunge_Slash_02"
+duration = 1.9
+active_start = 0.75
+active_end = 1.05
+windup_end = 0.6
+maximum_range = 1.65
+cooldown = 3.0
+damage = 1
+knockback = 2.5
+hitstop = 0.03

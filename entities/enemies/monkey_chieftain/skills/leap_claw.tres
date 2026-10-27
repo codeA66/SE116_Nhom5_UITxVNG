@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemySkillData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_skill_data.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+skill_id = &"leap_claw"
+animation = &"Monkey_Chieftain_Leap_Claw_Attack"
+duration = 2.8
+active_start = 1.4
+active_end = 1.75
+windup_end = 0.7
+maximum_range = 2.35
+cooldown = 3.0
+damage = 3
+knockback = 2.5
+hitstop = 0.03
