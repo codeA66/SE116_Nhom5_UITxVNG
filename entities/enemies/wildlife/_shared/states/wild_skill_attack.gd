@@ -1,3 +1,4 @@
+class_name WildSkillAttack
 extends EnemyState
 ## Cùng một đồng hồ cho pose, root motion vật lý, active frames và hiệu ứng.
 var _actor: WildEnemy
@@ -34,9 +35,7 @@ func physics_update(delta: float) -> void:
 	var previous: float = _elapsed
 	_elapsed += delta
 	_actor.apply_gravity(delta)
-	if _skill.track_during_windup and previous < _skill.windup_end and _actor.has_target():
-		_actor.face_direction(_actor.direction_to_target(), delta)
-		_facing = _actor.get_facing_direction()
+	_update_aim(previous, delta)
 	if _elapsed >= _skill.windup_end:
 		_actor.set_telegraph(false)
 		if not _effect_started and not _skill.effect_after_animation and _skill.effect_scene != null: _spawn_effect()
@@ -44,9 +43,7 @@ func physics_update(delta: float) -> void:
 		_hit_started = true
 		_actor.hitbox.activate(_skill, _skill.active_end - _skill.active_start)
 	if _elapsed >= _skill.active_end and _actor.hitbox.is_active(): _actor.hitbox.deactivate()
-	var advance: float = _actor.root_offset(_skill, _elapsed) - _actor.root_offset(_skill, previous)
-	_actor.velocity.x = _facing.x * advance / maxf(delta, 0.0001)
-	_actor.velocity.z = _facing.z * advance / maxf(delta, 0.0001)
+	_apply_motion(previous, delta)
 	if _elapsed >= _skill.duration:
 		_completed = true
 		if _skill.effect_after_animation: _spawn_effect()
@@ -56,3 +53,13 @@ func _spawn_effect() -> void:
 	_effect_started = true
 	if _skill.effect_scene == null: return
 	_effect = _actor.emitter.emit_skill(_skill, _facing)
+
+func _update_aim(previous: float, delta: float) -> void:
+	if _skill.track_during_windup and previous < _skill.windup_end and _actor.has_target():
+		_actor.face_direction(_actor.direction_to_target(), delta)
+		_facing = _actor.get_facing_direction()
+
+func _apply_motion(previous: float, delta: float) -> void:
+	var advance: float = _actor.root_offset(_skill, _elapsed) - _actor.root_offset(_skill, previous)
+	_actor.velocity.x = _facing.x * advance / maxf(delta, 0.0001)
+	_actor.velocity.z = _facing.z * advance / maxf(delta, 0.0001)

@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_watch.gd" id="watch"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_display.gd" id="display"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_skill_attack.gd" id="skill_attack"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_leap_attack.gd" id="leap_attack"]
 [sub_resource type="CapsuleShape3D" id="Body"]
 resource_local_to_scene = true
 radius = 0.48
@@ -65,3 +66,6 @@ script = ExtResource("skill_attack")
 
 [node name="SkillEmitter" type="Node" parent="."]
 script = ExtResource("emitter")
+
+[node name="LeapAttack" type="Node" parent="StateMachine"]
+script = ExtResource("leap_attack")

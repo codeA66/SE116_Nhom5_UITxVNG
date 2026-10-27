@@ -32,10 +32,13 @@ var _flash_tween: Tween
 @onready var health: HealthComponent = $HealthComponent
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent
 @onready var sensor: EnemySensor = $EnemySensor
+@onready var spacing: EnemySpacing = get_node_or_null(^"EnemySpacing") as EnemySpacing
 
 
 func _ready() -> void:
 	assert(data != null, "%s chưa gán EnemyData" % name)
+	# Áp dụng cả scene kế thừa đã override collision_mask từ trước.
+	set_collision_mask_value(3, true)
 	movement = data.movement
 	super()
 	home_position = global_position
@@ -53,6 +56,9 @@ func _ready() -> void:
 
 func _pre_state_update(delta: float) -> void:
 	_attack_cooldown_left = maxf(_attack_cooldown_left - delta, 0.0)
+
+func move_toward_direction(direction: Vector3, delta: float) -> void:
+	super(spacing.steer(direction) if spacing != null else direction, delta)
 
 
 # ---------- Mục tiêu ----------

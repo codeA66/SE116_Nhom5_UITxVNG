@@ -16,6 +16,11 @@
 [ext_resource type="Resource" path="res://resources/feedback/enemy_hit.tres" id="14_feedbackdata"]
 [ext_resource type="Script" path="res://components/death_effect/death_effect_component.gd" id="15_death"]
 [ext_resource type="Resource" path="res://resources/feedback/death_default.tres" id="16_deathdata"]
+[ext_resource type="Script" path="res://components/enemy_spacing/enemy_spacing.gd" id="17_spacing"]
+
+[sub_resource type="SphereShape3D" id="SpacingShape"]
+resource_local_to_scene = true
+radius = 1.5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
 shading_mode = 0
@@ -54,6 +59,7 @@ size = Vector3(0.5, 0.12, 0.12)
 [node name="Enemy" instance=ExtResource("1_base")]
 editor_description = "Scene gốc cho mọi quái. Quái mới: New Inherited Scene từ scene này, gán EnemyData, thêm model vào Model/Visual."
 collision_layer = 4
+collision_mask = 261
 script = ExtResource("2_enemy")
 data = ExtResource("3_data")
 hit_flash_material = SubResource("StandardMaterial3D_flash")
@@ -126,3 +132,13 @@ health = NodePath("../HealthComponent")
 model = NodePath("../Model")
 feedback = NodePath("../HitFeedbackComponent")
 data = ExtResource("16_deathdata")
+
+[node name="EnemySpacing" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+script = ExtResource("17_spacing")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EnemySpacing"]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("SpacingShape")

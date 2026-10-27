@@ -12,13 +12,19 @@ Quái nghỉ bằng Idle và đi bộ từng đoạn ngắn quanh vị trí spaw
 
 | Enemy | Khi phát hiện | Đòn đánh | Hồi chiêu |
 | --- | --- | --- | --- |
-| Chieftain | Vỗ ngực/gầm một lần; báo cho 3 grunt trong squad | Chạy áp sát, nhảy vồ/cào hai tay | 3 giây sau khi kết thúc đòn |
-| Grunt | Chạy áp sát | Chọn ngẫu nhiên `Lunge_Slash_01` hoặc `02`, giữ dao/ngón tay từ GLB mới nhất | 3 giây sau khi kết thúc đòn |
+| Chieftain | Vỗ ngực/gầm một lần; báo cho 3 grunt trong squad | Nhảy tới điểm đón hướng di chuyển của player, cào hai tay lúc đáp | 2 giây sau khi kết thúc đòn |
+| Grunt | Chạy áp sát | Chọn ngẫu nhiên `Lunge_Slash_01` hoặc `02`, phát nhanh 1,5 lần, giữ dao/ngón tay từ GLB | 2 giây sau khi kết thúc đòn |
 | Polar Bear | Chọn phép theo khoảng cách | Ice khi gần và sẵn sàng, Wind khi sẵn sàng; nếu cả hai đang hồi thì áp sát dùng physical claw | Ice và Wind độc lập, mỗi chiêu 5 giây sau khi kết thúc; physical claw 3 giây |
 
-Hai loại khỉ đứng Idle và xoay theo player trong suốt cooldown, rồi mới tiếp tục đuổi/đánh. Grunt không dùng vỗ ngực. Các clip khác vẫn nằm trong AnimationPlayer để xem hoặc dùng về sau.
+Hai loại khỉ chạy 6 m/s, bằng tốc độ chạy mặc định của player. Trong cooldown, chúng đi bộ áp sát với 28% tốc độ; xa hơn 4,5 m thì chạy, gần khoảng cách dừng thì Idle và quay nhìn player. Grunt không dùng vỗ ngực. Các clip khác vẫn nằm trong AnimationPlayer để xem hoặc dùng về sau.
 
-Wind đặt dấu báo tại chân player lúc bắt đầu phép; vùng này giữ nguyên khi player né đi. Ice theo hướng player trong windup, khóa hướng khi hết windup rồi mọc về phía đó. Sau khi physical claw kết thúc, gấu đặt một dấu magic claw ở vị trí player lúc ấy; **2 giây tiếp theo không gây sát thương**, sau đó mới bật collision trong 0,3 giây. Mỗi lần kích hoạt chỉ gây sát thương một lần trên mỗi hurtbox. Phép chỉ đánh layer player, không đánh các quái khác.
+Wind đặt dấu báo tại chân player lúc bắt đầu phép; vùng này giữ nguyên khi player né đi. Bán kính 2,9 m, gấp đôi bản đầu. Ice phát animation nhanh 1,4 lần, theo hướng player trong windup rồi khóa hướng; dải băng dài 7,7 m, hitbox rộng 3 m, lan hết trong khoảng 0,65 giây, đỉnh băng nằm xa hơn trước.
+
+Physical claw có clip thu tay lấy đà mới: windup 0,7 giây, dài hơn bản đầu 0,5 giây; hitbox chỉ bật sau windup. Khi đòn kết thúc, gấu đặt dấu magic claw ở vị trí player lúc ấy; **1 giây tiếp theo không gây sát thương**, sau đó bật collision trong 0,3 giây. Bán kính hitbox claw là 2,2 m. Vệt cào dùng CanvasLayer bám tọa độ chiếu của vùng chiêu, giữ nguyên góc nét vẽ từ mọi camera và luôn nổi trên hình ảnh 3D. Dấu báo vẫn nằm trên mặt đất để player né.
+
+Cú vồ của đầu đàn dự đoán vị trí player sau 0,45 giây theo vận tốc ngang. Trong 0,85 giây windup, nó cập nhật điểm đón và quay người theo; sau đó khóa điểm đáp, nhảy tối đa 7,5 m và tới nơi đúng mốc cào 1,45 giây. Tường và quái khác vẫn chặn được cú vồ.
+
+Mỗi lần kích hoạt chỉ gây sát thương một lần trên mỗi hurtbox. Phép chỉ đánh layer player, không đánh các quái khác. Body của mọi Enemy bật mask enemy, kể cả scene cũ đã override mask. `EnemySpacing` theo dõi hàng xóm bằng signal và giúp đi vòng nhau khi áp sát.
 
 ## Tổ chức và chỉnh thông số
 
@@ -36,7 +42,7 @@ Wind đặt dấu báo tại chân player lúc bắt đầu phép; vùng này gi
 
 | Model | Số clip | Nguồn |
 | --- | ---: | --- |
-| Polar Bear | 34 | Đủ 6 pack Rig_Large: General, MovementBasic, MovementAdvanced, CombatMelee, Simulation, Special; giữ các clip T-Pose theo namespace |
+| Polar Bear | 35 | Đủ 34 clip của 6 pack Rig_Large, giữ T-Pose theo namespace; thêm `BearActions/Claw_Windup` |
 | Chieftain | 8 | Đi bộ gốc, run, root-motion run, Idle, ChestBeat, ChestBeat_Roar, Leap_Claw_Attack, Demo_All |
 | Grunt | 7 | Đi bộ gốc, run, root-motion run, Idle, Lunge_Slash_01, Lunge_Slash_02, Demo_All |
 
@@ -47,6 +53,7 @@ Nếu thay GLB hoặc Rig_Large, import trước rồi bake lại thư viện:
 ```powershell
 godot --headless --path . --editor --import --quit
 godot --headless --path . --script res://tools/bake_new_enemy_animations.gd --quit-after 180
+godot --headless --path . --script res://tools/bake_bear_claw_windup.gd --quit-after 180
 ```
 
 ## Kiểm tra
@@ -55,7 +62,7 @@ godot --headless --path . --script res://tools/bake_new_enemy_animations.gd --qu
 godot --headless --path . --fixed-fps 60 res://tests/new_enemy_test/verify_new_enemies.tscn --quit-after 12000
 ```
 
-Bài test đo thư viện/đường dẫn animation, cảm biến, patrol, Run, vỗ ngực một lần, random hai đòn, cooldown đứng xoay, root motion và tường, Wind/Ice tracking, vùng sát thương thực, delay 2 giây, né đòn, phe, pool và dọn hiệu ứng khi chết. Có kiểm tra cả scene với player Foxy thật và đủ squad.
+Bài test đo thư viện/đường dẫn animation, cảm biến, patrol, Run, vỗ ngực một lần, random hai đòn, cooldown vừa đi vừa hồi, điểm đón/khóa hướng/đúng nhịp đáp của cú vồ, tường và crowd collision, Wind/Ice tracking, vùng sát thương mở rộng, delay 1 giây, overlay theo camera, né đòn, phe, pool và dọn hiệu ứng khi chết. Có kiểm tra cả scene với player Foxy thật và đủ squad.
 
 Chụp ảnh kiểm tra trên renderer thật (thư mục đích phải tồn tại):
 
@@ -65,4 +72,4 @@ godot --path . --fixed-fps 60 res://tests/new_enemy_test/capture_preview.tscn --
 
 Thông số sức mạnh hiện tại dành cho sân test; cần cân bằng tiếp khi đặt vào map chính.
 
-Kết quả kiểm tra tích hợp: **71/71** mục đạt; bộ test enemy hiện có `test_enemy_1.tscn` cũng báo `ENEMY1_CHECK PASSED`. Đã render model và ba VFX bằng GL Compatibility. Godot hiện báo một texture 4 KB chưa giải phóng lúc đóng renderer; cảnh enemy cũ cũng có cùng cảnh báo này, không phát sinh lỗi shader/VFX trong cảnh mới.
+Kết quả kiểm tra tích hợp: **93/93** mục đạt; hai bộ test enemy hiện có báo `ENEMY1_CHECK PASSED` và `ENEMY2_CHECK PASSED`. Đã render animation và ba VFX bằng GL Compatibility, kiểm tra overlay từ hai góc camera. Godot hiện báo một texture 4 KB chưa giải phóng lúc đóng renderer; cảnh enemy cũ cũng có cùng cảnh báo này, không phát sinh lỗi shader/VFX trong cảnh mới.

@@ -30,6 +30,8 @@ func _run() -> void:
 	await _chief_display_and_root()
 	await _bear_skills()
 	await _hazard_collisions()
+	await _revised_ranges_and_windup()
+	await _crowd_collisions()
 	await _tuning_and_interruptions()
 	await _playable_squad()
 	print("NEW_ENEMY_TEST_RESULT checks=%d failures=%d" % [_checks, _failures])
@@ -77,7 +79,7 @@ func _wait_state(actor: WildEnemy, state: StringName, limit: int = 600) -> bool:
 
 func _libraries_and_patrol() -> void:
 	var scenes: Array[PackedScene] = [BEAR, CHIEF, GRUNT]
-	var counts: Array[int] = [34, 8, 7]
+	var counts: Array[int] = [35, 8, 7]
 	for i: int in scenes.size():
 		var actor: WildEnemy = _spawn(scenes[i]); await _frames(5)
 		var anim: AnimationPlayer = actor.animation_player()
@@ -108,16 +110,22 @@ func _monkey_combat() -> void:
 	var at: Vector3 = actor.position
 	_dummy.position = at + Vector3(3, 0, 1)
 	await _seconds(1.0)
-	_check(actor.position.distance_to(at) < .05, "grunt stays still during cooldown")
+	_check(actor.position.distance_to(at) > .4, "grunt walks closer during cooldown")
 	_check(actor.get_facing_direction().dot(actor.direction_to_target()) > .98, "grunt faces moving player during cooldown")
-	_check(actor.animation_player().current_animation == actor.wildlife.idle_animation, "grunt uses idle while waiting")
+	_check(actor.animation_player().current_animation == actor.wildlife.walk_animation, "grunt uses walk while recovering nearby")
 	_dummy.position = actor.position + Vector3(0, 0, 1)
 	_check(await _wait_state(actor, &"SkillAttack", 400), "grunt attacks again after cooldown")
-	_check(_next_start - _last_finish >= 179, "grunt waits full three seconds after attack end")
+	_check(_next_start - _last_finish >= 119 and _next_start - _last_finish <= 124, "grunt waits two seconds after attack end")
 	_check(_health.current_health < _health.max_health, "monkey melee applies real hurtbox damage")
+	_check(actor.movement.max_speed == 6.0, "grunt run matches player speed without exceeding it")
+	_dummy.position = actor.position + Vector3(0, 0, 9)
+	await _wait_state(actor, &"Watch")
+	await _seconds(.25)
+	_check(actor.animation_player().current_animation == actor.wildlife.run_animation and actor.velocity.length() <= 6.01, "grunt runs during cooldown when player is far")
 	# Chọn ngẫu nhiên hai đòn hợp lệ, không cấp phát danh sách mỗi frame.
 	actor.set_physics_process(false)
 	actor.state_machine.transition_to(&"Idle")
+	_dummy.position = actor.position + Vector3(0, 0, 1)
 	actor.set(&"_attack_cooldown_left", 0.0)
 	var ready_slashes: Dictionary[StringName, float] = {&"slash_01": 0.0, &"slash_02": 0.0}
 	actor.set(&"_cooldowns", ready_slashes)
@@ -158,10 +166,26 @@ func _chief_display_and_root() -> void:
 	wall.queue_free(); await _frames(3)
 	actor.set_physics_process(false); actor.state_machine.transition_to(&"Idle")
 	actor.position = Vector3.ZERO; actor.velocity = Vector3.ZERO
+	_dummy.position = Vector3(0, 0, 5); _dummy.velocity = Vector3(6, 0, 0)
 	actor.begin_skill(skill); actor.set_physics_process(true)
-	await _seconds(skill.duration + .05)
-	_check(absf(actor.position.z - 1.344) < .08, "chief root motion advances physics body once")
-	_check(actor.attack_cooldown_remaining() > 2.8, "chief attack starts three-second recovery")
+	await _seconds(.4)
+	var leap: Node = actor.state_machine.current_state
+	var anticipated: Vector3 = leap.call(&"landing_position") as Vector3
+	_check(anticipated.x > 2.0, "chief aims ahead along player movement during windup")
+	_check(actor.get_facing_direction().x > .3, "chief turns toward predicted position while winding up")
+	await _seconds(.5)
+	var locked_landing: Vector3 = leap.call(&"landing_position") as Vector3
+	_dummy.velocity = Vector3(-6, 0, 0); _dummy.position = Vector3(-3, 0, 5)
+	await _seconds(.2)
+	_check((leap.call(&"landing_position") as Vector3).distance_to(locked_landing) < .001, "chief locks destination after launch")
+	for frame: int in 60:
+		if actor.hitbox.is_active(): break
+		await _frames(1)
+	_check(actor.hitbox.is_active() and actor.position.distance_to(locked_landing) < .08, "chief reaches landing point exactly when claw hitbox activates")
+	_check(actor.position.length() > 4.0, "chief leaps several meters rather than original short root step")
+	await _wait_state(actor, &"Watch")
+	_check(actor.attack_cooldown_remaining() > 1.9, "chief attack starts two-second recovery")
+	_dummy.velocity = Vector3.ZERO
 	_dummy.position = Vector3(40, 0, 40)
 	await _seconds(4)
 	_check(not actor.has_target(), "chief releases distant player")
@@ -208,7 +232,7 @@ func _bear_skills() -> void:
 	_check(actor.animation_player().current_animation == actor.wildlife.run_animation, "bear runs closer while spells cool down")
 	_check(await _wait_state(actor, &"SkillAttack", 150), "bear reaches fallback melee range")
 	_check(actor.pending_skill.skill_id == &"claw", "bear uses physical claw when spells unavailable")
-	await _seconds(1.1)
+	await _seconds(1.6)
 	_check(_hazard_id == &"claw" and _latest_hazard.age < .15, "delayed magic warning starts after physical claw finishes")
 	actor.health.take_damage(actor.health.max_health)
 	await _frames(2)
@@ -225,12 +249,12 @@ func _hazard_collisions() -> void:
 	var hazard: EnemyHazard = actor.emitter.emit_skill(skill, Vector3.BACK)
 	var at: Vector3 = hazard.global_position
 	var health_before: int = _health.current_health
-	await _seconds(1.9)
-	_check(_health.current_health == health_before and not hazard.hitbox.is_active(), "delayed claw cannot damage during two-second warning")
+	await _seconds(.9)
+	_check(_health.current_health == health_before and not hazard.hitbox.is_active(), "delayed claw cannot damage during one-second warning")
 	actor.position.x += 4
 	_check(hazard.global_position.distance_to(at) < .01, "pooled warning keeps world position when caster moves")
 	await _seconds(.25)
-	_check(_health.current_health == health_before - skill.damage, "delayed claw deals damage after two seconds")
+	_check(_health.current_health == health_before - skill.damage, "delayed claw deals damage after one second")
 	await _seconds(.25)
 	_check(_health.current_health == health_before - skill.damage, "one damage application per magic claw cast")
 	await _seconds(1.0)
@@ -292,7 +316,87 @@ func _playable_squad() -> void:
 	await _seconds(8.0)
 	_check((arena.get("_hits") as int) > 0, "playable encounter damages real player through existing combat components")
 	_check(player.health.current_health == player.health.max_health, "training toggle heals real player without saving progression")
+	var bear: WildEnemy = arena.get_node("ArmoredPolarBear") as WildEnemy
+	bear.set_physics_process(false); bear.sensor.monitoring = false
+	bear.target = player
+	var effect: EnemyHazard = bear.emitter.emit_skill(bear.wildlife.skills[2], Vector3.BACK)
+	effect.set_physics_process(false)
+	effect.visual.call(&"seek", 1.12)
+	var overlay: ClawScreenOverlay = effect.visual.get("overlay") as ClawScreenOverlay
+	var first_rect: Rect2 = overlay.screen_rect()
+	_check(overlay.overlay_visible() and first_rect.size.x > 20.0, "magic claw appears on screen overlay at world warning position")
+	var camera: Camera3D = arena.get_node("OverviewCamera") as Camera3D
+	camera.position = player.position + Vector3(12, 8, 0); camera.look_at(player.position); camera.make_current()
+	await _frames(2)
+	_check(overlay.overlay_visible() and overlay.screen_rect().size.x > 20.0, "claw overlay remains visible from side camera")
+	bear.emitter.cancel_all(); await _frames(2)
+	_check(not overlay.overlay_visible(), "pool release hides canvas overlay as well as world VFX")
 	arena.queue_free(); await _frames(3)
+
+func _revised_ranges_and_windup() -> void:
+	var actor: WildEnemy = _spawn(BEAR); await _frames(3)
+	actor.sensor.monitoring = false; actor.set_physics_process(false)
+	_dummy.position = Vector3(0, 0, 1.5); actor.target = _dummy
+	var health_before: int = _health.current_health
+	actor.begin_skill(actor.wildlife.skills[2]); actor.set_physics_process(true)
+	await _seconds(.6)
+	_check(not actor.hitbox.is_active() and _health.current_health == health_before, "bear claw has readable 0.7-second windup without early damage")
+	_check(actor.animation_player().current_animation == &"BearActions/Claw_Windup", "bear uses new pull-in anticipation clip")
+	await _seconds(.25)
+	_check(_health.current_health < health_before, "bear physical claw hits after longer windup")
+	actor.set_physics_process(false); actor.state_machine.transition_to(&"Idle"); actor.emitter.cancel_all()
+	actor.position = Vector3.ZERO
+	_dummy.position = Vector3(0, 0, 4)
+	health_before = _health.current_health
+	var hazard: EnemyHazard = actor.emitter.emit_skill(actor.wildlife.skills[1], Vector3.BACK)
+	await _seconds(.2); _dummy.position.x = 2.6
+	await _seconds(1.0)
+	_check(_health.current_health < health_before, "double-radius wind hits beyond former 1.45m radius")
+	actor.emitter.cancel_all(); await _frames(2)
+	_dummy.position = Vector3(0, 0, 4)
+	health_before = _health.current_health
+	hazard = actor.emitter.emit_skill(actor.wildlife.skills[2], Vector3.BACK)
+	await _seconds(.2); _dummy.position.x = 1.9
+	await _seconds(.95)
+	_check(_health.current_health < health_before, "expanded magic claw hits beyond old radius after 1s")
+	actor.emitter.cancel_all(); await _frames(2)
+	_dummy.position = Vector3(1.2, 0, 7)
+	health_before = _health.current_health
+	hazard = actor.emitter.emit_skill(actor.wildlife.skills[0], Vector3.BACK)
+	await _seconds(.8)
+	_check(_health.current_health < health_before, "faster wider ice reaches lateral player 7m away before old peak time")
+	actor.emitter.cancel_all(); await _dispose(actor)
+
+func _crowd_collisions() -> void:
+	var actors: Array[Enemy] = []
+	var starts: Array[Vector3] = [Vector3(-2, 0, -3), Vector3(0, 0, -3.8), Vector3(2, 0, -3), Vector3(-3.5, 0, -5.5), Vector3(3.5, 0, -5.5)]
+	var scenes: Array[PackedScene] = [CHIEF, GRUNT, GRUNT, BEAR, load("res://entities/enemies/enemy_1/enemy_1.tscn") as PackedScene]
+	for i: int in scenes.size():
+		var actor: Enemy = scenes[i].instantiate() as Enemy
+		actor.position = starts[i]
+		_arena.add_child(actor); actors.append(actor)
+		if actor is WildEnemy: actor.set(&"_alert_done", true)
+	await _frames(5)
+	_dummy.position = Vector3(0, 0, 4)
+	var clearance: float = INF
+	var all_masks: bool = true
+	for actor: Enemy in actors: all_masks = all_masks and actor.get_collision_mask_value(3)
+	for frame: int in 480:
+		await _frames(1)
+		for i: int in actors.size():
+			for j: int in range(i + 1, actors.size()):
+				var a: Enemy = actors[i]; var b: Enemy = actors[j]
+				var radius_a: float = ((a.get_node("CollisionShape3D") as CollisionShape3D).shape as CapsuleShape3D).radius
+				var radius_b: float = ((b.get_node("CollisionShape3D") as CollisionShape3D).shape as CapsuleShape3D).radius
+				var offset: Vector3 = a.position - b.position; offset.y = 0.0
+				clearance = minf(clearance, offset.length() - radius_a - radius_b)
+	_check(all_masks, "new and existing enemies all collide with enemy body layer")
+	_check(clearance >= -.035, "mixed crowd bodies never overlap while running and attacking (clearance %.3f)" % clearance)
+	var progressed: bool = true
+	for i: int in actors.size(): progressed = progressed and actors[i].position.distance_to(starts[i]) > 1.0
+	_check(progressed, "all five enemies make progress while avoiding their neighbors")
+	for actor: Enemy in actors: actor.queue_free()
+	_dummy.position = Vector3(40, 0, 40); await _frames(3)
 
 func _tuning_and_interruptions() -> void:
 	for radius: float in [0.0, 0.15, 4.0]:
@@ -309,5 +413,23 @@ func _tuning_and_interruptions() -> void:
 	var damage: DamageInfo = DamageInfo.new(1, DamageInfo.Type.PHYSICAL, Vector3.ZERO, _dummy)
 	actor.hurtbox.receive_hit(damage); await _frames(2)
 	_check(actor.state_machine.current_state.name == &"Hurt" and not actor.hitbox.is_active(), "hurt interrupts grunt windup and disables its hitbox")
-	_check(actor.attack_cooldown_remaining() > 2.8, "interrupted grunt attack still starts recovery cooldown")
+	_check(actor.attack_cooldown_remaining() > 1.8, "interrupted grunt attack still starts recovery cooldown")
 	await _dispose(actor)
+	actor = _spawn(CHIEF); await _frames(3); actor.set_physics_process(false)
+	_dummy.position = Vector3(0, 0, 8); _dummy.velocity = Vector3(40, 0, 0); actor.target = _dummy
+	var leap: LeapSkillData = actor.wildlife.skills[0] as LeapSkillData
+	for limit: float in [0.0, 0.2, 12.0]:
+		leap.maximum_leap_distance = limit
+		actor.begin_skill(leap)
+		var destination: Vector3 = actor.state_machine.current_state.call(&"landing_position") as Vector3
+		_check(destination.is_finite() and destination.distance_to(actor.position) <= limit + .001, "predicted leap limit %.1f clamps fast moving target safely" % limit)
+		actor.state_machine.transition_to(&"Idle")
+	_dummy.velocity = Vector3.ZERO; await _dispose(actor)
+	var first: WildEnemy = _spawn(GRUNT)
+	var second: WildEnemy = _spawn(GRUNT)
+	await _frames(3)
+	first.spacing.separation_radius = .15; second.spacing.separation_radius = 3.0
+	var first_radius: float = ((first.spacing.get_node("CollisionShape3D") as CollisionShape3D).shape as SphereShape3D).radius
+	var second_radius: float = ((second.spacing.get_node("CollisionShape3D") as CollisionShape3D).shape as SphereShape3D).radius
+	_check(absf(first_radius - .15) < .001 and absf(second_radius - 3.0) < .001, "spacing radius small/large updates independent per-enemy shapes")
+	await _dispose(first); await _dispose(second)

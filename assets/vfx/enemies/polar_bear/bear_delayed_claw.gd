@@ -2,13 +2,20 @@ extends Node3D
 signal finished
 const TELEGRAPH = preload("res://assets/vfx/enemies/polar_bear/bear_telegraph.gdshader")
 @export var telegraph_duration := 1.5
+@export var screen_overlay: bool = false
+@export var overlay_radius: float = 2.4
 var age := -1.0
 var manual_clock := false
 var solo_layer := ""
 var materials: Array[ShaderMaterial] = []
+var overlay: ClawScreenOverlay
 @onready var claw = $DarkClaw
 
 func _ready() -> void:
+	if screen_overlay:
+		overlay = ClawScreenOverlay.new()
+		overlay.world_radius = overlay_radius
+		add_child(overlay)
 	claw.manual_clock = true
 	claw.set_process(false)
 	claw.set_layer_enabled("Aura", false)
@@ -44,7 +51,8 @@ func seek(seconds: float) -> void:
 	for material in materials:
 		material.set_shader_parameter("telegraph_age", age)
 		material.set_shader_parameter("telegraph_duration", telegraph_duration)
-	claw.visible = age >= telegraph_duration and age < total_duration() and solo_layer != "Telegraph"
+	claw.visible = not screen_overlay and age >= telegraph_duration and age < total_duration() and solo_layer != "Telegraph"
+	if overlay != null: overlay.seek(age - telegraph_duration if solo_layer != "Telegraph" else -1.0)
 	claw.solo_layer = solo_layer if solo_layer != "Telegraph" else ""
 	claw.seek(claw.style.duration * 0.115 + maxf(age - telegraph_duration, 0.0))
 

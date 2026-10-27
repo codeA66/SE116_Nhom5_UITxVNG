@@ -39,12 +39,33 @@ func _capture() -> void:
 		bear.target = player
 		var hazard: EnemyHazard = bear.emitter.emit_skill(skill, Vector3.BACK)
 		hazard.set_physics_process(false)
-		hazard.visual.call(&"seek", 1.2 if skill.skill_id != &"claw" else 1.5)
+		hazard.visual.call(&"seek", .75 if skill.skill_id == &"ice" else (1.2 if skill.skill_id == &"wind" else .65))
 		await _shot("new_enemy_" + String(skill.skill_id) + "_preview")
 		if skill.skill_id == &"claw":
-			hazard.visual.call(&"seek", 2.12)
+			hazard.visual.call(&"seek", 1.12)
 			await _shot("new_enemy_claw_impact_preview")
+			camera.position = Vector3(12, 12, 0); camera.look_at(Vector3(0, 0, 1))
+			await _shot("new_enemy_claw_side_camera")
 		bear.emitter.cancel_all()
+	player.hide(); bear.position = Vector3.ZERO
+	camera.position = Vector3(4, 3.0, 7); camera.size = 6; camera.look_at(Vector3(0, 1.3, 0))
+	for seconds: float in [0.0, 0.4, 0.68, 0.85]:
+		bear.play_action(&"BearActions/Claw_Windup", 1.0, 0.0)
+		bear.animation_player().seek(seconds, true)
+		bear.animation_player().pause()
+		await _shot("new_enemy_bear_windup_%03d" % roundi(seconds * 100.0))
+	bear.hide(); chief.show(); player.show()
+	_scene.get_node("Cover/CollisionShape3D").set(&"disabled", true)
+	chief.position = Vector3.ZERO; chief.velocity = Vector3.ZERO
+	player.position = Vector3(0, 0, 5); player.velocity = Vector3(3, 0, 0)
+	chief.target = player
+	camera.position = Vector3(12, 10, 15); camera.size = 14; camera.look_at(Vector3(1, 1, 3))
+	chief.begin_skill(chief.wildlife.skills[0]); chief.set_physics_process(true)
+	var launch_frame: int = Engine.get_physics_frames()
+	for seconds: float in [.35, .85, 1.1, 1.45, 1.75]:
+		while Engine.get_physics_frames() - launch_frame < roundi(seconds * 60.0): await get_tree().physics_frame
+		await RenderingServer.frame_post_draw
+		get_viewport().get_texture().get_image().save_png(_output.path_join("new_enemy_chief_leap_%03d.png" % roundi(seconds * 100.0)))
 	print("ENEMY_PREVIEW_CAPTURED: ", _output)
 	_scene.queue_free()
 	await get_tree().process_frame

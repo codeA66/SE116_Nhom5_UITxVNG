@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://assets/models/enemies/blenderimport/armored_polar_bear/Armored_Polar_Bear_Large.glb" id="rig"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_skill_emitter.gd" id="emitter"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/general.tres" id="anim0"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/bear_actions.tres" id="bear_actions"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/movement_basic.tres" id="anim1"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/movement_advanced.tres" id="anim2"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/combat_melee.tres" id="anim3"]
@@ -46,6 +47,7 @@ shape = SubResource("Hit")
 [node name="AnimationPlayer" parent="." index="2"]
 callback_mode_process = 0
 libraries = {
+&"BearActions": ExtResource("bear_actions"),
 &"General": ExtResource("anim0"),
 &"MovementBasic": ExtResource("anim1"),
 &"MovementAdvanced": ExtResource("anim2"),

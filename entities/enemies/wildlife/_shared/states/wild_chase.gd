@@ -1,5 +1,5 @@
 extends EnemyState
-## FSM gốc gọi state này thay Chase; khoảng hồi chiêu là một state đứng xoay riêng.
+## FSM gốc gọi state này thay Chase; khoảng hồi chiêu áp sát do Watch điều khiển.
 var _actor: WildEnemy
 
 func enter(_previous: StringName) -> void:

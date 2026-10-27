@@ -11,3 +11,8 @@ extends EnemyData
 @export var skills: Array[EnemySkillData] = []
 @export var patrol_arrive_distance: float = 0.35
 @export var patrol_timeout: float = 5.0
+@export_group("Cooldown Approach")
+@export var advance_on_cooldown: bool = false
+@export_range(0.1, 1.0) var cooldown_walk_speed_scale: float = 0.28
+@export var cooldown_run_distance: float = 4.5
+@export var approach_stop_distance: float = 1.1
