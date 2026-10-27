@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://entities/bosses/boss_1/boss_data.gd" id="1_boss_data"]
+
+[resource]
+script = ExtResource("1_boss_data")
+display_name = "Dị Thú Tha Hoá"
+max_health = 20
+walk_speed_phase1 = 3.2
+walk_speed_phase2 = 4.2
+walk_speed_phase3 = 5.6
+rotation_speed = 8.0
+iframe_duration_normal = 0.6
+melee_range = 3.2
+melee_damage = 1
+melee_knockback = 8.0
+melee_cooldown_phase1 = 1.4
+melee_cooldown_phase2 = 0.9
+melee_cooldown_phase3 = 0.5
+jump_slam_min_range = 5.0
+jump_slam_max_range = 14.0
+jump_slam_damage = 1
+jump_slam_cooldown_phase1 = 5.0
+jump_slam_cooldown_phase2 = 3.5
+jump_slam_cooldown_phase3 = 2.2
+fireball_speed = 9.0
+fireball_reflected_speed = 18.0
+fireball_damage = 1
+fireball_cooldown_phase1 = 3.5
+fireball_cooldown_phase2 = 3.5
+fireball_cooldown_phase3 = 10.0
+damage_multiplier_phase3 = 2
+anim_speed_phase1 = 1.0
+anim_speed_phase2 = 1.2
+anim_speed_phase3 = 1.4
+stun_duration_phase1 = 2.5
+stun_duration_phase2 = 3.0

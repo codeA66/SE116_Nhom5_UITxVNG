@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="MovementStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://entities/_base/movement_stats.gd" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+max_speed = 3.2
+ground_accel = 40.0
+ground_decel = 50.0
+turn_accel = 70.0
+rotation_speed = 8.0
+jump_height = 3.5
+time_to_apex = 0.5
+fall_gravity_mult = 2.0
+jump_cut_mult = 1.0
+apex_threshold = 0.5
+apex_gravity_mult = 1.0
+max_fall_speed = 30.0

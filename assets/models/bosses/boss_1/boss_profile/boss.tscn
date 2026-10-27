@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://d0nmdoqns4vuu"]
+
+[ext_resource type="PackedScene" path="res://boss_profile/Boss2.glb" id="1_0bnu1"]
+[ext_resource type="AnimationLibrary" path="res://boss_profile/animation/boss_animation_library.tres" id="2_8u3v5"]
+
+[node name="Boss2" unique_id=801616070 instance=ExtResource("1_0bnu1")]
+
+[node name="Skeleton3D" parent="Armature" parent_id_path=PackedInt32Array(2020983440) index="0" unique_id=1798078055]
+bones/0/position = Vector3(0.0012679389, 0.0025334654, -0.43213287)
+bones/0/rotation = Quaternion(-0.6028743, -0.26593712, 0.3324655, 0.6747495)
+bones/1/rotation = Quaternion(0.34003404, 0.45350686, 0.7821343, -0.25879428)
+bones/2/rotation = Quaternion(-0.46023777, 0.17901205, -0.038498864, 0.8687081)
+bones/3/rotation = Quaternion(0.47382498, -0.19198464, 0.0049421634, 0.8594226)
+bones/4/rotation = Quaternion(0.29487196, -0.025516704, -0.037679028, 0.9544526)
+bones/6/rotation = Quaternion(-0.038631823, 0.286805, 0.908932, 0.3001552)
+bones/7/rotation = Quaternion(-0.52339864, -0.048935182, -0.037539884, 0.849853)
+bones/8/rotation = Quaternion(0.6510197, 0.2641065, 0.15549201, 0.6944375)
+bones/9/rotation = Quaternion(0.27696222, 0.041496538, 0.01724163, 0.9598295)
+bones/11/rotation = Quaternion(0.06967328, 0.026265925, -0.015384834, 0.9971054)
+bones/12/rotation = Quaternion(0.05130109, 0.052150916, -0.032077868, 0.99680465)
+bones/13/rotation = Quaternion(-0.051849306, 0.055193424, -0.026502673, 0.9967763)
+bones/14/rotation = Quaternion(-0.6353353, -0.3505275, 0.60653716, -0.32494962)
+bones/15/rotation = Quaternion(0.23951021, -0.041672166, -0.049206775, 0.96875024)
+bones/16/rotation = Quaternion(-0.037268415, -0.19435872, 0.34930727, 0.91587126)
+bones/17/rotation = Quaternion(0.07084866, 0.018730601, 0.04115509, 0.99646175)
+bones/18/rotation = Quaternion(0.13298422, -0.00014142692, 0.17598912, 0.97536814)
+bones/19/rotation = Quaternion(0.039541163, -0.0063953493, 0.0034817283, 0.99919146)
+bones/20/rotation = Quaternion(0.06462725, -0.012604998, 0.0059771226, 0.997812)
+bones/22/rotation = Quaternion(0, 0, 0, 1)
+bones/23/rotation = Quaternion(0, 0, 0, 1)
+bones/25/rotation = Quaternion(0.6510863, -0.30938616, 0.5781093, 0.38230425)
+bones/26/rotation = Quaternion(0.30598018, -0.15534799, 0.28274065, 0.89571244)
+bones/27/rotation = Quaternion(-0.037652094, 0.15222064, -0.5044971, 0.8490548)
+bones/28/rotation = Quaternion(0.17334299, 0.016044477, -0.3310242, 0.9274253)
+bones/29/rotation = Quaternion(0.5482097, -0.060785502, -0.07473487, 0.83077437)
+bones/30/rotation = Quaternion(0.5592783, -0.057965975, -0.07035749, 0.8239524)
+bones/31/rotation = Quaternion(0.51376903, 0.03720362, -0.045426764, 0.85591686)
+
+[node name="AnimationPlayer" parent="." index="1" unique_id=2100921052]
+libraries/ = ExtResource("2_8u3v5")
+autoplay = &"Walk"

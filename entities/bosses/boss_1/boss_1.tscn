@@ -1,0 +1,141 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/_base/character.tscn" id="1_base"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/boss_1.gd" id="2_script"]
+[ext_resource type="Resource" path="res://resources/bosses/boss_1/boss_1_data.tres" id="3_data"]
+[ext_resource type="Resource" path="res://resources/bosses/boss_1/boss_1_movement.tres" id="4_movement"]
+[ext_resource type="Resource" path="res://resources/bosses/boss_1/boss_1_melee_attack.tres" id="5_melee_attack"]
+[ext_resource type="Resource" path="res://resources/bosses/boss_1/boss_1_shockwave.tres" id="6_shockwave_data"]
+[ext_resource type="PackedScene" path="res://objects/projectiles/boss_fireball/boss_fireball.tscn" id="7_fireball_scene"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/boss_1/boss_profile/Boss2.glb" id="8_model"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/bosses/boss_1/boss_profile/animation/boss_animation_library.tres" id="9_anim_lib"]
+[ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="10_hitbox"]
+[ext_resource type="PackedScene" path="res://objects/shockwave/ground_shockwave.tscn" id="11_shockwave"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/boss_idle.gd" id="12_idle"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/boss_chase.gd" id="13_chase"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/boss_melee.gd" id="14_melee"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/boss_jump_slam.gd" id="15_jump_slam"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/boss_buff.gd" id="16_buff"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/boss_cast_fireball.gd" id="17_cast_fireball"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/boss_stunned.gd" id="18_stunned"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/boss_dead.gd" id="19_dead"]
+[ext_resource type="Script" path="res://components/object_pool/object_pool.gd" id="20_pool"]
+[ext_resource type="PackedScene" path="res://objects/indicators/aoe_circle_indicator.tscn" id="21_indicator"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss_body"]
+radius = 0.85
+height = 3.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss_hurtbox"]
+radius = 0.95
+height = 3.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss_wind"]
+radius = 0.95
+height = 3.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_melee"]
+size = Vector3(2.4, 2.0, 2.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shield"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 0.45, 0.1, 0.65)
+
+[sub_resource type="SphereMesh" id="SphereMesh_shield"]
+material = SubResource("StandardMaterial3D_shield")
+radius = 2.0
+height = 4.0
+radial_segments = 24
+rings = 12
+
+[node name="Boss1" instance=ExtResource("1_base")]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("2_script")
+data = ExtResource("3_data")
+melee_attack_data = ExtResource("5_melee_attack")
+shockwave_data = ExtResource("6_shockwave_data")
+fireball_scene = ExtResource("7_fireball_scene")
+movement = ExtResource("4_movement")
+
+[node name="CollisionShape3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CapsuleShape3D_boss_body")
+
+[node name="BossModel" parent="Model/Visual" index="0" instance=ExtResource("8_model")]
+transform = Transform3D(2.7, 0, 0, 0, 2.7, 0, 0, 0, 2.7, 0, 0, 0)
+
+[node name="FireballSpawn" type="Marker3D" parent="Model" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 1.4)
+
+[node name="MeleeHitbox" type="Area3D" parent="Model" index="2"]
+collision_layer = 16
+collision_mask = 2
+monitoring = false
+monitorable = false
+script = ExtResource("10_hitbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Model/MeleeHitbox" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 1.4)
+shape = SubResource("BoxShape3D_melee")
+
+[node name="AnimationPlayer" parent="." index="2"]
+root_node = NodePath("../Model/Visual/BossModel")
+libraries/ = ExtResource("9_anim_lib")
+
+[node name="HurtboxComponent" parent="." index="4"]
+collision_layer = 4
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CapsuleShape3D_boss_hurtbox")
+
+[node name="WindReceiverComponent" parent="." index="5"]
+wind_multiplier = 0.0
+
+[node name="CollisionShape3D" parent="WindReceiverComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CapsuleShape3D_boss_wind")
+
+[node name="ShieldSphere" type="MeshInstance3D" parent="." index="8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+visible = false
+mesh = SubResource("SphereMesh_shield")
+
+[node name="GroundShockwave" parent="." index="9" instance=ExtResource("11_shockwave")]
+
+[node name="FireballPool" type="Node" parent="." index="10"]
+script = ExtResource("20_pool")
+scene = ExtResource("7_fireball_scene")
+initial_size = 3
+
+[node name="AoeCircleIndicator" parent="." index="11" instance=ExtResource("21_indicator")]
+
+[node name="StateMachine" parent="." index="12" node_paths=PackedStringArray("initial_state")]
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine" index="0"]
+script = ExtResource("12_idle")
+
+[node name="Chase" type="Node" parent="StateMachine" index="1"]
+script = ExtResource("13_chase")
+
+[node name="Melee" type="Node" parent="StateMachine" index="2"]
+script = ExtResource("14_melee")
+
+[node name="JumpSlam" type="Node" parent="StateMachine" index="3"]
+script = ExtResource("15_jump_slam")
+
+[node name="Buff" type="Node" parent="StateMachine" index="4"]
+script = ExtResource("16_buff")
+
+[node name="CastFireball" type="Node" parent="StateMachine" index="5"]
+script = ExtResource("17_cast_fireball")
+
+[node name="Stunned" type="Node" parent="StateMachine" index="6"]
+script = ExtResource("18_stunned")
+
+[node name="Dead" type="Node" parent="StateMachine" index="7"]
+script = ExtResource("19_dead")
