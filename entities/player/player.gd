@@ -3,6 +3,11 @@ extends Character
 ## Player: đọc input theo hướng camera, coyote time, các input buffer, nhặt vũ khí, mở khóa kỹ năng.
 ## Vũ khí và kỹ năng thuộc tiến trình (GameState), không lưu trong player: chuyển scene không bị mất.
 
+## Vừa bắn cung, bắt đầu thời gian hồi (HUD nghe để hiện, không phải dò mỗi frame)
+signal bow_cooldown_started(duration: float)
+## Vừa dùng kỹ năng gió, bắt đầu thời gian hồi (tính cả thời gian ra đòn)
+signal wind_blast_cooldown_started(duration: float)
+
 const ANIM_IDLE := &"Rig_Medium_General/Idle_A"
 const ANIM_RUN := &"Rig_Medium_MovementBasic/Running_A"
 const ANIM_JUMP := &"Rig_Medium_MovementBasic/Jump_Start"
@@ -37,6 +42,11 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export var soft_lock_range: float = 4.0
 ## Góc lệch tối đa (độ) giữa hướng input và mục tiêu để được soft-lock
 @export var soft_lock_angle: float = 60.0
+## Số mũi tên tạo sẵn trong pool khi bắn lần đầu
+@export var arrow_pool_size: int = 4
+## Khi nhắm cung, người quay nghiêng bấy nhiêu độ để vai trái hướng về mục tiêu như cung thủ;
+## cung và mũi tên vẫn theo đúng hướng nhắm. Model nhìn theo +Z nên bên trái là +X. 0 = đứng thẳng mặt
+@export_range(-180.0, 180.0, 0.5) var bow_stance_degrees: float = 90.0
 
 ## Đòn đánh gần nhất trúng player, state Hurt dùng để lấy hướng đẩy lùi
 ## Tắt khi cutscene / hội thoại: bỏ qua mọi phím (đi, nhảy, đánh, dash, gió, tương tác, đổi vũ khí).
@@ -56,6 +66,7 @@ var _dash_cooldown_timer: float = 0.0
 var _air_dashes_used: int = 0
 var _wind_blast_buffer_timer: float = 0.0
 var _wind_blast_cooldown_timer: float = 0.0
+var _bow_cooldown_timer: float = 0.0
 ## Vị trí trên đất cuối cùng không bị gió đẩy, dùng khi rơi xuống vực
 var _last_safe_position: Vector3
 ## Vị trí trên đất của các frame gần nhất (không gió), phần tử đầu là cũ nhất
@@ -69,6 +80,11 @@ var _model_meshes: Array[MeshInstance3D] = []
 var _flash_tween: Tween
 ## Bảng UI đang mở và dùng chuột (tủ đồ): chuột trái cũng là nút đánh nên phải bỏ qua, nếu không kéo thả sẽ chém
 var _attack_blocked_by_ui: bool = false
+## Model cung đang gắn ở BowHold (tạo một lần, ẩn khi không nhắm) và scene đã dùng để tạo nó
+var _bow_model: Node3D
+var _bow_model_scene: PackedScene
+## Pool đạn theo scene, đặt ở cha của player để đạn không đi theo người
+var _projectile_pools: Dictionary[PackedScene, ObjectPool] = {}
 
 @onready var energy: EnergyComponent = $EnergyComponent
 @onready var hitbox: HitboxComponent = $Model/Hitbox
@@ -80,6 +96,8 @@ var _attack_blocked_by_ui: bool = false
 @onready var _camera: Camera3D = $CameraRig/Camera3D
 @onready var _weapon_socket: Node3D = $WeaponSocket
 @onready var _arrow_spawn: Marker3D = $Model/ArrowSpawn
+## Chỗ đặt cung khi nhắm (cầm ngang trước ngực), xoay theo model
+@onready var _bow_hold: Node3D = $Model/BowHold
 
 
 func _ready() -> void:
@@ -214,7 +232,113 @@ func pick_up_weapon(data: WeaponData) -> void:
 
 func equip_weapon(data: WeaponData) -> void:
 	pending_weapon = null
+	# Cung là vũ khí phụ: chỉ cần sở hữu (đã thêm lúc nhặt), không thay vũ khí chính đang cầm
+	if data is BowData:
+		GameState.add_weapon(data)
+		return
 	GameState.set_weapon(data)
+
+
+## Cung đã nhặt (vũ khí phụ, dùng bằng phím aim); null nếu chưa có
+func get_bow() -> BowData:
+	return GameState.get_weapon_in_slot(WeaponData.Slot.BOW) as BowData
+
+
+func is_holding_aim() -> bool:
+	return controls_enabled and Input.is_action_pressed(&"aim")
+
+
+## Đúng khi đang giữ phím aim, có cung bắn được và đã hết thời gian hồi
+func can_aim_bow() -> bool:
+	var bow := get_bow()
+	return bow != null and bow.is_ranged() and not bow.combo.is_empty() and is_holding_aim() \
+			and _bow_cooldown_timer <= 0.0
+
+
+## Hiện cung ở BowHold và bắt đầu tư thế kéo dây
+func begin_bow_aim() -> void:
+	var bow := get_bow()
+	if bow == null or bow.model_scene == null:
+		return
+	if _bow_model == null or _bow_model_scene != bow.model_scene:
+		if _bow_model:
+			_bow_model.queue_free()
+		_bow_model = bow.model_scene.instantiate() as Node3D
+		_bow_model_scene = bow.model_scene
+		_bow_hold.add_child(_bow_model)
+	# Cung nằm ngang, bụng cung chĩa theo hướng nhắm (không theo mặt nhân vật khi đứng nghiêng)
+	var forward := _get_bow_aim_local()
+	var limbs := Vector3.UP.cross(forward)
+	_bow_hold.basis = Basis(limbs.cross(forward), limbs, forward)
+	_bow_model.visible = true
+	if _bow_model is BowVisual:
+		(_bow_model as BowVisual).set_aiming(true)
+	play_action(bow.draw_animation, 0.0)
+	set_bow_draw(0.0)
+
+
+## Hướng bắn của cung (thế giới, mặt phẳng ngang) theo cách đứng hiện tại
+func get_bow_aim_direction() -> Vector3:
+	var direction := model.global_basis * _get_bow_aim_local()
+	direction.y = 0.0
+	return direction.normalized()
+
+
+## Xoay người để hướng bắn của cung (không phải mặt) chỉ về direction. rate < 0 = xoay ngay
+func turn_bow_toward(direction: Vector3, rate: float, delta: float) -> void:
+	if direction.is_zero_approx():
+		return
+	var target := atan2(direction.x, direction.z) - deg_to_rad(bow_stance_degrees)
+	model.rotation.y = target if rate < 0.0 else lerp_angle(model.rotation.y, target, 1.0 - exp(-rate * delta))
+
+
+## Bắn một mũi tên từ cung đang cầm; draw 0..1 quyết định tốc độ và sát thương
+func shoot_bow(draw: float) -> void:
+	var bow := get_bow()
+	if bow == null:
+		return
+	# Cung tiêu năng lượng mỗi phát (luật của nhánh energy-fusion); thiếu thì spend() tự báo và không bắn
+	if not energy.spend(bow.energy_cost):
+		return
+	var direction := get_bow_aim_direction()
+	# Xuất phát trên đường thẳng qua tâm người (hướng chuột tính từ tâm), ngang tay cầm cung:
+	# đứng nghiêng thì tay cầm lệch sang bên, bắn từ đó sẽ trượt khỏi chỗ chuột chỉ
+	var grip := _bow_hold.global_position
+	var flat_offset := Vector3(grip.x - global_position.x, 0.0, grip.z - global_position.z)
+	var spawn := global_position + direction * flat_offset.dot(direction)
+	spawn.y = grip.y
+	_launch_projectile(bow, bow.combo[0], direction, spawn, bow.get_shot_speed(draw), bow.get_shot_damage(draw))
+	_bow_cooldown_timer = bow.shot_cooldown
+	if bow.shot_cooldown > 0.0:
+		bow_cooldown_started.emit(bow.shot_cooldown)
+
+
+## amount 0..1: độ kéo dây
+func set_bow_draw(amount: float) -> void:
+	var visual := _bow_model as BowVisual
+	if visual:
+		visual.draw_amount = amount
+	_on_bow_draw_changed(amount)
+
+
+## Buông dây sau khi bắn: dây bật về, chạy animation buông
+func release_bow() -> void:
+	var bow := get_bow()
+	if bow:
+		play_action(bow.release_animation)
+	if _bow_model is BowVisual:
+		(_bow_model as BowVisual).play_release_flash()
+	# Sau play_action: clip buông chạy từ tư thế đang kéo, không bị tua về đầu clip kéo trước
+	set_bow_draw(0.0)
+
+
+## Cất cung (rời state nhắm vì bất cứ lý do gì)
+func end_bow_aim() -> void:
+	if _bow_model:
+		set_bow_draw(0.0)
+		if _bow_model is BowVisual:
+			(_bow_model as BowVisual).set_aiming(false)
+		_bow_model.visible = false
 
 
 func _on_progress_replaced() -> void:
@@ -226,10 +350,9 @@ func _update_weapon_selection() -> void:
 	if health.is_dead() or not controls_enabled:
 		_requested_weapon_slot = -1
 		return
+	# Cung không chọn bằng phím số: luôn dùng được qua phím aim
 	if Input.is_action_just_pressed(&"weapon_1"):
 		_requested_weapon_slot = WeaponData.Slot.SWORD
-	elif Input.is_action_just_pressed(&"weapon_2"):
-		_requested_weapon_slot = WeaponData.Slot.BOW
 	if _requested_weapon_slot < 0:
 		return
 	if GameState.get_weapon_in_slot(_requested_weapon_slot) == null:
@@ -246,22 +369,19 @@ func _update_weapon_selection() -> void:
 		play_anim(ANIM_RUN)
 
 
-func shoot_arrow(weapon: WeaponData, attack: AttackData, direction: Vector3) -> void:
+## speed < 0 = weapon.projectile_speed; damage < 0 = attack.damage
+func shoot_arrow(weapon: WeaponData, attack: AttackData, direction: Vector3, speed: float = -1.0, damage: int = -1) -> void:
 	if not energy.spend(weapon.energy_cost):
 		return
-	var arrow := weapon.projectile_scene.instantiate() as ArrowProjectile
-	get_parent().add_child(arrow)
-	arrow.global_position = _arrow_spawn.global_position
-	# Quét từ thân tới đầu tên trong frame đầu để không bắn xuyên tường sát người.
-	var origin := global_position + Vector3.UP * _arrow_spawn.position.y
-	arrow.launch(attack, weapon.projectile_speed, weapon.projectile_lifetime, direction, self, origin)
-	# Buff nguyên tố của cung (hố hút...) chạy khi tên trúng; chỉ nối khi đang ghép
+	_launch_projectile(weapon, attack, direction, _arrow_spawn.global_position, speed, damage)
+
+
+## Buff nguyên tố của cung (hố hút...) chạy khi tên trúng. Tên dùng pool nên nối một lần cho mỗi mũi
+## và đọc buff đang ghép lúc trúng, không bind theo từng phát (nối chồng sau mỗi lần dùng lại)
+func _on_arrow_impacted(position: Vector3, direction: Vector3) -> void:
 	var fusion := get_fusion()
-	if fusion and not fusion.effects.is_empty():
-		arrow.impacted.connect(_on_arrow_impacted.bind(fusion))
-
-
-func _on_arrow_impacted(position: Vector3, direction: Vector3, fusion: FusionData) -> void:
+	if fusion == null:
+		return
 	for effect in fusion.effects:
 		effect.on_projectile_impact(self, position, direction)
 
@@ -316,6 +436,7 @@ func start_wind_blast() -> WindBlastData:
 	energy.spend(data.energy_cost)
 	_wind_blast_buffer_timer = 0.0
 	_wind_blast_cooldown_timer = data.duration + data.cooldown
+	wind_blast_cooldown_started.emit(_wind_blast_cooldown_timer)
 	return data
 
 
@@ -436,6 +557,7 @@ func _pre_state_update(delta: float) -> void:
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
 	_wind_blast_buffer_timer = _update_buffer(&"skill", _wind_blast_buffer_timer, wind_blast_buffer_time, delta)
 	_wind_blast_cooldown_timer = maxf(_wind_blast_cooldown_timer - delta, 0.0)
+	_bow_cooldown_timer = maxf(_bow_cooldown_timer - delta, 0.0)
 
 
 func _attach_weapon_model(data: WeaponData) -> void:
@@ -443,6 +565,45 @@ func _attach_weapon_model(data: WeaponData) -> void:
 		child.queue_free()
 	if data and data.model_scene:
 		_weapon_socket.add_child(data.model_scene.instantiate())
+
+
+## Lớp con ghi đè để đồng bộ tư thế với độ kéo dây (ví dụ tua clip kéo cung)
+func _on_bow_draw_changed(_amount: float) -> void:
+	pass
+
+
+func _launch_projectile(weapon: WeaponData, attack: AttackData, direction: Vector3, spawn: Vector3,
+		speed: float, damage: int) -> void:
+	var pool := _get_projectile_pool(weapon.projectile_scene)
+	var arrow := pool.acquire() as ArrowProjectile
+	if not arrow.finished.is_connected(pool.release):
+		arrow.finished.connect(pool.release)
+	if not arrow.impacted.is_connected(_on_arrow_impacted):
+		arrow.impacted.connect(_on_arrow_impacted)
+	arrow.global_position = spawn
+	# Quét từ thân (cùng độ cao) tới đầu tên trong frame đầu để không bắn xuyên tường sát người.
+	var origin := Vector3(global_position.x, spawn.y, global_position.z)
+	var shot_speed := weapon.projectile_speed if speed < 0.0 else speed
+	arrow.launch(attack, shot_speed, weapon.projectile_lifetime, direction, self, origin, damage)
+
+
+## Hướng nhắm trong không gian model khi đứng nghiêng bow_stance_degrees
+func _get_bow_aim_local() -> Vector3:
+	var stance := deg_to_rad(bow_stance_degrees)
+	return Vector3(sin(stance), 0.0, cos(stance))
+
+
+func _get_projectile_pool(scene: PackedScene) -> ObjectPool:
+	var pool: ObjectPool = _projectile_pools.get(scene)
+	if is_instance_valid(pool):
+		return pool
+	pool = ObjectPool.new()
+	pool.name = "ProjectilePool"
+	pool.scene = scene
+	pool.initial_size = arrow_pool_size
+	get_parent().add_child(pool)
+	_projectile_pools[scene] = pool
+	return pool
 
 
 func _is_holding_jump() -> bool:

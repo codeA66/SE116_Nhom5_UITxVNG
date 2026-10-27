@@ -10,6 +10,7 @@ const PICK_UP := &"PickUp"
 const ATTACK := &"Attack"
 const DASH := &"Dash"
 const WIND_BLAST := &"WindBlast"
+const BOW_AIM := &"BowAim"
 const HURT := &"Hurt"
 const DEAD := &"Dead"
 
