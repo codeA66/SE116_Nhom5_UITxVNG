@@ -5,10 +5,14 @@
 [ext_resource type="Script" path="res://abilities/fusion/fusion_effect.gd" id="3_effect_base"]
 [ext_resource type="Script" path="res://abilities/fusion/effects/vortex_on_hit_effect.gd" id="4_vortex_effect"]
 [ext_resource type="PackedScene" path="res://abilities/fusion/moves/wind_vortex.tscn" id="5_vortex"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/vfx/wind_vortex_vfx.tscn" id="6_flight"]
+[ext_resource type="Resource" path="res://abilities/fusion/vfx/fusion_wind_style.tres" id="7_style"]
 
 [sub_resource type="Resource" id="VortexOnHit"]
 script = ExtResource("4_vortex_effect")
 move_scene = ExtResource("5_vortex")
+flight_scene = ExtResource("6_flight")
+vfx_style = ExtResource("7_style")
 
 [resource]
 script = ExtResource("1_fusion")

@@ -2,7 +2,7 @@ class_name WindVortex
 extends FusionMove
 ## Hố hút gió: nở tại chỗ mũi tên trúng, hút quái quanh đó về tâm trong một lúc rồi tan. Không gây sát thương
 ## (sát thương đã có ở mũi tên). Theo dõi quái vào/ra bằng signal; chỉ chạy _physics_process trong lúc còn sống.
-## Hình: nét gió xoáy hút vào suốt thời gian hố mở, hết thì bung nhẹ rồi tan.
+## Hình: dải gió có texture xoắn vào tâm, hết thì co lại rồi tan.
 
 @export var radius: float = 2.5
 @export var lifetime: float = 0.8
@@ -12,7 +12,7 @@ extends FusionMove
 @export var hold_radius: float = 0.7
 ## Lớp vùng nhận gió của nhân vật
 @export_flags_3d_physics var receiver_mask: int = 128
-## Giữ node thêm bấy nhiêu giây sau khi hố tắt để cú bung chạy hết
+## Giữ node thêm bấy nhiêu giây sau khi hố tắt để phần hình co lại chạy hết
 @export var linger: float = 0.45
 
 var _left: float = 0.0
@@ -21,8 +21,7 @@ var _receivers: Array[WindReceiverComponent] = []
 
 @onready var _area: Area3D = $Area
 @onready var _shape: CollisionShape3D = $Area/Shape
-## Nét gió xoáy hút vào (phần charge của WindBurstVfx), hết hố thì bung (phần play)
-@onready var _swirl: WindBurstVfx = $Swirl
+@onready var _swirl: WindVortexVfx = $Swirl
 
 
 func _ready() -> void:
@@ -36,6 +35,10 @@ func _ready() -> void:
 	_area.area_exited.connect(_on_receiver_exited)
 
 
+func prepare_shader_warmup() -> void:
+	_swirl.prepare_shader_warmup()
+
+
 ## Gốc node đặt ở điểm trúng; nét gió đặt dưới mặt đất ngay dưới tâm
 func perform(_user: Character, _attack: AttackData, _direction: Vector3) -> void:
 	_left = lifetime
@@ -46,7 +49,7 @@ func perform(_user: Character, _attack: AttackData, _direction: Vector3) -> void
 	if not hit.is_empty():
 		ground = hit["position"]
 	_swirl.global_position = ground
-	_swirl.start_charge(lifetime)
+	_swirl.play(radius)
 	set_physics_process(true)
 
 
@@ -68,7 +71,7 @@ func _physics_process(delta: float) -> void:
 	if _left <= 0.0:
 		_area.set_deferred(&"monitoring", false)
 		_receivers.clear()
-		_swirl.play(true)
+		_swirl.stop(linger)
 		_linger_left = linger
 
 
