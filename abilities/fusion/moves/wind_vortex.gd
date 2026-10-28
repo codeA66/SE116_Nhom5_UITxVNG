@@ -4,6 +4,8 @@ extends FusionMove
 ## (sát thương đã có ở mũi tên). Theo dõi quái vào/ra bằng signal; chỉ chạy _physics_process trong lúc còn sống.
 ## Hình: dải gió có texture xoắn vào tâm, hết thì co lại rồi tan.
 
+signal finished
+
 @export var radius: float = 2.5
 @export var lifetime: float = 0.8
 ## Gia tốc hút về tâm (m/s²); phải lớn hơn push_decay của vật nhận gió thì mới kéo được
@@ -25,12 +27,14 @@ var _receivers: Array[WindReceiverComponent] = []
 
 
 func _ready() -> void:
+	set_as_top_level(true)
 	set_physics_process(false)
 	_area.monitoring = false
 	_area.monitorable = false
 	_area.collision_layer = 0
 	_area.collision_mask = receiver_mask
-	(_shape.shape as SphereShape3D).radius = radius
+	_shape.shape = _shape.shape.duplicate()
+	(_shape.shape as SphereShape3D).radius = maxf(radius, 0.01)
 	_area.area_entered.connect(_on_receiver_entered)
 	_area.area_exited.connect(_on_receiver_exited)
 
@@ -42,6 +46,8 @@ func prepare_shader_warmup() -> void:
 ## Gốc node đặt ở điểm trúng; nét gió đặt dưới mặt đất ngay dưới tâm
 func perform(_user: Character, _attack: AttackData, _direction: Vector3) -> void:
 	_left = lifetime
+	_linger_left = 0.0
+	_receivers.clear()
 	_area.monitoring = true
 	var ground := global_position
 	var query := PhysicsRayQueryParameters3D.create(ground + Vector3.UP * 0.5, ground + Vector3.DOWN * 3.0, 1)
@@ -57,7 +63,11 @@ func _physics_process(delta: float) -> void:
 	if _left <= 0.0:
 		_linger_left -= delta
 		if _linger_left <= 0.0:
-			queue_free()
+			set_physics_process(false)
+			if finished.get_connections().is_empty():
+				queue_free()
+			else:
+				finished.emit()
 		return
 	var center := global_position
 	for receiver in _receivers:
@@ -73,6 +83,15 @@ func _physics_process(delta: float) -> void:
 		_receivers.clear()
 		_swirl.stop(linger)
 		_linger_left = linger
+
+
+func pool_released() -> void:
+	_left = 0.0
+	_linger_left = 0.0
+	_receivers.clear()
+	_area.set_deferred(&"monitoring", false)
+	_swirl.pool_released()
+	set_physics_process(false)
 
 
 func _on_receiver_entered(area: Area3D) -> void:

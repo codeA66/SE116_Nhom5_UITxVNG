@@ -9,6 +9,9 @@ extends Node
 ## Số đối tượng tạo sẵn; thiếu thì tạo thêm
 @export var initial_size: int = 3
 
+## Tuỳ chọn: cấu hình instance trước khi vào cây và chạy _ready().
+var configure_instance: Callable
+
 var _free: Array[Node] = []
 var _active: Array[Node] = []
 var _total_created: int = 0
@@ -77,6 +80,8 @@ func get_active_count() -> int:
 
 func _create() -> Node:
 	var node := scene.instantiate()
+	if configure_instance.is_valid():
+		configure_instance.call(node)
 	_total_created += 1
 	add_child(node)
 	_deactivate(node)

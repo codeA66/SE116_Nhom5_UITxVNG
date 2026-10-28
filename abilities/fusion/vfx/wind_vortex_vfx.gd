@@ -2,6 +2,8 @@ class_name WindVortexVfx
 extends Node3D
 ## Phễu khí thấp có lớp sát sàn, thân mờ, nét sắc và hạt CPU hút vào tâm.
 
+signal finished
+
 @export var style: FusionWindStyle
 @export var flight_mode: bool = false
 
@@ -12,6 +14,7 @@ var _materials: Array[ShaderMaterial] = []
 var _radius: float = 1.0
 var _projectile: Node3D
 var _flight_end_age: float = -1.0
+var _configured_radius: float = -1.0
 
 @onready var _streaks: MultiMeshInstance3D = $Streaks
 @onready var _wisps: MultiMeshInstance3D = $Wisps
@@ -24,6 +27,7 @@ var _flight_end_age: float = -1.0
 
 
 func _ready() -> void:
+	set_as_top_level(true)
 	set_process(false)
 	visible = false
 	if style == null:
@@ -48,6 +52,7 @@ func _ready() -> void:
 
 
 func start_flight(projectile: Node3D) -> void:
+	pool_released()
 	_projectile = projectile
 	_age = 0.0
 	_flight_end_age = -1.0
@@ -58,6 +63,8 @@ func start_flight(projectile: Node3D) -> void:
 		(projectile as ArrowProjectile).finished.connect(_on_pooled_flight_ended, CONNECT_ONE_SHOT)
 	visible = true
 	_particles.emitting = style.flight_particle_count > 0
+	if _particles.emitting:
+		_particles.restart()
 	set_process(true)
 
 
@@ -75,12 +82,39 @@ func _on_flight_ended() -> void:
 	if _flight_end_age >= 0.0:
 		return
 	_flight_end_age = _age
-	_projectile = null
+	_detach_projectile()
 	_particles.emitting = false
 
 
 func _on_pooled_flight_ended(_arrow: ArrowProjectile) -> void:
 	_on_flight_ended()
+
+
+func _detach_projectile() -> void:
+	if is_instance_valid(_projectile):
+		if _projectile.tree_exiting.is_connected(_on_flight_ended):
+			_projectile.tree_exiting.disconnect(_on_flight_ended)
+		if _projectile is ArrowProjectile:
+			var arrow := _projectile as ArrowProjectile
+			if arrow.finished.is_connected(_on_pooled_flight_ended):
+				arrow.finished.disconnect(_on_pooled_flight_ended)
+	_projectile = null
+
+
+func pool_released() -> void:
+	_detach_projectile()
+	visible = false
+	set_process(false)
+	_particles.emitting = false
+	_impact.emitting = false
+	_age = 0.0
+	_stop_age = -1.0
+	_flight_end_age = -1.0
+	for material in _materials:
+		material.set_shader_parameter(&"age", 0.0)
+		material.set_shader_parameter(&"dissolve", 0.0)
+		material.set_shader_parameter(&"stop_age", -1.0)
+		material.set_shader_parameter(&"flash_at", 0.0)
 
 
 func _prepare_flight() -> void:
@@ -140,7 +174,9 @@ func play(effect_radius: float) -> void:
 	_core.scale = Vector3.ONE * _radius * 0.60
 	_flash.scale = Vector3.ONE * minf(_radius * 0.65, 1.2)
 	_shock.scale = Vector3.ONE * _radius * 2.0
-	_configure_suction()
+	if not is_equal_approx(_configured_radius, _radius):
+		_configure_suction()
+		_configured_radius = _radius
 	visible = true
 	if style.suction_particle_count > 0:
 		_particles.restart()
@@ -173,7 +209,11 @@ func _process(delta: float) -> void:
 			if _flight_end_age >= 0.0:
 				material.set_shader_parameter(&"dissolve", clampf((_age - _flight_end_age) / maxf(style.flight_fade, 0.001), 0.0, 1.0))
 		if _flight_end_age >= 0.0 and _age - _flight_end_age >= style.flight_fade:
-			queue_free()
+			set_process(false)
+			if finished.get_connections().is_empty():
+				queue_free()
+			else:
+				finished.emit()
 		return
 	for material in _materials:
 		material.set_shader_parameter(&"age", _age)

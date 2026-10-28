@@ -43,8 +43,21 @@ func change_zone(zone_path: String, spawn_id: StringName = &"") -> void:
 	GameState.discard_pending_flags()
 	_pending_spawn_id = spawn_id
 	_zone_ready = false
-	get_tree().change_scene_to_file(zone_path)
-	# Scene mới được thay ở cuối frame; chờ ZoneRoot báo đã đặt player rồi mới sáng lại
+	var error := get_tree().change_scene_to_file(zone_path)
+	if error != OK:
+		push_error("SceneManager: không tải được '%s' (%s)" % [zone_path, error])
+		await _fade.fade_in(fade_duration)
+		_busy = false
+		return
+	await get_tree().scene_changed
+	var zone := get_tree().current_scene
+	# Khu có hợp đồng chuẩn bị combat phải báo xong, không bị cắt sau 30 frame.
+	if zone != null and zone.has_method(&"is_combat_ready"):
+		while not _zone_ready and is_instance_valid(zone) and zone.is_inside_tree():
+			await get_tree().process_frame
+		if not _zone_ready:
+			_busy = false
+			return
 	var waited_frames := 0
 	while not _zone_ready and waited_frames < ZONE_READY_TIMEOUT_FRAMES:
 		await get_tree().process_frame

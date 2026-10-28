@@ -42,8 +42,10 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export var soft_lock_range: float = 4.0
 ## Góc lệch tối đa (độ) giữa hướng input và mục tiêu để được soft-lock
 @export var soft_lock_angle: float = 60.0
-## Số mũi tên tạo sẵn trong pool khi bắn lần đầu
+## Số mũi tên tạo sẵn trước combat; thiếu thì pool vẫn mở rộng để không mất phát bắn.
 @export var arrow_pool_size: int = 4
+## Chuẩn bị cả vũ khí chưa nhặt, không cấp vũ khí cho tiến trình.
+@export var combat_weapons: Array[WeaponData] = [preload("res://resources/weapons/bow.tres")]
 ## Khi nhắm cung, người quay nghiêng bấy nhiêu độ để vai trái hướng về mục tiêu như cung thủ;
 ## cung và mũi tên vẫn theo đúng hướng nhắm. Model nhìn theo +Z nên bên trái là +X. 0 = đứng thẳng mặt
 @export_range(-180.0, 180.0, 0.5) var bow_stance_degrees: float = 90.0
@@ -83,8 +85,12 @@ var _attack_blocked_by_ui: bool = false
 ## Model cung đang gắn ở BowHold (tạo một lần, ẩn khi không nhắm) và scene đã dùng để tạo nó
 var _bow_model: Node3D
 var _bow_model_scene: PackedScene
-## Pool đạn theo scene, đặt ở cha của player để đạn không đi theo người
+## Pool đạn theo scene thuộc player; mỗi mũi tên top_level nên không đi theo người.
 var _projectile_pools: Dictionary[PackedScene, ObjectPool] = {}
+var _projectile_fusions: Dictionary[ArrowProjectile, FusionData] = {}
+var _fusion_pools: Dictionary[FusionEffect, Dictionary] = {}
+var _combat_prepared: bool = false
+var _fusion_table: FusionTable
 var _fusion_warmup_sources: Array[Node] = []
 var _fusion_warmup_prepared: bool = false
 
@@ -125,6 +131,50 @@ func _ready() -> void:
 	_hurtbox.hurt.connect(_on_hurt)
 	# Chỉ chạy _process khi đang nháy hình
 	set_process(false)
+	prepare_for_combat()
+
+
+func prepare_for_combat() -> void:
+	if _combat_prepared:
+		return
+	_combat_prepared = true
+	# Nạp lúc chạy để tránh vòng preload FusionTable -> FusionEffect -> Player.
+	_fusion_table = load("res://resources/fusion/fusion_table.tres") as FusionTable
+	var weapons: Array[WeaponData] = combat_weapons.duplicate()
+	weapons.append_array(GameState.progress.weapons)
+	for weapon in weapons:
+		if weapon == null:
+			continue
+		if weapon.projectile_scene:
+			_get_projectile_pool(weapon.projectile_scene)
+		if weapon is BowData:
+			_prepare_bow_model(weapon)
+	FusionEffect.prepare_loaded_effects(self)
+
+
+## Pool thuộc player để tự dọn khi đổi khu; hiệu ứng đặt top_level để không đi theo player.
+func get_fusion_pool(effect: FusionEffect, scene: PackedScene, count: int, configure: Callable = Callable()) -> ObjectPool:
+	if not _fusion_pools.has(effect):
+		_fusion_pools[effect] = {}
+	var pools: Dictionary = _fusion_pools[effect]
+	var pool: ObjectPool = pools.get(scene)
+	if is_instance_valid(pool):
+		return pool
+	pool = ObjectPool.new()
+	pool.name = "FusionPool"
+	pool.scene = scene
+	pool.initial_size = maxi(count, 0)
+	pool.configure_instance = _configure_fusion_instance.bind(configure, pool)
+	pools[scene] = pool
+	add_child(pool)
+	return pool
+
+
+func _configure_fusion_instance(node: Node, configure: Callable, pool: ObjectPool) -> void:
+	if configure.is_valid():
+		configure.call(node)
+	assert(node.has_signal(&"finished"), "Hiệu ứng dùng pool phải phát finished khi kết thúc")
+	node.connect(&"finished", pool.release.bind(node))
 
 
 ## Mọi fusion đăng ký đều được chuẩn bị khi nạp khu, kể cả kỹ năng chưa nhặt.
@@ -141,6 +191,12 @@ func get_shader_warmup_sources() -> Array[Node]:
 			if source is Node3D:
 				(source as Node3D).visible = false
 			_fusion_warmup_sources.append(source)
+		for pools: Dictionary in _fusion_pools.values():
+			for pool: ObjectPool in pools.values():
+				for instance: Node in pool.get_children():
+					if instance.has_method(&"prepare_shader_warmup"):
+						instance.call(&"prepare_shader_warmup")
+				_fusion_warmup_sources.append(pool)
 	return _fusion_warmup_sources
 
 
@@ -280,12 +336,7 @@ func begin_bow_aim() -> void:
 	var bow := get_bow()
 	if bow == null or bow.model_scene == null:
 		return
-	if _bow_model == null or _bow_model_scene != bow.model_scene:
-		if _bow_model:
-			_bow_model.queue_free()
-		_bow_model = bow.model_scene.instantiate() as Node3D
-		_bow_model_scene = bow.model_scene
-		_bow_hold.add_child(_bow_model)
+	_prepare_bow_model(bow)
 	# Cung nằm ngang, bụng cung chĩa theo hướng nhắm (không theo mặt nhân vật khi đứng nghiêng)
 	var forward := _get_bow_aim_local()
 	var limbs := Vector3.UP.cross(forward)
@@ -397,9 +448,9 @@ func shoot_arrow(weapon: WeaponData, attack: AttackData, direction: Vector3, spe
 
 
 ## Buff nguyên tố của cung (hố hút...) chạy khi tên trúng. Tên dùng pool nên nối một lần cho mỗi mũi
-## và đọc buff đang ghép lúc trúng, không bind theo từng phát (nối chồng sau mỗi lần dùng lại)
-func _on_arrow_impacted(position: Vector3, direction: Vector3) -> void:
-	var fusion := get_fusion()
+## và giữ fusion theo đúng vũ khí đã bắn, kể cả đang chọn kiếm hoặc đổi trang bị giữa đường bay.
+func _on_arrow_impacted(position: Vector3, direction: Vector3, arrow: ArrowProjectile) -> void:
+	var fusion: FusionData = _projectile_fusions.get(arrow)
 	if fusion == null:
 		return
 	for effect in fusion.effects:
@@ -598,17 +649,40 @@ func _launch_projectile(weapon: WeaponData, attack: AttackData, direction: Vecto
 	var arrow := pool.acquire() as ArrowProjectile
 	if not arrow.finished.is_connected(pool.release):
 		arrow.finished.connect(pool.release)
-	if not arrow.impacted.is_connected(_on_arrow_impacted):
-		arrow.impacted.connect(_on_arrow_impacted)
+	var impacted := _on_arrow_impacted.bind(arrow)
+	if not arrow.impacted.is_connected(impacted):
+		arrow.impacted.connect(impacted)
+	if not arrow.finished.is_connected(_on_projectile_finished):
+		arrow.finished.connect(_on_projectile_finished)
+	var element := GameState.get_fused_element(weapon.slot)
+	var fusion := _fusion_table.get_fusion(weapon.slot, element.id) if element else null
+	if fusion:
+		_projectile_fusions[arrow] = fusion
+	else:
+		_projectile_fusions.erase(arrow)
 	arrow.global_position = spawn
 	# Quét từ thân (cùng độ cao) tới đầu tên trong frame đầu để không bắn xuyên tường sát người.
 	var origin := Vector3(global_position.x, spawn.y, global_position.z)
 	var shot_speed := weapon.projectile_speed if speed < 0.0 else speed
 	arrow.launch(attack, shot_speed, weapon.projectile_lifetime, direction, self, origin, damage)
-	var fusion := get_fusion()
 	if fusion:
 		for effect: FusionEffect in fusion.effects:
 			effect.on_projectile_fired(self, arrow)
+
+
+func _on_projectile_finished(arrow: ArrowProjectile) -> void:
+	_projectile_fusions.erase(arrow)
+
+
+func _prepare_bow_model(bow: WeaponData) -> void:
+	if bow.model_scene == null or (is_instance_valid(_bow_model) and _bow_model_scene == bow.model_scene):
+		return
+	if is_instance_valid(_bow_model):
+		_bow_model.queue_free()
+	_bow_model = bow.model_scene.instantiate() as Node3D
+	_bow_model_scene = bow.model_scene
+	_bow_hold.add_child(_bow_model)
+	_bow_model.visible = false
 
 
 ## Hướng nhắm trong không gian model khi đứng nghiêng bow_stance_degrees
@@ -624,10 +698,15 @@ func _get_projectile_pool(scene: PackedScene) -> ObjectPool:
 	pool = ObjectPool.new()
 	pool.name = "ProjectilePool"
 	pool.scene = scene
-	pool.initial_size = arrow_pool_size
-	get_parent().add_child(pool)
+	pool.initial_size = maxi(arrow_pool_size, 0)
+	pool.configure_instance = _configure_projectile_instance
+	add_child(pool)
 	_projectile_pools[scene] = pool
 	return pool
+
+
+func _configure_projectile_instance(node: Node) -> void:
+	(node as Node3D).set_as_top_level(true)
 
 
 func _is_holding_jump() -> bool:

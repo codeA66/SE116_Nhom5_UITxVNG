@@ -16,8 +16,7 @@ func _init() -> void:
 	_registry_lock.unlock()
 
 
-static func collect_shader_warmup_sources() -> Array[Node]:
-	var sources: Array[Node] = []
+static func _registered_effects() -> Array[Resource]:
 	var effects: Array[Resource] = []
 	_registry_lock.lock()
 	for i in range(_loaded_effects.size() - 1, -1, -1):
@@ -27,9 +26,24 @@ static func collect_shader_warmup_sources() -> Array[Node]:
 		else:
 			effects.append(effect)
 	_registry_lock.unlock()
-	for effect in effects:
+	return effects
+
+
+static func prepare_loaded_effects(user: Player) -> void:
+	for effect in _registered_effects():
+		effect.call(&"prepare_for_combat", user)
+
+
+static func collect_shader_warmup_sources() -> Array[Node]:
+	var sources: Array[Node] = []
+	for effect in _registered_effects():
 		sources.append_array(effect.call(&"get_shader_warmup_sources"))
 	return sources
+
+
+## Chuẩn bị riêng cho từng player/khu; không lưu Node sống trong Resource dùng chung.
+func prepare_for_combat(_user: Player) -> void:
+	pass
 
 
 ## Hitbox của một nhát cận chiến vừa bật. combo_index đếm từ 0; direction là hướng ngang của nhát
