@@ -1,28 +1,22 @@
-[gd_resource type="Resource" script_class="BowData" format=3]
+[gd_resource type="Resource" script_class="BowData" format=3 uid="uid://bgc2p5bkgqoq7"]
 
-[ext_resource type="Script" path="res://entities/_base/bow_data.gd" id="1"]
-[ext_resource type="Script" path="res://entities/_base/attack_data.gd" id="2"]
-[ext_resource type="PackedScene" path="res://assets/weapons/bow_visual.tscn" id="3"]
+[ext_resource type="Script" uid="uid://bdpp27y4qb3v6" path="res://entities/_base/bow_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://bco0nr7ogmwo" path="res://entities/_base/attack_data.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://ogf07s4t0ew7" path="res://assets/weapons/bow_visual.tscn" id="3"]
 [ext_resource type="Resource" path="res://resources/attacks/bow_shot.tres" id="4"]
-[ext_resource type="PackedScene" path="res://objects/projectiles/arrow.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://objects/projectiles/wind_arrow/wind_arrow.tscn" id="5"]
 
 [resource]
 script = ExtResource("1")
+draw_time = 0.3
+release_recovery = 0.12
+min_speed_ratio = 0.55
 slot = 1
-energy_cost = 1
 display_name = "Cung"
 model_scene = ExtResource("3")
-model_scale = 1.0
 attack_range = 12.0
 combo = Array[ExtResource("2")]([ExtResource("4")])
+energy_cost = 1
 projectile_scene = ExtResource("5")
 projectile_speed = 32.0
 projectile_lifetime = 0.6
-draw_time = 0.3
-release_recovery = 0.12
-shot_cooldown = 0.5
-min_draw_to_shoot = 1.0
-aim_turn_speed = 25.0
-min_speed_ratio = 0.55
-min_damage = 1
-full_damage = 2

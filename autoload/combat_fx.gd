@@ -30,6 +30,8 @@ var _hit_pool: ObjectPool
 var _death_pool: ObjectPool
 var _blood_pool: ObjectPool
 var _arrow_impact_pool: ObjectPool
+## Pool hiệu ứng trúng riêng của từng loại tên (tên gió...), mỗi scene một pool
+var _arrow_impact_scene_pools: Dictionary[PackedScene, ObjectPool] = {}
 var _stains: BloodStains
 
 
@@ -67,6 +69,24 @@ func spawn_blood(position: Vector3, direction: Vector3, color: Color, floor_y: f
 func spawn_arrow_impact(position: Vector3, direction: Vector3, effect_scale: float = 1.0) -> void:
 	var fx := _acquire_capped(_arrow_impact_pool, max_active_arrow_impacts) as ArrowImpact
 	fx.play(position, direction, effect_scale)
+
+
+## Như spawn_arrow_impact nhưng dùng hiệu ứng riêng của loại tên (gốc scene là ArrowImpact)
+func spawn_arrow_impact_scene(scene: PackedScene, position: Vector3, direction: Vector3, effect_scale: float = 1.0) -> void:
+	var fx := _acquire_capped(prepare_arrow_impact_scene(scene), max_active_arrow_impacts) as ArrowImpact
+	if fx == null:
+		push_error("CombatFx: gốc scene hiệu ứng trúng phải là ArrowImpact: %s" % scene.resource_path)
+		return
+	fx.play(position, direction, effect_scale)
+
+
+## Tạo (nếu chưa có) và trả về pool của scene hiệu ứng trúng; gọi sớm để không tạo node lúc đang bắn
+func prepare_arrow_impact_scene(scene: PackedScene) -> ObjectPool:
+	var pool: ObjectPool = _arrow_impact_scene_pools.get(scene)
+	if pool == null:
+		pool = _make_pool(scene, arrow_impact_pool_size, StringName("ArrowImpactPool_%s" % scene.resource_path.get_file().get_basename()))
+		_arrow_impact_scene_pools[scene] = pool
+	return pool
 
 
 ## Vết máu trên sàn tại world_position (y là mặt sàn); delay: chờ giọt rơi tới
