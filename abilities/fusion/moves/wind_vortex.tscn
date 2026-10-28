@@ -1,8 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://abilities/fusion/moves/wind_vortex.gd" id="1_vortex"]
-[ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_burst_vfx.tscn" id="2_burst"]
-[ext_resource type="Resource" path="res://abilities/fusion/vfx/fusion_vortex_style.tres" id="3_style"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/vfx/wind_vortex_vfx.tscn" id="2_swirl"]
 
 [sub_resource type="SphereShape3D" id="VortexShape"]
 radius = 2.5
@@ -15,6 +14,4 @@ script = ExtResource("1_vortex")
 [node name="Shape" type="CollisionShape3D" parent="Area"]
 shape = SubResource("VortexShape")
 
-[node name="Swirl" parent="." instance=ExtResource("2_burst")]
-style = ExtResource("3_style")
-seed_value = 23
+[node name="Swirl" parent="." instance=ExtResource("2_swirl")]

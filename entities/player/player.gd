@@ -69,6 +69,8 @@ var _model_meshes: Array[MeshInstance3D] = []
 var _flash_tween: Tween
 ## Bảng UI đang mở và dùng chuột (tủ đồ): chuột trái cũng là nút đánh nên phải bỏ qua, nếu không kéo thả sẽ chém
 var _attack_blocked_by_ui: bool = false
+var _fusion_warmup_sources: Array[Node] = []
+var _fusion_warmup_prepared: bool = false
 
 @onready var energy: EnergyComponent = $EnergyComponent
 @onready var hitbox: HitboxComponent = $Model/Hitbox
@@ -84,6 +86,7 @@ var _attack_blocked_by_ui: bool = false
 
 func _ready() -> void:
 	super()
+	add_to_group(ShaderWarmup.SOURCE_GROUP)
 	hitbox.hit.connect(_on_hitbox_hit)
 	GameState.weapon_changed.connect(_attach_weapon_model)
 	GameState.progress_replaced.connect(_on_progress_replaced)
@@ -104,6 +107,23 @@ func _ready() -> void:
 	_hurtbox.hurt.connect(_on_hurt)
 	# Chỉ chạy _process khi đang nháy hình
 	set_process(false)
+
+
+## Mọi fusion đăng ký đều được chuẩn bị khi nạp khu, kể cả kỹ năng chưa nhặt.
+## Nguồn thuộc Player để được dọn tự động khi rời khu; không quét trong vòng lặp nóng.
+func get_shader_warmup_sources() -> Array[Node]:
+	if not _fusion_warmup_prepared:
+		_fusion_warmup_prepared = true
+		for source: Node in FusionEffect.collect_shader_warmup_sources():
+			add_child(source)
+			if source.has_method(&"prepare_shader_warmup"):
+				source.call(&"prepare_shader_warmup")
+			# Chỉ bản sao của ShaderWarmup hoạt động; nguồn không chạy hạt/vật lý mỗi frame.
+			source.process_mode = Node.PROCESS_MODE_DISABLED
+			if source is Node3D:
+				(source as Node3D).visible = false
+			_fusion_warmup_sources.append(source)
+	return _fusion_warmup_sources
 
 
 func _process(delta: float) -> void:
@@ -259,6 +279,8 @@ func shoot_arrow(weapon: WeaponData, attack: AttackData, direction: Vector3) -> 
 	var fusion := get_fusion()
 	if fusion and not fusion.effects.is_empty():
 		arrow.impacted.connect(_on_arrow_impacted.bind(fusion))
+		for effect: FusionEffect in fusion.effects:
+			effect.on_projectile_fired(self, arrow)
 
 
 func _on_arrow_impacted(position: Vector3, direction: Vector3, fusion: FusionData) -> void:
