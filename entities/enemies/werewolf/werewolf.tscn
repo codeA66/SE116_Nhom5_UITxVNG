@@ -1,0 +1,73 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="base"]
+[ext_resource type="Script" path="res://entities/enemies/werewolf/werewolf.gd" id="script"]
+[ext_resource type="Resource" path="res://entities/enemies/werewolf/werewolf_data.tres" id="data"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/blenderimport/werewolf/Werewolf.glb" id="rig"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_skill_emitter.gd" id="emitter"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/werewolf/animations/all.tres" id="anim0"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_patrol.gd" id="patrol"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_chase.gd" id="chase"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_watch.gd" id="watch"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_display.gd" id="display"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_skill_attack.gd" id="skill_attack"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_claw_combo.gd" id="claw_combo"]
+[ext_resource type="Script" path="res://assets/vfx/enemies/werewolf/wolf_claw_presenter.gd" id="claw_vfx"]
+[sub_resource type="CapsuleShape3D" id="Body"]
+resource_local_to_scene = true
+radius = 0.42
+height = 2.2
+[sub_resource type="CapsuleShape3D" id="Hurt"]
+resource_local_to_scene = true
+radius = 0.48
+height = 2.2
+[sub_resource type="BoxShape3D" id="Hit"]
+resource_local_to_scene = true
+size = Vector3(1.8, 2.1, 2.4)
+[node name="Werewolf" groups=["enemies"] instance=ExtResource("base")]
+script = ExtResource("script")
+data = ExtResource("data")
+chase_state = &"WildChase"
+attack_state = &"SkillAttack"
+[node name="CollisionShape3D" parent="." index="0"]
+position = Vector3(0, 1.1, 0)
+shape = SubResource("Body")
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+[node name="Rig" parent="Model/Visual" instance=ExtResource("rig")]
+scale = Vector3(1, 1, 1)
+[node name="CollisionShape3D" parent="Model/Hitbox" index="0"]
+position = Vector3(0, 1.0, 1.0)
+shape = SubResource("Hit")
+[node name="AnimationPlayer" parent="." index="2"]
+callback_mode_process = 0
+libraries = {
+&"": ExtResource("anim0")
+}
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+position = Vector3(0, 1.1, 0)
+shape = SubResource("Hurt")
+[node name="CollisionShape3D" parent="WindReceiverComponent" index="0"]
+position = Vector3(0, 1.1, 0)
+shape = SubResource("Body")
+[node name="Patrol" parent="StateMachine" index="1"]
+script = ExtResource("patrol")
+[node name="WildChase" type="Node" parent="StateMachine"]
+script = ExtResource("chase")
+
+[node name="Watch" type="Node" parent="StateMachine"]
+script = ExtResource("watch")
+
+[node name="Display" type="Node" parent="StateMachine"]
+script = ExtResource("display")
+
+[node name="SkillAttack" type="Node" parent="StateMachine"]
+script = ExtResource("skill_attack")
+
+[node name="SkillEmitter" type="Node" parent="."]
+script = ExtResource("emitter")
+[node name="ClawCombo" type="Node" parent="StateMachine"]
+script = ExtResource("claw_combo")
+[node name="ClawEffects" type="Node3D" parent="."]
+script = ExtResource("claw_vfx")

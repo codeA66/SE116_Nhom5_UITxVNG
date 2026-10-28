@@ -1,0 +1,33 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/ice_hazard.gd" id="hazard"]
+[ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="hitbox"]
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/ice_spike/ice_spike.tscn" id="visual"]
+[ext_resource type="Script" path="res://assets/vfx/enemies/ice_spike/ice_spike_style.gd" id="style"]
+[sub_resource type="Resource" id="IceStyle"]
+script = ExtResource("style")
+path_length = 11.0
+growth_time = 0.5
+shatter_time = 3.35
+duration = 4.4
+[sub_resource type="BoxShape3D" id="Shape"]
+resource_local_to_scene = true
+size = Vector3(3.0, 2.1, 0.1)
+[node name="Ice" type="Node3D"]
+script = ExtResource("hazard")
+active_start = 0.05
+active_end = 3.63
+lifetime = 4.4
+[node name="Visual" parent="." instance=ExtResource("visual")]
+scale = Vector3(0.7, 0.7, 1.2)
+rotation = Vector3(0, -1.5707963, 0)
+style = SubResource("IceStyle")
+
+[node name="Hitbox" type="Area3D" parent="."]
+collision_layer = 16
+collision_mask = 2
+monitoring = false
+monitorable = false
+script = ExtResource("hitbox")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("Shape")

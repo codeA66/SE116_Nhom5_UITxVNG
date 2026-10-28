@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemySkillData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_skill_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/_shared/hazards/wind.tscn" id="effect"]
+[resource]
+script = ExtResource("script")
+skill_id = &"wind"
+animation = &"CombatMelee/Melee_Unarmed_Smash"
+duration = 3.466667
+active_start = 0
+active_end = 0
+windup_end = 0.966667
+maximum_range = 12
+cooldown = 5.0
+damage = 2
+knockback = 2.5
+hitstop = 0.03
+
+effect_scene = ExtResource("effect")
+track_during_windup = true
+melee_enabled = false
+effect_at_target = true
+effect_on_start = true
