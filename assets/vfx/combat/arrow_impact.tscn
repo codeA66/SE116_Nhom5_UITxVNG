@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/combat/arrow_impact.gd" id="1_script"]
+[ext_resource type="Shader" path="res://assets/shaders/combat_particle.gdshader" id="2_particle"]
+[ext_resource type="Shader" path="res://assets/shaders/shock_ring.gdshader" id="3_ring"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_burst"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("2_particle")
+shader_parameter/tint = Color(1, 0.5, 0.08, 1)
+shader_parameter/intensity = 3.0
+shader_parameter/streak = false
+shader_parameter/core_width = 0.4
+shader_parameter/dot_softness = 1.2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ring"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("3_ring")
+shader_parameter/tint = Color(1, 0.55, 0.12, 1)
+shader_parameter/intensity = 2.5
+shader_parameter/progress = 0.0
+shader_parameter/start_radius = 0.1
+shader_parameter/end_radius = 0.97
+shader_parameter/start_width = 0.14
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_spark"]
+render_priority = 1
+shader = ExtResource("2_particle")
+shader_parameter/tint = Color(1, 0.5, 0.08, 1)
+shader_parameter/intensity = 2.2
+shader_parameter/streak = true
+shader_parameter/core_width = 0.45
+
+[sub_resource type="QuadMesh" id="QuadMesh_burst"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ring"]
+size = Vector2(1, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_spark"]
+size = Vector2(0.16, 1)
+
+[node name="ArrowImpact" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Burst" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_burst")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_burst")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_ring")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_ring")
+
+[node name="Sparks" type="CPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_spark")
+cast_shadow = 0
+emitting = false
+amount = 12
+lifetime = 0.45
+one_shot = true
+explosiveness = 1.0
+randomness = 0.4
+local_coords = false
+mesh = SubResource("QuadMesh_spark")
+direction = Vector3(0, 0, 1)
+spread = 60.0
+gravity = Vector3(0, -9.8, 0)
+initial_velocity_min = 3.5
+initial_velocity_max = 7.0
+damping_min = 2.0
+damping_max = 4.0
+particle_flag_align_y = true
+scale_amount_min = 0.2
+scale_amount_max = 0.45
+
+[node name="ImpactSound" type="AudioStreamPlayer3D" parent="."]

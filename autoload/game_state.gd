@@ -169,6 +169,9 @@ func replace_progress(new_progress: PlayerProgress) -> void:
 	# Tương thích tiến trình cũ chỉ có một weapon.
 	if progress.weapon:
 		_store_weapon(progress.weapon)
+	# Cung đã thành vũ khí phụ (phím aim): save cũ đang cầm cung thì về kiếm, chưa có kiếm thì tay không
+	if progress.weapon is BowData:
+		progress.weapon = progress.get_weapon_in_slot(WeaponData.Slot.SWORD)
 	_grant_starting_abilities()
 	_pending_flags.clear()
 	reset_player_health()

@@ -30,6 +30,20 @@ const ACTION_BLEND: float = 0.05
 	&"upper_r": &"upper_arm.R", &"fore_r": &"forearm.R", &"hand_r": &"hand.R",
 }
 
+@export_group("Bow Aim Pose")
+## Vai trò -> tên xương thân / đầu dùng cho tư thế giương cung
+@export var bow_body_bones: Dictionary[StringName, StringName] = {
+	&"spine": &"spine", &"chest": &"chest", &"neck": &"neck", &"head": &"head",
+}
+## Xoay thân trên sang trái khi giương cung (độ). 0 = ngực giữ nguyên như lúc đứng nghiêng
+@export_range(-60.0, 60.0, 0.5) var bow_twist_degrees: float = 0.0
+## Nghiêng người tới trước (độ)
+@export_range(-30.0, 30.0, 0.5) var bow_lean_degrees: float = 0.0
+## Cúi đầu (độ). 0 = mắt nhìn thẳng
+@export_range(-30.0, 30.0, 0.5) var bow_head_tilt_degrees: float = 0.0
+## Quay đầu (cổ + đầu) về phía mục tiêu khi đứng nghiêng (độ), mắt nhìn dọc mũi tên
+@export_range(0.0, 120.0, 0.5) var bow_head_turn_degrees: float = 75.0
+
 @export_group("Clips")
 ## Tên animation FSM/AttackData yêu cầu -> tên clip trong model Foxy
 @export var clip_map: Dictionary[StringName, StringName] = {
@@ -72,11 +86,12 @@ var _was_grounded: bool = false
 var _previous_vertical_speed: float = 0.0
 var _locomotion: StringName = Player.ANIM_IDLE
 var _sword_mesh: Node3D
-var _bow_visual: BowVisual
-var _bow_tween: Tween
 var _face: MeshInstance3D
 var _blink_shape: int = -1
 var _face_blink_timer: float = 0.0
+
+## Không có thì kiếm luôn ở tay như trước
+@onready var _holster: WeaponHolsterComponent = get_node_or_null(^"WeaponHolster")
 
 
 func _ready() -> void:
@@ -88,6 +103,8 @@ func _ready() -> void:
 	_install_animations(imported)
 	_sword_mesh = model.find_child(String(sword_node_name), true, false) as Node3D
 	_face_blink_timer = randf_range(face_blink_interval.x, face_blink_interval.y)
+	if _holster:
+		_holster.drawn_changed.connect(_on_sword_drawn_changed)
 	super()
 
 
@@ -107,7 +124,6 @@ func has_ability(id: StringName) -> bool:
 
 
 func play_anim(anim_name: StringName) -> void:
-	_reset_bow()
 	if anim_name == Player.ANIM_IDLE or anim_name == Player.ANIM_RUN:
 		_locomotion = anim_name
 		if _landing_remaining > 0.0:
@@ -130,12 +146,18 @@ func play_action(anim_name: StringName, speed: float = 1.0, blend: float = -1.0)
 			speed = _clip_length(clip) / maxf(dash.duration, 0.01)
 	_anim.play(clip, ACTION_BLEND if blend < 0.0 else blend, speed)
 	_anim.seek(0.0, true)
-	_reset_bow()
-	if is_instance_valid(_bow_visual) and anim_name == &"Bow_Shoot":
-		var release := get_weapon().combo[0].active_start
-		_bow_tween = create_tween()
-		_bow_tween.tween_property(_bow_visual, "draw_amount", 1.0, maxf(release, 0.01))
-		_bow_tween.tween_property(_bow_visual, "draw_amount", 0.0, 0.06)
+
+
+## Tay phải kéo dây nên cất kiếm trong lúc cầm cung
+func begin_bow_aim() -> void:
+	super()
+	if is_instance_valid(_sword_mesh):
+		_sword_mesh.visible = false
+
+
+func end_bow_aim() -> void:
+	super()
+	_update_sword_visibility()
 
 
 ## Tên đòn trong AttackData là tên clip gốc: đổi sang clip của Foxy trước khi đọc marker
@@ -167,25 +189,32 @@ func _pre_state_update(delta: float) -> void:
 
 
 func _attach_weapon_model(_data: WeaponData) -> void:
-	# Kiếm đã gắn sẵn vào tay phải trong model; cung gắn vào tay trái bằng WeaponSocket
-	_reset_bow()
+	# Kiếm đã gắn sẵn vào tay phải trong model; cung là vũ khí phụ, Player hiện ở BowHold khi nhắm
+	_update_sword_visibility()
+
+
+func _update_sword_visibility() -> void:
 	var equipped := get_weapon()
 	if is_instance_valid(_sword_mesh):
 		_sword_mesh.visible = equipped != null and equipped.slot == WeaponData.Slot.SWORD
-	for child in _weapon_socket.get_children():
-		child.queue_free()
-	_bow_visual = null
-	if equipped and equipped.slot == WeaponData.Slot.BOW and equipped.model_scene:
-		_bow_visual = equipped.model_scene.instantiate() as BowVisual
-		_weapon_socket.add_child(_bow_visual)
+
+
+## Clip kéo cung đứng yên (speed 0); tua theo độ kéo để tay khớp đúng với dây
+func _on_bow_draw_changed(amount: float) -> void:
+	var bow := get_bow()
+	if bow == null:
+		return
+	var clip := _resolve_clip(bow.draw_animation)
+	if _anim.current_animation == clip:
+		_anim.seek(amount * _clip_length(clip), true)
 
 
 func _resolve_clip(anim_name: StringName) -> StringName:
 	var clip: StringName
 	if anim_name == Player.ANIM_IDLE:
-		clip = &"Idle_Bow" if _has_bow() else (&"Idle_Sword" if has_weapon() else &"Idle")
+		clip = &"Idle_Bow" if _has_bow() else (&"Idle_Sword" if _is_sword_in_hand() else &"Idle")
 	elif anim_name == Player.ANIM_RUN:
-		clip = &"Run_Bow" if _has_bow() else (&"Run_Sword" if has_weapon() else &"Run")
+		clip = &"Run_Bow" if _has_bow() else (&"Run_Sword" if _is_sword_in_hand() else &"Run")
 	else:
 		clip = clip_map.get(anim_name, anim_name)
 	return StringName("%s/%s" % [LIBRARY_NAME, clip])
@@ -200,15 +229,20 @@ func _clip_length(clip: StringName) -> float:
 	return _anim.get_animation(clip).length if _anim.has_animation(clip) else 0.2
 
 
+## Kiếm đã cất vào chỗ đeo thì đứng/chạy bằng clip tay không
+func _is_sword_in_hand() -> bool:
+	return has_weapon() and (_holster == null or _holster.drawn)
+
+
+## state_changed phát sau enter(): Idle/Run đã chọn clip theo trạng thái cũ, chọn lại cho khớp
+func _on_sword_drawn_changed(_drawn: bool) -> void:
+	var state := state_machine.current_state
+	if state != null and state.name in [PlayerState.IDLE, PlayerState.RUN]:
+		play_anim(_locomotion)
+
+
 func _has_bow() -> bool:
 	return get_weapon() != null and get_weapon().slot == WeaponData.Slot.BOW
-
-
-func _reset_bow() -> void:
-	if _bow_tween:
-		_bow_tween.kill()
-	if is_instance_valid(_bow_visual):
-		_bow_visual.draw_amount = 0.0
 
 
 func _update_blink(delta: float) -> void:
@@ -242,7 +276,12 @@ func _install_animations(imported: AnimationPlayer) -> void:
 	var model_root := imported.get_node(imported.root_node)
 	var skeleton := model_root.get_node(skeleton_path) as Skeleton3D
 	assert(skeleton != null, "Không tìm thấy Skeleton3D tại %s" % skeleton_path)
-	BOW_ANIMATIONS.install(library, skeleton, model_root.get_path_to(skeleton), bow_arm_bones)
+	BOW_ANIMATIONS.install(library, skeleton, model_root.get_path_to(skeleton), bow_arm_bones, {
+		"bones": bow_body_bones, "twist": bow_twist_degrees, "lean": bow_lean_degrees,
+		"head_tilt": bow_head_tilt_degrees, "aim_yaw": bow_stance_degrees,
+		# Quay về cùng phía với hướng nhắm
+		"head_turn": bow_head_turn_degrees * signf(bow_stance_degrees),
+	})
 	if animation_markers:
 		animation_markers.apply_to(library)
 	var socket := get_node(^"WeaponSocket") as BoneAttachment3D

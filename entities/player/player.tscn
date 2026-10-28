@@ -17,10 +17,10 @@
 [ext_resource type="Script" path="res://entities/player/states/dash.gd" id="19_dash"]
 [ext_resource type="Script" path="res://entities/player/states/hurt.gd" id="23_hurt"]
 [ext_resource type="Script" path="res://entities/player/states/dead.gd" id="24_dead"]
-[ext_resource type="PackedScene" path="res://ui/hud/health_bar.tscn" id="25_hpbar"]
 [ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_area.tscn" id="26_blast"]
 [ext_resource type="Script" path="res://entities/player/states/wind_blast.gd" id="27_blaststate"]
-[ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="28_slots"]
+[ext_resource type="Script" path="res://components/weapon_holster/weapon_holster_component.gd" id="40_holster"]
+[ext_resource type="PackedScene" path="res://ui/hud/game_hud.tscn" id="28_gamehud"]
 [ext_resource type="Script" path="res://components/camera_shake/camera_shake.gd" id="29_shake"]
 [ext_resource type="Script" path="res://components/hit_feedback/hit_feedback_component.gd" id="30_feedback"]
 [ext_resource type="Resource" path="res://resources/feedback/player_hit.tres" id="31_feedbackdata"]
@@ -34,6 +34,7 @@
 [ext_resource type="Resource" path="res://resources/player/energy.tres" id="39_energydata"]
 [ext_resource type="PackedScene" path="res://ui/hud/energy_bar.tscn" id="43_energybar"]
 [ext_resource type="PackedScene" path="res://ui/menus/inventory/inventory_menu.tscn" id="44_inventory"]
+[ext_resource type="Script" path="res://entities/player/states/bow_aim.gd" id="38_bowaim"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -67,6 +68,9 @@ area = NodePath("../Model/WindBlastArea")
 [node name="ArrowSpawn" type="Marker3D" parent="Model"]
 position = Vector3(-0.06, 1.02, 0.55)
 
+[node name="BowHold" type="Marker3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.53, 0.77, 0.12)
+
 [node name="WeaponSocket" type="BoneAttachment3D" parent="."]
 bone_name = "hand.L"
 use_external_skeleton = true
@@ -95,12 +99,19 @@ shape = SubResource("SphereShape3D_interact")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="WeaponSlots" parent="HUD" instance=ExtResource("28_slots")]
+[node name="GameHud" parent="HUD" instance=ExtResource("28_gamehud")]
 
-[node name="HealthBar" parent="HUD" node_paths=PackedStringArray("health") instance=ExtResource("25_hpbar")]
-health = NodePath("../../HealthComponent")
+[node name="SkillCluster" parent="HUD/GameHud" index="0"]
+player_path = NodePath("../../..")
+
+[node name="HealthBar" parent="HUD/GameHud/HealthPanel" index="0" node_paths=PackedStringArray("health")]
+health = NodePath("../../../../HealthComponent")
 
 [node name="EnergyBar" parent="HUD" node_paths=PackedStringArray("energy") instance=ExtResource("43_energybar")]
+offset_left = 138.0
+offset_top = 46.0
+offset_right = 308.0
+offset_bottom = 64.0
 energy = NodePath("../../EnergyComponent")
 
 [node name="InventoryMenu" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("44_inventory")]
@@ -154,6 +165,9 @@ script = ExtResource("24_dead")
 [node name="WindBlast" type="Node" parent="StateMachine"]
 script = ExtResource("27_blaststate")
 
+[node name="BowAim" type="Node" parent="StateMachine"]
+script = ExtResource("38_bowaim")
+
 [node name="CameraShake" type="Node" parent="CameraRig/Camera3D"]
 script = ExtResource("29_shake")
 
@@ -179,3 +193,12 @@ hurtbox = NodePath("../../HurtboxComponent")
 [node name="MovementDust" parent="." node_paths=PackedStringArray("body", "state_machine") instance=ExtResource("36_dust")]
 body = NodePath("..")
 state_machine = NodePath("../StateMachine")
+
+[node name="WeaponHolster" type="Node" parent="." node_paths=PackedStringArray("state_machine", "skeleton", "weapon")]
+script = ExtResource("40_holster")
+state_machine = NodePath("../StateMachine")
+skeleton = NodePath("../Model/Visual/Foxy/Foxy_Rig/Skeleton3D")
+weapon = NodePath("../Model/Visual/Foxy/Foxy_Rig/Skeleton3D/hand_R/Sword")
+holster_transform = Transform3D(0, 1.4826, 0.1489, 1.2421, 0.0822, -0.8189, -0.8231, 0.1241, -1.2358, 0.24, 0.06, -0.12)
+
+[editable path="HUD/GameHud"]

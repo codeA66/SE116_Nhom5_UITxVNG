@@ -21,8 +21,8 @@
 [ext_resource type="Script" path="res://components/wind_receiver/wind_receiver_component.gd" id="22_wind"]
 [ext_resource type="Script" path="res://entities/player/states/hurt.gd" id="23_hurt"]
 [ext_resource type="Script" path="res://entities/player/states/dead.gd" id="24_dead"]
-[ext_resource type="PackedScene" path="res://ui/hud/health_bar.tscn" id="25_hpbar"]
-[ext_resource type="PackedScene" path="res://ui/hud/weapon_slots.tscn" id="28_slots"]
+[ext_resource type="Script" path="res://components/weapon_holster/weapon_holster_component.gd" id="40_holster"]
+[ext_resource type="PackedScene" path="res://ui/hud/game_hud.tscn" id="28_gamehud"]
 [ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_area.tscn" id="26_blast"]
 [ext_resource type="Script" path="res://entities/player/states/wind_blast.gd" id="27_blaststate"]
 
@@ -118,10 +118,13 @@ shape = SubResource("CapsuleShape3D_wind")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="WeaponSlots" parent="HUD" instance=ExtResource("28_slots")]
+[node name="GameHud" parent="HUD" instance=ExtResource("28_gamehud")]
 
-[node name="HealthBar" parent="HUD" node_paths=PackedStringArray("health") instance=ExtResource("25_hpbar")]
-health = NodePath("../../HealthComponent")
+[node name="SkillCluster" parent="HUD/GameHud" index="0"]
+player_path = NodePath("../../..")
+
+[node name="HealthBar" parent="HUD/GameHud/HealthPanel" index="0" node_paths=PackedStringArray("health")]
+health = NodePath("../../../../HealthComponent")
 
 [node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor") instance=ExtResource("18_prompt")]
 interactor = NodePath("../../Interactor")
@@ -168,3 +171,12 @@ script = ExtResource("24_dead")
 
 [node name="WindBlast" type="Node" parent="StateMachine"]
 script = ExtResource("27_blaststate")
+
+[node name="WeaponHolster" type="Node" parent="." node_paths=PackedStringArray("state_machine", "skeleton", "weapon")]
+script = ExtResource("40_holster")
+state_machine = NodePath("../StateMachine")
+skeleton = NodePath("../Model/Foxy_Rig/Skeleton3D")
+weapon = NodePath("../Model/Foxy_Rig/Skeleton3D/hand_R/Sword")
+holster_transform = Transform3D(0, 1.4826, 0.1489, 1.2421, 0.0822, -0.8189, -0.8231, 0.1241, -1.2358, 0.24, 0.06, -0.12)
+
+[editable path="HUD/GameHud"]

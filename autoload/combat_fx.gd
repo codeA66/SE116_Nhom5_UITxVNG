@@ -14,6 +14,11 @@ extends Node
 @export var death_burst_pool_size: int = 3
 @export var max_active_deaths: int = 3
 
+@export_group("Arrow Impact")
+@export var arrow_impact_scene: PackedScene = preload("res://assets/vfx/combat/arrow_impact.tscn")
+@export var arrow_impact_pool_size: int = 4
+@export var max_active_arrow_impacts: int = 4
+
 @export_group("Blood")
 @export var blood_spray_scene: PackedScene = preload("res://assets/vfx/combat/blood_spray.tscn")
 @export var blood_spray_pool_size: int = 4
@@ -24,6 +29,7 @@ extends Node
 var _hit_pool: ObjectPool
 var _death_pool: ObjectPool
 var _blood_pool: ObjectPool
+var _arrow_impact_pool: ObjectPool
 var _stains: BloodStains
 
 
@@ -31,6 +37,7 @@ func _ready() -> void:
 	_hit_pool = _make_pool(hit_spark_scene, hit_spark_pool_size, &"HitSparkPool")
 	_death_pool = _make_pool(death_burst_scene, death_burst_pool_size, &"DeathBurstPool")
 	_blood_pool = _make_pool(blood_spray_scene, blood_spray_pool_size, &"BloodSprayPool")
+	_arrow_impact_pool = _make_pool(arrow_impact_scene, arrow_impact_pool_size, &"ArrowImpactPool")
 	_stains = BloodStains.new()
 	_stains.name = &"BloodStains"
 	_stains.max_stains = max_blood_stains
@@ -56,6 +63,12 @@ func spawn_blood(position: Vector3, direction: Vector3, color: Color, floor_y: f
 	fx.play(position, direction, color, floor_y, power, kill)
 
 
+## Mũi tên trúng (tường hay quái): direction là hướng mũi tên bay tới
+func spawn_arrow_impact(position: Vector3, direction: Vector3, effect_scale: float = 1.0) -> void:
+	var fx := _acquire_capped(_arrow_impact_pool, max_active_arrow_impacts) as ArrowImpact
+	fx.play(position, direction, effect_scale)
+
+
 ## Vết máu trên sàn tại world_position (y là mặt sàn); delay: chờ giọt rơi tới
 func add_blood_stain(world_position: Vector3, size: float, color: Color, delay: float = 0.0, satellites: float = 3.0) -> void:
 	_stains.add_stain(world_position, size, color, delay, satellites)
@@ -76,6 +89,10 @@ func get_death_pool() -> ObjectPool:
 
 func get_blood_pool() -> ObjectPool:
 	return _blood_pool
+
+
+func get_arrow_impact_pool() -> ObjectPool:
+	return _arrow_impact_pool
 
 
 func get_blood_stains() -> BloodStains:

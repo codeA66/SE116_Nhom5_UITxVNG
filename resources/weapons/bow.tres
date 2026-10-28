@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="WeaponData" format=3]
+[gd_resource type="Resource" script_class="BowData" format=3]
 
-[ext_resource type="Script" path="res://entities/_base/weapon_data.gd" id="1"]
+[ext_resource type="Script" path="res://entities/_base/bow_data.gd" id="1"]
 [ext_resource type="Script" path="res://entities/_base/attack_data.gd" id="2"]
 [ext_resource type="PackedScene" path="res://assets/weapons/bow_visual.tscn" id="3"]
 [ext_resource type="Resource" path="res://resources/attacks/bow_shot.tres" id="4"]
@@ -16,5 +16,13 @@ model_scale = 1.0
 attack_range = 12.0
 combo = Array[ExtResource("2")]([ExtResource("4")])
 projectile_scene = ExtResource("5")
-projectile_speed = 18.0
-projectile_lifetime = 1.5
+projectile_speed = 32.0
+projectile_lifetime = 0.6
+draw_time = 0.3
+release_recovery = 0.12
+shot_cooldown = 0.5
+min_draw_to_shoot = 1.0
+aim_turn_speed = 25.0
+min_speed_ratio = 0.55
+min_damage = 1
+full_damage = 2

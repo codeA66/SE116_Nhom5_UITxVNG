@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://ui/hud/skill_cluster.tscn" id="1_cluster"]
+[ext_resource type="PackedScene" path="res://ui/hud/health_bar.tscn" id="2_bar"]
+[ext_resource type="PackedScene" path="res://ui/hud/health_segment.tscn" id="3_segment"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_track"]
+content_margin_left = 9.0
+content_margin_top = 4.0
+content_margin_right = 9.0
+content_margin_bottom = 4.0
+bg_color = Color(0.05, 0.05, 0.05, 0.6)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.75, 0.75, 0.75, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+anti_aliasing = true
+skew = Vector2(-0.2, 0)
+
+[node name="GameHud" type="HBoxContainer"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 16.0
+offset_bottom = 16.0
+mouse_filter = 2
+theme_override_constants/separation = -28
+
+[node name="SkillCluster" parent="." instance=ExtResource("1_cluster")]
+layout_mode = 2
+
+[node name="HealthPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_track")
+
+[node name="HealthBar" parent="HealthPanel" instance=ExtResource("2_bar")]
+layout_mode = 2
+theme_override_constants/separation = 3
+segment_scene = ExtResource("3_segment")
