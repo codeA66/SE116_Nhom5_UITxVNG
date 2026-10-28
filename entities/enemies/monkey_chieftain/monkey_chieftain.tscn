@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_display.gd" id="display"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_skill_attack.gd" id="skill_attack"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_leap_attack.gd" id="leap_attack"]
+[ext_resource type="Script" path="res://assets/vfx/enemies/earth_slam/chieftain_slam_presenter.gd" id="slam_vfx"]
 [sub_resource type="CapsuleShape3D" id="Body"]
 resource_local_to_scene = true
 radius = 0.48
@@ -19,9 +20,10 @@ height = 2.35
 resource_local_to_scene = true
 radius = 0.54
 height = 2.35
-[sub_resource type="BoxShape3D" id="Hit"]
+[sub_resource type="CylinderShape3D" id="Hit"]
 resource_local_to_scene = true
-size = Vector3(1.9, 2.1, 2.6)
+radius = 2.8
+height = 2.1
 [node name="MonkeyChieftain" groups=["enemies"] instance=ExtResource("base")]
 script = ExtResource("script")
 data = ExtResource("data")
@@ -37,7 +39,7 @@ visible = false
 [node name="Rig" parent="Model/Visual" instance=ExtResource("rig")]
 scale = Vector3(0.42, 0.42, 0.42)
 [node name="CollisionShape3D" parent="Model/Hitbox" index="0"]
-position = Vector3(0, 1.0575, 1.1)
+position = Vector3(0, 1.0, 0)
 shape = SubResource("Hit")
 [node name="AnimationPlayer" parent="." index="2"]
 callback_mode_process = 0
@@ -66,6 +68,8 @@ script = ExtResource("skill_attack")
 
 [node name="SkillEmitter" type="Node" parent="."]
 script = ExtResource("emitter")
+[node name="SlamEffects" type="Node3D" parent="."]
+script = ExtResource("slam_vfx")
 
 [node name="LeapAttack" type="Node" parent="StateMachine"]
 script = ExtResource("leap_attack")

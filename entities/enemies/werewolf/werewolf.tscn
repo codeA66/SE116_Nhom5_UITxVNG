@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_watch.gd" id="watch"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_display.gd" id="display"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_skill_attack.gd" id="skill_attack"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_claw_combo.gd" id="claw_combo"]
+[ext_resource type="Script" path="res://assets/vfx/enemies/werewolf/wolf_claw_presenter.gd" id="claw_vfx"]
 [sub_resource type="CapsuleShape3D" id="Body"]
 resource_local_to_scene = true
 radius = 0.42
@@ -65,3 +67,7 @@ script = ExtResource("skill_attack")
 
 [node name="SkillEmitter" type="Node" parent="."]
 script = ExtResource("emitter")
+[node name="ClawCombo" type="Node" parent="StateMachine"]
+script = ExtResource("claw_combo")
+[node name="ClawEffects" type="Node3D" parent="."]
+script = ExtResource("claw_vfx")

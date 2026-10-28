@@ -138,24 +138,31 @@ func forget_target() -> void:
 	_announced = false
 
 func reacquire_target() -> void:
+	var candidate: Node3D = sensor.target
+	var nearby: bool = false
+	if is_instance_valid(candidate):
+		var toward: Vector3 = candidate.global_position - global_position
+		toward.y = 0.0
+		nearby = toward.length() <= wildlife.close_defense_range
 	if _returning_home:
-		if distance_from_home() > data.patrol_radius + 0.2: return
+		if distance_from_home() > data.patrol_radius + 0.2 and not nearby: return
 		_returning_home = false
 	# Signal rời Area có thể đến sau một physics frame: không nhận lại mục tiêu đã xa.
 	if has_target():
 		if should_give_up_chase(): forget_target()
 		return
-	var candidate: Node3D = sensor.target
 	if not is_instance_valid(candidate) or is_dead(): return
 	var offset: Vector3 = candidate.global_position - global_position
 	offset.y = 0.0
-	if offset.length() <= data.detect_range and distance_from_home() <= data.leash_range:
+	if offset.length() <= data.detect_range and (distance_from_home() <= data.leash_range or nearby):
 		target = candidate
 		_announce_target(candidate)
 
 func should_give_up_chase() -> bool:
+	if not has_target(): return true
 	if target is Player and (target as Player).health.is_dead(): return true
-	return super()
+	var distance: float = distance_to_target()
+	return distance > data.lose_range or (distance_from_home() > data.leash_range and distance > wildlife.close_defense_range)
 
 func _announce_target(player: Node3D) -> void:
 	if _announced or is_dead(): return

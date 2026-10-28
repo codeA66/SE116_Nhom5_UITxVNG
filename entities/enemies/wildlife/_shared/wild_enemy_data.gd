@@ -16,3 +16,5 @@ extends EnemyData
 @export_range(0.1, 1.0) var cooldown_walk_speed_scale: float = 0.28
 @export var cooldown_run_distance: float = 4.5
 @export var approach_stop_distance: float = 1.1
+## Đang về nhà vẫn tự vệ khi player áp sát, kể cả bị vật cản chặn đường về.
+@export var close_defense_range: float = 2.5

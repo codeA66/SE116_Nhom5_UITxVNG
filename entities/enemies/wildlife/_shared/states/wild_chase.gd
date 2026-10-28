@@ -18,9 +18,10 @@ func physics_update(delta: float) -> void:
 	if skill != null:
 		_actor.begin_skill(skill); return
 	if _actor.distance_to_target() <= _actor.data.attack_range:
-		_actor.move_toward_direction(Vector3.ZERO, delta)
+		var approaching: bool = _actor.distance_to_target() > _actor.wildlife.approach_stop_distance
+		_actor.move_toward_direction(_actor.direction_to_target() * _actor.wildlife.cooldown_walk_speed_scale if approaching else Vector3.ZERO, delta)
 		_actor.face_direction(_actor.direction_to_target(), delta)
-		_actor.play_anim(ANIM_IDLE)
+		_actor.play_anim(ANIM_WALK if approaching else ANIM_IDLE)
 	else:
 		_actor.play_anim(ANIM_RUN)
 		_actor.move_toward_direction(_actor.direction_to_target(), delta)

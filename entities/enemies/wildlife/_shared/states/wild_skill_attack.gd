@@ -42,10 +42,7 @@ func physics_update(delta: float) -> void:
 	if _elapsed >= _skill.windup_end:
 		_actor.set_telegraph(false)
 		if not _effect_started and not _skill.effect_after_animation and _skill.effect_scene != null: _spawn_effect()
-	if _skill.melee_enabled and _elapsed >= _skill.active_start and not _hit_started:
-		_hit_started = true
-		_actor.hitbox.activate(_skill, (_skill.active_end - _skill.active_start) / _speed_scale)
-	if _elapsed >= _skill.active_end and _actor.hitbox.is_active(): _actor.hitbox.deactivate()
+	_update_melee(previous)
 	_apply_motion(previous, delta)
 	if _elapsed >= _skill.duration:
 		_completed = true
@@ -56,6 +53,13 @@ func _spawn_effect() -> void:
 	_effect_started = true
 	if _skill.effect_scene == null: return
 	_effect = _actor.emitter.emit_skill(_skill, _facing)
+
+func _update_melee(_previous: float) -> void:
+	if not _skill.melee_enabled: return
+	if _elapsed >= _skill.active_start and _elapsed < _skill.active_end and not _hit_started:
+		_hit_started = true
+		_actor.hitbox.activate(_skill, (_skill.active_end - _skill.active_start) / _speed_scale)
+	if _elapsed >= _skill.active_end and _actor.hitbox.is_active(): _actor.hitbox.deactivate()
 
 func _update_aim(previous: float, delta: float) -> void:
 	if _skill.track_during_windup and previous < _skill.windup_end and _actor.has_target():
