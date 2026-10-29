@@ -8,6 +8,9 @@ extends Node
 @export var hit_spark_pool_size: int = 6
 ## Trần số hiệu ứng chạy cùng lúc; vượt thì tái dùng cái cũ nhất. Giữ chi phí GPU (vẽ chồng cộng sáng) có giới hạn khi đánh đông quái
 @export var max_active_hits: int = 6
+## Điểm trúng thứ n trong cùng frame nhân cỡ với falloff^(n-1), không nhỏ hơn min_scale
+@export_range(0.3, 1.0) var crowd_hit_falloff: float = 0.6
+@export_range(0.1, 1.0) var crowd_hit_min_scale: float = 0.3
 
 @export_group("Death Burst")
 @export var death_burst_scene: PackedScene = preload("res://assets/vfx/combat/death_burst.tscn")
@@ -31,6 +34,8 @@ var _death_pool: ObjectPool
 var _blood_pool: ObjectPool
 var _arrow_impact_pool: ObjectPool
 var _stains: BloodStains
+var _hit_frame: int = -1
+var _hits_this_frame: int = 0
 
 
 func _ready() -> void:
@@ -47,8 +52,15 @@ func _ready() -> void:
 ## position: điểm trúng; direction: hướng tia bay; color: màu tia lửa; power > 1: đòn mạnh / kết liễu.
 ## cut_axis: hướng nét cắt (ngang); ZERO = lệch ngẫu nhiên so với direction. cut_scale: nhân độ dài/dày nét cắt
 func spawn_hit(position: Vector3, direction: Vector3, color: Color = Color(1.0, 0.7, 0.25), effect_scale: float = 1.0, power: float = 1.0, cut_axis: Vector3 = Vector3.ZERO, cut_scale: float = 1.0) -> void:
+	# Một nhát trúng nhiều quái cùng frame: mỗi điểm sau nhỏ dần để các lớp cộng sáng không chồng thành khối chói
+	var frame := Engine.get_physics_frames()
+	if frame != _hit_frame:
+		_hit_frame = frame
+		_hits_this_frame = 0
+	var crowd := pow(crowd_hit_falloff, float(_hits_this_frame))
+	_hits_this_frame += 1
 	var fx := _acquire_capped(_hit_pool, max_active_hits) as HitSpark
-	fx.play(position, direction, color, effect_scale, power, cut_axis, cut_scale)
+	fx.play(position, direction, color, effect_scale * maxf(crowd, crowd_hit_min_scale), power, cut_axis, cut_scale)
 
 
 ## position: chân quái

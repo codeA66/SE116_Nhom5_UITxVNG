@@ -18,6 +18,8 @@ const START_ZONE := "res://levels/zone_1_wind/level_1/level_1.tscn"
 var _pending_spawn_id: StringName = &""
 var _busy: bool = false
 var _zone_ready: bool = false
+## Lần đổi khu tới là hồi sinh: khôi phục tiến trình về checkpoint lúc màn đã tối
+var _restore_on_load: bool = false
 var _fade: FadeLayer
 
 
@@ -39,8 +41,11 @@ func change_zone(zone_path: String, spawn_id: StringName = &"") -> void:
 		return
 	_busy = true
 	await _fade.fade_out(fade_duration)
-	# Rời khu mà chưa chạm checkpoint: trạng thái chờ lưu (thuyền đã đi...) bị bỏ
-	GameState.discard_pending_flags()
+	# Hồi sinh: tiến trình về bản chốt ở checkpoint, làm lúc màn đã tối để không thấy cổng / vật đổi trạng thái.
+	# Chuyển khu thường thì giữ nguyên tiến trình đang chơi
+	if _restore_on_load:
+		_restore_on_load = false
+		GameState.restore_checkpoint()
 	_pending_spawn_id = spawn_id
 	_zone_ready = false
 	var error := get_tree().change_scene_to_file(zone_path)
@@ -71,7 +76,22 @@ func change_zone(zone_path: String, spawn_id: StringName = &"") -> void:
 
 ## Hồi sinh tại checkpoint gần nhất (kể cả khi đang ở khu khác); chưa có checkpoint thì về khu đầu game
 func respawn_at_checkpoint() -> void:
+	if _busy:
+		return
+	_restore_on_load = true
 	go_to_last_checkpoint()
+
+
+## Dịch chuyển player trong cùng khu (vòng xoáy ra khỏi phòng đánh): tối màn, đặt player, sáng lại. Không tải scene
+func warp_player(player: Player, target_position: Vector3, facing: Vector3 = Vector3.ZERO) -> void:
+	if _busy:
+		return
+	_busy = true
+	await _fade.fade_out(fade_duration)
+	if is_instance_valid(player):
+		player.teleport(target_position, facing)
+	await _fade.fade_in(fade_duration)
+	_busy = false
 
 
 ## Vào checkpoint đã lưu; chưa có thì vào điểm start của khu đầu game. Dùng khi mở game và khi hồi sinh

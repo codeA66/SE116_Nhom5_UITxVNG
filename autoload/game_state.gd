@@ -1,8 +1,14 @@
 extends Node
 ## Autoload "GameState": giữ tiến trình người chơi suốt game, kể cả khi chuyển scene.
-## Mọi thay đổi tiến trình đi qua đây; SaveManager nghe progress_changed để tự lưu.
+## Mọi thay đổi tiến trình đi qua đây và có hiệu lực ngay trong lượt chơi (cổng mở, trận đã thắng...).
+## Checkpoint lưu tất cả: chạm checkpoint thì chốt bản chụp tiến trình và SaveManager ghi file (progress_committed);
+## chết thì mọi thứ về đúng bản chụp đó (quái sống lại, chìa / đồ vừa nhặt mất, cổng vừa mở đóng lại).
+## Chuyển khu qua cổng không chốt, không khôi phục.
 
+## Tiến trình trong lượt chơi vừa đổi (HUD, cổng, trận nghe để phản ứng). Không ghi file
 signal progress_changed
+## Chạm checkpoint: tiến trình được chốt, SaveManager ghi file
+signal progress_committed
 signal ability_unlocked(ability: AbilityData)
 signal weapon_changed(weapon: WeaponData)
 signal checkpoint_changed(zone_path: String, spawn_id: StringName)
@@ -18,13 +24,13 @@ var progress: PlayerProgress = PlayerProgress.new()
 
 var _player_health: int = -1
 var _player_energy: int = -1
-## Cờ chờ checkpoint (set_flag_on_checkpoint): chỉ ghi vào tiến trình khi chạm checkpoint mới;
-## bị bỏ khi đổi khu, chết hay thoát game mà chưa chạm checkpoint
-var _pending_flags: Dictionary[StringName, bool] = {}
+## Bản chụp tiến trình ở lần chạm checkpoint gần nhất (hoặc lúc đọc save / bắt đầu game): chết thì quay về đây
+var _committed: PlayerProgress
 
 
 func _ready() -> void:
 	_grant_starting_abilities()
+	_committed = progress.snapshot()
 
 
 func get_weapon() -> WeaponData:
@@ -150,17 +156,21 @@ func set_flag(id: StringName) -> void:
 	progress_changed.emit()
 
 
-## Cờ chỉ được lưu khi người chơi chạm một checkpoint MỚI sau đó (thuyền đã tới bến, công tắc đã bật...).
-## Chết, đổi khu hay thoát game trước khi chạm checkpoint thì vật trở về trạng thái cũ
+## Giữ cho code cũ: giờ mọi cờ đều chỉ được ghi file khi chạm checkpoint, nên giống hệt set_flag
 func set_flag_on_checkpoint(id: StringName) -> void:
-	if id.is_empty() or has_flag(id):
-		return
-	_pending_flags[id] = true
+	set_flag(id)
 
 
-## SceneManager gọi khi đổi khu (kể cả hồi sinh): bỏ các cờ chưa kịp lưu
+## Không còn cờ chờ riêng (mọi thứ chờ checkpoint). Giữ hàm rỗng để test cũ (test_boat_integration) còn biên dịch
 func discard_pending_flags() -> void:
-	_pending_flags.clear()
+	pass
+
+
+## Chết: mọi thứ về bản chụp ở lần chạm checkpoint gần nhất. SceneManager gọi lúc màn đã tối, trước khi tải lại khu
+func restore_checkpoint() -> void:
+	progress = _committed.snapshot()
+	reset_player_health()
+	progress_replaced.emit()
 
 
 ## Thay toàn bộ tiến trình. Không phát progress_changed để không ghi đè file save ngay khi vừa đọc
@@ -173,7 +183,8 @@ func replace_progress(new_progress: PlayerProgress) -> void:
 	if progress.weapon is BowData:
 		progress.weapon = progress.get_weapon_in_slot(WeaponData.Slot.SWORD)
 	_grant_starting_abilities()
-	_pending_flags.clear()
+	# Vừa đọc save / bắt đầu mới: đây là mốc để chết thì quay về
+	_committed = progress.snapshot()
 	reset_player_health()
 	progress_replaced.emit()
 
@@ -182,17 +193,16 @@ func has_checkpoint() -> bool:
 	return progress.has_checkpoint()
 
 
+## Chạm checkpoint (kể cả chạm lại đúng checkpoint cũ): chốt toàn bộ tiến trình hiện tại và ghi file
 func set_checkpoint(zone_path: String, spawn_id: StringName) -> void:
-	if progress.checkpoint_zone == zone_path and progress.checkpoint_spawn_id == spawn_id:
-		return
+	var moved := progress.checkpoint_zone != zone_path or progress.checkpoint_spawn_id != spawn_id
 	progress.checkpoint_zone = zone_path
 	progress.checkpoint_spawn_id = spawn_id
-	# Checkpoint mới: các cờ đang chờ được ghi luôn trong lần lưu này
-	for id in _pending_flags:
-		progress.flags[id] = true
-	_pending_flags.clear()
-	checkpoint_changed.emit(zone_path, spawn_id)
-	progress_changed.emit()
+	_committed = progress.snapshot()
+	if moved:
+		checkpoint_changed.emit(zone_path, spawn_id)
+		progress_changed.emit()
+	progress_committed.emit()
 
 
 func get_checkpoint_zone() -> String:
