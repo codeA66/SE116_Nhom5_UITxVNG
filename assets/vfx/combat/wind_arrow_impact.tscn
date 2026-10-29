@@ -1,0 +1,115 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/combat/wind_arrow_impact.gd" id="1_script"]
+[ext_resource type="Shader" path="res://assets/shaders/combat_particle.gdshader" id="2_particle"]
+[ext_resource type="Shader" path="res://assets/shaders/shock_ring.gdshader" id="3_ring"]
+[ext_resource type="Shader" path="res://assets/shaders/arrow_bow_shock.gdshader" id="4_shock"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_burst"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("2_particle")
+shader_parameter/tint = Color(0.78, 0.9, 1, 1)
+shader_parameter/intensity = 3.0
+shader_parameter/streak = false
+shader_parameter/core_width = 0.4
+shader_parameter/dot_softness = 1.4
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ring"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("3_ring")
+shader_parameter/tint = Color(0.85, 0.94, 1, 1)
+shader_parameter/intensity = 2.2
+shader_parameter/progress = 0.0
+shader_parameter/start_radius = 0.1
+shader_parameter/end_radius = 0.97
+shader_parameter/start_width = 0.08
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_shell"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("4_shock")
+shader_parameter/tint = Color(0.78, 0.9, 1, 1)
+shader_parameter/intensity = 1.1
+shader_parameter/rim_power = 2.2
+shader_parameter/rim_strength = 1.0
+shader_parameter/fill = 0.03
+shader_parameter/line_count = 18.0
+shader_parameter/line_sharpness = 7.0
+shader_parameter/line_strength = 0.35
+shader_parameter/line_speed = 2.0
+shader_parameter/base_fade = 0.0
+shader_parameter/back_face_dim = 0.15
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_spark"]
+render_priority = 1
+shader = ExtResource("2_particle")
+shader_parameter/tint = Color(0.78, 0.9, 1, 1)
+shader_parameter/intensity = 2.2
+shader_parameter/streak = true
+shader_parameter/core_width = 0.45
+
+[sub_resource type="QuadMesh" id="QuadMesh_burst"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ring"]
+size = Vector2(1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_shell"]
+radial_segments = 32
+rings = 16
+
+[sub_resource type="QuadMesh" id="QuadMesh_spark"]
+size = Vector2(0.1, 1)
+
+[node name="WindArrowImpact" type="Node3D"]
+script = ExtResource("1_script")
+burst_size = 1.4
+burst_grow_time = 0.06
+burst_time = 0.18
+ring_size = 2.6
+ring_time = 0.26
+spark_speed_min = 6.0
+spark_speed_max = 11.0
+spark_length_min = 0.8
+spark_length_max = 1.6
+
+[node name="Burst" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_burst")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_burst")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_ring")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_ring")
+
+[node name="Shell" type="MeshInstance3D" parent="."]
+visible = false
+material_override = SubResource("ShaderMaterial_shell")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_shell")
+
+[node name="Sparks" type="CPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_spark")
+cast_shadow = 0
+emitting = false
+amount = 14
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+randomness = 0.4
+local_coords = false
+mesh = SubResource("QuadMesh_spark")
+direction = Vector3(0, 0, 1)
+spread = 75.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 11.0
+damping_min = 10.0
+damping_max = 16.0
+particle_flag_align_y = true
+scale_amount_min = 0.8
+scale_amount_max = 1.6
+
+[node name="ImpactSound" type="AudioStreamPlayer3D" parent="."]
