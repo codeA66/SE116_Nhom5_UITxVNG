@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b5sueurtacysl"]
 
-[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_82lrw"]
+[ext_resource type="Script" uid="uid://bw2mjpgi3op5x" path="res://levels/_base/zone_root.gd" id="1_82lrw"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/map_wind_island/wind_palace_lighting.tscn" id="2_5r1qf"]
-[ext_resource type="Shader" path="res://assets/shaders/cloud_sea.gdshader" id="3_ycmv8"]
-[ext_resource type="PackedScene" path="res://assets/generated/wind_ruins/gridmap/geo01/geo01_large_cloud_sea_island_v2.glb" id="4_xudqy"]
-[ext_resource type="PackedScene" path="res://assets/generated/wind_ruins/gridmap/geo02/geo02_medium_cloud_sea_island_v2.glb" id="5_t4n2c"]
+[ext_resource type="Shader" uid="uid://ofbqgo7ee0pc" path="res://assets/shaders/cloud_sea.gdshader" id="3_ycmv8"]
+[ext_resource type="PackedScene" uid="uid://45x73tf1y43h" path="res://assets/generated/wind_ruins/gridmap/geo01/geo01_large_cloud_sea_island_v2.glb" id="4_xudqy"]
+[ext_resource type="PackedScene" uid="uid://b0np53t3l3dud" path="res://assets/generated/wind_ruins/gridmap/geo02/geo02_medium_cloud_sea_island_v2.glb" id="5_t4n2c"]
 [ext_resource type="PackedScene" path="res://objects/kill_zone/kill_zone.tscn" id="6_u0yyv"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/room_01_dock.tscn" id="7_272vo"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/room_02_foyer.tscn" id="8_p8727"]
@@ -61,37 +61,37 @@ mesh = SubResource("PlaneMesh_riknd")
 [node name="BackgroundIsland" parent="." unique_id=1683345417 instance=ExtResource("4_xudqy")]
 transform = Transform3D(1.2380035, 0, 0.84696376, 0, 1.5, 0, -0.84696376, 0, 1.2380035, -95, -10, -30)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland" index="0" unique_id=1599168746]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland" index="0" unique_id=225154677]
 cast_shadow = 0
 
 [node name="BackgroundIsland2" parent="." unique_id=780542823 instance=ExtResource("5_t4n2c")]
 transform = Transform3D(-0.8239016, 0, 1.1318948, 0, 1.4, 0, -1.1318948, 0, -0.8239016, 120, -8, -40)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland2" index="0" unique_id=596526991]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland2" index="0" unique_id=1478586935]
 cast_shadow = 0
 
 [node name="BackgroundIsland3" parent="." unique_id=437858553 instance=ExtResource("4_xudqy")]
 transform = Transform3D(-0.84973663, 0, -0.9838432, 0, 1.3, 0, 0.9838432, 0, -0.84973663, -70, -12, 75)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland3" index="0" unique_id=1599168746]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland3" index="0" unique_id=225154677]
 cast_shadow = 0
 
 [node name="BackgroundIsland4" parent="." unique_id=312716818 instance=ExtResource("5_t4n2c")]
 transform = Transform3D(0.32099867, 0, 1.1562699, 0, 1.2, 0, -1.1562699, 0, 0.32099867, 100, -10, 70)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland4" index="0" unique_id=596526991]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland4" index="0" unique_id=1478586935]
 cast_shadow = 0
 
 [node name="BackgroundIsland5" parent="." unique_id=276255606 instance=ExtResource("4_xudqy")]
 transform = Transform3D(-1.5986162, 0, 0.066529214, 0, 1.6, 0, -0.066529214, 0, -1.5986162, 10, -14, -150)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland5" index="0" unique_id=1599168746]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland5" index="0" unique_id=225154677]
 cast_shadow = 0
 
 [node name="BackgroundIsland6" parent="." unique_id=1356314749 instance=ExtResource("5_t4n2c")]
 transform = Transform3D(0.31202844, 0, -1.0548167, 0, 1.1, 0, 1.0548167, 0, 0.31202844, -100, -6, -110)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland6" index="0" unique_id=596526991]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland6" index="0" unique_id=1478586935]
 cast_shadow = 0
 
 [node name="SafetyNet" parent="." unique_id=548147753 instance=ExtResource("6_u0yyv")]
@@ -103,7 +103,7 @@ size = Vector3(400, 2, 400)
 [node name="Tier1" type="Node3D" parent="Rooms" unique_id=1458844962]
 
 [node name="Room01Dock" parent="Rooms/Tier1" unique_id=1425730384 instance=ExtResource("7_272vo")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0006406307, 0.0033984184, 18.154236)
 
 [node name="Room02Foyer" parent="Rooms/Tier1" unique_id=257534146 instance=ExtResource("8_p8727")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -2)
