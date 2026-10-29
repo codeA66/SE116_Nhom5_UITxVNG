@@ -1,17 +1,28 @@
-[gd_scene format=3]
-[ext_resource type="Script" path="res://tests/new_enemy_test/new_enemy_test.gd" id="script"]
-[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="player"]
+[gd_scene format=3 uid="uid://capisrnwbl8dx"]
+
+[ext_resource type="Resource" path="res://resources/weapons/sword.tres" id="3_eos0d"]
+[ext_resource type="Resource" path="res://abilities/dash/dash.tres" id="4_0etxy"]
+[ext_resource type="Resource" uid="uid://cnkajx20i5gbp" path="res://resources/player/foxy_animation_markers.tres" id="5_o54rx"]
+[ext_resource type="Script" uid="uid://cabvd0p6t1m7a" path="res://entities/_base/weapon_data.gd" id="6_y8xkj"]
+[ext_resource type="Resource" path="res://resources/weapons/bow.tres" id="7_0kcie"]
 [ext_resource type="PackedScene" path="res://entities/enemies/armored_polar_bear/armored_polar_bear.tscn" id="bear"]
+[ext_resource type="PackedScene" path="res://entities/enemies/polar_bear_cub/polar_bear_cub.tscn" id="bear_cub"]
 [ext_resource type="PackedScene" path="res://entities/enemies/monkey_chieftain/monkey_chieftain.tscn" id="chief"]
 [ext_resource type="PackedScene" path="res://entities/enemies/monkey_grunt/monkey_grunt.tscn" id="grunt"]
+[ext_resource type="PackedScene" uid="uid://ogqrogwu58gt" path="res://entities/player/player.tscn" id="player"]
+[ext_resource type="Script" uid="uid://c66nnp5cr7w4p" path="res://tests/new_enemy_test/new_enemy_test.gd" id="script"]
+[ext_resource type="Script" uid="uid://bh6rk7xi8ofdw" path="res://entities/enemies/wildlife/_shared/monkey_squad.gd" id="squad"]
 [ext_resource type="PackedScene" path="res://entities/enemies/werewolf/werewolf.tscn" id="wolf"]
-[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/monkey_squad.gd" id="squad"]
+[ext_resource type="PackedScene" path="res://entities/enemies/werewolf_cub/werewolf_cub.tscn" id="wolf_cub"]
+
 [sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
 sky_top_color = Color(0.12, 0.23, 0.36, 1)
 sky_horizon_color = Color(0.65, 0.75, 0.8, 1)
 ground_horizon_color = Color(0.65, 0.75, 0.8, 1)
+
 [sub_resource type="Sky" id="Sky"]
 sky_material = SubResource("SkyMaterial")
+
 [sub_resource type="Environment" id="Environment"]
 background_mode = 2
 sky = SubResource("Sky")
@@ -19,74 +30,181 @@ ambient_light_source = 3
 ambient_light_color = Color(0.7, 0.8, 1, 1)
 ambient_light_energy = 0.6
 tonemap_mode = 2
+
 [sub_resource type="StandardMaterial3D" id="GroundMaterial"]
 albedo_color = Color(0.19, 0.28, 0.3, 1)
 roughness = 0.92
+
 [sub_resource type="BoxMesh" id="GroundMesh"]
 material = SubResource("GroundMaterial")
 size = Vector3(60, 1, 60)
+
 [sub_resource type="BoxShape3D" id="GroundShape"]
 size = Vector3(60, 1, 60)
+
 [sub_resource type="StandardMaterial3D" id="WallMaterial"]
 albedo_color = Color(0.29, 0.38, 0.42, 1)
+
 [sub_resource type="BoxMesh" id="WallMesh"]
 material = SubResource("WallMaterial")
 size = Vector3(8, 1.5, 1)
+
 [sub_resource type="BoxShape3D" id="WallShape"]
 size = Vector3(8, 1.5, 1)
-[node name="NewEnemyTest" type="Node3D"]
+
+[node name="NewEnemyTest" type="Node3D" unique_id=500715366]
 script = ExtResource("script")
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1767321464]
 environment = SubResource("Environment")
-[node name="Sun" type="DirectionalLight3D" parent="."]
-rotation_degrees = Vector3(-55, -25, 0)
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1995350817]
+transform = Transform3D(0.90630776, 0.34618863, -0.24240388, 0, 0.57357645, 0.81915206, 0.42261827, -0.74240386, 0.5198368, 0, 0, 0)
 light_energy = 0.95
 shadow_enabled = true
 directional_shadow_max_distance = 65.0
-[node name="Ground" type="StaticBody3D" parent="."]
-position = Vector3(0, -0.5, 0)
-collision_layer = 1
+
+[node name="Ground" type="StaticBody3D" parent="." unique_id=1185603471]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 collision_mask = 0
-[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground" unique_id=734301794]
 mesh = SubResource("GroundMesh")
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=1856261884]
 shape = SubResource("GroundShape")
-[node name="Cover" type="StaticBody3D" parent="."]
-position = Vector3(-3, 0.75, 3)
-collision_layer = 1
-[node name="Mesh" type="MeshInstance3D" parent="Cover"]
+
+[node name="Cover" type="StaticBody3D" parent="." unique_id=764403124]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.75, 3)
+
+[node name="Mesh" type="MeshInstance3D" parent="Cover" unique_id=1472476359]
 mesh = SubResource("WallMesh")
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Cover"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cover" unique_id=1651651809]
 shape = SubResource("WallShape")
-[node name="Player" parent="." instance=ExtResource("player")]
-position = Vector3(0, 0.05, 13)
+
+[node name="Player" parent="." unique_id=436489813 instance=ExtResource("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 13)
 preview_sword = true
 preview_dash = true
-[node name="ArmoredPolarBear" parent="." instance=ExtResource("bear")]
-position = Vector3(-10, 0.05, -5)
-[node name="Werewolf" parent="." instance=ExtResource("wolf")]
-position = Vector3(-5, 0.05, 7)
-[node name="MonkeySquad" type="Node3D" parent="." node_paths=PackedStringArray("leader", "members")]
+preview_weapon = ExtResource("3_eos0d")
+preview_dash_data = ExtResource("4_0etxy")
+skeleton_path = NodePath("Foxy_Rig/Skeleton3D")
+bow_hand_bone = &"hand.L"
+sword_node_name = &"Sword"
+bow_arm_bones = Dictionary[StringName, StringName]({
+&"fore_l": &"forearm.L",
+&"fore_r": &"forearm.R",
+&"hand_l": &"hand.L",
+&"hand_r": &"hand.R",
+&"upper_l": &"upper_arm.L",
+&"upper_r": &"upper_arm.R"
+})
+bow_body_bones = Dictionary[StringName, StringName]({
+&"chest": &"chest",
+&"head": &"head",
+&"neck": &"neck",
+&"spine": &"spine"
+})
+bow_twist_degrees = 0.0
+bow_lean_degrees = 0.0
+bow_head_tilt_degrees = 0.0
+bow_head_turn_degrees = 75.0
+clip_map = Dictionary[StringName, StringName]({
+&"Attack_Backhand": &"Attack_2",
+&"Attack_Finisher": &"Attack_3",
+&"Attack_Horizontal": &"Attack_1",
+&"Rig_Medium_CombatMelee/Melee_1H_Attack_Slice_Horizontal": &"Attack_1",
+&"Rig_Medium_General/Death_A": &"Death",
+&"Rig_Medium_General/Hit_A": &"Hurt",
+&"Rig_Medium_General/PickUp": &"PickUp",
+&"Rig_Medium_MovementAdvanced/Dodge_Forward": &"Dash",
+&"Rig_Medium_MovementBasic/Jump_Idle": &"Fall",
+&"Rig_Medium_MovementBasic/Jump_Start": &"Jump"
+})
+loop_clips = Array[StringName]([&"Idle", &"Idle_Sword", &"Run", &"Run_Sword", &"Fall"])
+animation_markers = ExtResource("5_o54rx")
+dash_clip = &"Dash"
+land_clip = &"Land"
+landing_duration = 0.2
+hard_landing_speed = 3.0
+run_reference_speed = 2.4
+min_run_playback = 0.85
+max_run_playback = 1.65
+locomotion_blend = 0.08
+run_playback_response = 12.0
+outline_color = Color(0.17, 0.08, 0.05, 1)
+face_blink_interval = Vector2(2, 4.5)
+face_blink_time = 0.1
+coyote_time = 0.12
+jump_buffer_time = 0.12
+attack_buffer_time = 0.25
+dash_buffer_time = 0.2
+wind_blast_buffer_time = 0.15
+recovery_invincibility = 1.0
+safe_ground_frames = 8
+blink_interval = 0.08
+lethal_flash_color = Color(1, 0.12, 0.1, 0.65)
+lethal_flash_time = 0.4
+soft_lock_range = 4.0
+soft_lock_angle = 60.0
+arrow_pool_size = 4
+combat_weapons = Array[ExtResource("6_y8xkj")]([ExtResource("7_0kcie")])
+bow_stance_degrees = 90.0
+
+[node name="ArmoredPolarBear" parent="." unique_id=843727499 instance=ExtResource("bear")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.766106, 0.05, -12.31006)
+hit_flash_time = 0.06
+
+[node name="Werewolf" parent="." unique_id=843591914 instance=ExtResource("wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.05, -16.433819)
+hit_flash_time = 0.06
+
+[node name="PolarBearCub" parent="." unique_id=1851422277 instance=ExtResource("bear_cub")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.445822, 0.05, 6)
+hit_flash_time = 0.06
+
+[node name="WerewolfCub" parent="." unique_id=380689946 instance=ExtResource("wolf_cub")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.09804, 0.05, 9)
+hit_flash_time = 0.06
+
+[node name="MonkeySquad" type="Node3D" parent="." unique_id=1327012690 node_paths=PackedStringArray("leader", "members")]
 script = ExtResource("squad")
 leader = NodePath("Chieftain")
-members = Array[NodePath]([NodePath("Grunt1"), NodePath("Grunt2"), NodePath("Grunt3")])
-[node name="Chieftain" parent="MonkeySquad" instance=ExtResource("chief")]
-position = Vector3(6, 0.05, -6)
-[node name="Grunt1" parent="MonkeySquad" instance=ExtResource("grunt")]
-position = Vector3(3.7, 0.05, -4)
-[node name="Grunt2" parent="MonkeySquad" instance=ExtResource("grunt")]
-position = Vector3(8.3, 0.05, -4)
-[node name="Grunt3" parent="MonkeySquad" instance=ExtResource("grunt")]
-position = Vector3(6, 0.05, -9)
-[node name="OverviewCamera" type="Camera3D" parent="."]
-position = Vector3(15, 20, 25)
-rotation_degrees = Vector3(-34, 30, 0)
+members = [NodePath("Grunt1"), NodePath("Grunt2"), NodePath("Grunt3")]
+
+[node name="Chieftain" parent="MonkeySquad" unique_id=1189427893 instance=ExtResource("chief")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.05, -6)
+battlecry_radius = 8.0
+battlecry_duration = 10.0
+battlecry_cooldown = 20.0
+hit_flash_time = 0.06
+
+[node name="Grunt1" parent="MonkeySquad" unique_id=1514320419 instance=ExtResource("grunt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0.05, -4)
+hit_flash_time = 0.06
+
+[node name="Grunt4" parent="MonkeySquad" unique_id=1666908142 instance=ExtResource("grunt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6954768, 0.05, 8.012437)
+hit_flash_time = 0.06
+
+[node name="Grunt2" parent="MonkeySquad" unique_id=1197726246 instance=ExtResource("grunt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.3, 0.05, -4)
+hit_flash_time = 0.06
+
+[node name="Grunt3" parent="MonkeySquad" unique_id=1036923036 instance=ExtResource("grunt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.05, -9)
+hit_flash_time = 0.06
+
+[node name="OverviewCamera" type="Camera3D" parent="." unique_id=2090014405]
+transform = Transform3D(0.8660254, -0.27959645, 0.4145188, 0, 0.8290376, 0.5591929, -0.5, -0.48427525, 0.7179676, 15, 20, 25)
 projection = 1
 size = 30.0
 far = 100.0
 
-[node name="HUD" type="CanvasLayer" parent="."]
-[node name="Training" type="CheckButton" parent="HUD"]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1507237681]
+
+[node name="Training" type="CheckButton" parent="HUD" unique_id=373135704]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -96,5 +214,5 @@ offset_left = -155.0
 offset_top = -55.0
 offset_right = -16.0
 offset_bottom = -16.0
-text = "Bất tử"
 button_pressed = true
+text = "Bất tử"

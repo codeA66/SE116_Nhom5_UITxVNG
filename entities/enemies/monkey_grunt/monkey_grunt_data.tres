@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://entities/enemies/monkey_grunt/movement.tres" id="move"]
 [ext_resource type="Resource" path="res://entities/enemies/monkey_grunt/skills/slash_01.tres" id="s0"]
 [ext_resource type="Resource" path="res://entities/enemies/monkey_grunt/skills/slash_02.tres" id="s1"]
+[ext_resource type="Resource" path="res://entities/enemies/monkey_grunt/skills/banana_throw.tres" id="banana"]
 [resource]
 script = ExtResource("data")
 display_name = "Monkey Grunt"
@@ -13,7 +14,7 @@ attack = ExtResource("s0")
 attack_range = 1.65
 hitbox_reach = 2.0
 attack_cooldown = 0.5
-detect_range = 10.0
+detect_range = 12.0
 lose_range = 13.0
 leash_range = 18.0
 patrol_radius = 1.4
@@ -30,4 +31,4 @@ walk_animation = &"Gorilla_Locomotion"
 run_animation = &"Gorilla_Quadrupedal_Run_Fast"
 alert_animation = &""
 
-skills = Array[ExtResource("skill")]([ExtResource("s0"), ExtResource("s1")])
+skills = Array[ExtResource("skill")]([ExtResource("s0"), ExtResource("s1"), ExtResource("banana")])

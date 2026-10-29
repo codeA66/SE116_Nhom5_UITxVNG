@@ -26,39 +26,8 @@ func _ready() -> void:
 	seek(-1.0)
 	set_process(false)
 
-func _triangle(a: Vector3, b: Vector3, c: Vector3, vertices: PackedVector3Array, normals: PackedVector3Array, colors: PackedColorArray, uvs: PackedVector2Array) -> void:
-	var normal := (b - a).cross(c - a).normalized()
-	for point in [a, b, c]:
-		vertices.append(point)
-		normals.append(normal)
-		uvs.append(Vector2(point.x * 0.5 + 0.5, point.y))
-	colors.append_array(PackedColorArray([Color(1, 0, 0), Color(0, 1, 0), Color(0, 0, 1)]))
-
 func _crystal_mesh() -> ArrayMesh:
-	var vertices := PackedVector3Array()
-	var normals := PackedVector3Array()
-	var colors := PackedColorArray()
-	var uvs := PackedVector2Array()
-	var tip := Vector3(0.18, 1.0, -0.08)
-	for side in 6:
-		var a := float(side) * TAU / 6.0
-		var b := float(side + 1) * TAU / 6.0
-		var low_a := Vector3(cos(a) * 0.50, 0, sin(a) * 0.50)
-		var low_b := Vector3(cos(b) * 0.50, 0, sin(b) * 0.50)
-		var mid_a := Vector3(cos(a), 0.53, sin(a))
-		var mid_b := Vector3(cos(b), 0.53, sin(b))
-		_triangle(low_a, mid_a, mid_b, vertices, normals, colors, uvs)
-		_triangle(low_a, mid_b, low_b, vertices, normals, colors, uvs)
-		_triangle(mid_a, tip, mid_b, vertices, normals, colors, uvs)
-	var arrays: Array = []
-	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = vertices
-	arrays[Mesh.ARRAY_NORMAL] = normals
-	arrays[Mesh.ARRAY_COLOR] = colors
-	arrays[Mesh.ARRAY_TEX_UV] = uvs
-	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	return mesh
+	return IceCrystalGeometry.build()
 
 func rebuild() -> void:
 	materials.clear()

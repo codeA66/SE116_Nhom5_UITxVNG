@@ -34,7 +34,8 @@ func play(at: Transform3D, combo: ClawComboSkillData, index: int, duration: floa
 		mesh.position.y=combo.slash_height
 		mesh.rotation.z=.10 if index%2==0 else -.10
 	for mesh: MeshInstance3D in _down:
-		mesh.visible=down;mesh.scale=Vector3.ONE*combo.slash_radius;mesh.position.y=.9
+		mesh.visible=down;mesh.scale=Vector3.ONE*combo.slash_radius;mesh.position.y=combo.slash_height*.86
+		mesh.position.x=signf(mesh.position.x)*combo.slash_radius*.19
 	for mat: ShaderMaterial in _materials:
 		mat.set_shader_parameter(&"sweep_time",_sweep)
 		mat.set_shader_parameter(&"arc_radians",deg_to_rad(combo.slash_arc_degrees))

@@ -7,6 +7,8 @@
 [ext_resource type="Script" uid="uid://bhy2r4v3q4hwg" path="res://components/squash_stretch/squash_stretch_component.gd" id="5_squash"]
 [ext_resource type="PackedScene" path="res://components/blob_shadow/blob_shadow.tscn" id="6_blob"]
 [ext_resource type="Script" uid="uid://blr8snfwvdvqy" path="res://components/state_machine/state_machine.gd" id="7_fsm"]
+[ext_resource type="Script" path="res://components/banana_slip/banana_slip.gd" id="8_slip"]
+[ext_resource type="Script" path="res://components/banana_slip/slip_state.gd" id="9_slip_state"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -71,3 +73,9 @@ target = NodePath("../Model/Visual")
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("7_fsm")
+
+[node name="Slip" type="Node" parent="StateMachine"]
+script = ExtResource("9_slip_state")
+
+[node name="BananaSlip" type="Node" parent="."]
+script = ExtResource("8_slip")

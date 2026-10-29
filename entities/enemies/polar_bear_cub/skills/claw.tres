@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemySkillData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_skill_data.gd" id="script"]
+[resource]
+script = ExtResource("script")
+skill_id = &"cub_claw"
+animation = &"BearActions/Claw_Windup"
+duration = 1.533333
+windup_end = 0.97
+active_start = 1.0
+active_end = 1.15
+maximum_range = 1.4
+cooldown = 0.0
+damage = 1
+knockback = 2.5
+hitstop = 0.03

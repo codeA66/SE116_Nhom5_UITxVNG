@@ -1,0 +1,33 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://objects/projectiles/enemy_throwables/enemy_projectile.gd" id="script"]
+[ext_resource type="Script" path="res://objects/projectiles/enemy_throwables/banana_visual.gd" id="peel"]
+[ext_resource type="Script" path="res://assets/vfx/enemies/contact_burst.gd" id="burst"]
+[sub_resource type="SphereShape3D" id="Sweep"]
+radius = 0.18
+[sub_resource type="CylinderShape3D" id="Peel"]
+radius = 0.7
+height = 0.3
+[node name="EnemyProjectile" type="Node3D"]
+script = ExtResource("script")
+[node name="Visual" type="Node3D" parent="."]
+[node name="Sweep" type="ShapeCast3D" parent="."]
+enabled = false
+shape = SubResource("Sweep")
+collision_mask = 259
+collide_with_areas = true
+max_results = 4
+margin = 0.005
+[node name="PeelVisual" type="Node3D" parent="."]
+script = ExtResource("peel")
+peeled = true
+[node name="PeelArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 6
+monitoring = false
+monitorable = false
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PeelArea"]
+position = Vector3(0, 0.15, 0)
+shape = SubResource("Peel")
+[node name="ContactBurst" type="Node3D" parent="."]
+position = Vector3(0, 0.04, 0)
+script = ExtResource("burst")

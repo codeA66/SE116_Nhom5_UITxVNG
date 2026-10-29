@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="ProjectileSkillData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/projectile_skill_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://objects/projectiles/enemy_throwables/banana.tscn" id="projectile"]
+[ext_resource type="PackedScene" path="res://objects/projectiles/enemy_throwables/banana_visual.tscn" id="held"]
+[resource]
+script = ExtResource("script")
+skill_id = &"banana_throw"
+state = &"ProjectileAttack"
+animation = &"Throws/Banana_Throw"
+anim_speed = 1.5
+duration = 1.466667
+windup_end = 0.653333
+release_time = 0.653333
+track_during_windup = true
+melee_enabled = false
+minimum_range = 5.0
+maximum_range = 12.0
+cooldown = 3.0
+use_attack_cooldown = false
+cooldown_affected_by_buff = false
+projectile_scene = ExtResource("projectile")
+held_visual_scene = ExtResource("held")
+hand_bone = &"CATRigRArmPalm001"
+held_scale = 0.85
+projectile_speed_ratio = 1.5
+flight_lifetime = 3.0
+launch_height = 1.2
+damage = 1
+knockback = 2.0

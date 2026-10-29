@@ -101,7 +101,7 @@ func choose_random_skill() -> EnemySkillData:
 
 func skill_ready(skill: EnemySkillData) -> bool:
 	var distance: float = distance_to_target()
-	return has_target() and _attack_cooldown_left <= 0.0 and skill_cooldown(skill.skill_id) <= 0.0 and distance >= skill.minimum_range and distance <= skill.maximum_range
+	return has_target() and (not skill.use_attack_cooldown or _attack_cooldown_left <= 0.0) and skill_cooldown(skill.skill_id) <= 0.0 and distance >= skill.minimum_range and distance <= skill.maximum_range
 
 func skill_cooldown(id: StringName) -> float:
 	return _cooldowns.get(id, 0.0)
@@ -113,9 +113,13 @@ func begin_skill(skill: EnemySkillData) -> void:
 	pending_skill = skill
 	state_machine.transition_to(skill.state)
 
-func complete_skill(skill: EnemySkillData, completed: bool) -> void:
-	_cooldowns[skill.skill_id] = maxf(0.0, skill.cooldown) * (0.88 if battle_buff_active() else 1.0)
-	start_attack_cooldown()
+func start_skill_cooldown(skill: EnemySkillData) -> void:
+	var scale: float = 0.88 if skill.cooldown_affected_by_buff and battle_buff_active() else 1.0
+	_cooldowns[skill.skill_id] = maxf(0.0, skill.cooldown) * scale
+
+func complete_skill(skill: EnemySkillData, completed: bool, cooldown_started: bool = false) -> void:
+	if not cooldown_started: start_skill_cooldown(skill)
+	if skill.use_attack_cooldown: start_attack_cooldown()
 	skill_finished.emit(skill, completed)
 	pending_skill = null
 

@@ -120,6 +120,18 @@ func resists_knockback() -> bool:
 	return false
 
 
+func get_slip_steering() -> Vector3:
+	return direction_to_target()
+
+
+func get_slip_recovery_state() -> StringName:
+	return &"Dead" if is_dead() else (chase_state if has_target() else &"Patrol")
+
+
+func play_slip_animation() -> void:
+	play_anim(&"Idle")
+
+
 func set_telegraph(on: bool) -> void:
 	_set_overlay(telegraph_material if on else null)
 

@@ -1,0 +1,59 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://entities/enemies/armored_polar_bear/armored_polar_bear.tscn" id="base"]
+[ext_resource type="Script" path="res://entities/enemies/polar_bear_cub/polar_bear_cub.gd" id="script"]
+[ext_resource type="Resource" path="res://entities/enemies/polar_bear_cub/polar_bear_cub_data.tres" id="data"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/wild_projectile_attack.gd" id="projectile_state"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_projectile_emitter.gd" id="projectile_emitter"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/cub_actions.tres" id="cub"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/general.tres" id="general"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/bear_actions.tres" id="bear"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/movement_basic.tres" id="move"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/combat_melee.tres" id="melee"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/movement_advanced.tres" id="advanced"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/simulation.tres" id="simulation"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/special.tres" id="special"]
+[sub_resource type="CapsuleShape3D" id="Body"]
+resource_local_to_scene = true
+radius = 0.32
+height = 1.375
+[sub_resource type="CapsuleShape3D" id="Hurt"]
+resource_local_to_scene = true
+radius = 0.35
+height = 1.375
+[sub_resource type="BoxShape3D" id="Hit"]
+resource_local_to_scene = true
+size = Vector3(0.85, 1.05, 1.3)
+[node name="PolarBearCub" instance=ExtResource("base")]
+script = ExtResource("script")
+data = ExtResource("data")
+[node name="CollisionShape3D" parent="." index="0"]
+position = Vector3(0, 0.6875, 0)
+shape = SubResource("Body")
+[node name="Rig" parent="Model/Visual" index="2"]
+scale = Vector3(0.34, 0.34, 0.34)
+[node name="CollisionShape3D" parent="Model/Hitbox" index="0"]
+position = Vector3(0, 0.6, 0.65)
+shape = SubResource("Hit")
+[node name="AnimationPlayer" parent="." index="2"]
+libraries = {
+&"BearActions": ExtResource("bear"),
+&"CubActions": ExtResource("cub"),
+&"General": ExtResource("general"),
+&"MovementBasic": ExtResource("move"),
+&"CombatMelee": ExtResource("melee"),
+&"MovementAdvanced": ExtResource("advanced"),
+&"Simulation": ExtResource("simulation"),
+&"Special": ExtResource("special")
+}
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+position = Vector3(0, 0.6875, 0)
+shape = SubResource("Hurt")
+[node name="CollisionShape3D" parent="WindReceiverComponent" index="0"]
+position = Vector3(0, 0.6875, 0)
+shape = SubResource("Body")
+[node name="EnemySpacing" parent="."]
+separation_radius = 0.8
+[node name="ProjectileAttack" type="Node" parent="StateMachine"]
+script = ExtResource("projectile_state")
+[node name="ProjectileEmitter" type="Node" parent="."]
+script = ExtResource("projectile_emitter")

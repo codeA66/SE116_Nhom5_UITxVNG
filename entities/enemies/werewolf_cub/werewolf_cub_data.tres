@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="WildEnemyData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/wild_enemy_data.gd" id="data"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_skill_data.gd" id="skill"]
+[ext_resource type="Resource" path="res://entities/enemies/werewolf_cub/movement.tres" id="movement"]
+[ext_resource type="Resource" path="res://entities/enemies/werewolf_cub/skills/claw.tres" id="claw"]
+[resource]
+script = ExtResource("data")
+display_name = "Werewolf Cub"
+max_health = 8
+movement = ExtResource("movement")
+attack = ExtResource("claw")
+attack_range = 1.5
+hitbox_reach = 1.45
+attack_cooldown = 1.0
+detect_range = 10.0
+lose_range = 13.0
+leash_range = 18.0
+patrol_radius = 1.5
+patrol_wait_min = 1.5
+patrol_wait_max = 3.0
+patrol_speed_scale = 0.32
+stagger_on_hit = true
+corpse_time = 2.0
+model_scale = 0.5
+advance_on_cooldown = true
+approach_stop_distance = 0.8
+idle_animation = &"idle"
+walk_animation = &"walk"
+run_animation = &"run"
+death_animation = &"death"
+skills = Array[ExtResource("skill")]([ExtResource("claw")])

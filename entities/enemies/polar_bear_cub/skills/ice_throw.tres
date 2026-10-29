@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="ProjectileSkillData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/projectile_skill_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://objects/projectiles/enemy_throwables/ice_shard.tscn" id="projectile"]
+[resource]
+script = ExtResource("script")
+skill_id = &"cub_ice_throw"
+state = &"ProjectileAttack"
+animation = &"CombatMelee/Melee_Unarmed_Punch"
+duration = 1.2333333
+windup_end = 0.53
+release_time = 0.53
+track_during_windup = true
+melee_enabled = false
+minimum_range = 5.0
+maximum_range = 12.0
+cooldown = 3.0
+use_attack_cooldown = false
+cooldown_affected_by_buff = false
+projectile_scene = ExtResource("projectile")
+hand_bone = &"hand.r"
+projectile_speed_ratio = 1.5
+flight_lifetime = 3.0
+launch_height = 0.9
+launch_forward = 0.65
+damage = 1
+knockback = 3.5

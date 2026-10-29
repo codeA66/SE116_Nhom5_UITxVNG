@@ -1,0 +1,6 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://objects/projectiles/enemy_throwables/enemy_projectile.tscn" id="base"]
+[ext_resource type="Script" path="res://objects/projectiles/enemy_throwables/ice_shard_visual.gd" id="visual"]
+[node name="IceShardProjectile" instance=ExtResource("base")]
+[node name="Visual" parent="." index="0"]
+script = ExtResource("visual")

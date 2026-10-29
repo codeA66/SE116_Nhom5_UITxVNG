@@ -14,3 +14,6 @@ extends AttackData
 @export var effect_after_animation: bool = false
 @export var effect_at_target: bool = false
 @export var effect_forward_offset: float = 0.8
+## Đòn ném hồi riêng, không khóa hoặc chờ cooldown của đòn đánh gần.
+@export var use_attack_cooldown: bool = true
+@export var cooldown_affected_by_buff: bool = true

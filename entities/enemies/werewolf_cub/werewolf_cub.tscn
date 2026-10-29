@@ -1,0 +1,28 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://entities/enemies/werewolf/werewolf.tscn" id="base"]
+[ext_resource type="Script" path="res://entities/enemies/werewolf_cub/werewolf_cub.gd" id="script"]
+[ext_resource type="Resource" path="res://entities/enemies/werewolf_cub/werewolf_cub_data.tres" id="data"]
+[sub_resource type="CapsuleShape3D" id="Body"]
+resource_local_to_scene = true
+radius = 0.24
+height = 1.1
+[sub_resource type="CapsuleShape3D" id="Hurt"]
+resource_local_to_scene = true
+radius = 0.28
+height = 1.1
+[node name="WerewolfCub" instance=ExtResource("base")]
+script = ExtResource("script")
+data = ExtResource("data")
+[node name="CollisionShape3D" parent="." index="0"]
+position = Vector3(0, 0.55, 0)
+shape = SubResource("Body")
+[node name="Rig" parent="Model/Visual" index="2"]
+scale = Vector3(0.5, 0.5, 0.5)
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+position = Vector3(0, 0.55, 0)
+shape = SubResource("Hurt")
+[node name="CollisionShape3D" parent="WindReceiverComponent" index="0"]
+position = Vector3(0, 0.55, 0)
+shape = SubResource("Body")
+[node name="EnemySpacing" parent="."]
+separation_radius = 0.8

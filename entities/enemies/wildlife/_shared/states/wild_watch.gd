@@ -13,6 +13,9 @@ func physics_update(delta: float) -> void:
 	_actor.apply_gravity(delta)
 	if _actor.should_give_up_chase():
 		_actor.forget_target(); state_machine.transition_to(PATROL); return
+	var skill: EnemySkillData = _actor.choose_skill()
+	if skill != null:
+		_actor.begin_skill(skill); return
 	if _actor.attack_cooldown_remaining() <= 0.0:
 		state_machine.transition_to(_actor.chase_state); return
 	var distance: float = _actor.distance_to_target()

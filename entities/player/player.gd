@@ -231,6 +231,20 @@ func get_move_direction() -> Vector3:
 	return right * input.x - forward * input.y
 
 
+func get_slip_steering() -> Vector3:
+	return get_move_direction()
+
+
+func get_slip_recovery_state() -> StringName:
+	if health.is_dead(): return &"Dead"
+	if not is_on_floor(): return &"Fall"
+	return &"Idle" if get_move_direction().is_zero_approx() else &"Run"
+
+
+func play_slip_animation() -> void:
+	play_action(ANIM_HURT)
+
+
 ## Hướng ngang từ player tới điểm con trỏ chuột chỉ trên mặt phẳng ngang ở độ cao chân player.
 ## Trả về Vector3.ZERO nếu không xác định được (chuột ngoài cửa sổ, tia song song mặt phẳng, chuột trùng chân player)
 func get_mouse_aim_direction() -> Vector3:
