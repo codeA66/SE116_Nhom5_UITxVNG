@@ -2,6 +2,8 @@ class_name WildEnemy
 extends Enemy
 ## Dùng Enemy/Character/FSM gốc; chỉ bổ sung chọn đòn và animation cho rig mới.
 signal engaged(player: Node3D)
+# Phát từ state WildSkillAttack (lớp khác) nên Godot tưởng không dùng
+@warning_ignore("unused_signal")
 signal skill_started(skill: EnemySkillData)
 signal skill_finished(skill: EnemySkillData, completed: bool)
 

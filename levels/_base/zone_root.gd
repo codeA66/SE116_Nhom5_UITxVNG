@@ -38,10 +38,11 @@ func _ready() -> void:
 	else:
 		push_warning("%s: không có SpawnPoint '%s', player giữ vị trí ban đầu" % [name, default_spawn_id])
 	player_spawned.emit(player)
-	# Báo sẵn sàng sau khi biên dịch xong: SceneManager giữ màn tối tới lúc đó
+	# Báo sẵn sàng sau khi biên dịch xong: SceneManager giữ màn tối tới lúc đó. Bỏ bước này thì lần đầu chém,
+	# thổi gió, quái chết, hố hút... đều đứng hình 0.2-0.5 s vì shader mới được biên dịch giữa lúc chơi
 	await _warm_up_shaders()
 	SceneManager.notify_zone_ready()
-	# Khi chuyển khu, chờ cả màn đen rút hết; F6 thì mở combat ngay sau warmup.
+	# Khi chuyển khu, chờ màn đen rút hết; F6 thì mở combat ngay sau warmup.
 	if SceneManager.is_busy():
 		await SceneManager.zone_changed
 	process_mode = previous_mode

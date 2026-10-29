@@ -1,12 +1,12 @@
 class_name SlashTrail
 extends Node3D
-## Vệt chém lưỡi liềm đặc đen kiểu Death's Door phía trước nhân vật. Nghe hitbox.activated: mỗi lần đòn bật
-## thì quét một vệt (mũi nhọn chạy qua cung, đuôi teo dần tới mũi rồi biến mất). Chiều quét theo
-## AttackData.slash_trail_direction của đòn; đòn không khai báo thì lần sau đổi chiều.
-## Có lớp phụ mờ chậm hơn tạo chiều sâu, ngôi sao lóe nhỏ ở mũi và vài mảnh đen bắn ra.
-## Đòn có SlashStyle thì chiều quét, độ nghiêng, độ cao, kích thước lấy từ đó (mỗi nhát combo một kiểu);
-## không có thì đòn cuối combo (finisher_attack) to hơn, sao to hơn. Mesh cung dựng một lần ở _ready.
-## _process chỉ chạy lúc đang quét; hướng cung (+Z) lấy theo node follow (thường là Model).
+## Vệt chém lưỡi liềm phía trước nhân vật. Nghe hitbox.activated: mỗi lần đòn bật thì quét một vệt (mũi nhọn chạy
+## qua cung, giữ trọn một nhịp, rồi teo từ đuôi tới mũi). Thân lưỡi SÁNG vẽ đặc (trắng ngà, ngả vàng nhạt vào trong)
+## có viền mực tối mảnh để tách khỏi mọi nền; bóng tối đổ phẳng trên sàn cho lưỡi nổi khỏi mặt đất; lớp cộng sáng
+## chỉ là dải mỏng ở mép ngoài (cộng sáng nhiều sẽ cháy trắng khi đè lên vật sáng).
+## Vũ khí đang ghép nguyên tố thì lưỡi đổi theo màu ElementData (đọc lúc chém, không cần nối thêm gì) và có lưỡi gió.
+## Đòn có SlashStyle thì chiều quét, độ nghiêng, độ cao, kích thước, độ dày, cung phụ, bụi đất lấy từ đó.
+## Mesh cung dựng một lần ở _ready (và khi tầm đổi). _process chỉ chạy lúc đang quét.
 ## Không đặt dưới Model của player: foxy_player.gd ghi đè material của mọi mesh dưới Model.
 
 @export var hitbox: HitboxComponent
@@ -14,60 +14,82 @@ extends Node3D
 @export var follow: Node3D
 
 @export_group("Shape")
-## Bán kính ngoài = tầm hitbox thực tế x hệ số này (vệt không vượt vùng trúng)
+## Bán kính ngoài = tầm hitbox thực tế x hệ số này (vệt khớp vùng trúng để người chơi đọc được tầm)
 @export_range(0.1, 1.5) var reach_ratio: float = 0.95
 ## Bán kính trong = bán kính ngoài x hệ số này (nhỏ = lưỡi liềm dày)
-@export_range(0.0, 0.95) var inner_ratio: float = 0.6
+@export_range(0.0, 0.95) var inner_ratio: float = 0.3
 ## Dùng khi hitbox chưa có tầm (m)
 @export var fallback_reach: float = 1.65
 @export var arc_degrees: float = 175.0
 ## Độ cao mặt phẳng cung so với chân (m): hơi cao hơn mặt đất
 @export var height: float = 0.35
-## Nghiêng mặt phẳng cung quanh trục hướng nhìn (độ); đổi dấu theo chiều quét
-@export var tilt_degrees: float = 16.0
+## Nghiêng mặt phẳng cung quanh trục hướng nhìn (độ); đổi dấu theo chiều quét.
+## Camera nhìn từ trên: nghiêng nhiều thì cung bị ép dẹt, trông mảnh
+@export var tilt_degrees: float = 12.0
 @export var segments: int = 160
-## Lớp phụ to hơn lớp chính bấy nhiêu lần
-@export var back_layer_scale: float = 1.05
+## Bề dày lưỡi tối đa (tỉ lệ bề rộng mesh) khi SlashStyle không đổi
+@export_range(0.1, 0.98) var thickness: float = 0.7
 
 @export_group("Look")
-@export var body_color: Color = Color(0.012, 0.018, 0.035)
-## Viền sáng ngoài + lưỡi gió (blend_add, HDR để glow toả ra)
-@export var edge_color: Color = Color(0.45, 0.8, 1.0)
-@export var edge_intensity: float = 2.5
-## Số lưỡi gió nhỏ bên trong thân đen (0..5)
-@export_range(0, 5) var blade_count: int = 4
-@export_range(0.0, 1.0) var back_layer_alpha: float = 0.2
+@export var body_color: Color = Color(1.0, 0.97, 0.88)
+@export var inner_color: Color = Color(0.95, 0.8, 0.5)
+@export var outline_color: Color = Color(0.02, 0.025, 0.05)
+## Bề dày viền mực (theo bề rộng mesh)
+@export_range(0.0, 0.2) var outline_width: float = 0.035
+## Dải cộng sáng mỏng ở mép ngoài (giữ thấp để không cháy trắng)
+@export var edge_color: Color = Color(1.0, 0.92, 0.7)
+@export var edge_intensity: float = 1.2
+## Số lưỡi gió nhỏ bên trong thân khi KHÔNG ghép nguyên tố (0..5)
+@export_range(0, 5) var blade_count: int = 0
 ## Bật = mỗi lần chém hình lưỡi hơi khác nhau (nhiễu theo seed ngẫu nhiên). Tắt = cùng nhát luôn ra cùng hình
 @export var random_shape: bool = false
 
+@export_group("Element")
+## Ghép nguyên tố: thân pha màu nguyên tố bấy nhiêu, mép sáng lấy hẳn màu nguyên tố
+@export_range(0.0, 1.0) var element_body_mix: float = 0.35
+@export_range(0, 5) var element_blade_count: int = 3
+
+@export_group("Shadow")
+## Bóng tối phẳng trên sàn dưới lưỡi: tách lưỡi khỏi nền sáng
+@export var shadow_color: Color = Color(0.0, 0.0, 0.02)
+@export_range(0.0, 1.0) var shadow_alpha: float = 0.35
+## Độ cao bóng so với chân (m), sát sàn
+@export var shadow_height: float = 0.03
+@export var shadow_scale: float = 1.04
+
+@export_group("Echo")
+## Cung phụ mảnh chạy trễ sau lưỡi chính (bật theo SlashStyle.echo_arc, thường cho nhát cuối)
+@export var echo_scale: float = 1.18
+@export var echo_lag: float = 1.35
+
 @export_group("Star")
 ## Kích thước sao lóe ở mũi (m)
-@export var star_size: float = 0.4
-@export var star_color: Color = Color(1.0, 1.0, 1.0)
-@export var star_intensity: float = 2.5
+@export var star_size: float = 0.55
+@export var star_color: Color = Color(1.0, 0.98, 0.9)
+@export var star_intensity: float = 2.0
 
 @export_group("Timing")
 ## Thời gian mũi vệt quét hết cung (s, thời gian thật)
-@export var sweep_time: float = 0.05
+@export var sweep_time: float = 0.08
+## Giữ trọn lưỡi sau khi quét xong rồi mới teo (s): mắt kịp đọc hình lưỡi liềm
+@export var hold_time: float = 0.04
 ## Quét đúng bằng khoảng hitbox bật thay vì sweep_time. Tắt mặc định: khoảng bật đổi theo anim_speed
 ## nên vệt dài ngắn khác nhau giữa các nhát
 @export var match_hitbox_window: bool = false
 ## Phần quét chạy theo thời gian thật, không bị hitstop làm chậm: trúng hay hụt vệt đều vẽ trọn,
 ## rồi mới đứng hình trong lúc hitstop (phần teo vẫn theo thời gian game)
 @export var sweep_ignores_time_scale: bool = true
-## Thời gian lưỡi liềm teo hết sau khi quét xong (s)
-@export var fade_time: float = 0.1
-## Lớp phụ chậm hơn lớp chính bấy nhiêu lần
-@export var back_layer_lag: float = 1.15
+## Thời gian lưỡi liềm teo hết sau khi giữ (s)
+@export var fade_time: float = 0.14
 
 @export_group("Finisher")
-## Đòn này (thường là đòn cuối combo) to hơn; để trống = không có đòn đặc biệt
+## Dùng khi đòn không có SlashStyle: đòn này to hơn, có cung phụ
 @export var finisher_attack: AttackData
-@export var finisher_scale: float = 1.1
+@export var finisher_scale: float = 1.25
 @export var finisher_star_scale: float = 1.6
 
 const SPARKLE_POINTS := 6
-## Mảnh đen bắn ra từ mép trong: vị trí giữa mép trong và mép ngoài
+## Mảnh bắn ra từ mép trong: vị trí giữa mép trong và mép ngoài
 const INNER_FLECK_T := 0.08
 ## Mũi sao nằm sát mép ngoài lưỡi
 const STAR_RADIUS_T := 0.96
@@ -80,6 +102,7 @@ var _star_scale: float = 1.0
 ## Độ nghiêng (độ) và độ cao (m) của nhát hiện tại: lấy từ SlashStyle của đòn nếu có
 var _tilt: float = 0.0
 var _height: float = 0.0
+var _echo_on: bool = false
 var _sweeping: bool = false
 var _slash_seed: float = 0.0
 var _inner_radius: float = 0.0
@@ -90,11 +113,14 @@ var _fleck_normals: Dictionary[float, PackedVector3Array] = {}
 @onready var _arc: MeshInstance3D = $Arc
 @onready var _arc_back: MeshInstance3D = $ArcBack
 @onready var _arc_glow: MeshInstance3D = $ArcGlow
+@onready var _arc_echo: MeshInstance3D = $ArcEcho
 @onready var _star: MeshInstance3D = $Star
 @onready var _sparkles: CPUParticles3D = $Sparkles
+@onready var _dust: CPUParticles3D = $Dust
 @onready var _arc_material: ShaderMaterial = _arc.material_override as ShaderMaterial
 @onready var _back_material: ShaderMaterial = _arc_back.material_override as ShaderMaterial
 @onready var _glow_material: ShaderMaterial = _arc_glow.material_override as ShaderMaterial
+@onready var _echo_material: ShaderMaterial = _arc_echo.material_override as ShaderMaterial
 @onready var _star_material: ShaderMaterial = _star.material_override as ShaderMaterial
 
 
@@ -102,20 +128,22 @@ func _ready() -> void:
 	rebuild()
 	_sparkles.color_ramp = FxUtil.make_alpha_gradient([[0.0, 1.0], [0.7, 1.0], [1.0, 0.0]])
 	_sparkles.scale_amount_curve = FxUtil.make_curve([Vector2(0.0, 1.0), Vector2(1.0, 0.3)])
-	for material: ShaderMaterial in [_arc_material, _back_material]:
-		material.set_shader_parameter(&"body_color", body_color)
-	_glow_material.set_shader_parameter(&"edge_color", edge_color)
-	_glow_material.set_shader_parameter(&"edge_intensity", edge_intensity)
-	_glow_material.set_shader_parameter(&"core_intensity", edge_intensity * 1.4)
-	_glow_material.set_shader_parameter(&"blade_intensity", edge_intensity * 0.75)
-	_glow_material.set_shader_parameter(&"blade_count", blade_count)
-	_back_material.set_shader_parameter(&"layer_alpha", back_layer_alpha)
+	_dust.color_ramp = FxUtil.make_alpha_gradient([[0.0, 0.0], [0.15, 1.0], [1.0, 0.0]])
+	_dust.scale_amount_curve = FxUtil.make_curve([Vector2(0.0, 0.5), Vector2(1.0, 1.0)])
+	_arc_material.set_shader_parameter(&"outline_color", outline_color)
+	_arc_material.set_shader_parameter(&"outline_width", outline_width)
+	_arc_material.set_shader_parameter(&"thickness", thickness)
+	_back_material.set_shader_parameter(&"body_color", shadow_color)
+	_back_material.set_shader_parameter(&"inner_color", shadow_color)
+	_back_material.set_shader_parameter(&"outline_width", 0.0)
+	_back_material.set_shader_parameter(&"layer_alpha", shadow_alpha)
+	_back_material.set_shader_parameter(&"thickness", thickness)
+	_glow_material.set_shader_parameter(&"thickness", thickness)
 	_star_material.set_shader_parameter(&"tint", star_color)
 	_star_material.set_shader_parameter(&"intensity", star_intensity)
-	_arc.visible = false
-	_arc_back.visible = false
-	_arc_glow.visible = false
-	_star.visible = false
+	_apply_tint(null)
+	for node: Node3D in [_arc, _arc_back, _arc_glow, _arc_echo, _star]:
+		node.visible = false
 	set_process(false)
 	_current_sweep = sweep_time
 	if hitbox:
@@ -127,19 +155,21 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_sync_facing()
 	var step := delta
+	var sweep_span := _current_sweep * (echo_lag if _echo_on else 1.0)
 	# Đang quét: bù time_scale để hitstop không làm vệt đứng hình khi mới vẽ một đoạn
-	if sweep_ignores_time_scale and _age < _current_sweep * back_layer_lag and Engine.time_scale > 0.0:
-		step = minf(delta / Engine.time_scale, _current_sweep * back_layer_lag - _age)
+	if sweep_ignores_time_scale and _age < sweep_span and Engine.time_scale > 0.0:
+		step = minf(delta / Engine.time_scale, sweep_span - _age)
 	_age += step
-	var head := _update_layer(_arc_material, _arc, _current_sweep, fade_time)
-	_update_layer(_back_material, _arc_back, _current_sweep * back_layer_lag, fade_time * back_layer_lag)
-	_update_layer(_glow_material, _arc_glow, _current_sweep, fade_time)
+	var head := _update_layer(_arc_material, _arc, _current_sweep, hold_time, fade_time)
+	_update_layer(_back_material, _arc_back, _current_sweep, hold_time, fade_time)
+	_update_layer(_glow_material, _arc_glow, _current_sweep, hold_time, fade_time)
+	if _echo_on:
+		_update_layer(_echo_material, _arc_echo, _current_sweep * echo_lag, hold_time, fade_time * echo_lag)
 	_update_star(head)
 	if _age >= total_time():
 		_sweeping = false
-		_arc.visible = false
-		_arc_back.visible = false
-		_arc_glow.visible = false
+		for node: Node3D in [_arc, _arc_back, _arc_glow, _arc_echo]:
+			node.visible = false
 		set_process(false)
 
 
@@ -148,22 +178,10 @@ func rebuild() -> void:
 	_fit_to_reach(true)
 
 
-func _build_mesh_and_points() -> void:
-	var mesh := _build_arc_mesh()
-	_arc.mesh = mesh
-	_arc_back.mesh = mesh
-	_arc_glow.mesh = mesh
-	_arc_back.scale = Vector3(back_layer_scale, 1.0, back_layer_scale)
-	_apply_height(height)
-	_sparkles.emission_shape = CPUParticles3D.EMISSION_SHAPE_DIRECTED_POINTS
-	_sparkles.emission_points = _build_arc_points(SPARKLE_POINTS, INNER_FLECK_T)
-	_fleck_normals[1.0] = _build_tangents(SPARKLE_POINTS, 1.0)
-	_fleck_normals[-1.0] = _build_tangents(SPARKLE_POINTS, -1.0)
-
-
-## Tổng thời gian một lần chém (lớp phụ chậm hơn nên dài nhất)
+## Tổng thời gian một lần chém (cung phụ trễ nhất nếu bật)
 func total_time() -> float:
-	return (_current_sweep + fade_time) * back_layer_lag
+	var lag := echo_lag if _echo_on else 1.0
+	return (_current_sweep + fade_time) * lag + hold_time
 
 
 func is_sweeping() -> bool:
@@ -175,19 +193,35 @@ func get_outer_radius() -> float:
 	return _outer_radius
 
 
+func _build_mesh_and_points() -> void:
+	var mesh := _build_arc_mesh()
+	for node: MeshInstance3D in [_arc, _arc_back, _arc_glow, _arc_echo]:
+		node.mesh = mesh
+	_arc_back.scale = Vector3(shadow_scale, 1.0, shadow_scale)
+	_arc_echo.scale = Vector3(echo_scale, 1.0, echo_scale)
+	_apply_height(height)
+	_sparkles.emission_shape = CPUParticles3D.EMISSION_SHAPE_DIRECTED_POINTS
+	_sparkles.emission_points = _build_arc_points(SPARKLE_POINTS, INNER_FLECK_T)
+	_fleck_normals[1.0] = _build_tangents(SPARKLE_POINTS, 1.0)
+	_fleck_normals[-1.0] = _build_tangents(SPARKLE_POINTS, -1.0)
+	_dust.emission_points = _build_arc_points(SPARKLE_POINTS, 1.0)
+
+
 func _on_activated(attack: AttackData) -> void:
 	_fit_to_reach()
 	var window := hitbox.get_active_duration()
 	_current_sweep = window if match_hitbox_window and window > 0.0 else sweep_time
 	_apply_attack_look(attack)
+	_apply_tint(_sword_element())
 	_slash_seed = randf() * 10.0 if random_shape else 0.0
 	_age = 0.0
 	_sweeping = true
 	_sync_facing()
 	var tilt := deg_to_rad(_tilt) * _direction
-	for node: Node3D in [_arc, _arc_back, _arc_glow, _sparkles]:
+	# Bóng nằm phẳng trên sàn, không nghiêng theo lưỡi
+	for node: Node3D in [_arc, _arc_glow, _arc_echo, _sparkles]:
 		node.rotation.z = tilt
-	for material: ShaderMaterial in [_arc_material, _back_material, _glow_material]:
+	for material: ShaderMaterial in [_arc_material, _back_material, _glow_material, _echo_material]:
 		material.set_shader_parameter(&"direction", _direction)
 		material.set_shader_parameter(&"seed", _slash_seed)
 		material.set_shader_parameter(&"head", 0.0)
@@ -195,37 +229,78 @@ func _on_activated(attack: AttackData) -> void:
 	_arc.visible = true
 	_arc_back.visible = true
 	_arc_glow.visible = true
+	_arc_echo.visible = _echo_on
 	_sparkles.emission_normals = _fleck_normals[_direction]
 	_sparkles.restart()
 	set_process(true)
 	_process(0.0)
 
 
-## Đòn có SlashStyle thì lấy chiều quét / nghiêng / độ cao / kích thước từ đó; không có thì giữ cách cũ
+## Đòn có SlashStyle thì lấy kiểu từ đó; không có thì giữ cách cũ
 ## (chiều theo slash_trail_direction hoặc luân phiên, finisher_attack to hơn)
 func _apply_attack_look(attack: AttackData) -> void:
 	var style := attack.slash_style
+	var lift := 0.0
+	var thick := thickness
 	if style:
 		_direction = float(signi(style.sweep_direction)) if style.sweep_direction != 0 else -_direction
 		_tilt = style.tilt_degrees
 		scale = Vector3.ONE * style.trail_scale
 		_star_scale = style.star_scale
-		_apply_height(height + style.height_offset)
-		return
-	_direction = float(signi(attack.slash_trail_direction)) if attack.slash_trail_direction != 0 else -_direction
-	_tilt = tilt_degrees
-	var finisher := finisher_attack != null and attack == finisher_attack
-	scale = Vector3.ONE * (finisher_scale if finisher else 1.0)
-	_star_scale = finisher_star_scale if finisher else 1.0
-	_apply_height(height)
+		_echo_on = style.echo_arc
+		lift = style.height_offset
+		thick = clampf(thickness * style.thickness_scale, 0.05, 0.98)
+		if style.ground_dust:
+			_dust.restart()
+	else:
+		_direction = float(signi(attack.slash_trail_direction)) if attack.slash_trail_direction != 0 else -_direction
+		_tilt = tilt_degrees
+		var finisher := finisher_attack != null and attack == finisher_attack
+		scale = Vector3.ONE * (finisher_scale if finisher else 1.0)
+		_star_scale = finisher_star_scale if finisher else 1.0
+		_echo_on = finisher
+	for material: ShaderMaterial in [_arc_material, _back_material, _glow_material]:
+		material.set_shader_parameter(&"thickness", thick)
+	_apply_height(height + lift)
+
+
+## Nguyên tố đang ghép vào vũ khí đang cầm (null nếu không ghép). Đọc lúc chém: ghép / tháo giữa chừng tự đúng
+func _sword_element() -> ElementData:
+	var fusion := GameState.get_active_fusion()
+	return fusion.element if fusion else null
+
+
+## Màu lưỡi theo nguyên tố; null = kiếm thường (trắng ngà)
+func _apply_tint(element: ElementData) -> void:
+	var body := body_color
+	var inner := inner_color
+	var edge := edge_color
+	var blades := blade_count
+	if element:
+		body = body_color.lerp(element.color, element_body_mix)
+		inner = inner_color.lerp(element.color, element_body_mix * 1.6)
+		edge = element.color
+		blades = element_blade_count
+	_arc_material.set_shader_parameter(&"body_color", body)
+	_arc_material.set_shader_parameter(&"inner_color", inner)
+	for material: ShaderMaterial in [_glow_material, _echo_material]:
+		material.set_shader_parameter(&"edge_color", edge)
+		material.set_shader_parameter(&"core_color", body)
+		material.set_shader_parameter(&"edge_intensity", edge_intensity)
+		material.set_shader_parameter(&"core_intensity", edge_intensity * 1.3)
+		material.set_shader_parameter(&"blade_intensity", edge_intensity)
+	_glow_material.set_shader_parameter(&"blade_count", blades)
+	_echo_material.set_shader_parameter(&"blade_count", 0)
 
 
 func _apply_height(value: float) -> void:
 	_height = value
 	_arc.position.y = value
-	_arc_back.position.y = value - 0.01
 	_arc_glow.position.y = value + 0.01
+	_arc_echo.position.y = value + 0.02
+	_arc_back.position.y = shadow_height
 	_sparkles.position.y = value
+	_dust.position.y = shadow_height
 
 
 func _sync_facing() -> void:
@@ -233,12 +308,12 @@ func _sync_facing() -> void:
 		global_basis = follow.global_basis * Basis.from_scale(scale)
 
 
-## Mũi quét theo ease-out; lưỡi teo (dissolve) sau khi quét xong. Trả về vị trí mũi (0..1)
-func _update_layer(material: ShaderMaterial, node: MeshInstance3D, sweep: float, fade: float) -> float:
+## Mũi quét theo ease-out; giữ trọn lưỡi hold giây; rồi teo (dissolve). Trả về vị trí mũi (0..1)
+func _update_layer(material: ShaderMaterial, node: MeshInstance3D, sweep: float, hold: float, fade: float) -> float:
 	var t := clampf(_age / maxf(sweep, 0.0001), 0.0, 1.0)
 	var head := 1.0 - pow(1.0 - t, 3.0)
 	material.set_shader_parameter(&"head", head)
-	var d := clampf((_age - sweep) / maxf(fade, 0.0001), 0.0, 1.0)
+	var d := clampf((_age - sweep - hold) / maxf(fade, 0.0001), 0.0, 1.0)
 	material.set_shader_parameter(&"dissolve", d * d)
 	if d >= 1.0:
 		node.visible = false

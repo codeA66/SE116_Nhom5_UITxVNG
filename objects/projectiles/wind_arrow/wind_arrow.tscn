@@ -1,0 +1,138 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/projectiles/arrow.gd" id="1"]
+[ext_resource type="PackedScene" path="res://assets/weapons/golden_arrow/golden_arrow.glb" id="2"]
+[ext_resource type="Shader" path="res://assets/shaders/combat_particle.gdshader" id="3_particle"]
+[ext_resource type="Shader" path="res://assets/shaders/energy_arrow.gdshader" id="4_energy"]
+[ext_resource type="PackedScene" path="res://assets/vfx/combat/wind_arrow_impact.tscn" id="5_impact"]
+[ext_resource type="Shader" path="res://assets/shaders/arrow_bow_shock.gdshader" id="6_shock"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_trail"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("3_particle")
+shader_parameter/tint = Color(0.78, 0.9, 1, 1)
+shader_parameter/intensity = 2.0
+shader_parameter/streak = true
+shader_parameter/core_width = 0.4
+
+[sub_resource type="QuadMesh" id="QuadMesh_trail"]
+size = Vector2(0.012, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_energy"]
+render_priority = 2
+shader = ExtResource("4_energy")
+shader_parameter/tint = Color(0.78, 0.9, 1, 1)
+shader_parameter/intensity = 1.5
+shader_parameter/body_length = 1.425
+shader_parameter/quad_width = 0.7
+shader_parameter/head_length = 0.38
+shader_parameter/head_half_width = 0.16
+shader_parameter/barb_sweep = 0.12
+shader_parameter/shaft_half_width = 0.027
+shader_parameter/fletch_length = 0.36
+shader_parameter/fletch_half_width = 0.135
+shader_parameter/notch_depth = 0.15
+shader_parameter/edge_softness = 0.012
+shader_parameter/core_width = 0.018
+shader_parameter/fill_alpha = 0.3
+shader_parameter/glow_strength = 0.35
+shader_parameter/glow_radius = 0.068
+shader_parameter/flicker = 0.12
+
+[sub_resource type="QuadMesh" id="QuadMesh_energy"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_shock"]
+render_priority = 1
+shader = ExtResource("6_shock")
+shader_parameter/tint = Color(0.78, 0.9, 1, 0.8)
+shader_parameter/intensity = 0.9
+shader_parameter/rim_power = 2.5
+shader_parameter/rim_strength = 0.9
+shader_parameter/fill = 0.03
+shader_parameter/line_count = 14.0
+shader_parameter/line_sharpness = 6.0
+shader_parameter/line_strength = 0.45
+shader_parameter/line_speed = 3.0
+shader_parameter/base_fade = 0.35
+shader_parameter/back_face_dim = 0.4
+
+[sub_resource type="SphereMesh" id="SphereMesh_shock"]
+radius = 0.2
+height = 0.2
+radial_segments = 24
+rings = 6
+is_hemisphere = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ember"]
+render_priority = 1
+shader = ExtResource("3_particle")
+shader_parameter/tint = Color(0.78, 0.9, 1, 1)
+shader_parameter/intensity = 2.5
+shader_parameter/streak = false
+shader_parameter/dot_softness = 1.6
+
+[sub_resource type="QuadMesh" id="QuadMesh_ember"]
+size = Vector2(0.06, 0.06)
+
+[sub_resource type="Gradient" id="Gradient_ember"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 0)
+
+[node name="WindArrow" type="Node3D" node_paths=PackedStringArray("flight_particles")]
+script = ExtResource("1")
+trail_length = 4.0
+trail_fade_time = 0.18
+trail_head_offset = 1.12
+impact_scene = ExtResource("5_impact")
+flight_particles = [NodePath("Embers")]
+
+[node name="Model" parent="." instance=ExtResource("2")]
+transform = Transform3D(-1.5, 0, 0, 0, 1.5, 0, 0, 0, -1.5, 0, 0, -1.072)
+
+[node name="GoldenArrow" parent="Model"]
+cast_shadow = 0
+
+[node name="EnergyBody" type="MeshInstance3D" parent="Model"]
+position = Vector3(0, 0, -0.29)
+rotation = Vector3(0, 3.14159, 0)
+material_override = SubResource("ShaderMaterial_energy")
+cast_shadow = 0
+extra_cull_margin = 1.0
+mesh = SubResource("QuadMesh_energy")
+
+[node name="BowShock" type="MeshInstance3D" parent="Model"]
+position = Vector3(0, 0, -0.73)
+rotation = Vector3(-1.5708, 0, 0)
+scale = Vector3(1, 0.6, 1)
+material_override = SubResource("ShaderMaterial_shock")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_shock")
+
+[node name="Trail" type="MeshInstance3D" parent="."]
+visible = false
+material_override = SubResource("ShaderMaterial_trail")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_trail")
+
+[node name="Embers" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.12)
+material_override = SubResource("ShaderMaterial_ember")
+cast_shadow = 0
+emitting = false
+amount = 24
+lifetime = 0.4
+local_coords = false
+mesh = SubResource("QuadMesh_ember")
+emission_shape = 1
+emission_sphere_radius = 0.06
+direction = Vector3(0, 0, -1)
+spread = 30.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 0.3
+initial_velocity_max = 1.2
+damping_min = 1.0
+damping_max = 3.0
+scale_amount_min = 0.4
+scale_amount_max = 1.2
+color_ramp = SubResource("Gradient_ember")

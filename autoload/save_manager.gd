@@ -1,5 +1,6 @@
 extends Node
-## Autoload "SaveManager": ghi/đọc tiến trình ra file JSON, tự lưu mỗi khi tiến trình thay đổi.
+## Autoload "SaveManager": ghi/đọc tiến trình ra file JSON. Chỉ tự lưu khi chạm checkpoint (GameState.progress_committed):
+## thoát game giữa chừng thì lần sau vào lại đúng trạng thái ở checkpoint gần nhất.
 ## Lưu đường dẫn res:// thay vì file .tres: đọc .tres từ bên ngoài có thể chạy script nhúng trong đó.
 ## Phải đứng sau GameState trong danh sách autoload.
 
@@ -9,12 +10,12 @@ signal loaded
 const SAVE_PATH := "user://savegame.json"
 const TEMP_PATH := "user://savegame.json.tmp"
 ## Tăng khi đổi định dạng file, kèm xử lý chuyển đổi trong _deserialize
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
 
 
 func _ready() -> void:
 	load_game()
-	GameState.progress_changed.connect(save_game)
+	GameState.progress_committed.connect(save_game)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -87,6 +88,8 @@ func _serialize(progress: PlayerProgress) -> Dictionary:
 		"weapons": weapon_paths,
 		"abilities": ability_paths,
 		"flags": flag_ids,
+		# Từ version 4: nguyên tố đang ghép ở từng ô vũ khí (ô -> id nguyên tố)
+		"fusions": _serialize_fusions(progress),
 		"checkpoint": {"zone": progress.checkpoint_zone, "spawn": String(progress.checkpoint_spawn_id)},
 	}
 
@@ -123,6 +126,12 @@ func _deserialize(data: Dictionary) -> PlayerProgress:
 		for flag: Variant in flag_ids:
 			progress.flags[StringName(str(flag))] = true
 
+	var fusions: Variant = data.get("fusions", {})
+	if fusions is Dictionary:
+		for slot: Variant in fusions:
+			if str(slot).is_valid_int():
+				progress.fusions[int(str(slot))] = StringName(str((fusions as Dictionary)[slot]))
+
 	# Từ version 2. Save version 1 không có checkpoint: bắt đầu ở khu đầu tiên
 	var checkpoint: Variant = data.get("checkpoint", {})
 	if checkpoint is Dictionary:
@@ -131,6 +140,13 @@ func _deserialize(data: Dictionary) -> PlayerProgress:
 			progress.checkpoint_zone = zone
 			progress.checkpoint_spawn_id = StringName(str((checkpoint as Dictionary).get("spawn", "")))
 	return progress
+
+
+func _serialize_fusions(progress: PlayerProgress) -> Dictionary:
+	var result := {}
+	for slot: int in progress.fusions:
+		result[str(slot)] = String(progress.fusions[slot])
+	return result
 
 
 ## Chỉ nạp tài nguyên nằm trong project; kiểu dữ liệu được kiểm tra ở nơi gọi bằng "as"

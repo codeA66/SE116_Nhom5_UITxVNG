@@ -12,6 +12,12 @@ extends Resource
 ## Cộng thêm vào độ cao vệt so với mặc định của SlashTrail (m)
 @export var height_offset: float = 0.0
 @export var trail_scale: float = 1.0
+## Nhân bề dày lưỡi (1 = mặc định của SlashTrail): nhát nặng dày hơn
+@export_range(0.2, 2.0) var thickness_scale: float = 1.0
+## Cung phụ mảnh chạy trễ sau lưỡi chính (nhát cuối combo)
+@export var echo_arc: bool = false
+## Bụi đất bắn dọc mép ngoài lưỡi (nhát nặng)
+@export var ground_dust: bool = false
 ## Nhân kích thước sao lóe ở mũi vệt
 @export var star_scale: float = 1.0
 

@@ -15,6 +15,8 @@ var _activated: bool = false
 var _skill: EnemySkillData
 @onready var hitbox: HitboxComponent = $Hitbox
 @onready var visual: Node3D = $Visual
+# Lớp con (IceHazard) dùng _shape; Godot chỉ xét trong lớp này nên báo "không dùng"
+@warning_ignore("unused_private_class_variable")
 @onready var _shape: CollisionShape3D = $Hitbox/CollisionShape3D
 
 func _ready() -> void:

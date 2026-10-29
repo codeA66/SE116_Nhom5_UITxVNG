@@ -463,12 +463,12 @@ func shoot_arrow(weapon: WeaponData, attack: AttackData, direction: Vector3, spe
 
 ## Buff nguyên tố của cung (hố hút...) chạy khi tên trúng. Tên dùng pool nên nối một lần cho mỗi mũi
 ## và giữ fusion theo đúng vũ khí đã bắn, kể cả đang chọn kiếm hoặc đổi trang bị giữa đường bay.
-func _on_arrow_impacted(position: Vector3, direction: Vector3, arrow: ArrowProjectile) -> void:
+func _on_arrow_impacted(hit_position: Vector3, direction: Vector3, arrow: ArrowProjectile) -> void:
 	var fusion: FusionData = _projectile_fusions.get(arrow)
 	if fusion == null:
 		return
 	for effect in fusion.effects:
-		effect.on_projectile_impact(self, position, direction)
+		effect.on_projectile_impact(self, hit_position, direction)
 
 
 func unlock_ability(ability: AbilityData) -> void:
