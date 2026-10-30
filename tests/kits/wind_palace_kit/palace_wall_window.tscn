@@ -1,0 +1,86 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/wall_window_open_6m.glb" id="1"]
+
+[sub_resource type="BoxShape3D" id="PierL"]
+size = Vector3(2, 5.1, 0.7)
+
+[sub_resource type="BoxShape3D" id="PierR"]
+size = Vector3(2, 5.1, 0.7)
+
+[sub_resource type="BoxShape3D" id="Sill"]
+size = Vector3(2, 1.07, 0.82)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch0"]
+points = PackedVector3Array(1.000000, 3.100000, -0.350000, 0.939693, 3.442020, -0.350000, 0.939693, 5.100000, -0.350000, 1.000000, 5.100000, -0.350000, 1.000000, 3.100000, 0.350000, 0.939693, 3.442020, 0.350000, 0.939693, 5.100000, 0.350000, 1.000000, 5.100000, 0.350000)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch1"]
+points = PackedVector3Array(0.939693, 3.442020, -0.350000, 0.766044, 3.742788, -0.350000, 0.766044, 5.100000, -0.350000, 0.939693, 5.100000, -0.350000, 0.939693, 3.442020, 0.350000, 0.766044, 3.742788, 0.350000, 0.766044, 5.100000, 0.350000, 0.939693, 5.100000, 0.350000)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch2"]
+points = PackedVector3Array(0.766044, 3.742788, -0.350000, 0.500000, 3.966025, -0.350000, 0.500000, 5.100000, -0.350000, 0.766044, 5.100000, -0.350000, 0.766044, 3.742788, 0.350000, 0.500000, 3.966025, 0.350000, 0.500000, 5.100000, 0.350000, 0.766044, 5.100000, 0.350000)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch3"]
+points = PackedVector3Array(0.500000, 3.966025, -0.350000, 0.173648, 4.084808, -0.350000, 0.173648, 5.100000, -0.350000, 0.500000, 5.100000, -0.350000, 0.500000, 3.966025, 0.350000, 0.173648, 4.084808, 0.350000, 0.173648, 5.100000, 0.350000, 0.500000, 5.100000, 0.350000)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch4"]
+points = PackedVector3Array(0.173648, 4.084808, -0.350000, -0.173648, 4.084808, -0.350000, -0.173648, 5.100000, -0.350000, 0.173648, 5.100000, -0.350000, 0.173648, 4.084808, 0.350000, -0.173648, 4.084808, 0.350000, -0.173648, 5.100000, 0.350000, 0.173648, 5.100000, 0.350000)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch5"]
+points = PackedVector3Array(-0.173648, 4.084808, -0.350000, -0.500000, 3.966025, -0.350000, -0.500000, 5.100000, -0.350000, -0.173648, 5.100000, -0.350000, -0.173648, 4.084808, 0.350000, -0.500000, 3.966025, 0.350000, -0.500000, 5.100000, 0.350000, -0.173648, 5.100000, 0.350000)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch6"]
+points = PackedVector3Array(-0.500000, 3.966025, -0.350000, -0.766044, 3.742788, -0.350000, -0.766044, 5.100000, -0.350000, -0.500000, 5.100000, -0.350000, -0.500000, 3.966025, 0.350000, -0.766044, 3.742788, 0.350000, -0.766044, 5.100000, 0.350000, -0.500000, 5.100000, 0.350000)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch7"]
+points = PackedVector3Array(-0.766044, 3.742788, -0.350000, -0.939693, 3.442020, -0.350000, -0.939693, 5.100000, -0.350000, -0.766044, 5.100000, -0.350000, -0.766044, 3.742788, 0.350000, -0.939693, 3.442020, 0.350000, -0.939693, 5.100000, 0.350000, -0.766044, 5.100000, 0.350000)
+
+[sub_resource type="ConvexPolygonShape3D" id="Arch8"]
+points = PackedVector3Array(-0.939693, 3.442020, -0.350000, -1.000000, 3.100000, -0.350000, -1.000000, 5.100000, -0.350000, -0.939693, 5.100000, -0.350000, -0.939693, 3.442020, 0.350000, -1.000000, 3.100000, 0.350000, -1.000000, 5.100000, 0.350000, -0.939693, 5.100000, 0.350000)
+
+[node name="PalaceWall" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1")]
+position = Vector3(0.0, 0.0, 0.06)
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="PierL" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-2.0, 2.55, 0)
+shape = SubResource("PierL")
+
+[node name="PierR" type="CollisionShape3D" parent="Collision"]
+position = Vector3(2.0, 2.55, 0)
+shape = SubResource("PierR")
+
+[node name="Sill" type="CollisionShape3D" parent="Collision"]
+position = Vector3(0, 0.535, 0)
+shape = SubResource("Sill")
+
+[node name="Arch0" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch0")
+
+[node name="Arch1" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch1")
+
+[node name="Arch2" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch2")
+
+[node name="Arch3" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch3")
+
+[node name="Arch4" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch4")
+
+[node name="Arch5" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch5")
+
+[node name="Arch6" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch6")
+
+[node name="Arch7" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch7")
+
+[node name="Arch8" type="CollisionShape3D" parent="Collision"]
+shape = SubResource("Arch8")

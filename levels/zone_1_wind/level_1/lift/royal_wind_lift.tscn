@@ -1,16 +1,16 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://levels/zone_1_wind/level_1/lift/royal_wind_lift.gd" id="1"]
-[ext_resource type="PackedScene" path="res://assets/generated/wind_ruins/gridmap/royal_wind_lift_20261024/royal_wind_lift_20261024.glb" id="2"]
-[ext_resource type="Script" path="res://components/state_machine/state_machine.gd" id="3"]
+[ext_resource type="PackedScene" path="res://assets/models/shared/generated/wind_ruins/gridmap/royal_wind_lift_20261024/royal_wind_lift_20261024.glb" id="2"]
+[ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="3"]
 [ext_resource type="Script" path="res://levels/zone_1_wind/level_1/lift/states/idle.gd" id="4"]
 [ext_resource type="Script" path="res://levels/zone_1_wind/level_1/lift/states/rising.gd" id="5"]
 [ext_resource type="Script" path="res://levels/zone_1_wind/level_1/lift/states/docked.gd" id="6"]
 [ext_resource type="Script" path="res://levels/zone_1_wind/level_1/lift/states/returning.gd" id="7"]
-[ext_resource type="Script" path="res://objects/camera_cutscene/camera_cutscene_data.gd" id="8"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/camera_cutscene_data.gd" id="8"]
 
-[ext_resource type="PackedScene" path="res://objects/wind_zone/wind_zone.tscn" id="9"]
-[ext_resource type="Resource" path="res://resources/wind/wind_updraft.tres" id="10"]
+[ext_resource type="PackedScene" path="res://objects/wind_puzzle/wind_zone/wind_zone.tscn" id="9"]
+[ext_resource type="Resource" path="res://resources/world/wind/wind/wind_updraft.tres" id="10"]
 
 [sub_resource type="Resource" id="CameraData"]
 script = ExtResource("8")

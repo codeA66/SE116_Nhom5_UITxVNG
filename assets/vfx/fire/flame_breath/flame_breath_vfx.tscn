@@ -1,0 +1,299 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/fire/flame_breath/flame_breath_vfx.gd" id="1_vfx"]
+[ext_resource type="Shader" path="res://assets/shaders/environment/light/soft_glow.gdshader" id="2_glow"]
+
+[ext_resource type="Shader" path="res://assets/vfx/fire/flame_breath/shaders/flame_breath.gdshader" id="3_fire"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/flame_breath/textures/flame_masks.svg" id="4_mask"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/flame_breath/impact/flame_impact.tscn" id="5_hit"]
+[sub_resource type="Gradient" id="PuffShape"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="PuffTex"]
+gradient = SubResource("PuffShape")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="CoreColor"]
+offsets = PackedFloat32Array(0, 0.15, 0.45, 0.75, 1)
+colors = PackedColorArray(1, 0.95, 0.5, 0, 1, 0.85, 0.25, 0.9, 1, 0.55, 0.04, 0.9, 1, 0.3, 0.01, 0.6, 1, 0.15, 0.01, 0)
+
+[sub_resource type="GradientTexture1D" id="CoreColorTex"]
+gradient = SubResource("CoreColor")
+
+[sub_resource type="Curve" id="CoreSize"]
+max_value = 2.0
+_data = [Vector2(0, 0.25), 0.0, 1.8, 0, 0, Vector2(0.55, 1.0), 0.6, 0.6, 0, 0, Vector2(1, 1.35), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CoreSizeTex"]
+curve = SubResource("CoreSize")
+
+[sub_resource type="ParticleProcessMaterial" id="CoreProcess"]
+resource_local_to_scene = true
+emission_shape = 1
+emission_sphere_radius = 0.08
+angle_min = -180.0
+angle_max = 180.0
+direction = Vector3(0, 0, 1)
+spread = 13.0
+initial_velocity_min = 14.0
+initial_velocity_max = 18.0
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+gravity = Vector3(0, 1.4, 0)
+damping_min = 7.0
+damping_max = 9.0
+scale_min = 0.75
+scale_max = 1.1
+scale_curve = SubResource("CoreSizeTex")
+color_ramp = SubResource("CoreColorTex")
+
+[sub_resource type="StandardMaterial3D" id="AddPuffMat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("PuffTex")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+[sub_resource type="StandardMaterial3D" id="MixPuffMat"]
+resource_local_to_scene = true
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("PuffTex")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+
+[sub_resource type="QuadMesh" id="CoreMesh"]
+material = SubResource("MixPuffMat")
+resource_local_to_scene = true
+size = Vector2(0.75, 0.75)
+
+[sub_resource type="Gradient" id="EmberColor"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.95, 0.6, 1, 1, 0.55, 0.15, 1, 0.9, 0.2, 0.05, 0)
+
+[sub_resource type="GradientTexture1D" id="EmberColorTex"]
+gradient = SubResource("EmberColor")
+
+[sub_resource type="ParticleProcessMaterial" id="EmberProcess"]
+resource_local_to_scene = true
+resource_local_to_scene = true
+emission_shape = 1
+emission_sphere_radius = 0.1
+direction = Vector3(0, 0, 1)
+spread = 24.0
+initial_velocity_min = 13.0
+initial_velocity_max = 20.0
+gravity = Vector3(0, 2.2, 0)
+damping_min = 3.0
+damping_max = 5.0
+scale_min = 0.6
+scale_max = 1.2
+color_ramp = SubResource("EmberColorTex")
+turbulence_enabled = true
+turbulence_noise_strength = 0.6
+turbulence_noise_scale = 3.0
+turbulence_influence_min = 0.05
+turbulence_influence_max = 0.15
+
+[sub_resource type="QuadMesh" id="EmberMesh"]
+material = SubResource("AddPuffMat")
+size = Vector2(0.05, 0.22)
+
+[sub_resource type="Gradient" id="SmokeColor"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(0.2, 0.17, 0.16, 0, 0.18, 0.15, 0.14, 0.45, 0.14, 0.13, 0.13, 0)
+
+[sub_resource type="GradientTexture1D" id="SmokeColorTex"]
+gradient = SubResource("SmokeColor")
+
+[sub_resource type="Curve" id="SmokeSize"]
+max_value = 2.0
+_data = [Vector2(0, 0.5), 0.0, 1.5, 0, 0, Vector2(1, 1.8), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="SmokeSizeTex"]
+curve = SubResource("SmokeSize")
+
+[sub_resource type="ParticleProcessMaterial" id="SmokeProcess"]
+resource_local_to_scene = true
+resource_local_to_scene = true
+emission_shape = 1
+emission_sphere_radius = 0.15
+angle_min = -180.0
+angle_max = 180.0
+direction = Vector3(0, 0.15, 1)
+spread = 18.0
+initial_velocity_min = 7.0
+initial_velocity_max = 9.0
+angular_velocity_min = -40.0
+angular_velocity_max = 40.0
+gravity = Vector3(0, 1.6, 0)
+damping_min = 3.5
+damping_max = 4.5
+scale_curve = SubResource("SmokeSizeTex")
+color_ramp = SubResource("SmokeColorTex")
+
+[sub_resource type="StandardMaterial3D" id="SmokeMat"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("PuffTex")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="SmokeMesh"]
+material = SubResource("SmokeMat")
+size = Vector2(1.0, 1.0)
+
+[sub_resource type="ShaderMaterial" id="HeatMat"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_glow")
+shader_parameter/glow_color = Color(1, 0.6, 0.22, 1)
+shader_parameter/intensity = 0.9
+shader_parameter/billboard = true
+shader_parameter/falloff = 2.0
+shader_parameter/breathe = 0.25
+shader_parameter/breathe_speed = 14.0
+
+[sub_resource type="QuadMesh" id="HeatMesh"]
+material = SubResource("HeatMat")
+size = Vector2(1.1, 1.1)
+
+[sub_resource type="ShaderMaterial" id="GroundMat"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_glow")
+shader_parameter/glow_color = Color(1, 0.5, 0.15, 1)
+shader_parameter/intensity = 0.55
+shader_parameter/billboard = false
+shader_parameter/falloff = 1.5
+shader_parameter/breathe = 0.2
+shader_parameter/breathe_speed = 10.0
+
+[sub_resource type="QuadMesh" id="GroundMesh"]
+resource_local_to_scene = true
+material = SubResource("GroundMat")
+size = Vector2(2, 4.5)
+orientation = 1
+
+[sub_resource type="Gradient" id="BurstColor"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 0.95, 0.7, 1, 1, 0.5, 0.12, 0.9, 0.5, 0.1, 0.04, 0)
+
+[sub_resource type="GradientTexture1D" id="BurstColorTex"]
+gradient = SubResource("BurstColor")
+
+[sub_resource type="ParticleProcessMaterial" id="BurstProcess"]
+emission_shape = 1
+emission_sphere_radius = 0.25
+angle_min = -180.0
+angle_max = 180.0
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 1.5
+initial_velocity_max = 3.5
+gravity = Vector3(0, 2.5, 0)
+damping_min = 2.0
+damping_max = 3.0
+scale_min = 0.4
+scale_max = 0.9
+scale_curve = SubResource("CoreSizeTex")
+color_ramp = SubResource("BurstColorTex")
+
+[sub_resource type="QuadMesh" id="BurstMesh"]
+material = SubResource("AddPuffMat")
+size = Vector2(0.55, 0.55)
+
+[sub_resource type="ShaderMaterial" id="BodyMat"]
+resource_local_to_scene = true
+shader = ExtResource("3_fire")
+shader_parameter/masks = ExtResource("4_mask")
+shader_parameter/flow_speed = 2.2
+[sub_resource type="PlaneMesh" id="BodyMesh"]
+size = Vector2(1, 1)
+subdivide_width = 8
+subdivide_depth = 16
+[sub_resource type="ShaderMaterial" id="ScorchMat"]
+resource_local_to_scene = true
+shader = ExtResource("3_fire")
+shader_parameter/masks = ExtResource("4_mask")
+shader_parameter/ground_mode = 1.0
+[node name="FlameBreathVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+
+[node name="Nozzle" type="Node3D" parent="."]
+top_level = true
+
+[node name="Core" type="GPUParticles3D" parent="Nozzle"]
+emitting = false
+amount = 12
+lifetime = 0.28
+randomness = 0.3
+visibility_aabb = AABB(-4, -2, -2, 8, 6, 14)
+cast_shadow = 0
+process_material = SubResource("CoreProcess")
+draw_pass_1 = SubResource("CoreMesh")
+
+[node name="Embers" type="GPUParticles3D" parent="Nozzle"]
+emitting = false
+amount = 16
+lifetime = 0.7
+randomness = 0.4
+visibility_aabb = AABB(-4, -2, -2, 8, 6, 14)
+cast_shadow = 0
+process_material = SubResource("EmberProcess")
+draw_pass_1 = SubResource("EmberMesh")
+
+[node name="Smoke" type="GPUParticles3D" parent="Nozzle"]
+emitting = false
+amount = 8
+lifetime = 1.1
+randomness = 0.3
+visibility_aabb = AABB(-4, -2, -2, 8, 6, 14)
+cast_shadow = 0
+process_material = SubResource("SmokeProcess")
+draw_pass_1 = SubResource("SmokeMesh")
+
+[node name="Heat" type="MeshInstance3D" parent="Nozzle"]
+cast_shadow = 0
+mesh = SubResource("HeatMesh")
+
+[node name="Light" type="OmniLight3D" parent="Nozzle"]
+position = Vector3(0, 0, 1.2)
+light_color = Color(1, 0.55, 0.2, 1)
+light_energy = 0.0
+omni_range = 6.0
+
+[node name="GroundGlow" type="MeshInstance3D" parent="Nozzle"]
+position = Vector3(0, -0.96, 2.25)
+cast_shadow = 0
+mesh = SubResource("GroundMesh")
+material_override = SubResource("ScorchMat")
+
+[node name="FlameBody" type="MeshInstance3D" parent="Nozzle"]
+cast_shadow = 0
+mesh = SubResource("BodyMesh")
+material_override = SubResource("BodyMat")
+[node name="ImpactPool" type="Node3D" parent="."]
+[node name="Impact0" parent="ImpactPool" instance=ExtResource("5_hit")]
+[node name="Impact1" parent="ImpactPool" instance=ExtResource("5_hit")]
+[node name="Impact2" parent="ImpactPool" instance=ExtResource("5_hit")]
+[node name="Impact3" parent="ImpactPool" instance=ExtResource("5_hit")]
+[node name="Impact4" parent="ImpactPool" instance=ExtResource("5_hit")]
+[node name="Impact5" parent="ImpactPool" instance=ExtResource("5_hit")]

@@ -1,0 +1,59 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/wind_puzzle/boulder/wind_boulder/wind_boulder.gd" id="1_dvosd"]
+[ext_resource type="Resource" path="res://resources/world/puzzles/wind_boulder_default.tres" id="2_6efpa"]
+[ext_resource type="Material" path="res://assets/materials/ruin_stone.tres" id="3_xa1g3"]
+[ext_resource type="Material" path="res://assets/materials/wind_glow.tres" id="4_838dr"]
+[ext_resource type="Script" path="res://components/wind/wind_receiver/wind_receiver_component.gd" id="5_uvmrq"]
+[ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="6_l3ueu"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/boulder/wind_boulder/states/idle.gd" id="7_o2nor"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/boulder/wind_boulder/states/sliding.gd" id="8_tqlqf"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/boulder/wind_boulder/states/seated.gd" id="9_mikh5"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_0wxrr"]
+radius = 1.0
+height = 2.0
+radial_segments = 12
+rings = 6
+
+[sub_resource type="TorusMesh" id="TorusMesh_cx8jw"]
+inner_radius = 0.95
+outer_radius = 1.05
+
+[node name="WindBoulder" type="AnimatableBody3D" unique_id=1946340713]
+collision_mask = 0
+script = ExtResource("1_dvosd")
+data = ExtResource("2_6efpa")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1630698279]
+
+[node name="Visual" type="Node3D" parent="." unique_id=1638467834]
+
+[node name="Rock" type="MeshInstance3D" parent="Visual" unique_id=2145474227]
+material_override = ExtResource("3_xa1g3")
+mesh = SubResource("SphereMesh_0wxrr")
+
+[node name="WindBand" type="MeshInstance3D" parent="Visual" unique_id=1258247472]
+material_override = ExtResource("4_838dr")
+mesh = SubResource("TorusMesh_cx8jw")
+
+[node name="WindReceiver" type="Area3D" parent="." unique_id=1688219328]
+collision_layer = 128
+collision_mask = 0
+monitoring = false
+script = ExtResource("5_uvmrq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiver" unique_id=609928706]
+
+[node name="StateMachine" type="Node" parent="." unique_id=533818618 node_paths=PackedStringArray("initial_state")]
+script = ExtResource("6_l3ueu")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine" unique_id=2048181960]
+script = ExtResource("7_o2nor")
+
+[node name="Sliding" type="Node" parent="StateMachine" unique_id=837911311]
+script = ExtResource("8_tqlqf")
+
+[node name="Seated" type="Node" parent="StateMachine" unique_id=157079405]
+script = ExtResource("9_mikh5")

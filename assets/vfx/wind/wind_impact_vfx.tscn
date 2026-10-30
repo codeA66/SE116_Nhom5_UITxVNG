@@ -1,9 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_burst_vfx.tscn" id="1_burst"]
-[ext_resource type="Script" path="res://assets/vfx/wind/wind_impact_vfx.gd" id="2_impact"]
-[ext_resource type="Resource" path="res://assets/vfx/wind/wind_impact_style.tres" id="3_style"]
-
-[node name="WindImpactVfx" instance=ExtResource("1_burst")]
-script = ExtResource("2_impact")
-style = ExtResource("3_style")

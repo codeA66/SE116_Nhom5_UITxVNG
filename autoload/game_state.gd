@@ -18,7 +18,7 @@ signal progress_replaced
 signal fusion_changed
 
 const NEW_GAME: NewGameData = preload("res://resources/player/new_game.tres")
-const FUSIONS: FusionTable = preload("res://resources/fusion/fusion_table.tres")
+const FUSIONS: FusionTable = preload("res://resources/combat/fusion/fusion_table.tres")
 
 var progress: PlayerProgress = PlayerProgress.new()
 
@@ -81,6 +81,11 @@ func has_ability(id: StringName) -> bool:
 
 func get_ability(id: StringName) -> AbilityData:
 	return progress.get_ability(id)
+
+
+## Mọi kỹ năng đã mở khoá (không sao chép: chỉ đọc, đừng sửa mảng trả về)
+func get_abilities() -> Array[AbilityData]:
+	return progress.abilities
 
 
 func unlock_ability(ability: AbilityData) -> void:

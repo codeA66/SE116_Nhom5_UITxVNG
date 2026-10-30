@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/traversal/boat/boat.gd" id="1_boat"]
+[ext_resource type="Resource" path="res://resources/world/transport/boat/boat_default.tres" id="2_data"]
+[ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="3_fsm"]
+[ext_resource type="Script" path="res://objects/traversal/boat/states/docked.gd" id="4_docked"]
+[ext_resource type="Script" path="res://objects/traversal/boat/states/sailing.gd" id="5_sailing"]
+[ext_resource type="Script" path="res://objects/traversal/boat/states/drifting.gd" id="6_drifting"]
+[ext_resource type="Script" path="res://objects/traversal/boat/states/arrived.gd" id="7_arrived"]
+[ext_resource type="Script" path="res://components/wind/wind_receiver/wind_receiver_component.gd" id="8_wind"]
+
+[ext_resource type="PackedScene" path="res://objects/traversal/boat/boat_visual.tscn" id="9_visual"]
+
+[sub_resource type="ConvexPolygonShape3D" id="HullShape"]
+points = PackedVector3Array(0.73000, 0.40000, -2.05000, -0.73000, 0.40000, -2.05000, -1.00000, 0.40000, -1.35000, -1.02500, 0.40000, -0.25000, -0.88000, 0.40000, 0.90000, -0.50000, 0.40000, 1.65000, 0.00000, 0.40000, 2.15000, 0.50000, 0.40000, 1.65000, 0.88000, 0.40000, 0.90000, 1.02500, 0.40000, -0.25000, 1.00000, 0.40000, -1.35000, 0.62780, 0.04800, -1.76300, -0.62780, 0.04800, -1.76300, -0.86000, 0.04800, -1.16100, -0.88150, 0.04800, -0.21500, -0.75680, 0.04800, 0.77400, -0.43000, 0.04800, 1.41900, 0.00000, 0.04800, 1.84900, 0.43000, 0.04800, 1.41900, 0.75680, 0.04800, 0.77400, 0.88150, 0.04800, -0.21500, 0.86000, 0.04800, -1.16100, 0.35770, -0.23200, -0.94423, -0.35770, -0.23200, -0.94423, -0.49000, -0.23200, -0.62181, -0.50225, -0.23200, -0.11515, -0.43120, -0.23200, 0.41454, -0.24500, -0.23200, 0.75999, 0.00000, -0.23200, 0.99029, 0.24500, -0.23200, 0.75999, 0.43120, -0.23200, 0.41454, 0.50225, -0.23200, -0.11515, 0.49000, -0.23200, -0.62181)
+
+[sub_resource type="CylinderShape3D" id="MastShape"]
+radius = 0.065
+height = 3.26
+
+[sub_resource type="ConvexPolygonShape3D" id="BoxShape3D_deck"]
+points = PackedVector3Array(0.68620, 0.38000, -1.98850, -0.68620, 0.38000, -1.98850, -0.94000, 0.38000, -1.30950, -0.96350, 0.38000, -0.24250, -0.82720, 0.38000, 0.87300, -0.47000, 0.38000, 1.60050, 0.00000, 0.38000, 2.08550, 0.47000, 0.38000, 1.60050, 0.82720, 0.38000, 0.87300, 0.96350, 0.38000, -0.24250, 0.94000, 0.38000, -1.30950, 0.68620, 1.85000, -1.98850, -0.68620, 1.85000, -1.98850, -0.94000, 1.85000, -1.30950, -0.96350, 1.85000, -0.24250, -0.82720, 1.85000, 0.87300, -0.47000, 1.85000, 1.60050, 0.00000, 1.85000, 2.08550, 0.47000, 1.85000, 1.60050, 0.82720, 1.85000, 0.87300, 0.96350, 1.85000, -0.24250, 0.94000, 1.85000, -1.30950)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wind"]
+size = Vector3(2.3, 3.5, 4.4)
+
+[node name="Boat" type="AnimatableBody3D"]
+collision_mask = 0
+script = ExtResource("1_boat")
+data = ExtResource("2_data")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("HullShape")
+
+[node name="MastCollision" type="CollisionShape3D" parent="."]
+position = Vector3(0, 2.03, 0.62)
+shape = SubResource("MastShape")
+
+[node name="BoatVisual" parent="." instance=ExtResource("9_visual")]
+
+[node name="Deck" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck"]
+shape = SubResource("BoxShape3D_deck")
+
+[node name="WindReceiverComponent" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+collision_layer = 128
+collision_mask = 0
+script = ExtResource("8_wind")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiverComponent"]
+shape = SubResource("BoxShape3D_wind")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("3_fsm")
+initial_state = NodePath("Docked")
+
+[node name="Docked" type="Node" parent="StateMachine"]
+script = ExtResource("4_docked")
+
+[node name="Sailing" type="Node" parent="StateMachine"]
+script = ExtResource("5_sailing")
+
+[node name="Drifting" type="Node" parent="StateMachine"]
+script = ExtResource("6_drifting")
+
+[node name="Arrived" type="Node" parent="StateMachine"]
+script = ExtResource("7_arrived")

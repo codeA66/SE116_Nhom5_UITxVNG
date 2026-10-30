@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/enemies/wisp_caster/test_wisp_caster.gd" id="1_test"]
+
+[node name="TestWispCaster" type="Node3D"]
+editor_description = "Test headless cho Quái 3 (Pháp sư Hồn Trôi): chạy bằng godot --headless --path . res://tests/enemies/wisp_caster/test_wisp_caster.tscn [-- tên_mục ...]. Dùng APPDATA riêng để không ghi save thật."
+script = ExtResource("1_test")

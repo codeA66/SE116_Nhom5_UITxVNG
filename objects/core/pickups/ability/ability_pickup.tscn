@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/ability/ability_pickup.gd" id="1_pickup"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/wind_spellbook_visual.tscn" id="3_book_visual"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_range"]
+radius = 1.5
+
+[node name="AbilityPickup" type="Node3D"]
+script = ExtResource("1_pickup")
+spin_speed = 0.45
+
+[node name="Visual" parent="." instance=ExtResource("3_book_visual")]
+position = Vector3(0, 1.05, 0)
+rotation = Vector3(0, 0.25, 0)
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2_interact")
+prompt_text = "PICK UP"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("SphereShape3D_range")

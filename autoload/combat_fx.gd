@@ -4,7 +4,7 @@ extends Node
 ## Vết máu trên sàn dùng một BloodStains số lượng cố định (vết cũ nhất bị tái dùng).
 
 @export_group("Hit Spark")
-@export var hit_spark_scene: PackedScene = preload("res://assets/vfx/combat/hit_spark.tscn")
+@export var hit_spark_scene: PackedScene = preload("res://assets/vfx/combat/hit_spark/hit_spark.tscn")
 @export var hit_spark_pool_size: int = 6
 ## Trần số hiệu ứng chạy cùng lúc; vượt thì tái dùng cái cũ nhất. Giữ chi phí GPU (vẽ chồng cộng sáng) có giới hạn khi đánh đông quái
 @export var max_active_hits: int = 6
@@ -13,17 +13,17 @@ extends Node
 @export_range(0.1, 1.0) var crowd_hit_min_scale: float = 0.3
 
 @export_group("Death Burst")
-@export var death_burst_scene: PackedScene = preload("res://assets/vfx/combat/death_burst.tscn")
+@export var death_burst_scene: PackedScene = preload("res://assets/vfx/combat/death_burst/death_burst.tscn")
 @export var death_burst_pool_size: int = 3
 @export var max_active_deaths: int = 3
 
 @export_group("Arrow Impact")
-@export var arrow_impact_scene: PackedScene = preload("res://assets/vfx/combat/arrow_impact.tscn")
+@export var arrow_impact_scene: PackedScene = preload("res://assets/vfx/combat/arrow_impact/arrow_impact.tscn")
 @export var arrow_impact_pool_size: int = 4
 @export var max_active_arrow_impacts: int = 4
 
 @export_group("Blood")
-@export var blood_spray_scene: PackedScene = preload("res://assets/vfx/combat/blood_spray.tscn")
+@export var blood_spray_scene: PackedScene = preload("res://assets/vfx/combat/blood/blood_spray.tscn")
 @export var blood_spray_pool_size: int = 4
 @export var max_active_blood: int = 4
 ## Số vết máu tối đa trên sàn

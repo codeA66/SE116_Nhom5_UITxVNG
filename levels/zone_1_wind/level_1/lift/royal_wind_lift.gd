@@ -6,7 +6,7 @@ extends Node3D
 signal trip_started
 signal arrived
 
-const CUTSCENE := preload("res://objects/camera_cutscene/camera_cutscene.tscn")
+const CUTSCENE := preload("res://objects/world/camera_cutscene/camera_cutscene.tscn")
 @export var travel_height: float = 4.22
 @export var rise_time: float = 7.0
 @export var return_time: float = 5.0

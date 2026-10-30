@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/combat/hit_spark/hit_spark.gd" id="1_script"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/death/combat_particle.gdshader" id="2_particle"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/slash/cut_flash.gdshader" id="3_cut"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/slash/star_flash.gdshader" id="4_star"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/impact/shock_ring.gdshader" id="5_ring"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_spark"]
+resource_local_to_scene = true
+shader = ExtResource("2_particle")
+shader_parameter/tint = Color(1, 0.7, 0.25, 1)
+shader_parameter/intensity = 1.8
+shader_parameter/streak = true
+shader_parameter/core_width = 0.45
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lines"]
+shader = ExtResource("2_particle")
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/intensity = 3.0
+shader_parameter/streak = true
+shader_parameter/core_width = 0.8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cut"]
+resource_local_to_scene = true
+shader = ExtResource("3_cut")
+shader_parameter/intensity = 3.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_star"]
+resource_local_to_scene = true
+shader = ExtResource("4_star")
+shader_parameter/intensity = 2.8
+shader_parameter/short_arm = 0.4
+shader_parameter/core_radius = 0.1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ring"]
+resource_local_to_scene = true
+shader = ExtResource("5_ring")
+shader_parameter/intensity = 2.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ring2"]
+resource_local_to_scene = true
+shader = ExtResource("5_ring")
+shader_parameter/intensity = 2.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_spark"]
+size = Vector2(0.16, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_line"]
+size = Vector2(0.08, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_unit"]
+size = Vector2(1, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ring"]
+size = Vector2(1, 1)
+
+[node name="HitSpark" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="CutFlash" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_cut")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_unit")
+
+[node name="Star" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_star")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_unit")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_ring")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_ring")
+
+[node name="Ring2" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_ring2")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_ring")
+
+[node name="ImpactLines" type="CPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_lines")
+cast_shadow = 0
+emitting = false
+amount = 7
+lifetime = 0.13
+one_shot = true
+explosiveness = 1.0
+randomness = 0.3
+local_coords = false
+mesh = SubResource("QuadMesh_line")
+direction = Vector3(0, 0, -1)
+spread = 60.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 16.0
+initial_velocity_max = 26.0
+particle_flag_align_y = true
+scale_amount_min = 0.9
+scale_amount_max = 1.5
+
+[node name="Sparks" type="CPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_spark")
+cast_shadow = 0
+emitting = false
+amount = 8
+lifetime = 0.45
+one_shot = true
+explosiveness = 1.0
+randomness = 0.4
+local_coords = false
+mesh = SubResource("QuadMesh_spark")
+direction = Vector3(0, 0, -1)
+spread = 55.0
+gravity = Vector3(0, -6, 0)
+initial_velocity_min = 4.0
+initial_velocity_max = 9.0
+damping_min = 4.0
+damping_max = 6.0
+particle_flag_align_y = true
+scale_amount_min = 0.35
+scale_amount_max = 0.75

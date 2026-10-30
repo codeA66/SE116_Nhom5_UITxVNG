@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://assets/vfx/enemies/bear/ice_spike/ice_spike.gd" id="1"]
+[ext_resource type="Resource" path="res://assets/vfx/enemies/bear/ice_spike/ice_spike_default.tres" id="2"]
+[node name="IceSpikeAttack" type="Node3D"]
+script = ExtResource("1")
+style = ExtResource("2")
+[node name="CrystalCore" type="Node3D" parent="."]
+[node name="SecondaryShards" type="Node3D" parent="."]
+[node name="Glow" type="Node3D" parent="."]
+[node name="FrostMist" type="Node3D" parent="."]
+[node name="Sparks" type="Node3D" parent="."]
+[node name="Shatter" type="Node3D" parent="."]
+[node name="GroundCracks" type="Node3D" parent="."]

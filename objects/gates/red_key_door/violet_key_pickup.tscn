@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/key/key_pickup.gd" id="1"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2"]
+[ext_resource type="PackedScene" path="res://assets/models/shared/generated/wind_ruins/gridmap/red_gate_showcase/scarlet_key.glb" id="3"]
+[ext_resource type="Shader" path="res://assets/shaders/environment/props/key_recolor.gdshader" id="4"]
+[ext_resource type="Shader" path="res://assets/shaders/environment/light/soft_glow.gdshader" id="5"]
+
+[sub_resource type="ShaderMaterial" id="KeyMat"]
+shader = ExtResource("4")
+shader_parameter/tint = Color(0.62, 0.32, 1, 1)
+shader_parameter/strength = 1.0
+shader_parameter/lift = 1.5
+shader_parameter/glow = 0.45
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 1.5
+
+[sub_resource type="ShaderMaterial" id="HaloMat"]
+render_priority = 0
+shader = ExtResource("5")
+shader_parameter/glow_color = Color(0.68, 0.38, 1, 1)
+shader_parameter/intensity = 0.55
+shader_parameter/billboard = true
+shader_parameter/falloff = 2.2
+shader_parameter/breathe = 0.18
+shader_parameter/breathe_speed = 1.6
+
+[sub_resource type="QuadMesh" id="HaloMesh"]
+material = SubResource("HaloMat")
+size = Vector2(1.6, 1.6)
+
+[sub_resource type="ShaderMaterial" id="FloorGlowMat"]
+render_priority = 0
+shader = ExtResource("5")
+shader_parameter/glow_color = Color(0.6, 0.3, 1, 1)
+shader_parameter/intensity = 0.45
+shader_parameter/billboard = false
+shader_parameter/falloff = 1.6
+shader_parameter/breathe = 0.12
+
+[sub_resource type="QuadMesh" id="FloorGlowMesh"]
+material = SubResource("FloorGlowMat")
+size = Vector2(2.2, 2.2)
+orientation = 1
+
+[sub_resource type="Gradient" id="SparkleFade"]
+colors = PackedColorArray(0.85, 0.65, 1, 1, 0.55, 0.25, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="SparkleFadeTex"]
+gradient = SubResource("SparkleFade")
+
+[sub_resource type="ParticleProcessMaterial" id="SparkleProcess"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.1
+emission_ring_radius = 0.5
+emission_ring_inner_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 15.0
+initial_velocity_min = 0.3
+initial_velocity_max = 0.7
+gravity = Vector3(0, 0, 0)
+scale_min = 0.5
+scale_max = 1.0
+color_ramp = SubResource("SparkleFadeTex")
+
+[sub_resource type="StandardMaterial3D" id="SparkleMat"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+transparency = 1
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="SparkleMesh"]
+material = SubResource("SparkleMat")
+size = Vector2(0.07, 0.07)
+
+[node name="VioletKeyPickup" type="Node3D"]
+script = ExtResource("1")
+spin_speed = 0.8
+model_material = SubResource("KeyMat")
+
+[node name="Visual" type="Node3D" parent="."]
+position = Vector3(0, 1.05, 0)
+
+[node name="Model" parent="Visual" instance=ExtResource("3")]
+
+[node name="Halo" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.1, 0)
+cast_shadow = 0
+mesh = SubResource("HaloMesh")
+
+[node name="FloorGlow" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.03, 0)
+cast_shadow = 0
+mesh = SubResource("FloorGlowMesh")
+
+[node name="Sparkles" type="GPUParticles3D" parent="."]
+position = Vector3(0, 0.3, 0)
+amount = 14
+lifetime = 1.8
+cast_shadow = 0
+process_material = SubResource("SparkleProcess")
+draw_pass_1 = SubResource("SparkleMesh")
+
+[node name="Glow" type="OmniLight3D" parent="."]
+position = Vector3(0, 1.4, 0.3)
+light_color = Color(0.68, 0.36, 1, 1)
+light_energy = 0.9
+omni_range = 3.0
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2")
+prompt_text = "PICK UP"
+prompt_offset = Vector3(0, 1.95, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("Range")

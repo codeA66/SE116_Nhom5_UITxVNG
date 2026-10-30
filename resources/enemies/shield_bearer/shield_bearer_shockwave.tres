@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ShockwaveData" format=3]
+
+[ext_resource type="Script" path="res://objects/combat/shockwave/shockwave_data.gd" id="1_wave"]
+
+[resource]
+script = ExtResource("1_wave")
+damage = 1
+knockback = 7.0
+start_radius = 0.6
+max_radius = 6.0
+speed = 7.0
+band_width = 0.6
+hit_height = 0.45
+hit_height_below = 1.0
+blocked_by_world = true

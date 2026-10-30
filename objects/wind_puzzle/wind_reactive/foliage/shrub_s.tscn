@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://objects/wind_puzzle/wind_reactive/foliage/wind_reactive_shrub.gd" id="1_prop"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_kit/shrub_s.glb" id="2_model"]
+[ext_resource type="Script" path="res://components/wind/wind_reactive/wind_reactive_receiver.gd" id="3_receiver"]
+[ext_resource type="Script" path="res://components/wind/wind_reactive/wind_reactive_component.gd" id="4_reactive"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_receiver"]
+radius = 0.8
+
+[node name="ShrubS" type="Node3D"]
+script = ExtResource("1_prop")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="WindReceiver" type="Area3D" parent="."]
+collision_layer = 128
+collision_mask = 64
+script = ExtResource("3_receiver")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiver"]
+shape = SubResource("SphereShape3D_receiver")
+
+[node name="WindReactive" type="Node3D" parent="."]
+script = ExtResource("4_reactive")
+
+

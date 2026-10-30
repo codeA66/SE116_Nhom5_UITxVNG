@@ -1,0 +1,207 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/wind_puzzle/rubble_jam/rubble_jam.gd" id="1_ef0yj"]
+[ext_resource type="Resource" path="res://resources/world/puzzles/rubble_jam_default.tres" id="2_wd6pm"]
+[ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="3_heo4b"]
+[ext_resource type="Material" path="res://assets/materials/ruin_stone.tres" id="4_rsceo"]
+[ext_resource type="PackedScene" path="res://assets/vfx/wind/burst/wind_burst_vfx.tscn" id="5_mmmd1"]
+[ext_resource type="Resource" path="res://assets/vfx/wind/impact/wind_impact_style.tres" id="6_ul5ih"]
+[ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="7_n56m3"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/rubble_jam/states/jammed.gd" id="8_ys5pu"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/rubble_jam/states/bursting.gd" id="9_u4jy8"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/rubble_jam/states/cleared.gd" id="10_cl8m3"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/rubble_jam/states/waiting.gd" id="11_wait"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_hr7mq"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_i07gw"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_ty3kk"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_hxfcl"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_cnri5"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_d7gtg"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_pd7w1"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_t6r4w"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_qqsgp"]
+radius = 1.0
+height = 2.0
+radial_segments = 5
+rings = 3
+
+[sub_resource type="Gradient" id="Gradient_rqio4"]
+colors = PackedColorArray(0.72, 0.7, 0.66, 0.85, 0.72, 0.7, 0.66, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_qqjks"]
+gradient = SubResource("Gradient_rqio4")
+
+[sub_resource type="Curve" id="Curve_1xa7e"]
+_data = [Vector2(0, 0.4), 0.0, 0.0, 0, 0, Vector2(0.3, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_5c003"]
+curve = SubResource("Curve_1xa7e")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_8ig35"]
+direction = Vector3(0, 0.25, 1)
+spread = 70.0
+initial_velocity_min = 1.8
+initial_velocity_max = 4.5
+gravity = Vector3(0, -1.5, 0)
+damping_min = 2.0
+damping_max = 3.5
+scale_min = 0.6
+scale_max = 1.4
+scale_curve = SubResource("CurveTexture_5c003")
+color_ramp = SubResource("GradientTexture1D_qqjks")
+
+[sub_resource type="Gradient" id="Gradient_duxhr"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_6sbka"]
+gradient = SubResource("Gradient_duxhr")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ucqq2"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("GradientTexture2D_6sbka")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_wwa15"]
+material = SubResource("StandardMaterial3D_ucqq2")
+size = Vector2(0.55, 0.55)
+
+[node name="RubbleJam" type="Node3D" unique_id=167205888]
+script = ExtResource("1_ef0yj")
+data = ExtResource("2_wd6pm")
+
+[node name="Pieces" type="Node3D" parent="." unique_id=1101081892]
+
+[node name="Chunk0" type="MeshInstance3D" parent="Pieces" unique_id=1666024192]
+transform = Transform3D(0.3505429, -0.109903716, 0.14613204, -0.06551789, -0.19230606, -0.24730662, 0.23558709, 0.1100505, -0.286215, 0, 0, 0.14408675)
+material_override = ExtResource("3_heo4b")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_hr7mq")
+
+[node name="Chunk1" type="MeshInstance3D" parent="Pieces" unique_id=1867589522]
+transform = Transform3D(0.1644255, -0.15561415, -0.14105669, -0.26117057, -0.024109049, -0.19690582, 0.14282688, 0.13506116, -0.19767068, 0.38, 0.12, 0.16543037)
+material_override = ExtResource("4_rsceo")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_i07gw")
+
+[node name="Chunk2" type="MeshInstance3D" parent="Pieces" unique_id=1476429527]
+transform = Transform3D(-0.11134635, -0.077941366, -0.1536608, 0.15649341, 0.008405579, -0.13160837, 0.056614492, -0.17652555, 0.061579127, -0.34, 0.18, 0.10110825)
+material_override = ExtResource("4_rsceo")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_ty3kk")
+
+[node name="Chunk3" type="MeshInstance3D" parent="Pieces" unique_id=1431130792]
+transform = Transform3D(-0.12318218, -0.20091558, -0.106373355, 0.14650379, -0.006216346, -0.22040936, 0.14181836, -0.16809179, 0.13529633, 0.12, -0.4, 0.18143907)
+material_override = ExtResource("3_heo4b")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_hxfcl")
+
+[node name="Chunk4" type="MeshInstance3D" parent="Pieces" unique_id=1104871480]
+transform = Transform3D(-0.049431168, 0.16433124, 0.00798685, 0.09789821, 0.016383633, 0.14900814, 0.15699854, 0.04152368, -0.090401046, -0.22, -0.32, 0.1258592)
+material_override = ExtResource("4_rsceo")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_cnri5")
+
+[node name="Chunk5" type="MeshInstance3D" parent="Pieces" unique_id=330570995]
+transform = Transform3D(-0.17829219, -0.016717453, -0.030150702, 0.0024720656, -0.14402705, 0.09344892, -0.03370217, 0.07787471, 0.16635863, 0.45, -0.22, 0.18716237)
+material_override = ExtResource("4_rsceo")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_d7gtg")
+
+[node name="Chunk6" type="MeshInstance3D" parent="Pieces" unique_id=262541582]
+transform = Transform3D(0.06670067, 0.21878017, -0.08766274, 0.049210824, -0.12233211, -0.1793756, -0.21331863, 0.040187392, -0.06879092, -0.48, -0.05, 0.1581881)
+material_override = ExtResource("3_heo4b")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pd7w1")
+
+[node name="Chunk7" type="MeshInstance3D" parent="Pieces" unique_id=22995870]
+transform = Transform3D(-0.071047984, -0.24766183, 0.05466428, -0.041186873, 0.056626923, 0.2790588, -0.32198232, 0.04740504, -0.047758356, 0.2, 0.42, 0.09876004)
+material_override = ExtResource("4_rsceo")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_t6r4w")
+
+[node name="Chunk8" type="MeshInstance3D" parent="Pieces" unique_id=280017387]
+transform = Transform3D(-0.022279995, -0.044267993, 0.21600965, 0.16506967, -0.117012374, -0.026358716, 0.16102119, 0.11382912, 0.056910012, -0.12, 0.5, 0.21744795)
+material_override = ExtResource("4_rsceo")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_qqsgp")
+
+[node name="Dust" type="GPUParticles3D" parent="." unique_id=980201957]
+cast_shadow = 0
+emitting = false
+amount = 28
+lifetime = 1.1
+one_shot = true
+explosiveness = 0.95
+visibility_aabb = AABB(-4, -4, -2, 8, 8, 10)
+process_material = SubResource("ParticleProcessMaterial_8ig35")
+draw_pass_1 = SubResource("QuadMesh_wwa15")
+
+[node name="WindBurst" parent="." unique_id=349339537 instance=ExtResource("5_mmmd1")]
+style = ExtResource("6_ul5ih")
+
+[node name="StateMachine" type="Node" parent="." unique_id=656065215 node_paths=PackedStringArray("initial_state")]
+script = ExtResource("7_n56m3")
+initial_state = NodePath("Jammed")
+
+[node name="Jammed" type="Node" parent="StateMachine" unique_id=1771567200]
+script = ExtResource("8_ys5pu")
+
+[node name="Waiting" type="Node" parent="StateMachine"]
+script = ExtResource("11_wait")
+
+[node name="Bursting" type="Node" parent="StateMachine" unique_id=1671995618]
+script = ExtResource("9_u4jy8")
+
+[node name="Cleared" type="Node" parent="StateMachine" unique_id=1638527818]
+script = ExtResource("10_cl8m3")

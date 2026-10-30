@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://entities/_base/data/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="2_attack"]
+[ext_resource type="PackedScene" uid="uid://c3prrp3fhlw5a" path="res://assets/characters/kaykit_adventurers/Assets/gltf/sword_1handed.gltf" id="3_model"]
+[ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_1.tres" id="4_slash1"]
+[ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_2.tres" id="5_slash2"]
+[ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_3.tres" id="6_slash3"]
+
+[resource]
+script = ExtResource("1_weapon")
+display_name = "Kiếm"
+model_scene = ExtResource("3_model")
+model_scale = 0.5
+combo = Array[ExtResource("2_attack")]([ExtResource("4_slash1"), ExtResource("5_slash2"), ExtResource("6_slash3")])
