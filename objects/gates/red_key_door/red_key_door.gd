@@ -11,6 +11,10 @@ signal denied
 @export_range(0.1, 3.0, 0.05) var insert_time: float = 0.7
 @export_range(0.2, 5.0, 0.1) var dissolve_time: float = 1.8
 @export var dissolve_material: ShaderMaterial
+## Vật liệu cho chìa cắm vào ổ (cửa màu khác dùng chung model chìa đỏ); để trống = giữ màu model
+@export var key_material: Material
+## Rung màn hình lúc cửa bắt đầu tan (0 = không rung)
+@export_range(0.0, 1.0, 0.05) var open_trauma: float = 0.0
 
 var is_open: bool = false
 var _dissolve: ShaderMaterial
@@ -27,6 +31,9 @@ func _ready() -> void:
 	if dissolve_material:
 		_dissolve = dissolve_material.duplicate() as ShaderMaterial
 		door_panels.material_override = _dissolve
+	if key_material:
+		for mesh: MeshInstance3D in key_visual.find_children("*", "MeshInstance3D", true, false):
+			mesh.material_override = key_material
 	interaction.interacted.connect(_on_interacted)
 	set_physics_process(false)
 
@@ -65,6 +72,8 @@ func begin_dissolve() -> void:
 	var motes: GPUParticles3D = get_node_or_null("DissolveMotes") as GPUParticles3D
 	if motes:
 		motes.restart()
+	if open_trauma > 0.0:
+		ScreenShake.add_trauma(open_trauma)
 
 func update_dissolve(progress: float) -> void:
 	if _dissolve:
