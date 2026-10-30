@@ -34,6 +34,9 @@ func _connect_player() -> void:
 		return
 	for slot in _slots:
 		if slot.cooldown_signal.is_empty():
+			# Ô kỹ năng không đặt signal riêng: nghe signal chung của mọi kỹ năng, ô tự lọc theo id
+			if slot.has_method(&"on_skill_cooldown") and player.has_signal(&"skill_cooldown_started"):
+				player.connect(&"skill_cooldown_started", Callable(slot, &"on_skill_cooldown"))
 			continue
 		if player.has_signal(slot.cooldown_signal):
 			player.connect(slot.cooldown_signal, slot.start_cooldown)

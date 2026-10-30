@@ -19,7 +19,8 @@ func _try_common_transitions() -> bool:
 	if player.can_dash():
 		state_machine.transition_to(DASH)
 		return true
-	if player.can_wind_blast():
-		state_machine.transition_to(WIND_BLAST)
+	var skill := player.get_ready_skill()
+	if skill:
+		state_machine.transition_to(skill.state)
 		return true
 	return false

@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" path="res://ui/hud/icons/bow.svg" id="5_bow"]
 [ext_resource type="Texture2D" path="res://ui/hud/icons/wind.svg" id="6_wind"]
 [ext_resource type="Script" path="res://ui/hud/skills/skill_slot.gd" id="7_slot"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/fire.svg" id="8_fire"]
 
 [node name="SkillCluster" type="Control"]
 custom_minimum_size = Vector2(140, 140)
@@ -62,7 +63,7 @@ input_action = &"attack"
 icon = ExtResource("4_sword")
 active_states = Array[StringName]([&"Attack"])
 
-[node name="EmptySlot" type="Control" parent="."]
+[node name="FireSlot" type="Control" parent="."]
 custom_minimum_size = Vector2(76, 76)
 layout_mode = 0
 offset_left = 32.0
@@ -71,7 +72,11 @@ offset_right = 108.0
 offset_bottom = 140.0
 pivot_offset = Vector2(38, 38)
 mouse_filter = 2
-script = ExtResource("7_slot")
+script = ExtResource("3_ability")
+ability_id = &"flame_breath"
+input_action = &"skill_fire"
+icon = ExtResource("8_fire")
+active_states = Array[StringName]([&"FlameBreath"])
 
 [node name="BindingRefresh" type="Timer" parent="."]
 wait_time = 0.25

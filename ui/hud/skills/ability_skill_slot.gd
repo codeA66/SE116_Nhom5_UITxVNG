@@ -13,3 +13,9 @@ func is_available() -> bool:
 
 func is_ready() -> bool:
 	return true
+
+
+## Player phát skill_cooldown_started cho mọi kỹ năng: chỉ nhận của kỹ năng ô này
+func on_skill_cooldown(skill_id: StringName, duration: float) -> void:
+	if skill_id == ability_id:
+		start_cooldown(duration)

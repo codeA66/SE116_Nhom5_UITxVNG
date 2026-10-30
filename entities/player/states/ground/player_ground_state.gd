@@ -29,8 +29,9 @@ func _try_common_transitions() -> bool:
 	if player.can_aim_bow():
 		state_machine.transition_to(BOW_AIM)
 		return true
-	if player.can_wind_blast():
-		state_machine.transition_to(WIND_BLAST)
+	var skill := player.get_ready_skill()
+	if skill:
+		state_machine.transition_to(skill.state)
 		return true
 	if player.can_jump():
 		state_machine.transition_to(JUMP)
