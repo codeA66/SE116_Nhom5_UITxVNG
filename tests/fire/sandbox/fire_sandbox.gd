@@ -7,7 +7,8 @@ var _measure_last_us: int = 0
 ## Sân thử kỹ năng Lửa: cho sẵn kiếm, Thổi Gió (E) và Phun Lửa (Q) để chơi thử ngay, không cần đi nhặt.
 ## Tắt tự lưu khi mở sân: cho kỹ năng thử ở đây không được ghi vào save thật đang chơi dở.
 
-@export var weapon: WeaponData
+## Vũ khí cho sẵn (kiếm, cung...); cái đầu tiên được cầm. Cung là vũ khí phụ: giữ aim (chuột phải) để bắn
+@export var weapons: Array[Resource] = []
 ## Kiểu Resource (không phải AbilityData): mảng trong .tscn ghi là Array[Resource], gán sai kiểu sẽ bị bỏ qua không báo
 @export var abilities: Array[Resource] = []
 
@@ -18,9 +19,10 @@ func _ready() -> void:
 		GameState.progress_changed.disconnect(SaveManager.save_game)
 	if GameState.progress_committed.is_connected(SaveManager.save_game):
 		GameState.progress_committed.disconnect(SaveManager.save_game)
-	if weapon:
-		GameState.add_weapon(weapon)
-		GameState.set_weapon(weapon)
+	for weapon in weapons:
+		GameState.add_weapon(weapon as WeaponData)
+	if not weapons.is_empty():
+		GameState.set_weapon(weapons[0] as WeaponData)
 	call_deferred(&"_review")
 	for ability in abilities:
 		GameState.unlock_ability(ability as AbilityData)

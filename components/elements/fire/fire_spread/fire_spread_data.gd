@@ -13,3 +13,9 @@ extends Resource
 @export_range(0.0, 5.0, 0.05) var spread_cooldown: float = 0.5
 ## Mục tiêu vừa bắt lửa mà còn đang trôi vì cú gió đó thì phụt lửa tiếp (một cú gió đốt cả hàng)
 @export var chain_while_pushed: bool = true
+## Cú gió phải mạnh ít nhất chừng này mới làm lửa phụt theo hướng (cú thổi E = 12).
+## Lực kéo nhỏ mỗi khung của hố hút Cung Gió (~0.6) không tính: hố có luật riêng (lốc lửa)
+@export_range(0.0, 100.0, 0.1) var min_impulse: float = 3.0
+## Lan nối tiếp chỉ khi cú gió mạnh gần nhất xảy ra trong khoảng này (s): đang trôi vì thứ khác (hố hút)
+## thì không phụt theo hướng một cú gió cũ
+@export_range(0.0, 5.0, 0.05) var chain_window: float = 0.6

@@ -5,6 +5,10 @@ extends FusionMove
 ## Hình: dải gió có texture xoắn vào tâm, hết thì co lại rồi tan.
 
 signal finished
+## Hố bắt đầu hút (thứ đi kèm hố như lốc lửa dùng bán kính / thời gian này)
+signal started(radius: float, lifetime: float)
+## Hố thôi hút (hết thời gian hoặc bị trả về pool)
+signal stopped
 
 @export var radius: float = 2.5
 @export var lifetime: float = 0.8
@@ -57,6 +61,7 @@ func perform(_user: Character, _attack: AttackData, _direction: Vector3) -> void
 	_swirl.global_position = ground
 	_swirl.play(radius)
 	set_physics_process(true)
+	started.emit(radius, lifetime)
 
 
 func _physics_process(delta: float) -> void:
@@ -83,9 +88,12 @@ func _physics_process(delta: float) -> void:
 		_receivers.clear()
 		_swirl.stop(linger)
 		_linger_left = linger
+		stopped.emit()
 
 
 func pool_released() -> void:
+	if _left > 0.0:
+		stopped.emit()
 	_left = 0.0
 	_linger_left = 0.0
 	_receivers.clear()

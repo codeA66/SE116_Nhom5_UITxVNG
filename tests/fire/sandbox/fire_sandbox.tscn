@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="3_spawn"]
 [ext_resource type="Script" path="res://tests/fire/sandbox/fire_sandbox.gd" id="4_sandbox"]
 [ext_resource type="Resource" path="res://resources/combat/weapons/sword.tres" id="5_sword"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/bow.tres" id="13_bow"]
 [ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="6_wind"]
 [ext_resource type="Resource" path="res://abilities/flame_breath/flame_breath.tres" id="7_flame"]
 [ext_resource type="PackedScene" path="res://objects/combat/training_dummy/training_dummy.tscn" id="8_dummy"]
@@ -68,7 +69,7 @@ spawn_id = &"start"
 
 [node name="Sandbox" type="Node" parent="."]
 script = ExtResource("4_sandbox")
-weapon = ExtResource("5_sword")
+weapons = Array[Resource]([ExtResource("5_sword"), ExtResource("13_bow")])
 abilities = Array[Resource]([ExtResource("6_wind"), ExtResource("7_flame")])
 
 [node name="Player" parent="." instance=ExtResource("2_player")]

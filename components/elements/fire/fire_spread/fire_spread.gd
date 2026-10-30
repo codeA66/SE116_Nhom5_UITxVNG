@@ -48,6 +48,16 @@ func chains_while_pushed() -> bool:
 	return data != null and data.chain_while_pushed
 
 
+## Độ mạnh tối thiểu của cú gió để lửa phụt theo hướng
+func get_min_impulse() -> float:
+	return data.min_impulse if data else 0.0
+
+
+## Khoảng thời gian (s) sau cú gió mạnh mà vẫn được lan nối tiếp
+func get_chain_window() -> float:
+	return data.chain_window if data else 0.0
+
+
 ## Phụt lửa từ origin (chân mục tiêu) kéo dài theo direction; co giãn vùng theo dữ liệu rồi bật.
 ## source: người châm lửa ban đầu, truyền tiếp cho mục tiêu bị lan
 func spread(origin: Vector3, direction: Vector3, source: Node = null) -> void:

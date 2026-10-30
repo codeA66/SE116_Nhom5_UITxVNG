@@ -28,6 +28,8 @@ var _tick_timer: float = 0.0
 var _source: Node
 var _enabled: bool = true
 var _last_wind_dir: Vector3 = Vector3.ZERO
+## Mốc thời gian (ms) của cú gió mạnh gần nhất
+var _last_wind_ms: int = -1000000
 ## Mốc thời gian (ms) sớm nhất được phụt lửa lại
 var _next_spread_ms: int = 0
 
@@ -90,9 +92,16 @@ func ignite(source: Node = null) -> void:
 	_tick_timer = data.tick_interval
 	set_physics_process(true)
 	ignited.emit()
-	# Cú gió đẩy cả hàng gần như cùng lúc, thường trước khi lửa lan tới: vừa bắt lửa mà còn trôi thì phụt tiếp
-	if fire_spread and fire_spread.chains_while_pushed() and wind_receiver and wind_receiver.is_being_pushed():
+	# Cú gió đẩy cả hàng gần như cùng lúc, thường trước khi lửa lan tới: vừa bắt lửa mà còn trôi thì phụt tiếp.
+	# Chỉ tính cú gió mạnh vừa xảy ra: đang trôi vì hố hút thì không phụt theo hướng một cú gió cũ
+	if fire_spread and fire_spread.chains_while_pushed() and wind_receiver and wind_receiver.is_being_pushed() \
+			and Time.get_ticks_msec() - _last_wind_ms <= int(fire_spread.get_chain_window() * 1000.0):
 		_try_spread()
+
+
+## Người châm lửa ban đầu (player...), để lửa lan / lốc lửa truyền tiếp; null nếu không rõ
+func get_source() -> Node:
+	return _source if is_instance_valid(_source) else null
 
 
 ## Tắt lửa ngay (hết giờ, chết, hoặc vật thể tự dập); gọi khi không cháy thì bỏ qua
@@ -122,12 +131,16 @@ func _is_alive() -> bool:
 	return hurtbox == null or hurtbox.is_alive()
 
 
-## Gió đẩy trúng: luôn nhớ hướng (cho lan tiếp lúc bắt lửa sau đó); đang cháy thì phụt lửa ngay
+## Cú gió mạnh đẩy trúng: nhớ hướng + thời điểm (cho lan tiếp lúc bắt lửa ngay sau đó); đang cháy thì phụt lửa ngay.
+## Lực đẩy yếu hơn min_impulse (lực kéo mỗi khung của hố hút) bỏ qua: hố hút có luật lốc lửa riêng
 func _on_wind_pushed(impulse: Vector3) -> void:
 	var flat := Vector3(impulse.x, 0.0, impulse.z)
 	if flat.is_zero_approx():
 		return
+	if fire_spread and flat.length() < fire_spread.get_min_impulse():
+		return
 	_last_wind_dir = flat.normalized()
+	_last_wind_ms = Time.get_ticks_msec()
 	if is_burning():
 		_try_spread()
 
