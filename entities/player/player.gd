@@ -7,6 +7,8 @@ extends Character
 signal bow_cooldown_started(duration: float)
 ## Vừa dùng kỹ năng gió, bắt đầu thời gian hồi (tính cả thời gian ra đòn)
 signal wind_blast_cooldown_started(duration: float)
+## Vừa dùng một kỹ năng chủ động bất kỳ (SkillData), bắt đầu thời gian khoá của nó
+signal skill_cooldown_started(skill_id: StringName, duration: float)
 
 const ANIM_IDLE := &"Rig_Medium_General/Idle_A"
 const ANIM_RUN := &"Rig_Medium_MovementBasic/Running_A"
@@ -22,6 +24,7 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export var attack_buffer_time: float = 0.25
 ## Không ngắn hơn cancel_start của đòn chém: bấm dash sớm trong đòn vẫn được giữ tới lúc hủy được
 @export var dash_buffer_time: float = 0.2
+## Buffer phím kỹ năng (mọi SkillData: Gió, Lửa...). Giữ tên cũ để scene đã chỉnh số không mất giá trị
 @export var wind_blast_buffer_time: float = 0.15
 
 @export_group("Fall Recovery")
@@ -66,8 +69,9 @@ var _attack_buffer_timer: float = 0.0
 var _dash_buffer_timer: float = 0.0
 var _dash_cooldown_timer: float = 0.0
 var _air_dashes_used: int = 0
-var _wind_blast_buffer_timer: float = 0.0
-var _wind_blast_cooldown_timer: float = 0.0
+## Buffer phím và thời gian khoá theo id kỹ năng: thêm kỹ năng mới không cần thêm biến
+var _skill_buffers: Dictionary[StringName, float] = {}
+var _skill_cooldowns: Dictionary[StringName, float] = {}
 var _bow_cooldown_timer: float = 0.0
 ## Vị trí trên đất cuối cùng không bị gió đẩy, dùng khi rơi xuống vực
 var _last_safe_position: Vector3
@@ -216,7 +220,7 @@ func set_controls_enabled(enabled: bool) -> void:
 		_jump_buffer_timer = 0.0
 		_attack_buffer_timer = 0.0
 		_dash_buffer_timer = 0.0
-		_wind_blast_buffer_timer = 0.0
+		_skill_buffers.clear()
 		_requested_weapon_slot = -1
 
 
@@ -488,12 +492,34 @@ func start_dash() -> DashData:
 	return dash
 
 
-## Đúng khi kỹ năng gió dùng được (đã mở khóa, không đang ghép vào vũ khí), có lệnh trong buffer,
-## hết cooldown và đủ năng lượng
+## Kỹ năng chủ động vừa được bấm và dùng được ngay (đã mở khóa, không đang ghép vào vũ khí, có lệnh trong buffer,
+## hết thời gian khoá, đủ năng lượng); null nếu không có. State nền / trên không chuyển sang skill.state
+func get_ready_skill() -> SkillData:
+	for ability in GameState.get_abilities():
+		var skill := ability as SkillData
+		if skill == null or not is_skill_available(skill.id):
+			continue
+		if _skill_buffers.get(skill.id, 0.0) <= 0.0 or _skill_cooldowns.get(skill.id, 0.0) > 0.0:
+			continue
+		if energy.can_spend(skill.energy_cost):
+			return skill
+	return null
+
+
+## Gọi khi vào state của kỹ năng: tiêu input, tính thời gian khoá, trừ năng lượng
+func start_skill(id: StringName) -> SkillData:
+	var data := get_ability(id) as SkillData
+	energy.spend(data.energy_cost)
+	_skill_buffers[id] = 0.0
+	_skill_cooldowns[id] = data.get_lockout()
+	skill_cooldown_started.emit(id, _skill_cooldowns[id])
+	return data
+
+
+## Đúng khi kỹ năng gió dùng được ngay (giữ cho code / test cũ gọi theo tên)
 func can_wind_blast() -> bool:
-	if not is_skill_available(WindBlastData.ID) or _wind_blast_buffer_timer <= 0.0 or _wind_blast_cooldown_timer > 0.0:
-		return false
-	return energy.can_spend(get_ability(WindBlastData.ID).energy_cost)
+	var skill := get_ready_skill()
+	return skill != null and skill.id == WindBlastData.ID
 
 
 ## Kỹ năng đã mở khóa và nguyên tố của nó không đang ghép vào vũ khí
@@ -501,13 +527,10 @@ func is_skill_available(id: StringName) -> bool:
 	return has_ability(id) and not GameState.is_ability_fused(id)
 
 
-## Gọi khi vào state WindBlast: tiêu input, tính cooldown, trừ năng lượng
+## Gọi khi vào state WindBlast: như start_skill, phát thêm signal riêng của gió cho HUD / test cũ
 func start_wind_blast() -> WindBlastData:
-	var data := get_ability(WindBlastData.ID) as WindBlastData
-	energy.spend(data.energy_cost)
-	_wind_blast_buffer_timer = 0.0
-	_wind_blast_cooldown_timer = data.duration + data.cooldown
-	wind_blast_cooldown_started.emit(_wind_blast_cooldown_timer)
+	var data := start_skill(WindBlastData.ID) as WindBlastData
+	wind_blast_cooldown_started.emit(_skill_cooldowns[WindBlastData.ID])
 	return data
 
 
@@ -626,8 +649,12 @@ func _pre_state_update(delta: float) -> void:
 	_report_unaffordable_input()
 	_dash_buffer_timer = _update_buffer(&"dash", _dash_buffer_timer, dash_buffer_time, delta)
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
-	_wind_blast_buffer_timer = _update_buffer(&"skill", _wind_blast_buffer_timer, wind_blast_buffer_time, delta)
-	_wind_blast_cooldown_timer = maxf(_wind_blast_cooldown_timer - delta, 0.0)
+	for ability in GameState.get_abilities():
+		var skill := ability as SkillData
+		if skill and not skill.input_action.is_empty():
+			_skill_buffers[skill.id] = _update_buffer(skill.input_action, _skill_buffers.get(skill.id, 0.0), wind_blast_buffer_time, delta)
+	for id: StringName in _skill_cooldowns:
+		_skill_cooldowns[id] = maxf(_skill_cooldowns[id] - delta, 0.0)
 	_bow_cooldown_timer = maxf(_bow_cooldown_timer - delta, 0.0)
 
 
@@ -748,10 +775,11 @@ func _report_unaffordable_input() -> void:
 	if not _attack_blocked_by_ui and Input.is_action_just_pressed(&"attack") and has_weapon() \
 			and not energy.can_spend(get_weapon().energy_cost):
 		energy.notify_insufficient(get_weapon().energy_cost)
-	if Input.is_action_just_pressed(&"skill") and is_skill_available(WindBlastData.ID):
-		var cost := get_ability(WindBlastData.ID).energy_cost
-		if not energy.can_spend(cost):
-			energy.notify_insufficient(cost)
+	for ability in GameState.get_abilities():
+		var skill := ability as SkillData
+		if skill and not skill.input_action.is_empty() and Input.is_action_just_pressed(skill.input_action) \
+				and is_skill_available(skill.id) and not energy.can_spend(skill.energy_cost):
+			energy.notify_insufficient(skill.energy_cost)
 
 
 func _start_blink(duration: float) -> void:

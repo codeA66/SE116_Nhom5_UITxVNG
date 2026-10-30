@@ -57,6 +57,15 @@ func set_reach(reach: float) -> void:
 	_shape.position.z = _back_edge + depth * 0.5 - position.z
 
 
+## Bề ngang và chiều cao hộp (m), giữ nguyên tâm; dùng cho chiêu có vùng đánh chỉnh theo dữ liệu (luồng lửa...)
+func set_cross_section(width: float, height: float) -> void:
+	var box := _shape.shape as BoxShape3D
+	if box == null:
+		return
+	box.size.x = maxf(width, MIN_DEPTH)
+	box.size.y = maxf(height, MIN_DEPTH)
+
+
 ## duration: độ dài khoảng bật (s) để VFX/âm thanh khớp nhịp; bỏ trống nếu state không tính
 func activate(data: AttackData, duration: float = -1.0) -> void:
 	attack = data

@@ -1,5 +1,5 @@
 class_name WindBlastData
-extends AbilityData
+extends SkillData
 ## Thông số kỹ năng thổi gió. Gió không gây sát thương, chỉ đẩy; sát thương đến từ môi trường.
 ## Chỉnh trong file .tres, không cần sửa code.
 
@@ -26,3 +26,7 @@ const ID := &"wind_blast"
 ## Model cáo chưa có anim thổi riêng, tạm dùng anim chém ngang
 @export var animation: StringName = &"Rig_Medium_CombatMelee/Melee_1H_Attack_Slice_Horizontal"
 @export var anim_speed: float = 1.3
+
+
+func get_lockout() -> float:
+	return duration + cooldown

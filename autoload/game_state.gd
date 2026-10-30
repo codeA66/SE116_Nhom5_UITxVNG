@@ -83,6 +83,11 @@ func get_ability(id: StringName) -> AbilityData:
 	return progress.get_ability(id)
 
 
+## Mọi kỹ năng đã mở khoá (không sao chép: chỉ đọc, đừng sửa mảng trả về)
+func get_abilities() -> Array[AbilityData]:
+	return progress.abilities
+
+
 func unlock_ability(ability: AbilityData) -> void:
 	if ability == null or has_ability(ability.id):
 		return
