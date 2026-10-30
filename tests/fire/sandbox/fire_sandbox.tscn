@@ -3,12 +3,14 @@
 [ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_zone"]
 [ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="3_spawn"]
-[ext_resource type="Script" path="res://tests/fire/fire_sandbox.gd" id="4_sandbox"]
+[ext_resource type="Script" path="res://tests/fire/sandbox/fire_sandbox.gd" id="4_sandbox"]
 [ext_resource type="Resource" path="res://resources/combat/weapons/sword.tres" id="5_sword"]
 [ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="6_wind"]
 [ext_resource type="Resource" path="res://abilities/flame_breath/flame_breath.tres" id="7_flame"]
 [ext_resource type="PackedScene" path="res://objects/combat/training_dummy/training_dummy.tscn" id="8_dummy"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="9_enemy"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/shield_bearer/shield_bearer.tscn" id="10_shield"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="11_wisp"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 sky_top_color = Color(0.32, 0.4, 0.55, 1)
@@ -81,3 +83,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -3.5)
 
 [node name="Enemy" parent="." instance=ExtResource("9_enemy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -10)
+
+[node name="EnemyRow2" parent="." instance=ExtResource("9_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -13)
+
+[node name="EnemyRow3" parent="." instance=ExtResource("9_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -16)
+
+[node name="ShieldBearer" parent="." instance=ExtResource("10_shield")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -12)
+
+[node name="WispCaster" parent="." instance=ExtResource("11_wisp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -6)

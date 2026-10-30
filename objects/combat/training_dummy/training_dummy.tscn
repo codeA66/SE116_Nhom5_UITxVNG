@@ -3,7 +3,9 @@
 [ext_resource type="Script" path="res://objects/combat/training_dummy/training_dummy.gd" id="1_dummy"]
 [ext_resource type="Script" path="res://components/combat/health/health_component.gd" id="2_health"]
 [ext_resource type="Script" path="res://components/combat/hurtbox/hurtbox_component.gd" id="3_hurtbox"]
-[ext_resource type="Script" path="res://components/wind/wind_receiver/wind_receiver_component.gd" id="4_wind"]
+[ext_resource type="Script" path="res://components/elements/wind/wind_receiver/wind_receiver_component.gd" id="4_wind"]
+[ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="burn_comp"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="burn_vfx"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.4
@@ -70,3 +72,10 @@ billboard = 1
 no_depth_test = true
 font_size = 48
 outline_size = 12
+
+[node name="BurnableComponent" parent="." node_paths=PackedStringArray("hurtbox", "match_shape_of") instance=ExtResource("burn_comp")]
+hurtbox = NodePath("../HurtboxComponent")
+match_shape_of = NodePath("../HurtboxComponent/CollisionShape3D")
+
+[node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("burn_vfx")]
+burnable = NodePath("../BurnableComponent")

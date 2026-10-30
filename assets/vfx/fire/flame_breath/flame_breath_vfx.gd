@@ -5,7 +5,7 @@ extends Node3D
 ## Nằm dưới gốc Player, KHÔNG dưới Model: foxy_player.gd ghi đè material mọi mesh dưới Model.
 ## Chỉ nghe signal (hitbox.activated / hitbox.hit / state_changed), không dò va chạm mỗi frame; state không biết VFX tồn tại.
 ##
-## TRẠNG THÁI (2026-10-30, đã chạy thử trong tests/fire/fire_sandbox.tscn, cửa sổ + headless):
+## TRẠNG THÁI (2026-10-30, đã chạy thử trong tests/fire/sandbox/fire_sandbox.tscn, cửa sổ + headless):
 ## - ĐẠT: khớp tầm/độ rộng theo FlameBreathData (đã chụp tầm 0.5 m, 4.5 m, 20 m; rộng 0.3 m, 2.4 m, 10 m).
 ## - ĐẠT: đọc rõ trên nền sáng và nền tối; tắt dần bằng khói, không cắt ngang.
 ## - ĐẠT: khung chậm nhất lúc phun thường 9-20 ms (tầm 4.5 m ~9-10 ms, tầm 20 m ~13.5 ms, rộng 10 m ~17-20 ms).

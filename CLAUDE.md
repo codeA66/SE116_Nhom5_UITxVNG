@@ -54,7 +54,7 @@ assets/
   audio/       music/, sfx/, ambience/
   ui/          icons/, fonts/, theme/
 autoload/      game_state, save_manager, scene_manager, combat_fx, ...
-components/    ai/, combat/ (health, hitbox, hurtbox), core/ (state_machine, object_pool), feedback/, utility/, wind/
+components/    ai/, combat/ (health, hitbox, hurtbox), core/ (state_machine, object_pool), feedback/, utility/, elements/ {wind, fire, ...}
 entities/      _base/ {character, data/}
                player/ {player, camera/, data/, foxy/, states/{ground, air, action, status}}
                enemies/ {_base/ (states/{movement, attack, status}), palace/, wildlife/}

@@ -3,7 +3,7 @@ extends Node3D
 ## Hiệu ứng trúng lửa tại một mục tiêu: tia lửa + chớp sáng chỗ chạm + phủ cam lên mesh của mục tiêu.
 ## FlameBreathVfx giữ sẵn vài node này trong ImpactPool và gọi play() mỗi lần hitbox lửa trúng (không instantiate mỗi lần).
 ##
-## TRẠNG THÁI (2026-10-30, đã chạy thử trong tests/fire/fire_sandbox.tscn):
+## TRẠNG THÁI (2026-10-30, đã chạy thử trong tests/fire/sandbox/fire_sandbox.tscn):
 ## - ĐẠT: tia lửa + chớp ở đúng vị trí mục tiêu; phủ cam rồi tự trả lại; không cấp phát mỗi frame.
 ## - ĐẠT: danh sách mesh của mỗi mục tiêu chỉ tìm 1 lần rồi lưu lại (trước đây find_children mỗi lần trúng).
 ## - CHƯA ĐẠT / LƯU Ý: lớp phủ cam dùng chung material_overlay với chớp trúng đòn có sẵn của quái

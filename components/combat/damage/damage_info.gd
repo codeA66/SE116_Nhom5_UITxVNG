@@ -4,7 +4,7 @@ extends RefCounted
 ## nên Hurtbox không cần biết sát thương đến từ đâu.
 
 ## Loại sát thương. Thêm nguyên tố mới (gió, lửa...) chỉ cần thêm một giá trị ở đây
-enum Type { PHYSICAL }
+enum Type { PHYSICAL, FIRE }
 
 var amount: int
 var type: Type
@@ -16,6 +16,8 @@ var direction: Vector3
 var attack: AttackData
 ## Bỏ qua bất tử của mục tiêu (bẫy môi trường: dash hay vừa bị đánh cũng không đi xuyên được)
 var ignores_invincibility: bool = false
+## false: đòn không làm mục tiêu khựng (tick cháy...), mục tiêu vẫn nháy và mất máu
+var staggers: bool = true
 
 
 func _init(p_amount: int = 1, p_type: Type = Type.PHYSICAL, p_knockback: Vector3 = Vector3.ZERO, p_source: Node = null) -> void:
