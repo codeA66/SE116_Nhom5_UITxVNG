@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/wind/burst/wind_burst_vfx.gd" id="1_burst"]
+
+[node name="WindBurstVfx" type="Node3D"]
+script = ExtResource("1_burst")
+
+[node name="Mist" type="MultiMeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 1.2)
+cast_shadow = 0
+
+[node name="Strokes" type="MultiMeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="Motes" type="MultiMeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="Charge" type="MultiMeshInstance3D" parent="."]
+cast_shadow = 0

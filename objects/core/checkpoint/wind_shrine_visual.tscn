@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://objects/core/checkpoint/wind_shrine_visual.gd" id="1_visual"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_shrine/wind_shrine.glb" id="2_model"]
+
+[sub_resource type="QuadMesh" id="AuraMesh"]
+size = Vector2(1, 1)
+
+[node name="WindShrineVisual" type="Node3D"]
+script = ExtResource("1_visual")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="Aura" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.43, 0)
+cast_shadow = 0
+mesh = SubResource("AuraMesh")

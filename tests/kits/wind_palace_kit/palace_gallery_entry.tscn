@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/upper_gallery_l_entry_6m.glb" id="1"]
+
+[sub_resource type="BoxShape3D" id="S0"]
+size = Vector3(6, 0.24, 2)
+
+[sub_resource type="BoxShape3D" id="S1"]
+size = Vector3(2, 0.24, 4)
+
+[sub_resource type="BoxShape3D" id="S2"]
+size = Vector3(6, 0.728, 0.4)
+
+[sub_resource type="BoxShape3D" id="S3"]
+size = Vector3(0.4, 1.12, 2)
+
+[node name="PalaceModule" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1")]
+position = Vector3(-0.04999995, 0.0, 0.04999995)
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Shape0" type="CollisionShape3D" parent="Collision"]
+position = Vector3(0, 0.12, 2)
+shape = SubResource("S0")
+
+[node name="Shape1" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-2, 0.12, -1)
+shape = SubResource("S1")
+
+[node name="Shape2" type="CollisionShape3D" parent="Collision"]
+position = Vector3(0, 0.604, 2.9)
+shape = SubResource("S2")
+
+[node name="Shape3" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-2.9, 0.8, -2)
+shape = SubResource("S3")
+

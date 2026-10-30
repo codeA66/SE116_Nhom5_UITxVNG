@@ -1,0 +1,67 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="1_damage"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_base"]
+albedo_color = Color(0.22, 0.2, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_base"]
+material = SubResource("StandardMaterial3D_base")
+size = Vector3(2, 0.04, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spike"]
+albedo_color = Color(0.75, 0.75, 0.78, 1)
+metallic = 0.6
+roughness = 0.35
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_spike"]
+material = SubResource("StandardMaterial3D_spike")
+top_radius = 0.0
+bottom_radius = 0.12
+height = 0.45
+radial_segments = 6
+rings = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_area"]
+size = Vector3(1.8, 1, 1.8)
+
+[node name="SpikeTrap" type="Area3D"]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("1_damage")
+ignore_invincibility = true
+lethal = true
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_base")
+
+[node name="Spike1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.22, -0.5)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_spike")
+
+[node name="Spike2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.22, -0.5)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_spike")
+
+[node name="Spike3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.22, 0.5)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_spike")
+
+[node name="Spike4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.22, 0.5)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_spike")
+
+[node name="Spike5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_spike")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_area")

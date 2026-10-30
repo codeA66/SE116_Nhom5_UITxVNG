@@ -1,0 +1,458 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_zone"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://objects/world/water/water.tscn" id="3_veqk8"]
+[ext_resource type="Script" path="res://objects/world/water/water.gd" id="4_fbr0n"]
+[ext_resource type="Resource" path="res://resources/world/water/sea_teal.tres" id="5_ufssb"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/weapon/weapon_pickup.tscn" id="6_pcvyj"]
+[ext_resource type="Script" path="res://objects/core/pickups/weapon/weapon_pickup.gd" id="7_mbq41"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/sword.tres" id="8_i1k8n"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/bow.tres" id="bow_weapon"]
+[ext_resource type="PackedScene" path="res://objects/combat/training_dummy/training_dummy.tscn" id="9_kuppm"]
+[ext_resource type="Script" path="res://objects/combat/training_dummy/training_dummy.gd" id="10_yj7l3"]
+[ext_resource type="PackedScene" path="res://objects/wind_puzzle/wind_zone/wind_zone.tscn" id="11_8pi34"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/wind_zone/wind_zone.gd" id="12_ar3jg"]
+[ext_resource type="Resource" path="res://resources/world/wind/wind/wind_lane.tres" id="13_60ygp"]
+[ext_resource type="Resource" path="res://resources/world/wind/wind/wind_pulse_block.tres" id="14_06ovo"]
+[ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint.tscn" id="15_i0seb"]
+[ext_resource type="Script" path="res://objects/core/checkpoint/checkpoint.gd" id="16_3k7rm"]
+[ext_resource type="Resource" path="res://resources/world/wind/wind/wind_gap.tres" id="17_6cjlc"]
+[ext_resource type="Resource" path="res://resources/world/wind/wind/wind_updraft.tres" id="18_1ti1l"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/ability_pickup.tscn" id="19_2x252"]
+[ext_resource type="Script" path="res://objects/core/pickups/ability/ability_pickup.gd" id="20_iwbtt"]
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="21_iassw"]
+[ext_resource type="PackedScene" path="res://objects/combat/hazards/spike_trap.tscn" id="22_4hj8e"]
+[ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="23_312uv"]
+[ext_resource type="PackedScene" path="res://objects/traversal/boat/boat.tscn" id="24_yv6nd"]
+[ext_resource type="Script" path="res://objects/traversal/boat/boat.gd" id="25_8ecdu"]
+[ext_resource type="Resource" path="res://resources/world/transport/boat/boat_default.tres" id="26_rsc44"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_du5pb"]
+albedo_color = Color(0.3, 0.31, 0.34, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_agy2d"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(16, 5, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rrf4m"]
+size = Vector3(16, 5, 12)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.85)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1cgky"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(6, 1, 12.165525)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_c7l78"]
+size = Vector3(6, 1, 12.165525)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ugvfk"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(6, 7, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ob2up"]
+size = Vector3(6, 7, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_w7h0q"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(12, 7, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3kxph"]
+size = Vector3(12, 7, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4yi42"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(6, 7, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4odx3"]
+size = Vector3(6, 7, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dm58n"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(6, 7, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3mvw1"]
+size = Vector3(6, 7, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o2dbg"]
+albedo_color = Color(0.42, 0.43, 0.47, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yn8re"]
+material = SubResource("StandardMaterial3D_o2dbg")
+size = Vector3(16, 11, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wk1kd"]
+size = Vector3(16, 11, 18)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2l0gw"]
+material = SubResource("StandardMaterial3D_o2dbg")
+size = Vector3(6, 9, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1hv2t"]
+size = Vector3(6, 9, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xjumq"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(6, 7, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oh08f"]
+size = Vector3(6, 7, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lf1ni"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(10, 5, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_achws"]
+size = Vector3(10, 5, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xd7at"]
+material = SubResource("StandardMaterial3D_du5pb")
+size = Vector3(4, 5, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e6vm1"]
+size = Vector3(4, 5, 6)
+
+[sub_resource type="Curve3D" id="Curve3D_0m4s5"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -29.5, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[node name="TestGame" type="Node3D" unique_id=1660711879]
+script = ExtResource("1_zone")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1387687984]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1972289584]
+transform = Transform3D(0.8660254, -0.38302222, 0.32139382, 0, 0.6427876, 0.76604444, -0.5, -0.66341394, 0.5566704, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Start" type="Marker3D" parent="." unique_id=205903106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+script = ExtResource("2_spawn")
+spawn_id = &"start"
+
+[node name="Water" type="Node3D" parent="." unique_id=1940017995 instance=ExtResource("3_veqk8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, -1, -5)
+script = ExtResource("4_fbr0n")
+data = ExtResource("5_ufssb")
+size = Vector3(72, 4, 40)
+
+[node name="Station1_Yard" type="Node3D" parent="." unique_id=381150982]
+
+[node name="Yard" type="StaticBody3D" parent="Station1_Yard" unique_id=688883266]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 6)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station1_Yard/Yard" unique_id=1964401230]
+mesh = SubResource("BoxMesh_agy2d")
+
+[node name="Collision" type="CollisionShape3D" parent="Station1_Yard/Yard" unique_id=997500636]
+shape = SubResource("BoxShape3D_rrf4m")
+
+[node name="SwordPickup" type="Node3D" parent="Station1_Yard" unique_id=1002488766 instance=ExtResource("6_pcvyj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 6)
+script = ExtResource("7_mbq41")
+weapon = ExtResource("8_i1k8n")
+persistent_id = &"test_game.sword"
+
+[node name="BowPickup" parent="Station1_Yard" instance=ExtResource("6_pcvyj")]
+position = Vector3(6, 0, 6)
+weapon = ExtResource("bow_weapon")
+persistent_id = &"test_game.bow"
+
+[node name="Dummy1" type="CharacterBody3D" parent="Station1_Yard" unique_id=377788384 instance=ExtResource("9_kuppm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
+collision_layer = 4
+script = ExtResource("10_yj7l3")
+flash_material = SubResource("StandardMaterial3D_flash")
+
+[node name="Dummy2" type="CharacterBody3D" parent="Station1_Yard" unique_id=1130936318 instance=ExtResource("9_kuppm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 6)
+collision_layer = 4
+script = ExtResource("10_yj7l3")
+flash_material = SubResource("StandardMaterial3D_flash")
+
+[node name="Label" type="Label3D" parent="Station1_Yard" unique_id=165629571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 10)
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "1. SÂN ĐẦU"
+font_size = 56
+outline_size = 14
+
+[node name="Station2_GentleWind" type="Node3D" parent="." unique_id=1899329565]
+
+[node name="Ramp" type="StaticBody3D" parent="Station2_GentleWind" unique_id=2093065075]
+transform = Transform3D(1, 0, 0, 0, 0.9863939, -0.16439898, 0, 0.16439898, 0.9863939, 0, 0.50680304, -6.0821996)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station2_GentleWind/Ramp" unique_id=778966353]
+mesh = SubResource("BoxMesh_1cgky")
+
+[node name="Collision" type="CollisionShape3D" parent="Station2_GentleWind/Ramp" unique_id=338500925]
+shape = SubResource("BoxShape3D_c7l78")
+
+[node name="GentleWind" type="Area3D" parent="Station2_GentleWind" unique_id=1604802431 instance=ExtResource("11_8pi34")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.5, -6)
+collision_layer = 64
+collision_mask = 0
+script = ExtResource("12_ar3jg")
+data = ExtResource("13_60ygp")
+size = Vector3(6, 4, 12)
+
+[node name="Label" type="Label3D" parent="Station2_GentleWind" unique_id=1090207909]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 4, -6)
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "2. GIÓ NHẸ (đi ngược được)"
+font_size = 56
+outline_size = 14
+
+[node name="Station3_BlockingWind" type="Node3D" parent="." unique_id=495199082]
+
+[node name="Landing" type="StaticBody3D" parent="Station3_BlockingWind" unique_id=1782291432]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, -15)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station3_BlockingWind/Landing" unique_id=1061079044]
+mesh = SubResource("BoxMesh_ugvfk")
+
+[node name="Collision" type="CollisionShape3D" parent="Station3_BlockingWind/Landing" unique_id=1015468878]
+shape = SubResource("BoxShape3D_ob2up")
+
+[node name="Corridor" type="StaticBody3D" parent="Station3_BlockingWind" unique_id=1501109640]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, -1.5, -15)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station3_BlockingWind/Corridor" unique_id=1719343570]
+mesh = SubResource("BoxMesh_w7h0q")
+
+[node name="Collision" type="CollisionShape3D" parent="Station3_BlockingWind/Corridor" unique_id=1600345085]
+shape = SubResource("BoxShape3D_3kxph")
+
+[node name="BlockingPulseWind" type="Area3D" parent="Station3_BlockingWind" unique_id=339854563 instance=ExtResource("11_8pi34")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9, 3.5, -15)
+collision_layer = 64
+collision_mask = 0
+script = ExtResource("12_ar3jg")
+data = ExtResource("14_06ovo")
+size = Vector3(4, 3, 12)
+
+[node name="CP1Platform" type="StaticBody3D" parent="Station3_BlockingWind" unique_id=186913785]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -1.5, -15)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station3_BlockingWind/CP1Platform" unique_id=537956230]
+mesh = SubResource("BoxMesh_4yi42")
+
+[node name="Collision" type="CollisionShape3D" parent="Station3_BlockingWind/CP1Platform" unique_id=241835914]
+shape = SubResource("BoxShape3D_4odx3")
+
+[node name="Checkpoint1" type="Node3D" parent="Station3_BlockingWind" unique_id=696175975 instance=ExtResource("15_i0seb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 2, -15)
+script = ExtResource("16_3k7rm")
+checkpoint_id = &"test_game_cp_1"
+
+[node name="Label" type="Label3D" parent="Station3_BlockingWind" unique_id=677859178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 6, -15)
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "3. GIÓ CHẶN CÓ NHỊP (canh lúc tắt)"
+font_size = 56
+outline_size = 14
+
+[node name="Station4_GapWind" type="Node3D" parent="." unique_id=1454756828]
+
+[node name="TailWind" type="Area3D" parent="Station4_GapWind" unique_id=1066561139 instance=ExtResource("11_8pi34")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 25, 3.5, -15)
+collision_layer = 64
+collision_mask = 0
+script = ExtResource("12_ar3jg")
+data = ExtResource("17_6cjlc")
+size = Vector3(4, 3, 12)
+
+[node name="Landing" type="StaticBody3D" parent="Station4_GapWind" unique_id=631096883]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, -1.5, -15)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station4_GapWind/Landing" unique_id=574546783]
+mesh = SubResource("BoxMesh_dm58n")
+
+[node name="Collision" type="CollisionShape3D" parent="Station4_GapWind/Landing" unique_id=1032161455]
+shape = SubResource("BoxShape3D_3mvw1")
+
+[node name="Label" type="Label3D" parent="Station4_GapWind" unique_id=1457623539]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 6, -15)
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "4. VỰC + GIÓ ĐẨY"
+font_size = 56
+outline_size = 14
+
+[node name="Station5_Updraft" type="Node3D" parent="." unique_id=1498885880]
+
+[node name="Updraft" type="Area3D" parent="Station5_Updraft" unique_id=578608946 instance=ExtResource("11_8pi34")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 38, 3, -15)
+collision_layer = 64
+collision_mask = 0
+script = ExtResource("12_ar3jg")
+data = ExtResource("18_1ti1l")
+size = Vector3(4, 4, 8)
+fade_toward_end = true
+
+[node name="Label" type="Label3D" parent="Station5_Updraft" unique_id=333376071]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 9, -15)
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "5. CỘT GIÓ"
+font_size = 56
+outline_size = 14
+
+[node name="Station6_Plateau" type="Node3D" parent="." unique_id=1347813119]
+
+[node name="Plateau" type="StaticBody3D" parent="Station6_Plateau" unique_id=147209070]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 0.5, -11)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station6_Plateau/Plateau" unique_id=1507921543]
+mesh = SubResource("BoxMesh_yn8re")
+
+[node name="Collision" type="CollisionShape3D" parent="Station6_Plateau/Plateau" unique_id=734632087]
+shape = SubResource("BoxShape3D_wk1kd")
+
+[node name="Checkpoint2" type="Node3D" parent="Station6_Plateau" unique_id=1034557045 instance=ExtResource("15_i0seb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, 6, -16)
+script = ExtResource("16_3k7rm")
+checkpoint_id = &"test_game_cp_2"
+
+[node name="WindBook" type="Node3D" parent="Station6_Plateau" unique_id=575096881 instance=ExtResource("19_2x252")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, 6, -10)
+script = ExtResource("20_iwbtt")
+ability = ExtResource("21_iassw")
+persistent_id = &"test_game.wind_book"
+
+[node name="Spike1" type="Area3D" parent="Station6_Plateau" unique_id=1355560327 instance=ExtResource("22_4hj8e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52, 6, -12)
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("23_312uv")
+ignore_invincibility = true
+lethal = true
+
+[node name="Spike2" type="Area3D" parent="Station6_Plateau" unique_id=1191536148 instance=ExtResource("22_4hj8e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52, 6, -10)
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("23_312uv")
+ignore_invincibility = true
+lethal = true
+
+[node name="Spike3" type="Area3D" parent="Station6_Plateau" unique_id=242335275 instance=ExtResource("22_4hj8e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52, 6, -8)
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("23_312uv")
+ignore_invincibility = true
+lethal = true
+
+[node name="Dummy3" type="CharacterBody3D" parent="Station6_Plateau" unique_id=137297443 instance=ExtResource("9_kuppm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48.5, 6, -12)
+collision_layer = 4
+script = ExtResource("10_yj7l3")
+flash_material = SubResource("StandardMaterial3D_flash")
+
+[node name="Dummy4" type="CharacterBody3D" parent="Station6_Plateau" unique_id=648111089 instance=ExtResource("9_kuppm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48.5, 6, -8)
+collision_layer = 4
+script = ExtResource("10_yj7l3")
+flash_material = SubResource("StandardMaterial3D_flash")
+
+[node name="Label" type="Label3D" parent="Station6_Plateau" unique_id=1299488267]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 9.5, -11)
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "6. SÁCH GIÓ + GAI (thổi hình nộm vào gai)"
+font_size = 56
+outline_size = 14
+
+[node name="Station7_Boat" type="Node3D" parent="." unique_id=1621448891]
+
+[node name="Step1" type="StaticBody3D" parent="Station7_Boat" unique_id=1681915891]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, -0.5, -0.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station7_Boat/Step1" unique_id=1402734017]
+mesh = SubResource("BoxMesh_2l0gw")
+
+[node name="Collision" type="CollisionShape3D" parent="Station7_Boat/Step1" unique_id=1214667121]
+shape = SubResource("BoxShape3D_1hv2t")
+
+[node name="Step2" type="StaticBody3D" parent="Station7_Boat" unique_id=119416605]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, -1.5, 2.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station7_Boat/Step2" unique_id=7710680]
+mesh = SubResource("BoxMesh_xjumq")
+
+[node name="Collision" type="CollisionShape3D" parent="Station7_Boat/Step2" unique_id=944473581]
+shape = SubResource("BoxShape3D_oh08f")
+
+[node name="DockC" type="StaticBody3D" parent="Station7_Boat" unique_id=626842996]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, -2.5, 7)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station7_Boat/DockC" unique_id=360389332]
+mesh = SubResource("BoxMesh_lf1ni")
+
+[node name="Collision" type="CollisionShape3D" parent="Station7_Boat/DockC" unique_id=1820143562]
+shape = SubResource("BoxShape3D_achws")
+
+[node name="DockD" type="StaticBody3D" parent="Station7_Boat" unique_id=1511648235]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -2.5, 7)
+
+[node name="Mesh" type="MeshInstance3D" parent="Station7_Boat/DockD" unique_id=729513769]
+mesh = SubResource("BoxMesh_xd7at")
+
+[node name="Collision" type="CollisionShape3D" parent="Station7_Boat/DockD" unique_id=298048078]
+shape = SubResource("BoxShape3D_e6vm1")
+
+[node name="BoatRoute" type="Path3D" parent="Station7_Boat" unique_id=301606427]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44.2, -1, 7)
+curve = SubResource("Curve3D_0m4s5")
+
+[node name="Boat" type="AnimatableBody3D" parent="Station7_Boat" unique_id=993889391 node_paths=PackedStringArray("route", "water") instance=ExtResource("24_yv6nd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44.2, -0.9, 7)
+collision_mask = 0
+script = ExtResource("25_8ecdu")
+data = ExtResource("26_rsc44")
+route = NodePath("../BoatRoute")
+water = NodePath("../../Water")
+persistent_id = &"test_game.boat"
+
+[node name="Checkpoint3" type="Node3D" parent="Station7_Boat" unique_id=932595932 instance=ExtResource("15_i0seb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 7)
+script = ExtResource("16_3k7rm")
+checkpoint_id = &"test_game_cp_3"
+
+[node name="Label" type="Label3D" parent="Station7_Boat" unique_id=1943591790]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51, 4, 7)
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "7. THUYỀN (thổi buồm từ phía sau)"
+font_size = 56
+outline_size = 14

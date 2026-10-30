@@ -18,7 +18,7 @@ signal progress_replaced
 signal fusion_changed
 
 const NEW_GAME: NewGameData = preload("res://resources/player/new_game.tres")
-const FUSIONS: FusionTable = preload("res://resources/fusion/fusion_table.tres")
+const FUSIONS: FusionTable = preload("res://resources/combat/fusion/fusion_table.tres")
 
 var progress: PlayerProgress = PlayerProgress.new()
 

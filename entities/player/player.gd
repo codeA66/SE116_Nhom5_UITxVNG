@@ -45,7 +45,7 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 ## Số mũi tên tạo sẵn trước combat; thiếu thì pool vẫn mở rộng để không mất phát bắn.
 @export var arrow_pool_size: int = 4
 ## Chuẩn bị cả vũ khí chưa nhặt, không cấp vũ khí cho tiến trình.
-@export var combat_weapons: Array[WeaponData] = [preload("res://resources/weapons/bow.tres")]
+@export var combat_weapons: Array[WeaponData] = [preload("res://resources/combat/weapons/bow.tres")]
 ## Khi nhắm cung, người quay nghiêng bấy nhiêu độ để vai trái hướng về mục tiêu như cung thủ;
 ## cung và mũi tên vẫn theo đúng hướng nhắm. Model nhìn theo +Z nên bên trái là +X. 0 = đứng thẳng mặt
 @export_range(-180.0, 180.0, 0.5) var bow_stance_degrees: float = 90.0
@@ -139,7 +139,7 @@ func prepare_for_combat() -> void:
 		return
 	_combat_prepared = true
 	# Nạp lúc chạy để tránh vòng preload FusionTable -> FusionEffect -> Player.
-	_fusion_table = load("res://resources/fusion/fusion_table.tres") as FusionTable
+	_fusion_table = load("res://resources/combat/fusion/fusion_table.tres") as FusionTable
 	var weapons: Array[WeaponData] = combat_weapons.duplicate()
 	weapons.append_array(GameState.progress.weapons)
 	for weapon in weapons:

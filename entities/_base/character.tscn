@@ -1,12 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" uid="uid://b6r4ht78fr5vg" path="res://entities/_base/character.gd" id="1_character"]
-[ext_resource type="Script" uid="uid://bin26hafdtu1e" path="res://components/health/health_component.gd" id="2_health"]
-[ext_resource type="Script" uid="uid://cquuusc2l7sjd" path="res://components/hurtbox/hurtbox_component.gd" id="3_hurtbox"]
-[ext_resource type="Script" uid="uid://b3ue3kprh711p" path="res://components/wind_receiver/wind_receiver_component.gd" id="4_wind"]
-[ext_resource type="Script" uid="uid://bhy2r4v3q4hwg" path="res://components/squash_stretch/squash_stretch_component.gd" id="5_squash"]
-[ext_resource type="PackedScene" path="res://components/blob_shadow/blob_shadow.tscn" id="6_blob"]
-[ext_resource type="Script" uid="uid://blr8snfwvdvqy" path="res://components/state_machine/state_machine.gd" id="7_fsm"]
+[ext_resource type="Script" uid="uid://bin26hafdtu1e" path="res://components/combat/health/health_component.gd" id="2_health"]
+[ext_resource type="Script" uid="uid://cquuusc2l7sjd" path="res://components/combat/hurtbox/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" uid="uid://b3ue3kprh711p" path="res://components/wind/wind_receiver/wind_receiver_component.gd" id="4_wind"]
+[ext_resource type="Script" uid="uid://bhy2r4v3q4hwg" path="res://components/feedback/squash_stretch/squash_stretch_component.gd" id="5_squash"]
+[ext_resource type="PackedScene" path="res://components/utility/blob_shadow/blob_shadow.tscn" id="6_blob"]
+[ext_resource type="Script" uid="uid://blr8snfwvdvqy" path="res://components/core/state_machine/state_machine.gd" id="7_fsm"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35

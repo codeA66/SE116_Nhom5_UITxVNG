@@ -1,8 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="PackedScene" path="res://assets/vfx/wind/wind_impact_pool.tscn" id="1_pool"]
-[ext_resource type="PackedScene" path="res://abilities/fusion/vfx/fusion_impact_vfx.tscn" id="2_impact"]
-
-[node name="FusionImpactPool" instance=ExtResource("1_pool")]
-impact_scene = ExtResource("2_impact")
-pool_size = 4

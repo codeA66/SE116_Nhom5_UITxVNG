@@ -5,7 +5,7 @@ extends Player
 
 const LIBRARY_NAME: StringName = &"foxy"
 const BOW_ANIMATIONS: GDScript = preload("res://entities/player/foxy/foxy_bow_animations.gd")
-const TOON_SHADER: Shader = preload("res://assets/shaders/foxy_toon.gdshader")
+const TOON_SHADER: Shader = preload("res://assets/shaders/character/foxy_toon.gdshader")
 const BLINK_SHAPE: StringName = &"Blink"
 ## Chuyển cảnh mặc định của clip hành động khi state không yêu cầu riêng
 const ACTION_BLEND: float = 0.05
@@ -14,7 +14,7 @@ const ACTION_BLEND: float = 0.05
 ## Chỉ bật trong scene thử: không thay đổi tiến trình hoặc file save
 @export var preview_sword: bool = false
 @export var preview_dash: bool = false
-@export var preview_weapon: WeaponData = preload("res://resources/weapons/sword.tres")
+@export var preview_weapon: WeaponData = preload("res://resources/combat/weapons/sword.tres")
 @export var preview_dash_data: DashData = preload("res://abilities/dash/dash.tres")
 
 @export_group("Rig")

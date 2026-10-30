@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EnemySkillData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/skills/enemy_skill_data.gd" id="script"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/_shared/hazards/delayed_claw.tscn" id="effect"]
+[resource]
+script = ExtResource("script")
+skill_id = &"claw"
+animation = &"BearActions/Claw_Windup"
+duration = 1.533333
+active_start = 1.0
+active_end = 1.15
+windup_end = 0.97
+maximum_range = 1.9
+cooldown = 3.0
+damage = 1
+knockback = 2.5
+hitstop = 0.03
+
+effect_scene = ExtResource("effect")
+effect_at_target = true
+effect_after_animation = true

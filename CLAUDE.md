@@ -34,19 +34,40 @@ Tài liệu này là quy tắc bắt buộc cho Claude khi làm việc trong pro
 
 ## 3. Cấu trúc thư mục (tổ chức theo tính năng)
 
+Nguyên tắc:
+1. **Gom theo tính năng**, không theo loại file. Scene và script cùng tên nằm cùng thư mục.
+2. **Mỗi thư mục tối đa 6 mục con.** Vượt thì tách nhóm con theo nghĩa (`movement/`, `attack/`, `status/`...), không đánh số tuỳ tiện.
+3. **Theo map:** asset, level, puzzle riêng của một map nằm trong nhánh của map đó (`map_wind`, `map_ice`...). Dùng chung nhiều map thì để ở nhánh chung (`shared/`).
+4. **Dữ liệu cân bằng** (`.tres`) nằm trong `resources/`, cùng tên nhóm với code của nó.
+5. **Ngoại lệ được phép** (có `README.md` giải thích): gói bên thứ ba (KayKit), nội bộ kit model, file nguồn thô (FBX), phòng level đánh số.
+6. **Chuyển file:** dùng `map_build_tmp/mvdir.sh` (git mv + sửa mọi `res://`). Phòng level lưu nhị phân `.scn`: đổi sang `.tscn` trước khi chuyển rồi đổi lại (Godot không tự tìm lại phụ thuộc qua UID trong file nhị phân).
+
 ```
-addons/        plugin bên thứ 3
-assets/        asset dùng chung: models, textures, materials, audio, fonts, vfx, shaders
-entities/      player/, enemies/ (_base/), bosses/, npcs/
-components/    health, hitbox, hurtbox, state_machine... tái sử dụng
-abilities/     dash/, double_jump/, các skill nhặt được
-objects/       door_locked, key, traps, platforms, wind_zone, checkpoint, pickups
-levels/        hub_temple/, zone_1_wind/ (rooms/), ..., final_arena/
-ui/            hud/, menus/, dialogs/, theme/
-autoload/      game_manager, save_manager, audio_manager, event_bus
-resources/     dữ liệu .tres: stats, ability data (để cân bằng game)
-tests/         scene thử nghiệm
-docs/          tài liệu
+abilities/     dash/, wind_blast/, ... (mỗi kỹ năng 1 thư mục); fusion/ {data, effects, moves, vfx}
+assets/
+  characters/  foxy/ + gói KayKit (ngoại lệ)
+  materials/
+  models/      map_wind/ (wind_kit, wind_palace_v1, tier_3_monkey_garden, ...), map_ice/, map_fire/, map_thunder/,
+               map_temple/, enemies/, bosses/, shared/ (weapons, generated, đồ dùng chung)
+  shaders/     character/, combat/, environment/, screen/, wind/ (+ ice/, fire/, thunder/)
+  vfx/         ambient/, combat/, enemies/, wind/ (+ ice/, fire/, thunder/)
+  audio/       music/, sfx/, ambience/
+  ui/          icons/, fonts/, theme/
+autoload/      game_state, save_manager, scene_manager, combat_fx, ...
+components/    ai/, combat/ (health, hitbox, hurtbox), core/ (state_machine, object_pool), feedback/, utility/, wind/
+entities/      _base/ {character, data/}
+               player/ {player, camera/, data/, foxy/, states/{ground, air, action, status}}
+               enemies/ {_base/ (states/{movement, attack, status}), palace/, wildlife/}
+               bosses/ {boss_1/, ..., final_boss/}, npcs/
+levels/        _base/, boot/, zone_1_wind/ (level_1/{rooms/{tier_1, tier_2, tier_3}, lighting, lift}),
+               zone_2_ice/, zone_3_fire/, zone_4_thunder/, temple_center/ (Đền Trung Tâm + Final Boss)
+objects/       core/ (checkpoint, pickups, encounter), gates/, traversal/, combat/, world/,
+               wind_puzzle/ (map sau: ice_puzzle/... ; quá 6 thì gom vào puzzles/)
+resources/     player/, combat/ {attacks/{sword, bow}, weapons, fusion}, enemies/, feedback/, world/, vfx/
+ui/            hud/ {health, energy, skills, prompt, icons}, menus/ {main, pause, inventory, settings, game_over},
+               transition/
+tests/         player/, enemies/, wind/, levels/, kits/
+docs/          tài liệu (Godot bỏ qua nhờ .gdignore)
 ```
 
 ## 4. Quy ước code
@@ -55,7 +76,7 @@ docs/          tài liệu
 
 - **Mọi code phải viết theo kiến trúc mở rộng được ngay từ lần đầu**, kể cả bản hướng dẫn, ví dụ hay prototype. Không viết bản "đơn giản cho dễ hiểu" rồi mới tái cấu trúc sau.
 - Thêm tính năng mới (state, kỹ năng, loại quái, vật thể tương tác) phải **thêm file / node mới**, không phải sửa logic có sẵn (nguyên tắc open/closed).
-- Hành vi nhân vật (player, quái, boss) **luôn dùng FSM dạng node** (`components/state_machine/`). Cấm dồn logic vào `if/else` hay `match` dài trong một script.
+- Hành vi nhân vật (player, quái, boss) **luôn dùng FSM dạng node** (`components/core/state_machine/`). Cấm dồn logic vào `if/else` hay `match` dài trong một script.
 - Logic dùng chung tách thành **component** hoặc lớp cơ sở để tái sử dụng; không copy-paste giữa các entity.
 - Các phần giao tiếp với nhau qua **signal / EventBus / hàm public rõ ràng**, không truy cập trực tiếp biến private của node khác.
 - Dữ liệu cấu hình (stats, ability, enemy) tách ra **Resource**, để thêm nội dung mới không cần sửa code.
