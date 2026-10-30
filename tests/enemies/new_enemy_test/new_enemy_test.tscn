@@ -1,0 +1,100 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://tests/enemies/new_enemy_test/new_enemy_test.gd" id="script"]
+[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="player"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/armored_polar_bear/armored_polar_bear.tscn" id="bear"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/monkey_chieftain/monkey_chieftain.tscn" id="chief"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/monkey_grunt/monkey_grunt.tscn" id="grunt"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/werewolf/werewolf.tscn" id="wolf"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/monkey_squad.gd" id="squad"]
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
+sky_top_color = Color(0.12, 0.23, 0.36, 1)
+sky_horizon_color = Color(0.65, 0.75, 0.8, 1)
+ground_horizon_color = Color(0.65, 0.75, 0.8, 1)
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMaterial")
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.7, 0.8, 1, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+[sub_resource type="StandardMaterial3D" id="GroundMaterial"]
+albedo_color = Color(0.19, 0.28, 0.3, 1)
+roughness = 0.92
+[sub_resource type="BoxMesh" id="GroundMesh"]
+material = SubResource("GroundMaterial")
+size = Vector3(60, 1, 60)
+[sub_resource type="BoxShape3D" id="GroundShape"]
+size = Vector3(60, 1, 60)
+[sub_resource type="StandardMaterial3D" id="WallMaterial"]
+albedo_color = Color(0.29, 0.38, 0.42, 1)
+[sub_resource type="BoxMesh" id="WallMesh"]
+material = SubResource("WallMaterial")
+size = Vector3(8, 1.5, 1)
+[sub_resource type="BoxShape3D" id="WallShape"]
+size = Vector3(8, 1.5, 1)
+[node name="NewEnemyTest" type="Node3D"]
+script = ExtResource("script")
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-55, -25, 0)
+light_energy = 0.95
+shadow_enabled = true
+directional_shadow_max_distance = 65.0
+[node name="Ground" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.5, 0)
+collision_layer = 1
+collision_mask = 0
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("GroundMesh")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("GroundShape")
+[node name="Cover" type="StaticBody3D" parent="."]
+position = Vector3(-3, 0.75, 3)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="Cover"]
+mesh = SubResource("WallMesh")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cover"]
+shape = SubResource("WallShape")
+[node name="Player" parent="." instance=ExtResource("player")]
+position = Vector3(0, 0.05, 13)
+preview_sword = true
+preview_dash = true
+[node name="ArmoredPolarBear" parent="." instance=ExtResource("bear")]
+position = Vector3(-10, 0.05, -5)
+[node name="Werewolf" parent="." instance=ExtResource("wolf")]
+position = Vector3(-5, 0.05, 7)
+[node name="MonkeySquad" type="Node3D" parent="." node_paths=PackedStringArray("leader", "members")]
+script = ExtResource("squad")
+leader = NodePath("Chieftain")
+members = Array[NodePath]([NodePath("Grunt1"), NodePath("Grunt2"), NodePath("Grunt3")])
+[node name="Chieftain" parent="MonkeySquad" instance=ExtResource("chief")]
+position = Vector3(6, 0.05, -6)
+[node name="Grunt1" parent="MonkeySquad" instance=ExtResource("grunt")]
+position = Vector3(3.7, 0.05, -4)
+[node name="Grunt2" parent="MonkeySquad" instance=ExtResource("grunt")]
+position = Vector3(8.3, 0.05, -4)
+[node name="Grunt3" parent="MonkeySquad" instance=ExtResource("grunt")]
+position = Vector3(6, 0.05, -9)
+[node name="OverviewCamera" type="Camera3D" parent="."]
+position = Vector3(15, 20, 25)
+rotation_degrees = Vector3(-34, 30, 0)
+projection = 1
+size = 30.0
+far = 100.0
+
+[node name="HUD" type="CanvasLayer" parent="."]
+[node name="Training" type="CheckButton" parent="HUD"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -155.0
+offset_top = -55.0
+offset_right = -16.0
+offset_bottom = -16.0
+text = "Bất tử"
+button_pressed = true

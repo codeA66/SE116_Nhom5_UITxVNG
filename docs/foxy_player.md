@@ -1,6 +1,6 @@
 # Foxy — model, animation và scene Godot
 
-Mở `res://tests/fox/fox_demo.tscn` trong Godot rồi nhấn **F6**.
+Mở `res://tests/player/fox/fox_demo.tscn` trong Godot rồi nhấn **F6**.
 Demo có sẵn kiếm và dash để thử, không cấp vật phẩm hay ghi tiến trình lúc khởi động.
 
 - `entities/player/foxy/foxy_player.gd` (`FoxyPlayer`): script của `player.tscn`, gắn model / animation Foxy vào Player.

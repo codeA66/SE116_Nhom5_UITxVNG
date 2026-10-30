@@ -27,7 +27,7 @@ extends FusionMove
 @export var inner_radius: float = 1.0
 @export var outer_radius: float = 1.6
 @export var arc_degrees: float = 120.0
-@export var style: FusionWindStyle = preload("res://abilities/fusion/vfx/fusion_wind_style.tres")
+@export var style: FusionWindStyle = preload("res://abilities/fusion/vfx/style/fusion_wind_style.tres")
 ## Lưỡi liềm bắt đầu tan khi bay được tỉ lệ này của quãng đường
 @export_range(0.0, 1.0) var dissolve_from: float = 0.45
 ## Giữ node thêm bấy nhiêu giây sau nhát cuối để cú bung / bụi trúng chạy hết

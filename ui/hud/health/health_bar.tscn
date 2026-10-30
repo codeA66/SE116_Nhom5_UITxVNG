@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/hud/health/health_bar.gd" id="1_bar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_filled"]
+bg_color = Color(0.55, 0.82, 0.38, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.1, 0.12, 0.08, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_empty"]
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.55, 0.82, 0.38, 0.5)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="HealthBar" type="HBoxContainer"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 200.0
+offset_bottom = 36.0
+mouse_filter = 2
+theme_override_constants/separation = 4
+script = ExtResource("1_bar")
+filled_style = SubResource("StyleBoxFlat_filled")
+empty_style = SubResource("StyleBoxFlat_empty")

@@ -1,0 +1,62 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/camera_cutscene.gd" id="1_4ufqe"]
+[ext_resource type="Resource" path="res://resources/world/cutscenes/camera_cutscene_default.tres" id="2_cdre7"]
+[ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="3_x600b"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/states/idle.gd" id="4_wscv1"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/states/intro.gd" id="5_p3od2"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/states/hold.gd" id="6_ojx5u"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/states/outro.gd" id="7_d37mf"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/states/done.gd" id="8_vip37"]
+
+[node name="CameraCutscene" type="Node3D" unique_id=875361822]
+script = ExtResource("1_4ufqe")
+data = ExtResource("2_cdre7")
+
+[node name="Trigger" type="Area3D" parent="." unique_id=1191444031]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Trigger" unique_id=905330754]
+
+[node name="CutCamera" type="Camera3D" parent="." unique_id=1482162782]
+far = 400.0
+
+[node name="Letterbox" type="CanvasLayer" parent="." unique_id=1638955247]
+layer = 20
+
+[node name="Top" type="ColorRect" parent="Letterbox" unique_id=592216624]
+visible = false
+anchors_preset = 10
+anchor_right = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Bottom" type="ColorRect" parent="Letterbox" unique_id=733258707]
+visible = false
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="StateMachine" type="Node" parent="." unique_id=891834268 node_paths=PackedStringArray("initial_state")]
+script = ExtResource("3_x600b")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine" unique_id=1226322212]
+script = ExtResource("4_wscv1")
+
+[node name="Intro" type="Node" parent="StateMachine" unique_id=914349676]
+script = ExtResource("5_p3od2")
+
+[node name="Hold" type="Node" parent="StateMachine" unique_id=1865874124]
+script = ExtResource("6_ojx5u")
+
+[node name="Outro" type="Node" parent="StateMachine" unique_id=1479116270]
+script = ExtResource("7_d37mf")
+
+[node name="Done" type="Node" parent="StateMachine" unique_id=169564667]
+script = ExtResource("8_vip37")

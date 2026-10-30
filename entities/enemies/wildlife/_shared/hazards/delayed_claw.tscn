@@ -1,7 +1,7 @@
 [gd_scene format=3]
-[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/enemy_hazard.gd" id="hazard"]
-[ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="hitbox"]
-[ext_resource type="PackedScene" path="res://assets/vfx/enemies/polar_bear/bear_delayed_claw.tscn" id="visual"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/hazards/enemy_hazard.gd" id="hazard"]
+[ext_resource type="Script" path="res://components/combat/hitbox/hitbox_component.gd" id="hitbox"]
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/bear/polar_bear/claw/bear_delayed_claw.tscn" id="visual"]
 [sub_resource type="CylinderShape3D" id="Shape"]
 resource_local_to_scene = true
 radius = 2.2

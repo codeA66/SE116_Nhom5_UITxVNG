@@ -1,0 +1,100 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_zone"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/boss_1.tscn" id="3_boss"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.38, 0.52, 0.68, 1)
+sky_horizon_color = Color(0.72, 0.8, 0.86, 1)
+ground_bottom_color = Color(0.2, 0.25, 0.3, 1)
+ground_horizon_color = Color(0.72, 0.8, 0.86, 1)
+
+[sub_resource type="Sky" id="Sky_arena"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_arena"]
+background_mode = 2
+sky = SubResource("Sky_arena")
+ambient_light_source = 3
+ambient_light_energy = 0.8
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.42, 0.46, 0.45, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+material = SubResource("StandardMaterial3D_floor")
+size = Vector3(28, 1, 28)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(28, 1, 28)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_lr"]
+size = Vector3(1, 4, 30)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_fb"]
+size = Vector3(30, 4, 1)
+
+[node name="TestBossArena" type="Node3D"]
+script = ExtResource("1_zone")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_arena")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallLeft" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallLeft"]
+shape = SubResource("BoxShape3D_wall_lr")
+
+[node name="WallRight" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallRight"]
+shape = SubResource("BoxShape3D_wall_lr")
+
+[node name="WallBack" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 14)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallBack"]
+shape = SubResource("BoxShape3D_wall_fb")
+
+[node name="WallFront" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -14)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallFront"]
+shape = SubResource("BoxShape3D_wall_fb")
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 8)
+script = ExtResource("2_spawn")
+spawn_id = &"start"
+is_default = true
+
+[node name="Boss1" parent="." instance=ExtResource("3_boss")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)

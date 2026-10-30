@@ -7,8 +7,8 @@ extends RefCounted
 ## DRAWN: kéo đầy của Bow_Shoot (cung cầm dọc); FULL: kéo đầy khi cầm ngang ở BowHold
 enum Pose { REST, NOCKED, DRAWN, FULL }
 
-const SHOT: AttackData = preload("res://resources/attacks/bow_shot.tres")
-const BOW: BowData = preload("res://resources/weapons/bow.tres")
+const SHOT: AttackData = preload("res://resources/combat/attacks/bow/bow_shot.tres")
+const BOW: BowData = preload("res://resources/combat/weapons/bow.tres")
 const ROLES: Array[StringName] = [&"upper_l", &"fore_l", &"hand_l", &"upper_r", &"fore_r", &"hand_r"]
 ## Hướng xương theo tư thế, trong không gian rig (+Z là hướng bắn, tay phải ở +X).
 ## "_l" cho tay trái (cả cánh tay trên nếu không có "upper_l"); "_r" cho cẳng tay và bàn tay phải

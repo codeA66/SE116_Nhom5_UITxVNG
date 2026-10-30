@@ -1,8 +1,8 @@
 [gd_scene format=3]
-[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/ice_hazard.gd" id="hazard"]
-[ext_resource type="Script" path="res://components/hitbox/hitbox_component.gd" id="hitbox"]
-[ext_resource type="PackedScene" path="res://assets/vfx/enemies/ice_spike/ice_spike.tscn" id="visual"]
-[ext_resource type="Script" path="res://assets/vfx/enemies/ice_spike/ice_spike_style.gd" id="style"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/hazards/ice_hazard.gd" id="hazard"]
+[ext_resource type="Script" path="res://components/combat/hitbox/hitbox_component.gd" id="hitbox"]
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/bear/ice_spike/ice_spike.tscn" id="visual"]
+[ext_resource type="Script" path="res://assets/vfx/enemies/bear/ice_spike/ice_spike_style.gd" id="style"]
 [sub_resource type="Resource" id="IceStyle"]
 script = ExtResource("style")
 path_length = 11.0

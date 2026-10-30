@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AttackData" format=3]
+
+[ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+animation = &"Bow_Shoot"
+damage = 1
+knockback = 2.5
+hitstop = 0.0
+active_start = 0.24
+active_end = 0.26
+cancel_start = 0.38
+duration = 0.55
+lunge_speed = 0.0
+lunge_time = 0.0
+lunge_stop = true

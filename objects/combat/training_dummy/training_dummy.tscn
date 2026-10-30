@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/training_dummy/training_dummy.gd" id="1_dummy"]
+[ext_resource type="Script" path="res://components/combat/health/health_component.gd" id="2_health"]
+[ext_resource type="Script" path="res://components/combat/hurtbox/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" path="res://components/wind/wind_receiver/wind_receiver_component.gd" id="4_wind"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dummy"]
+albedo_color = Color(0.75, 0.6, 0.4, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_dummy"]
+material = SubResource("StandardMaterial3D_dummy")
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.85)
+transparency = 1
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hurt"]
+radius = 0.5
+height = 1.9
+
+[node name="TrainingDummy" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 257
+script = ExtResource("1_dummy")
+flash_material = SubResource("StandardMaterial3D_flash")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("CapsuleMesh_dummy")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 5
+
+[node name="HurtboxComponent" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("3_hurtbox")
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_hurt")
+
+[node name="WindReceiverComponent" type="Area3D" parent="."]
+collision_layer = 128
+collision_mask = 64
+script = ExtResource("4_wind")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiverComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="HealthLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
+pixel_size = 0.016
+billboard = 1
+no_depth_test = true
+font_size = 48
+outline_size = 12
