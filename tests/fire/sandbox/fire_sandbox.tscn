@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="9_enemy"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/shield_bearer/shield_bearer.tscn" id="10_shield"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="11_wisp"]
+[ext_resource type="PackedScene" path="res://tests/fire/burnable_crate/burnable_crate.tscn" id="12_crate"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 sky_top_color = Color(0.32, 0.4, 0.55, 1)
@@ -111,3 +112,9 @@ wind_enabled = true
 [node name="SpreadSide" parent="." instance=ExtResource("8_dummy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 3)
 wind_enabled = true
+
+[node name="CrateA" parent="." instance=ExtResource("12_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
+
+[node name="CrateB" parent="." instance=ExtResource("12_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 3)

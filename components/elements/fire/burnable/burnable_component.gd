@@ -26,6 +26,7 @@ signal spread_fired(direction: Vector3)
 var _remaining: float = 0.0
 var _tick_timer: float = 0.0
 var _source: Node
+var _enabled: bool = true
 var _last_wind_dir: Vector3 = Vector3.ZERO
 ## Mốc thời gian (ms) sớm nhất được phụt lửa lại
 var _next_spread_ms: int = 0
@@ -67,10 +68,19 @@ func is_burning() -> bool:
 	return _remaining > 0.0
 
 
+## Bật / tắt khả năng bắt lửa (vật đã cháy tan, đang ẩn...). Tắt thì dập lửa đang cháy, ẩn khỏi nguồn lửa,
+## và ignite() gọi thẳng cũng không có tác dụng
+func set_enabled(enabled: bool) -> void:
+	_enabled = enabled
+	set_deferred(&"monitorable", enabled)
+	if not enabled:
+		extinguish()
+
+
 ## Bắt lửa hoặc làm mới thời gian cháy. Đang cháy thì giữ đồng hồ tick:
 ## phun liên tục vẫn tick đều, không bị reset mãi không tới tick
 func ignite(source: Node = null) -> void:
-	if data == null or data.immune or data.duration <= 0.0 or not _is_alive():
+	if not _enabled or data == null or data.immune or data.duration <= 0.0 or not _is_alive():
 		return
 	_source = source
 	var was_burning := is_burning()
