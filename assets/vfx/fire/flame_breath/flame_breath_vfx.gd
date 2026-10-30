@@ -5,6 +5,16 @@ extends Node3D
 ## Nằm dưới gốc Player, KHÔNG dưới Model: foxy_player.gd ghi đè material mọi mesh dưới Model.
 ## Chỉ nghe signal (hitbox.activated / hitbox.hit / state_changed), không dò va chạm mỗi frame; state không biết VFX tồn tại.
 ##
+## CẬP NHẬT ÁP LỰC 2026-10-30:
+## DONE: sửa winding mesh để vẽ mặt ngoài; lõi nóng theo đỉnh thân; chớp bùng và co áp lực lúc kích hoạt.
+## NOTES: lượt không chụp chỉ phun 7.01 -> 7.71 ms trung bình; khi trúng vẫn có frame 128.62 ms.
+## NOT DONE: chưa xác định nguồn khựng khi trúng; chưa được báo hết lag hoặc đạt ngân sách khung tệ nhất.
+## Ghi chú lượt trước:
+## CẬP NHẬT 2026-10-30:
+## DONE: shader bốn dải màu, cuộn hai lớp mask; đầu/thân liền; phóng ra và tắt từ miệng theo signal deactivated.
+## NOT DONE: lượt đo không chụp khi trúng có frame 103 ms; chưa xác định nguồn, không được báo hết lag.
+## NOTES: chỉ phun trung bình 5.28 ms, max 16.81 ms; có trúng trung bình 6.63 ms, max 103.34 ms.
+## Ghi chú kiểm tra trước lượt chỉnh này:
 ## TRẠNG THÁI (2026-10-30, đã chạy thử trong tests/fire/sandbox/fire_sandbox.tscn, cửa sổ + headless):
 ## - ĐẠT: khớp tầm/độ rộng theo FlameBreathData (đã chụp tầm 0.5 m, 4.5 m, 20 m; rộng 0.3 m, 2.4 m, 10 m).
 ## - ĐẠT: đọc rõ trên nền sáng và nền tối; tắt dần bằng khói, không cắt ngang.
@@ -31,17 +41,17 @@ const STATE_NAME := &"FlameBreath"
 ## Cỡ hạt lõi theo tỉ lệ cạnh nhỏ của vùng trúng
 @export var particle_width_ratio: float = 0.22
 ## Thân lửa thấp hơn hộp va chạm cho dáng dẹt dễ đọc từ camera trên cao
-@export var body_height_ratio: float = 0.64
+@export var body_height_ratio: float = 0.84
 ## Số vòng / số cạnh của mesh thân lửa; nhiều hơn mượt hơn nhưng nặng hơn (dựng 1 lần lúc tải)
 @export_range(8, 48, 1) var body_rings: int = 24
 @export_range(8, 32, 1) var body_sides: int = 16
 ## Dáng thân lửa (tỉ lệ theo bề ngang): cổ hẹp ở miệng -> loe dần -> phình ở "đỉnh" -> thu nhọn ở cuối tầm
-@export var neck_ratio: float = 0.035
-@export var stream_width_ratio: float = 0.44
+@export var neck_ratio: float = 0.10
+@export var stream_width_ratio: float = 0.64
 @export var bloom_power: float = 0.65
 @export var crest_position: float = 0.76
 @export var crest_span: float = 0.24
-@export var crest_strength: float = 0.56
+@export var crest_strength: float = 0.20
 @export var tip_start: float = 0.88
 ## Cỡ hạt khói theo tỉ lệ cạnh nhỏ của vùng trúng
 @export var smoke_width_ratio: float = 0.35
@@ -57,12 +67,22 @@ const STATE_NAME := &"FlameBreath"
 @export_group("Timing")
 ## Thời gian lửa tắt dần sau khi hết phun (s)
 @export var fade_time: float = 0.35
+## Tắt từ miệng ra đầu để lửa còn lại không bị cắt đồng loạt.
+@export var release_travel_time: float = 0.22
 ## Cỡ quầng nóng ở miệng lúc vung tay (trước active_start)
 @export var ignition_size: float = 0.65
 ## Thời gian thân lửa bùng từ 0 lên đủ sáng (s); ngắn = cảm giác "nổ" mạnh
 @export var release_time: float = 0.05
+@export_group("Ignition Punch")
+@export var ignition_pop: float = 1.6
+@export var ignition_decay: float = 0.035
+@export var pressure_boost: float = 0.15
+@export var light_pop: float = 0.35
 @export_group("Light")
 @export var light_energy: float = 2.0
+## Giới hạn vùng đèn để tầm xa không tăng chi phí phủ sáng toàn phòng.
+@export var light_max_range: float = 6.0
+@export var preparation_flash_scale: float = 0.01
 ## Biên độ nhấp nháy của đèn (0 = không nhấp nháy)
 @export var light_flicker: float = 0.18
 @export var ground_glow_intensity: float = 0.8
@@ -102,9 +122,10 @@ func _ready() -> void:
 	_hitbox_shape = (hitbox.get_node("CollisionShape3D") as CollisionShape3D).shape as BoxShape3D
 	hitbox.activated.connect(_on_activated)
 	hitbox.hit.connect(_on_hit)
+	hitbox.deactivated.connect(_on_deactivated)
 	if prepare_on_ready and DisplayServer.get_name() != "headless":
 		await _prepare_render()
-	var player := get_parent() as Player
+	var player: Player = get_parent() as Player
 	if player:
 		if not player.is_node_ready():
 			await player.ready
@@ -124,15 +145,23 @@ func _process(delta: float) -> void:
 		return
 	if _active > 0.0:
 		_active -= delta
+		var punch: float = exp(-_clock / maxf(ignition_decay, 0.001))
+		_heat.scale = Vector3.ONE * ignition_size * (1.0 + ignition_pop * punch)
+		_heat_mat.set_shader_parameter(&"intensity", 0.6 + punch)
+		_body_mat.set_shader_parameter(&"pressure", 1.0 + pressure_boost * punch)
+		var advance: float = clampf(_clock / maxf(release_time, 0.001), 0.0, 1.0)
+		_body_mat.set_shader_parameter(&"front", 1.0 - pow(1.0 - advance, 3.0))
 		_body_mat.set_shader_parameter(&"strength", minf(_clock / maxf(release_time, 0.001), 1.0))
-		_light.light_energy = light_energy * (1.0 - light_flicker * randf())
+		_light.light_energy = light_energy * (1.0 - light_flicker * randf()) * (1.0 + light_pop * punch)
 		if _active <= 0.0:
 			_set_emitting(false)
 			_fade = fade_time
 		return
 	_fade = maxf(0.0, _fade - delta)
 	var k: float = _fade / maxf(fade_time, 0.001)
-	_body_mat.set_shader_parameter(&"strength", k * k)
+	_body_mat.set_shader_parameter(&"pressure", 1.0)
+	_body_mat.set_shader_parameter(&"strength", 1.0 if k > 0.0 else 0.0)
+	_body_mat.set_shader_parameter(&"retreat", clampf((fade_time - _fade) / maxf(release_travel_time, 0.001), 0.0, 1.0))
 	_ground_mat.set_shader_parameter(&"strength", k * ground_glow_intensity)
 	_light.light_energy = light_energy * k
 	_heat_mat.set_shader_parameter(&"intensity", k)
@@ -155,6 +184,8 @@ func _align() -> void:
 ## ĐẠT: hitbox bật = bắt đầu phun; thời gian phun lấy từ hitbox nên đổi active_time trong .tres là VFX theo.
 func _on_activated(_attack: AttackData) -> void:
 	_clock = 0.0
+	_body_mat.set_shader_parameter(&"front", 0.0)
+	_body_mat.set_shader_parameter(&"retreat", 0.0)
 	_ignition = 0.0
 	_active = hitbox.get_active_duration()
 	_fade = fade_time
@@ -170,32 +201,32 @@ func _on_activated(_attack: AttackData) -> void:
 ## LƯU Ý: sửa thẳng ParticleProcessMaterial / QuadMesh của scene; ổn vì chỉ có một player.
 ## Nếu sau này nhiều nhân vật cùng dùng scene này thì phải bật resource_local_to_scene cho các resource đó.
 func _fit_shape() -> void:
-	var box := _hitbox_shape
+	var box: BoxShape3D = _hitbox_shape
 	var reach: float = hitbox.get_reach()
 	var length: float = maxf(reach - nozzle_forward, 0.01)
 	_body.scale = Vector3(box.size.x, box.size.y * body_height_ratio, length)
 	_body.position = Vector3.ZERO
-	var quad := _ground.mesh as QuadMesh
+	var quad: QuadMesh = _ground.mesh as QuadMesh
 	quad.size = Vector2(box.size.x, reach)
 	_ground.position = Vector3(0.0, -nozzle_height + floor_offset, reach * 0.5 - nozzle_forward)
 	for particles: GPUParticles3D in _streams:
 		particles.visibility_aabb = AABB(Vector3(-box.size.x, -box.size.y, -1.0), Vector3(box.size.x * 2.0, box.size.y * 3.0, length + 2.0))
-		var mat := particles.process_material as ParticleProcessMaterial
+		var mat: ParticleProcessMaterial = particles.process_material as ParticleProcessMaterial
 		mat.initial_velocity_min = length / particles.lifetime * particle_speed_min_ratio
 		mat.initial_velocity_max = length / particles.lifetime * particle_speed_max_ratio
 		mat.spread = rad_to_deg(atan2(box.size.x * spread_width_ratio, length))
 		mat.damping_min = 0.0
 		mat.damping_max = 0.0
-	var smoke_material := _smoke.process_material as ParticleProcessMaterial
+	var smoke_material: ParticleProcessMaterial = _smoke.process_material as ParticleProcessMaterial
 	smoke_material.scale_min = minf(box.size.x, box.size.y) * smoke_width_ratio * 0.5
 	smoke_material.scale_max = smoke_material.scale_min
 	_heat.scale = Vector3.ONE * minf(ignition_size, box.size.x)
 	# LƯU Ý: tầm 20 m -> đèn phủ 20 m; chưa thấy gây giật (đo 13.5 ms) nhưng chiêu tầm xa nên cân nhắc giới hạn
-	_light.omni_range = maxf(reach, maxf(box.size.x, box.size.y))
-	var core_material := _core.process_material as ParticleProcessMaterial
+	_light.omni_range = minf(light_max_range, maxf(reach, maxf(box.size.x, box.size.y)))
+	var core_material: ParticleProcessMaterial = _core.process_material as ParticleProcessMaterial
 	core_material.scale_min = minf(box.size.x, box.size.y) * particle_width_ratio
 	core_material.scale_max = core_material.scale_min * 1.5
-	var core_mesh := _core.draw_pass_1 as QuadMesh
+	var core_mesh: QuadMesh = _core.draw_pass_1 as QuadMesh
 	core_mesh.size = Vector2.ONE * minf(box.size.x * 0.6, box.size.y * 0.65)
 
 
@@ -220,8 +251,8 @@ func _on_hit(target: HurtboxComponent) -> void:
 ## bị ngắt giữa chừng (dash, bị đánh) = cho lửa tắt dần ngay.
 func _on_state_changed(from: StringName, to: StringName) -> void:
 	if to == STATE_NAME:
-		var player := get_parent() as Player
-		var data := player.get_ability(FlameBreathData.ID) as FlameBreathData
+		var player: Player = get_parent() as Player
+		var data: FlameBreathData = player.get_ability(FlameBreathData.ID) as FlameBreathData
 		if data:
 			_ignition = data.active_start
 			_heat.show()
@@ -239,6 +270,10 @@ func _on_state_changed(from: StringName, to: StringName) -> void:
 func _prepare_render() -> void:
 	_align()
 	_body_mat.set_shader_parameter(&"strength", 0.001)
+	# Chớp mới có biến thể billboard riêng, phải vẽ thật trước lần Q đầu.
+	_heat.scale = Vector3.ONE * preparation_flash_scale
+	_heat_mat.set_shader_parameter(&"intensity", 0.001)
+	_heat.show()
 	_ground_mat.set_shader_parameter(&"strength", 0.001)
 	for particles: GPUParticles3D in _streams:
 		particles.transparency = 0.999
@@ -253,6 +288,8 @@ func _prepare_render() -> void:
 	_set_emitting(false)
 	_body_mat.set_shader_parameter(&"strength", 0.0)
 	_ground_mat.set_shader_parameter(&"strength", 0.0)
+	_heat.hide()
+	_heat_mat.set_shader_parameter(&"intensity", 0.0)
 
 
 ## ĐẠT: thân và đầu lửa chung một mesh ống (vòng x cạnh) để không có đường nối; chỉ dựng một lần lúc tải.
@@ -278,7 +315,7 @@ func _build_body() -> void:
 		for side: int in range(body_sides):
 			var a: int = ring * (body_sides + 1) + side
 			var b: int = a + body_sides + 1
-			indices.append_array(PackedInt32Array([a, a + 1, b, a + 1, b + 1, b]))
+			indices.append_array(PackedInt32Array([a, b, a + 1, a + 1, b, b + 1]))
 	var arrays: Array = []
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = vertices
@@ -288,3 +325,12 @@ func _build_body() -> void:
 	var mesh := ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	_body.mesh = mesh
+
+
+## Ngắt phát hạt theo hitbox, kể cả khi kỹ năng bị hủy sớm.
+func _on_deactivated() -> void:
+	if _active <= 0.0:
+		return
+	_active = 0.0
+	_fade = fade_time
+	_set_emitting(false)

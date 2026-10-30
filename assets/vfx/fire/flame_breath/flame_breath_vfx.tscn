@@ -89,7 +89,6 @@ gradient = SubResource("EmberColor")
 
 [sub_resource type="ParticleProcessMaterial" id="EmberProcess"]
 resource_local_to_scene = true
-resource_local_to_scene = true
 emission_shape = 1
 emission_sphere_radius = 0.1
 direction = Vector3(0, 0, 1)
@@ -129,7 +128,6 @@ curve = SubResource("SmokeSize")
 
 [sub_resource type="ParticleProcessMaterial" id="SmokeProcess"]
 resource_local_to_scene = true
-resource_local_to_scene = true
 emission_shape = 1
 emission_sphere_radius = 0.15
 angle_min = -180.0
@@ -162,14 +160,9 @@ size = Vector2(1.0, 1.0)
 
 [sub_resource type="ShaderMaterial" id="HeatMat"]
 resource_local_to_scene = true
-render_priority = 0
-shader = ExtResource("2_glow")
-shader_parameter/glow_color = Color(1, 0.6, 0.22, 1)
-shader_parameter/intensity = 0.9
-shader_parameter/billboard = true
-shader_parameter/falloff = 2.0
-shader_parameter/breathe = 0.25
-shader_parameter/breathe_speed = 14.0
+shader = ExtResource("3_fire")
+shader_parameter/accent_mode = 1.0
+shader_parameter/intensity = 0.0
 
 [sub_resource type="QuadMesh" id="HeatMesh"]
 material = SubResource("HeatMat")
@@ -224,7 +217,7 @@ size = Vector2(0.55, 0.55)
 resource_local_to_scene = true
 shader = ExtResource("3_fire")
 shader_parameter/masks = ExtResource("4_mask")
-shader_parameter/flow_speed = 2.2
+shader_parameter/flow_speed = 3.0
 [sub_resource type="PlaneMesh" id="BodyMesh"]
 size = Vector2(1, 1)
 subdivide_width = 8
