@@ -9,6 +9,8 @@ signal ignited
 signal extinguished
 ## damage_taken = 0 khi không có hurtbox hoặc tick bị chặn
 signal burn_tick(damage_taken: int)
+## Đang cháy + bị gió thổi -> phụt luồng lửa theo hướng gió
+signal spread_fired(direction: Vector3)
 
 @export var data: BurnData
 ## Nhận sát thương mỗi tick; để trống cho vật không có máu
@@ -16,12 +18,20 @@ signal burn_tick(damage_taken: int)
 ## Dùng chung shape với vùng này (thường là CollisionShape3D của hurtbox) để quái to nhỏ đều khớp, khỏi chỉnh tay.
 ## Để trống thì tự thêm CollisionShape3D con.
 @export var match_shape_of: CollisionShape3D
+## Nghe cú gió đẩy để lan lửa; để trống thì vật không lan (thùng gỗ không nhận gió...)
+@export var wind_receiver: WindReceiverComponent
+## Luồng lửa phụt ra khi đang cháy mà bị gió thổi; để trống thì không lan
+@export var fire_spread: FireSpread
 
 var _remaining: float = 0.0
 var _tick_timer: float = 0.0
 var _source: Node
+var _last_wind_dir: Vector3 = Vector3.ZERO
+## Mốc thời gian (ms) sớm nhất được phụt lửa lại
+var _next_spread_ms: int = 0
 
 
+## Chỉ cho nguồn lửa phát hiện; chép shape hurtbox; chết thì tắt lửa; nghe gió để lan; mặc định nghỉ
 func _ready() -> void:
 	# Chỉ cần bị nguồn lửa phát hiện, không tự quét
 	monitoring = false
@@ -34,9 +44,12 @@ func _ready() -> void:
 		add_child(copy)
 	if hurtbox and hurtbox.health:
 		hurtbox.health.died.connect(extinguish)
+	if wind_receiver:
+		wind_receiver.pushed.connect(_on_wind_pushed)
 	set_physics_process(false)
 
 
+## Chỉ chạy khi đang cháy: đếm thời gian cháy và nhịp tick, hết hạn thì tắt
 func _physics_process(delta: float) -> void:
 	_remaining -= delta
 	_tick_timer -= delta
@@ -49,6 +62,7 @@ func _physics_process(delta: float) -> void:
 		extinguish()
 
 
+## Đúng khi đang cháy
 func is_burning() -> bool:
 	return _remaining > 0.0
 
@@ -66,8 +80,12 @@ func ignite(source: Node = null) -> void:
 	_tick_timer = data.tick_interval
 	set_physics_process(true)
 	ignited.emit()
+	# Cú gió đẩy cả hàng gần như cùng lúc, thường trước khi lửa lan tới: vừa bắt lửa mà còn trôi thì phụt tiếp
+	if fire_spread and fire_spread.chains_while_pushed() and wind_receiver and wind_receiver.is_being_pushed():
+		_try_spread()
 
 
+## Tắt lửa ngay (hết giờ, chết, hoặc vật thể tự dập); gọi khi không cháy thì bỏ qua
 func extinguish() -> void:
 	if not is_burning() and not is_physics_processing():
 		return
@@ -76,6 +94,7 @@ func extinguish() -> void:
 	extinguished.emit()
 
 
+## Một nhịp cháy: có hurtbox thì gây đòn FIRE không khựng, rồi báo burn_tick
 func _tick() -> void:
 	var taken := 0
 	if hurtbox:
@@ -88,5 +107,28 @@ func _tick() -> void:
 	burn_tick.emit(taken)
 
 
+## Đúng khi không có máu (vật) hoặc còn sống
 func _is_alive() -> bool:
 	return hurtbox == null or hurtbox.is_alive()
+
+
+## Gió đẩy trúng: luôn nhớ hướng (cho lan tiếp lúc bắt lửa sau đó); đang cháy thì phụt lửa ngay
+func _on_wind_pushed(impulse: Vector3) -> void:
+	var flat := Vector3(impulse.x, 0.0, impulse.z)
+	if flat.is_zero_approx():
+		return
+	_last_wind_dir = flat.normalized()
+	if is_burning():
+		_try_spread()
+
+
+## Phụt luồng lửa theo hướng gió gần nhất, tối đa một lần mỗi spread_cooldown (chống lan qua lại vô hạn)
+func _try_spread() -> void:
+	if fire_spread == null or _last_wind_dir.is_zero_approx():
+		return
+	var now := Time.get_ticks_msec()
+	if now < _next_spread_ms:
+		return
+	_next_spread_ms = now + int(fire_spread.get_cooldown() * 1000.0)
+	fire_spread.spread(global_position, _last_wind_dir, _source if is_instance_valid(_source) else null)
+	spread_fired.emit(_last_wind_dir)

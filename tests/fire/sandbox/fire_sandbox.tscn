@@ -95,3 +95,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -12)
 
 [node name="WispCaster" parent="." instance=ExtResource("11_wisp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -6)
+
+[node name="SpreadA" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 6)
+wind_enabled = true
+
+[node name="SpreadB" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 3)
+wind_enabled = true
+
+[node name="SpreadC" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)
+wind_enabled = true
+
+[node name="SpreadSide" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 3)
+wind_enabled = true

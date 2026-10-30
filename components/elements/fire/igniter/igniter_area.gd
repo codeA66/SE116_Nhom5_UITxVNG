@@ -16,6 +16,13 @@ const BURNABLE_LAYER := 10
 ## Hitbox để bám theo; để trống nếu vùng tự đứng
 @export var follow_hitbox: HitboxComponent
 
+## Không đốt BurnableComponent nằm dưới node này (thực thể chứa vùng). Mặc định là owner;
+## vùng nằm trong scene con (FireSpread) thì scene đó gán lại thành thực thể thật
+var exclude_root: Node
+## Ai được tính là người châm lửa (DamageInfo.source của tick cháy). Null = exclude_root.
+## Lửa lan truyền tiếp người châm ban đầu, để quái bị lan không quay sang đuổi con quái đang cháy
+var ignite_source: Node
+
 var _active: bool = false
 var _already_lit: Array[BurnableComponent] = []
 var _follow_shape: CollisionShape3D
@@ -29,6 +36,8 @@ func _ready() -> void:
 	set_collision_mask_value(BURNABLE_LAYER, true)
 	monitorable = false
 	monitoring = false
+	if exclude_root == null:
+		exclude_root = owner
 	area_entered.connect(_on_area_entered)
 	if follow_hitbox == null:
 		return
@@ -72,10 +81,10 @@ func _on_area_entered(area: Area3D) -> void:
 	if not _active or burnable == null or burnable in _already_lit or _is_own(burnable):
 		return
 	_already_lit.append(burnable)
-	burnable.ignite(owner)
+	burnable.ignite(ignite_source if is_instance_valid(ignite_source) else exclude_root)
 	ignited_target.emit(burnable)
 
 
-## Đúng khi mục tiêu thuộc cùng thực thể với vùng này (player tự phun không tự cháy)
+## Đúng khi mục tiêu thuộc cùng thực thể với vùng này (player tự phun không tự cháy, quái không tự lan vào mình)
 func _is_own(burnable: BurnableComponent) -> bool:
-	return owner != null and owner.is_ancestor_of(burnable)
+	return exclude_root != null and exclude_root.is_ancestor_of(burnable)
