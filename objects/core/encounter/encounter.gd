@@ -9,6 +9,8 @@ extends Node3D
 
 signal started
 signal cleared
+## Một con quái trong trận vừa chết (phát trước cleared nếu là con cuối): cho vật rơi đồ biết chỗ quái gục
+signal enemy_died(enemy: Enemy)
 
 ## Hộp kích hoạt nhỏ hơn mức này không bắt được player (capsule bán kính 0.35)
 const MIN_TRIGGER_SIZE := 0.5
@@ -177,7 +179,8 @@ func _apply_trigger_size() -> void:
 	shape_node.position = Vector3(0.0, trigger_size.y * 0.5, 0.0)
 
 
-func _on_enemy_died(_enemy: Enemy) -> void:
+func _on_enemy_died(enemy: Enemy) -> void:
+	enemy_died.emit(enemy)
 	_count_down()
 
 

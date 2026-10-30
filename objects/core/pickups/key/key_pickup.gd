@@ -11,6 +11,17 @@ extends Pickup
 		update_configuration_warnings()
 
 
+## Vật liệu phủ lên model chìa (chìa màu khác dùng chung model chìa đỏ); để trống = giữ màu model
+@export var model_material: Material
+
+
+func _build_visual(visual_root: Node3D) -> void:
+	if model_material == null:
+		return
+	for mesh: MeshInstance3D in visual_root.find_children("*", "MeshInstance3D", true, false):
+		mesh.material_override = model_material
+
+
 func _get_configuration_warnings() -> PackedStringArray:
 	if key_id.is_empty():
 		return ["Chưa đặt Key Id: ổ khóa sẽ không biết chìa này."]

@@ -9,6 +9,8 @@ extends Node3D
 @export var destination: Node3D
 ## Thả player cao hơn điểm đến bấy nhiêu mét để rơi "bộp" xuống
 @export var drop_height: float = 4.0
+## Để trống: phễu hiện khi thắng trận. Có cờ: chỉ hiện khi cờ này bật (ví dụ key_id của chìa rơi từ trận)
+@export var unlock_flag: StringName
 @export var radius: float = 1.6:
 	set(value):
 		radius = value
@@ -51,6 +53,13 @@ func _ready() -> void:
 		push_warning("%s thiếu encounter hoặc destination: phễu không hoạt động" % get_path())
 		_set_active(false)
 		return
+	if not unlock_flag.is_empty():
+		# Mở theo cờ (ví dụ đã nhặt chìa rơi từ trận) thay vì ngay khi thắng
+		var unlocked := GameState.has_flag(unlock_flag)
+		_set_active(unlocked)
+		if not unlocked:
+			GameState.progress_changed.connect(_on_progress_changed)
+		return
 	var won := not encounter.persistent_id.is_empty() and GameState.has_flag(encounter.persistent_id)
 	_set_active(won)
 	if not won:
@@ -59,6 +68,13 @@ func _ready() -> void:
 
 func is_active() -> bool:
 	return _visual.visible
+
+
+func _on_progress_changed() -> void:
+	if not GameState.has_flag(unlock_flag):
+		return
+	GameState.progress_changed.disconnect(_on_progress_changed)
+	_on_cleared()
 
 
 func _on_cleared() -> void:
