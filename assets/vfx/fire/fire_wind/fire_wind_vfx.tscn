@@ -1,0 +1,66 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/fire/fire_wind/fire_wind_vfx.gd" id="1_vfx"]
+
+[sub_resource type="Gradient" id="PuffShape"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="PuffTex"]
+gradient = SubResource("PuffShape")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="Gradient" id="TrailColor"]
+offsets = PackedFloat32Array(0, 0.15, 0.6, 1)
+colors = PackedColorArray(1, 0.92, 0.6, 0, 1, 0.55, 0.12, 0.95, 0.9, 0.22, 0.05, 0.6, 0.25, 0.06, 0.04, 0)
+
+[sub_resource type="GradientTexture1D" id="TrailColorTex"]
+gradient = SubResource("TrailColor")
+
+[sub_resource type="ParticleProcessMaterial" id="TrailProcess"]
+resource_local_to_scene = true
+emission_shape = 3
+emission_box_extents = Vector3(1, 0.3, 2)
+direction = Vector3(0, 0.3, 1)
+spread = 15.0
+initial_velocity_min = 3.0
+initial_velocity_max = 6.0
+gravity = Vector3(0, 0.8, 0)
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 0.7
+scale_max = 1.1
+color_ramp = SubResource("TrailColorTex")
+
+[sub_resource type="StandardMaterial3D" id="TrailMat"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("PuffTex")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="TrailMesh"]
+material = SubResource("TrailMat")
+size = Vector2(0.7, 0.7)
+
+[node name="FireWindVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+
+[node name="Trail" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+cast_shadow = 0
+emitting = false
+amount = 32
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.7
+visibility_aabb = AABB(-5, -1, -2, 10, 4, 16)
+process_material = SubResource("TrailProcess")
+draw_pass_1 = SubResource("TrailMesh")

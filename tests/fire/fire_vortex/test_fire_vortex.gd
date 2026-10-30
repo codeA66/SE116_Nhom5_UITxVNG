@@ -10,9 +10,7 @@ extends Node
 ## UC3 Thứ đang cháy đứng ngoài bán kính hố -> không bốc lửa.
 ## UC4 Thứ bên trong bắt lửa giữa chừng (phun Q lúc hố đang hút) -> hố bốc lửa từ lúc đó.
 ## UC5 Hố hết thời gian -> lửa của hố tắt, không còn đốt.
-## UC6 Hố kéo quái đang cháy không còn làm lửa phụt lung tung theo hướng kéo (chỉ cú gió mạnh như E mới phụt).
-## UC7 Lan nối tiếp chỉ tính cú gió vừa xảy ra: quái bị hố kéo (đang trôi) bắt lửa không phụt theo hướng cú gió cũ.
-## UC8 Thông số cực đoan (bán kính, thời gian hố, min_impulse) vẫn đúng.
+## UC8 Thông số cực đoan (bán kính, thời gian hố) vẫn đúng.
 ## UC9 Chơi thật: cáo có cung + ghép Gió vào cung, bắn tên vào quái đang cháy -> quái gần đó cháy theo.
 ##
 ## ===== TEST CASE =====
@@ -22,11 +20,8 @@ extends Node
 ## TC3 (UC3) Chỉ EnemyRow3 (cách tâm 4.5 m) cháy -> hố không bốc lửa, EnemyRow2 không cháy.
 ## TC4 (UC4) Hố đang chạy, chưa ai cháy; 0.2 s sau đốt Enemy -> hố bốc lửa, EnemyRow2 cháy.
 ## TC5 (UC5) Sau lifetime: Igniter của hố tắt (không monitoring); dời CrateA vào lại và không bị đốt.
-## TC6 (UC6) Enemy đang cháy bị hố kéo suốt lifetime -> spread_fired của Enemy = 0.
-## TC7 (UC7) EnemyRow2 bị hố kéo (đang trôi), cú gió E gần nhất đã lâu (> chain_window) -> bắt lửa không spread_fired.
 ## TC8 (UC8) radius 0.5 -> Enemy cháy cách tâm 1.5 m không làm hố bốc lửa; radius 8 -> EnemyRow3 (4.5 m) cháy theo;
-##           lifetime 0.1 -> vẫn bốc lửa và đốt EnemyRow2; min_impulse 0 -> hố kéo quái cháy LÀM phụt lửa (spread_fired > 0);
-##           min_impulse 50 -> cú gió E (12) không làm hàng SpreadA/B lan lửa.
+##           lifetime 0.1 -> vẫn bốc lửa và đốt EnemyRow2.
 ## TC9 (UC9) Ghép Gió vào cung, Enemy đang cháy, EnemyRow2 đứng cách 2 m: giữ aim rồi thả bắn tên vào Enemy -> EnemyRow2 cháy.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
@@ -60,8 +55,6 @@ func _run() -> void:
 	await _tc3_outside()
 	await _tc4_mid_ignite()
 	await _tc5_after_lifetime()
-	await _tc6_no_random_jets()
-	await _tc7_stale_wind()
 	await _tc8_extremes()
 	await _tc9_real_arrow()
 	print("RESULT fails=%d" % _fails)
@@ -155,40 +148,6 @@ func _tc5_after_lifetime() -> void:
 	await _finish(v)
 
 
-func _tc6_no_random_jets() -> void:
-	await _reset()
-	var fired: Array[int] = [0]
-	var counter := func(_d: Vector3) -> void: fired[0] += 1
-	_burn("Enemy").spread_fired.connect(counter)
-	var v := _new_vortex()
-	_burn("Enemy").ignite(_p)
-	_perform(v)
-	await _wait(v.lifetime + 0.2)
-	_burn("Enemy").spread_fired.disconnect(counter)
-	_check(fired[0] == 0, "TC6: hố kéo quái đang cháy không làm phụt lửa theo hướng kéo (%d)" % fired[0])
-	await _finish(v)
-
-
-func _tc7_stale_wind() -> void:
-	await _reset()
-	var data := _burn("EnemyRow2").fire_spread.data
-	var fired: Array[int] = [0]
-	var counter := func(_d: Vector3) -> void: fired[0] += 1
-	_burn("EnemyRow2").spread_fired.connect(counter)
-	# Cú gió mạnh cũ (đủ mạnh để ghi hướng), rồi chờ quá chain_window
-	_burn("EnemyRow2").wind_receiver.push(Vector3(0, 0, -12))
-	await _wait(data.chain_window + 0.3)
-	var v := _new_vortex()
-	_perform(v)
-	await _wait(0.2)
-	_check(_burn("EnemyRow2").wind_receiver.is_being_pushed(), "TC7: EnemyRow2 đang trôi (thân đứng hình nên lực đẩy cũ chưa giảm)")
-	_burn("EnemyRow2").ignite(_p)
-	await _wait(0.2)
-	_burn("EnemyRow2").spread_fired.disconnect(counter)
-	_check(fired[0] == 0, "TC7: cú gió cũ quá chain_window -> bắt lửa không phụt theo hướng cũ (%d)" % fired[0])
-	await _finish(v)
-
-
 func _tc8_extremes() -> void:
 	# Bán kính 0.5: Enemy cháy cách tâm 1.5 m nằm ngoài
 	await _reset()
@@ -214,42 +173,6 @@ func _tc8_extremes() -> void:
 	await _wait(0.4)
 	_check(_burn("EnemyRow2").is_burning(), "TC8: hố chỉ 0.1 s -> vẫn bốc lửa, EnemyRow2 cháy")
 	await _finish(v)
-	# min_impulse 0: lực kéo nhỏ của hố cũng làm phụt lửa
-	await _reset()
-	var data := _burn("Enemy").fire_spread.data
-	var min0 := data.min_impulse
-	data.min_impulse = 0.0
-	var fired: Array[int] = [0]
-	var counter := func(_d: Vector3) -> void: fired[0] += 1
-	_burn("Enemy").spread_fired.connect(counter)
-	v = _new_vortex()
-	_burn("Enemy").ignite(_p)
-	_perform(v)
-	await _wait(0.5)
-	_burn("Enemy").spread_fired.disconnect(counter)
-	_check(fired[0] > 0, "TC8: min_impulse 0 -> lực kéo của hố làm phụt lửa (%d)" % fired[0])
-	await _finish(v)
-	# min_impulse 50: cú gió E (12) không đủ mạnh để lan
-	await _reset()
-	data.min_impulse = 50.0
-	var spread_home: Dictionary[String, Vector3] = {}
-	for n: String in ["SpreadA", "SpreadB"]:
-		spread_home[n] = (_lv.get_node(n) as Node3D).global_position
-	_burn_node("SpreadA").ignite(_p)
-	_p.teleport((_lv.get_node("SpreadA") as Node3D).global_position + Vector3(0, 0.2, 1.5), Vector3.FORWARD)
-	await _f(8)
-	_p.energy.set_current(_p.energy.get_max())
-	await _press(&"skill")
-	await _wait(0.4)
-	_check(not _burn_node("SpreadB").is_burning(), "TC8: min_impulse 50 -> cú gió E không lan lửa")
-	data.min_impulse = min0
-	_burn_node("SpreadA").extinguish()
-	await _wait(1.0)
-	# Cú gió thổi hình nộm trôi đi vài mét: đưa về chỗ cũ để không thành mục tiêu tự ngắm của test sau
-	for n: String in ["SpreadA", "SpreadB"]:
-		var d := _lv.get_node(n) as CharacterBody3D
-		d.velocity = Vector3.ZERO
-		d.global_position = spread_home[n]
 
 
 func _tc9_real_arrow() -> void:
@@ -258,7 +181,7 @@ func _tc9_real_arrow() -> void:
 	for n: String in ENEMIES:
 		# Lúc thân đứng hình, lực đẩy của hố / gió ở test trước dồn lại không giảm (chỉ giảm khi thân di chuyển):
 		# bật/tắt miễn đẩy để xoá lực tồn, không thì bật thân lên quái bị bắn văng đi
-		var receiver := _burn(n).wind_receiver
+		var receiver := _lv.get_node(n).get_node("WindReceiverComponent") as WindReceiverComponent
 		receiver.set_push_immunity(true)
 		receiver.set_push_immunity(false)
 		(_lv.get_node(n) as Enemy).set_physics_process(true)

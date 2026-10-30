@@ -19,7 +19,6 @@
 [ext_resource type="Script" path="res://components/ai/enemy_spacing/enemy_spacing.gd" id="17_spacing"]
 [ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="burn_comp"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="burn_vfx"]
-[ext_resource type="PackedScene" path="res://components/elements/fire/fire_spread/fire_spread.tscn" id="fire_spread"]
 
 [sub_resource type="SphereShape3D" id="SpacingShape"]
 resource_local_to_scene = true
@@ -146,13 +145,10 @@ script = ExtResource("17_spacing")
 position = Vector3(0, 0.8, 0)
 shape = SubResource("SpacingShape")
 
-[node name="BurnableComponent" parent="." node_paths=PackedStringArray("hurtbox", "match_shape_of", "wind_receiver", "fire_spread") instance=ExtResource("burn_comp")]
+[node name="BurnableComponent" parent="." node_paths=PackedStringArray("hurtbox", "match_shape_of") instance=ExtResource("burn_comp")]
 hurtbox = NodePath("../HurtboxComponent")
 match_shape_of = NodePath("../HurtboxComponent/CollisionShape3D")
-wind_receiver = NodePath("../WindReceiverComponent")
-fire_spread = NodePath("../FireSpread")
 
 [node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("burn_vfx")]
 burnable = NodePath("../BurnableComponent")
 
-[node name="FireSpread" parent="." instance=ExtResource("fire_spread")]

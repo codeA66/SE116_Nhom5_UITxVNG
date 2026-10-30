@@ -4,7 +4,7 @@ extends Area3D
 ## Hai cách dùng:
 ## - follow_hitbox: bám theo một HitboxComponent (lửa phun Q, sau này kiếm lửa): bật/tắt và dùng chung shape với nó,
 ##   nên đổi tầm / độ rộng ở dữ liệu kỹ năng là vùng cháy đổi theo.
-## - Tự đứng (luồng lửa lan, bẫy lửa...): tự thêm CollisionShape3D con rồi gọi activate() / deactivate().
+## - Tự đứng (vết lửa theo gió, lốc lửa, bẫy lửa...): tự thêm CollisionShape3D con rồi gọi activate() / deactivate().
 ## Chỉ quét layer "burnable" (lọc ở engine), không đụng hurtbox. Không đốt BurnableComponent của chính thực thể chứa nó.
 
 ## Phát mỗi lần một mục tiêu bắt lửa từ vùng này (VFX / âm thanh nghe)
@@ -15,9 +15,11 @@ const BURNABLE_LAYER := 10
 
 ## Hitbox để bám theo; để trống nếu vùng tự đứng
 @export var follow_hitbox: HitboxComponent
+## Bỏ qua thứ đang cháy sẵn (không làm mới thời gian cháy): vết lửa theo gió dùng; phun lửa Q thì không (trúng lại là làm mới)
+@export var skip_burning: bool = false
 
 ## Không đốt BurnableComponent nằm dưới node này (thực thể chứa vùng). Mặc định là owner;
-## vùng nằm trong scene con (FireSpread) thì scene đó gán lại thành thực thể thật
+## vùng nằm trong scene con thì scene đó có thể gán lại thành thực thể thật
 var exclude_root: Node
 ## Ai được tính là người châm lửa (DamageInfo.source của tick cháy). Null = exclude_root.
 ## Lửa lan truyền tiếp người châm ban đầu, để quái bị lan không quay sang đuổi con quái đang cháy
@@ -79,6 +81,8 @@ func _on_hitbox_activated(_attack: AttackData) -> void:
 func _on_area_entered(area: Area3D) -> void:
 	var burnable := area as BurnableComponent
 	if not _active or burnable == null or burnable in _already_lit or _is_own(burnable):
+		return
+	if skip_burning and burnable.is_burning():
 		return
 	_already_lit.append(burnable)
 	burnable.ignite(ignite_source if is_instance_valid(ignite_source) else exclude_root)

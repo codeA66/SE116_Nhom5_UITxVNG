@@ -8,8 +8,8 @@ extends Node
 ## UC2 Thùng cháy hết thời gian (3 s) thì tan: ẩn đi, tắt va chạm, player đi xuyên qua được.
 ## UC3 Thùng tan rồi hồi lại sau respawn_delay (3 s), đốt được tiếp.
 ## UC4 Thùng đang tan thì không bắt lửa.
-## UC5 Thùng đang cháy bị gió thổi -> lan lửa sang thùng phía sau theo hướng gió.
-## UC6 Thùng không cháy bị gió thổi -> không lan, thùng không bị đẩy đi, không tự lan khi bị đốt sau đó.
+## UC5 Thùng đang cháy nằm trong vết gió -> lửa theo vết gió sang thùng phía sau.
+## UC6 Thùng không cháy bị gió thổi -> không lửa, thùng không bị đẩy đi; đốt thùng lúc không có gió thì lửa không tự lan.
 ## UC7 Thông số cực đoan: cháy 0.1 s, hồi lại 0.1 s vẫn đúng thứ tự cháy -> tan -> hồi.
 ##
 ## ===== TEST CASE =====
@@ -20,7 +20,7 @@ extends Node
 ## TC5 (UC3)   Sau respawn_delay: hiện lại, va chạm bật lại, ignite() lại cháy được.
 ## TC6 (UC5)   CrateA cháy, bấm E thổi về CrateB: CrateB cháy.
 ## TC7 (UC6)   Không thùng nào cháy, bấm E: không cháy, CrateA không xê dịch;
-##             sau đó đốt CrateB bằng ignite(): CrateB không tự phụt lửa (spread_fired = 0).
+##             sau đó đốt CrateB bằng ignite() (không gió): CrateA không cháy.
 ## TC8 (UC7)   duration 0.1, respawn_delay 0.1: cháy -> tan -> hồi lại trong < 0.5 s.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
@@ -110,17 +110,16 @@ func _tc6_spread() -> void:
 
 func _tc7_no_fire_wind() -> void:
 	await _ensure_present()
-	var fired: Array[int] = [0]
-	_burn("CrateB").spread_fired.connect(func(_d: Vector3) -> void: fired[0] += 1)
 	var pos := _crate("CrateA").global_position
 	await _blow()
 	await _wait(0.4)
 	_check(not _burn("CrateA").is_burning() and not _burn("CrateB").is_burning(), "TC7: không ai cháy + gió -> không cháy")
 	_check(_crate("CrateA").global_position.distance_to(pos) < 0.01, "TC7: thùng không bị gió đẩy đi")
+	# Đốt thùng sau khi gió đã tắt: không có gió thì không có lửa đi đâu cả, thùng kia vẫn yên
 	await _wait(0.6)
 	_burn("CrateB").ignite(_p)
 	await _wait(0.3)
-	_check(fired[0] == 0, "TC7: thùng đứng yên bị đốt sau cú gió không tự phụt lửa (%d)" % fired[0])
+	_check(not _burn("CrateA").is_burning(), "TC7: đốt thùng khi không có gió -> lửa không tự lan sang thùng khác")
 	_burn("CrateB").extinguish()
 	await _wait(_crate("CrateB").respawn_delay + 0.3)
 

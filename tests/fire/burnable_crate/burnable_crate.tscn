@@ -3,8 +3,6 @@
 [ext_resource type="Script" path="res://tests/fire/burnable_crate/burnable_crate.gd" id="1_crate"]
 [ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="2_burn"]
 [ext_resource type="Resource" path="res://tests/fire/burnable_crate/crate_burn.tres" id="3_data"]
-[ext_resource type="Script" path="res://components/elements/wind/wind_receiver/wind_receiver_component.gd" id="4_wind"]
-[ext_resource type="PackedScene" path="res://components/elements/fire/fire_spread/fire_spread.tscn" id="5_spread"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="6_vfx"]
 
 [sub_resource type="BoxShape3D" id="CrateShape"]
@@ -31,26 +29,12 @@ shape = SubResource("CrateShape")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("CrateMesh")
 
-[node name="BurnableComponent" parent="." node_paths=PackedStringArray("wind_receiver", "fire_spread") instance=ExtResource("2_burn")]
+[node name="BurnableComponent" parent="." instance=ExtResource("2_burn")]
 data = ExtResource("3_data")
-wind_receiver = NodePath("../WindReceiverComponent")
-fire_spread = NodePath("../FireSpread")
 
 [node name="Zone" type="CollisionShape3D" parent="BurnableComponent"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CrateZone")
-
-[node name="WindReceiverComponent" type="Area3D" parent="."]
-collision_layer = 128
-collision_mask = 64
-script = ExtResource("4_wind")
-wind_multiplier = 0.0
-
-[node name="Zone" type="CollisionShape3D" parent="WindReceiverComponent"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-shape = SubResource("CrateZone")
-
-[node name="FireSpread" parent="." instance=ExtResource("5_spread")]
 
 [node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("6_vfx")]
 burnable = NodePath("../BurnableComponent")

@@ -3,14 +3,13 @@ extends Area3D
 ## Thứ gì gắn component này thì đốt được (quái, hình nộm, sau này rào gỗ / dây leo / lò lửa).
 ## Nguồn lửa tìm thấy nó qua collision layer "burnable" rồi gọi ignite(). Có hurtbox thì mỗi tick mất máu
 ## (đòn FIRE, không khựng); không có hurtbox thì vật tự phản ứng qua signal (rào cháy tan, lò sáng...).
+## Lửa lan theo gió / lốc lửa do nguồn lửa bên ngoài lo (FireWind, FireVortex): component chỉ giữ trạng thái cháy.
 ## Không cháy thì tắt _physics_process.
 
 signal ignited
 signal extinguished
 ## damage_taken = 0 khi không có hurtbox hoặc tick bị chặn
 signal burn_tick(damage_taken: int)
-## Đang cháy + bị gió thổi -> phụt luồng lửa theo hướng gió
-signal spread_fired(direction: Vector3)
 
 @export var data: BurnData
 ## Nhận sát thương mỗi tick; để trống cho vật không có máu
@@ -18,23 +17,14 @@ signal spread_fired(direction: Vector3)
 ## Dùng chung shape với vùng này (thường là CollisionShape3D của hurtbox) để quái to nhỏ đều khớp, khỏi chỉnh tay.
 ## Để trống thì tự thêm CollisionShape3D con.
 @export var match_shape_of: CollisionShape3D
-## Nghe cú gió đẩy để lan lửa; để trống thì vật không lan (thùng gỗ không nhận gió...)
-@export var wind_receiver: WindReceiverComponent
-## Luồng lửa phụt ra khi đang cháy mà bị gió thổi; để trống thì không lan
-@export var fire_spread: FireSpread
 
 var _remaining: float = 0.0
 var _tick_timer: float = 0.0
 var _source: Node
 var _enabled: bool = true
-var _last_wind_dir: Vector3 = Vector3.ZERO
-## Mốc thời gian (ms) của cú gió mạnh gần nhất
-var _last_wind_ms: int = -1000000
-## Mốc thời gian (ms) sớm nhất được phụt lửa lại
-var _next_spread_ms: int = 0
 
 
-## Chỉ cho nguồn lửa phát hiện; chép shape hurtbox; chết thì tắt lửa; nghe gió để lan; mặc định nghỉ
+## Chỉ cho nguồn lửa phát hiện; chép shape hurtbox; chết thì tắt lửa; mặc định nghỉ
 func _ready() -> void:
 	# Chỉ cần bị nguồn lửa phát hiện, không tự quét
 	monitoring = false
@@ -47,8 +37,6 @@ func _ready() -> void:
 		add_child(copy)
 	if hurtbox and hurtbox.health:
 		hurtbox.health.died.connect(extinguish)
-	if wind_receiver:
-		wind_receiver.pushed.connect(_on_wind_pushed)
 	set_physics_process(false)
 
 
@@ -92,14 +80,9 @@ func ignite(source: Node = null) -> void:
 	_tick_timer = data.tick_interval
 	set_physics_process(true)
 	ignited.emit()
-	# Cú gió đẩy cả hàng gần như cùng lúc, thường trước khi lửa lan tới: vừa bắt lửa mà còn trôi thì phụt tiếp.
-	# Chỉ tính cú gió mạnh vừa xảy ra: đang trôi vì hố hút thì không phụt theo hướng một cú gió cũ
-	if fire_spread and fire_spread.chains_while_pushed() and wind_receiver and wind_receiver.is_being_pushed() \
-			and Time.get_ticks_msec() - _last_wind_ms <= int(fire_spread.get_chain_window() * 1000.0):
-		_try_spread()
 
 
-## Người châm lửa ban đầu (player...), để lửa lan / lốc lửa truyền tiếp; null nếu không rõ
+## Người châm lửa ban đầu (player...), để lửa theo gió / lốc lửa truyền tiếp; null nếu không rõ
 func get_source() -> Node:
 	return _source if is_instance_valid(_source) else null
 
@@ -129,29 +112,3 @@ func _tick() -> void:
 ## Đúng khi không có máu (vật) hoặc còn sống
 func _is_alive() -> bool:
 	return hurtbox == null or hurtbox.is_alive()
-
-
-## Cú gió mạnh đẩy trúng: nhớ hướng + thời điểm (cho lan tiếp lúc bắt lửa ngay sau đó); đang cháy thì phụt lửa ngay.
-## Lực đẩy yếu hơn min_impulse (lực kéo mỗi khung của hố hút) bỏ qua: hố hút có luật lốc lửa riêng
-func _on_wind_pushed(impulse: Vector3) -> void:
-	var flat := Vector3(impulse.x, 0.0, impulse.z)
-	if flat.is_zero_approx():
-		return
-	if fire_spread and flat.length() < fire_spread.get_min_impulse():
-		return
-	_last_wind_dir = flat.normalized()
-	_last_wind_ms = Time.get_ticks_msec()
-	if is_burning():
-		_try_spread()
-
-
-## Phụt luồng lửa theo hướng gió gần nhất, tối đa một lần mỗi spread_cooldown (chống lan qua lại vô hạn)
-func _try_spread() -> void:
-	if fire_spread == null or _last_wind_dir.is_zero_approx():
-		return
-	var now := Time.get_ticks_msec()
-	if now < _next_spread_ms:
-		return
-	_next_spread_ms = now + int(fire_spread.get_cooldown() * 1000.0)
-	fire_spread.spread(global_position, _last_wind_dir, _source if is_instance_valid(_source) else null)
-	spread_fired.emit(_last_wind_dir)
