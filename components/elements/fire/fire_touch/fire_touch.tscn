@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://components/elements/fire/fire_touch/fire_touch.gd" id="1_touch"]
+[ext_resource type="Script" path="res://components/elements/fire/igniter/igniter_area.gd" id="2_igniter"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_touch/fire_touch_vfx.tscn" id="3_vfx"]
+
+[sub_resource type="BoxShape3D" id="TouchBox"]
+resource_local_to_scene = true
+size = Vector3(2.4, 1.6, 2.2)
+
+[sub_resource type="SphereShape3D" id="TouchSphere"]
+resource_local_to_scene = true
+radius = 1.0
+
+[node name="FireTouch" type="Node3D"]
+script = ExtResource("1_touch")
+
+[node name="Igniter" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 512
+monitoring = false
+monitorable = false
+script = ExtResource("2_igniter")
+
+[node name="Box" type="CollisionShape3D" parent="Igniter"]
+shape = SubResource("TouchBox")
+
+[node name="Sphere" type="CollisionShape3D" parent="Igniter"]
+shape = SubResource("TouchSphere")
+disabled = true
+
+[node name="Vfx" parent="." node_paths=PackedStringArray("touch") instance=ExtResource("3_vfx")]
+touch = NodePath("..")

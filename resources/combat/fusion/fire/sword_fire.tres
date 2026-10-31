@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FusionData" format=3]
+
+[ext_resource type="Script" path="res://abilities/fusion/_base/fusion_data.gd" id="1_fusion"]
+[ext_resource type="Resource" path="res://resources/combat/fusion/fire/fire.tres" id="2_fire"]
+[ext_resource type="Script" path="res://abilities/fusion/_base/fusion_effect.gd" id="3_effect_base"]
+[ext_resource type="Script" path="res://abilities/fusion/fire/effects/ignite_on_last_hit_effect.gd" id="4_last_hit"]
+[ext_resource type="PackedScene" path="res://components/elements/fire/fire_touch/fire_touch.tscn" id="5_touch"]
+
+[sub_resource type="Resource" id="IgniteLastHit"]
+script = ExtResource("4_last_hit")
+touch_scene = ExtResource("5_touch")
+warmup_scenes = Array[PackedScene]([ExtResource("5_touch")])
+
+[resource]
+script = ExtResource("1_fusion")
+element = ExtResource("2_fire")
+display_name = "Kiếm Lửa"
+description = "Nhát cuối của combo chém làm cháy mọi thứ dễ cháy trước mặt."
+effects = Array[ExtResource("3_effect_base")]([SubResource("IgniteLastHit")])

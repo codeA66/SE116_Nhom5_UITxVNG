@@ -28,6 +28,8 @@ var _radius: float = 2.5
 var _length: float = 5.0
 var _width: float = 2.5
 var _test_fails: int = 0
+var _repeat_wind: bool = false
+var _repeat_clock: float = 0.0
 
 ## Tạo phòng thử chỉ có hình ảnh và component thật, dùng signal công khai để phát VFX.
 func _ready() -> void:
@@ -42,20 +44,29 @@ func _ready() -> void:
 		if arg == "--bench": _bench = true
 		if arg == "--dark": dark = true
 		if arg == "--palace": _palace = true
+	if _bench:
+		Engine.max_fps = 0
+		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	if _case in ["lifecycle", "lifecycle_original"]:
 		await _test_lifecycle(_case == "lifecycle_original")
 		get_tree().quit(1 if _test_fails > 0 else 0)
+		return
+	if _case == "status_unit":
+		_setup_burning()
+		await _test_status_readability()
+		get_tree().quit(1 if _test_fails else 0)
 		return
 	DirAccess.make_dir_recursive_absolute(output)
 	_setup_stage(dark)
 	if _palace: _setup_palace()
 	if _case == "burn": _setup_burning()
+	if _case == "crowd": _setup_crowd()
 	if _case == "wind":
 		_wind = (load("res://components/elements/fire/fire_wind/fire_wind.tscn") as PackedScene).instantiate() as FireWind
 		_wind.position.z = -4.0
 		add_child(_wind)
 	if _case in ["vortex", "wind_only"]:
-		_vortex = (load("res://abilities/fusion/moves/wind_vortex.tscn") as PackedScene).instantiate() as WindVortex
+		_vortex = (load("res://abilities/fusion/wind/moves/wind_vortex.tscn") as PackedScene).instantiate() as WindVortex
 		_vortex.radius = _radius
 		_vortex.finished.connect(_on_review_vortex_finished)
 		add_child(_vortex)
@@ -66,11 +77,15 @@ func _ready() -> void:
 		_vortex.lifetime = benchmark_duration * 2.0 + wait_before
 		_vortex.perform(null, null, Vector3.FORWARD)
 		await get_tree().create_timer(wait_before).timeout
+	if _case == "crowd":
+		await _review_crowd()
+		return
 	if _bench:
 		_begin()
 		await get_tree().create_timer(benchmark_duration).timeout
 		_end("baseline")
 		_begin()
+	_repeat_wind = _bench and _case == "wind"
 	_activate()
 	if _case == "wind_only":
 		var vfx: FireVortexVfx = _fire.get_node("Vfx") as FireVortexVfx
@@ -282,11 +297,16 @@ func _begin() -> void:
 func _end(label: String) -> void:
 	_measuring = false
 	set_process(false)
-	print("BENCH ",label," frames=",_frames," mean_ms=",_sum/maxf(float(_frames),1.0)," worst_ms=",_max," draws=",Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
+	print("BENCH ",label," frames=",_frames," mean_ms=",_sum/maxf(float(_frames),1.0)," fps=",1000.0 * _frames / maxf(_sum,0.001)," worst_ms=",_max," draws=",Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
 
 ## Chỉ tích lũy scalar để đo không tự gây cấp phát mỗi khung.
 func _process(_delta: float) -> void:
 	if not _measuring: return
+	if _repeat_wind:
+		_repeat_clock += _delta
+		if _repeat_clock >= 0.36:
+			_repeat_clock = 0.0
+			_wind.fired.emit(2.0, _length, _width)
 	var now: int = Time.get_ticks_usec()
 	var ms: float = float(now - _last) / 1000.0
 	_last = now
@@ -330,3 +350,81 @@ func _copy_geometry(node: Node, parent_transform: Transform3D, destination: Node
 			destination.add_child(copy)
 	for child: Node in node.get_children():
 		_copy_geometry(child, accumulated, destination)
+
+
+## Tám quái thật, bốn cháy xen kẽ bốn không cháy rồi cả tám, không bật AI hoặc ghi save.
+func _setup_crowd() -> void:
+	var packed: PackedScene = load("res://entities/enemies/palace/enemy_1/enemy_1.tscn") as PackedScene
+	for i: int in range(8):
+		var actor: Enemy = packed.instantiate() as Enemy
+		actor.position = Vector3(float(i % 4) * 2.2 - 3.3, 0, float(i / 4) * 2.6 - 1.3)
+		add_child(actor)
+		actor.set_physics_process(false)
+		actor.get_node("StateMachine").process_mode = Node.PROCESS_MODE_DISABLED
+		actor.health.max_health = 1000
+		actor.health.current_health = 1000
+		var burn: BurnableComponent = actor.get_node("BurnableComponent") as BurnableComponent
+		burn.data = burn.data.duplicate() as BurnData
+		burn.data.duration = 10.0
+		_burns.append(burn)
+
+
+## Chụp tín hiệu tick thật và trạng thái tắt; phép đo FPS không xen đọc ảnh.
+func _review_crowd() -> void:
+	for i: int in range(0, 8, 2): _burns[i].ignite()
+	await get_tree().create_timer(0.65).timeout
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(output.path_join("mixed.png"))
+	for burn: BurnableComponent in _burns: burn.extinguish()
+	await get_tree().create_timer(0.4).timeout
+	if _bench:
+		_begin()
+		await get_tree().create_timer(3.0).timeout
+		_end("crowd_baseline")
+	for burn: BurnableComponent in _burns: burn.ignite()
+	await get_tree().create_timer(0.65).timeout
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(output.path_join("eight_steady.png"))
+	# Chu kỳ burn_default phát tick thật; không gọi thẳng handler VFX.
+	await _burns[0].burn_tick
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(output.path_join("eight_tick.png"))
+	if _bench:
+		_begin()
+		await get_tree().create_timer(3.0).timeout
+		_end("crowd_eight_burning")
+	for burn: BurnableComponent in _burns: burn.extinguish()
+	await get_tree().create_timer(0.4).timeout
+	for burn: BurnableComponent in _burns:
+		var vfx: BurningVfx = burn.get_parent().get_node("BurningVfx") as BurningVfx
+		_test_check(not vfx.is_processing(), "Dập lửa xong nghỉ xử lý")
+		_test_check(not (vfx.get_node("StatusCrown") as MeshInstance3D).visible, "Không còn silhouette sau khi dập")
+	print("CROWD_RESULT fails=", _test_fails)
+	get_tree().quit(1 if _test_fails else 0)
+
+
+## UC: idle không dấu cháy; ignite hiện silhouette; tick bùng ngay; dập xong về nghỉ, không có đèn.
+func _test_status_readability() -> void:
+	for burn: BurnableComponent in _burns:
+		var vfx: BurningVfx = burn.get_node("BurningVfx") as BurningVfx
+		var crown: MeshInstance3D = vfx.get_node("StatusCrown") as MeshInstance3D
+		_test_check(not crown.visible, "UC1 silhouette ẩn trước ignite")
+		_test_check(vfx.find_children("*", "OmniLight3D", true, false).is_empty(), "UC2 không có đèn trên mục tiêu")
+		burn.ignite()
+		_test_check(crown.visible, "UC3 ignite hiện silhouette không chờ ngẫu nhiên particle")
+		_test_check(crown.mesh.get_aabb().size.y * crown.scale.y <= vfx.crown_height + 0.001, "UC4 mục tiêu to vẫn chặn chiều cao crown")
+	await get_tree().create_timer(0.3).timeout
+	for burn: BurnableComponent in _burns:
+		var vfx: BurningVfx = burn.get_node("BurningVfx") as BurningVfx
+		var crown: MeshInstance3D = vfx.get_node("StatusCrown") as MeshInstance3D
+		var mat: ShaderMaterial = crown.material_override as ShaderMaterial
+		_test_check(float(mat.get_shader_parameter("pulse")) < 0.01, "UC5 pulse đầu đã kết thúc")
+		burn.burn_tick.emit(1)
+		_test_check(is_equal_approx(float(mat.get_shader_parameter("pulse")), 1.0), "UC6 tick bật pulse ngay")
+		burn.extinguish()
+		burn.extinguish()
+	await get_tree().create_timer(0.4).timeout
+	for burn: BurnableComponent in _burns:
+		var vfx: BurningVfx = burn.get_node("BurningVfx") as BurningVfx
+		_test_check(not vfx.is_processing() and not (vfx.get_node("StatusCrown") as MeshInstance3D).visible, "UC7 dập lặp không lóe và không còn xử lý")
+	print("STATUS_READABILITY_RESULT fails=", _test_fails)

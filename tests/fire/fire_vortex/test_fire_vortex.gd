@@ -25,7 +25,7 @@ extends Node
 ## TC9 (UC9) Ghép Gió vào cung, Enemy đang cháy, EnemyRow2 đứng cách 2 m: giữ aim rồi thả bắn tên vào Enemy -> EnemyRow2 cháy.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
-const VORTEX_SCENE := "res://abilities/fusion/moves/wind_vortex.tscn"
+const VORTEX_SCENE := "res://abilities/fusion/wind/moves/wind_vortex.tscn"
 ## Tâm hố cho các test đặt tay: giữa Enemy (z -10) và EnemyRow2 (z -13)
 const CENTER := Vector3(-6, 0.5, -11.5)
 const ENEMIES: Array[String] = ["Enemy", "EnemyRow2", "EnemyRow3"]
