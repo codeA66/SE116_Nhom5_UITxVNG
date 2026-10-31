@@ -97,6 +97,9 @@ func _ready() -> void:
 	_heat.hide()
 	_body.hide()
 	_ground.hide()
+	# Tắt hẳn đèn lúc nghỉ: renderer Compatibility vẽ thêm một lượt cho mọi vật trong tầm đèn đang bật,
+	# kể cả khi light_energy = 0, nên để đèn bật sẵn là tốn mỗi frame dù không phun
+	_light.hide()
 	_build_body()
 	# Ngọn phụ cũng có thể tích, tránh những tấm atlas quay theo camera ở đầu luồng.
 	var core_mesh: SphereMesh = SphereMesh.new()
@@ -165,6 +168,7 @@ func _process(delta: float) -> void:
 		_heat.hide()
 		_body.hide()
 		_ground.hide()
+		_light.hide()
 		set_process(false)
 
 
@@ -184,6 +188,7 @@ func _align() -> void:
 func _on_activated(_attack: AttackData) -> void:
 	_body.show()
 	_ground.show()
+	_light.show()
 	_clock = 0.0
 	_body_mat.set_shader_parameter(&"front", 0.0)
 	_body_mat.set_shader_parameter(&"retreat", 0.0)
@@ -280,6 +285,9 @@ func _prepare_render() -> void:
 	_heat_mat.set_shader_parameter(&"intensity", 0.001)
 	_heat.show()
 	_ground_mat.set_shader_parameter(&"strength", 0.001)
+	# Bật đèn (độ sáng 0) vài khung để biến thể shader có đèn được biên dịch sẵn, lần Q đầu không giật
+	_light.light_energy = 0.0
+	_light.show()
 	for particles: CPUParticles3D in _streams:
 		particles.transparency = 0.999
 	_set_emitting(true)
@@ -298,6 +306,7 @@ func _prepare_render() -> void:
 	_ground_mat.set_shader_parameter(&"strength", 0.0)
 	_body.hide()
 	_ground.hide()
+	_light.hide()
 	if _ignition <= 0.0:
 		_heat.hide()
 		_heat_mat.set_shader_parameter(&"intensity", 0.0)
