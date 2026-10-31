@@ -198,6 +198,8 @@ func _tc8_no_self_burn() -> void:
 	own.hurtbox = _p.get_node("HurtboxComponent") as HurtboxComponent
 	own.match_shape_of = _p.get_node("HurtboxComponent/CollisionShape3D") as CollisionShape3D
 	_p.add_child(own)
+	# Như khi đặt sẵn trong player.tscn: node thuộc scene Player (owner = Player) mới được tính là "của cáo"
+	own.owner = _p
 	await _breath_at("Dummy1")
 	await _wait(0.6)
 	_check(not own.is_burning(), "TC8: lửa không đốt chính player")

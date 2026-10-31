@@ -358,6 +358,8 @@ func begin_bow_aim() -> void:
 	_bow_hold.basis = Basis(limbs.cross(forward), limbs, forward)
 	_bow_model.visible = true
 	if _bow_model is BowVisual:
+		# Cung đang ghép nguyên tố: VFX tụ lực của nguyên tố thay cho cụm tụ lực mặc định
+		(_bow_model as BowVisual).default_charge_enabled = _bow_element_id() == &""
 		(_bow_model as BowVisual).set_aiming(true)
 	play_action(bow.draw_animation, 0.0)
 	set_bow_draw(0.0)

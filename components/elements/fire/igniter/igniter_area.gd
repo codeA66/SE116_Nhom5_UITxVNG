@@ -91,4 +91,18 @@ func _on_area_entered(area: Area3D) -> void:
 
 ## Đúng khi mục tiêu thuộc cùng thực thể với vùng này (player tự phun không tự cháy, quái không tự lan vào mình)
 func _is_own(burnable: BurnableComponent) -> bool:
-	return exclude_root != null and exclude_root.is_ancestor_of(burnable)
+	return belongs_to(burnable, exclude_root)
+
+
+## Đúng khi node thuộc thực thể entity: lần theo chuỗi owner của scene, KHÔNG theo cây node.
+## Vật nằm dưới Player trong cây nhưng thuộc scene khác (hố hút Cung Gió trong pool của Player) không tính là của Player.
+## Vật gắn vào thực thể bằng code lúc chạy phải tự đặt owner = thực thể thì mới được coi là của nó
+static func belongs_to(node: Node, entity: Node) -> bool:
+	if entity == null or node == null:
+		return false
+	var current := node.owner
+	while current != null:
+		if current == entity:
+			return true
+		current = current.owner
+	return false

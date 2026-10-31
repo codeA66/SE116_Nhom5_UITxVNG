@@ -25,11 +25,26 @@ extends Node
 ## TC9 (UC9) Ghép Gió vào cung, Enemy đang cháy, EnemyRow2 đứng cách 2 m: giữ aim rồi thả bắn tên vào Enemy -> EnemyRow2 cháy.
 ## TC10 (UC5) Bắn tên gió thật 3 lần (hố hút lấy từ pool, dùng lại): lần 1 Enemy cháy -> EnemyRow2 cháy; dập hết lửa,
 ##           lần 2, 3 không ai cháy -> hố KHÔNG bốc lửa (không giữ trạng thái lần trước); cuối cùng không hạt lửa nào còn phát.
+## TC11 (UC10) Hố ở chỗ trống (không có gì dễ cháy bên trong), đứng 3.5 m bấm Q phun THẲNG vào hố -> hố bốc lửa.
+## TC12 (UC10) Cùng chỗ, bấm Q phun NGƯỢC ra xa hố -> hố không bốc lửa.
+## TC13 (UC11) Quái đang cháy đứng cách tâm 3.3 m (ngoài vùng hút 2.5 m, trong vùng bắt lửa 2.5 x 1.25) -> hố bốc lửa.
+## TC14 (UC11) Quái đang cháy cách tâm 4.2 m (ngoài cả vùng bắt lửa) -> không bốc lửa.
+## TC15 (UC11) catch_radius_scale 1.0 -> quái cháy cách 3.3 m không làm bốc lửa; 2.0 -> quái cháy cách 4.2 m làm bốc lửa.
+## TC16 (UC10) Hố trong pool chưa hút (chưa perform): vùng lửa chạm vào -> KHÔNG bốc lửa, vùng nhận lửa của hố đang tắt.
+## TC17 (UC10) NHƯ GAME THẬT: hố lấy từ pool Cung Gió (nằm DƯỚI node Player), hố trống, Q phun vào -> bốc lửa.
+##            (lỗi cũ: luật "không tự đốt mình" xét cây node nên bỏ qua hố nằm dưới Player)
+## TC18 (UC10) Như TC17 nhưng nguồn lửa là vùng bùng của Cung Lửa (FireTouch, người châm = Player) -> bốc lửa.
+##
+## UC10 (thêm 2026-10-31) Nguồn lửa chạm vào chính hố (Q, lửa theo gió, nhát cuối Kiếm Lửa, chỗ tên Cung Lửa trúng)
+##      -> hố bốc lửa, kể cả khi trong hố không có gì dễ cháy.
+## UC11 (thêm 2026-10-31) Vùng bắt lửa rộng bằng hình xoáy nhìn thấy (bán kính hút x catch_radius_scale), vùng hút không đổi.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
 const VORTEX_SCENE := "res://abilities/fusion/wind/moves/wind_vortex.tscn"
 ## Tâm hố cho các test đặt tay: giữa Enemy (z -10) và EnemyRow2 (z -13)
 const CENTER := Vector3(-6, 0.5, -11.5)
+## Chỗ trống trong sân thử (xa quái / hình nộm / thùng) cho các test hố không có gì bên trong
+const EMPTY := Vector3(12, 0.5, 12)
 const ENEMIES: Array[String] = ["Enemy", "EnemyRow2", "EnemyRow3"]
 const BOW_SLOT := WeaponData.Slot.BOW
 
@@ -60,6 +75,10 @@ func _run() -> void:
 	await _tc8_extremes()
 	await _tc9_real_arrow()
 	await _tc10_vortex_reuse()
+	await _tc11_tc12_breath_into_vortex()
+	await _tc13_to_tc15_catch_radius()
+	await _tc16_idle_vortex()
+	await _tc17_tc18_pooled_vortex()
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
 
@@ -257,6 +276,114 @@ func _tc10_vortex_reuse() -> void:
 				emitting.append(String(fv.get_path_to(p)))
 		_check(not (fv as FireVortex).is_lit(), "TC10: hố %s đã tắt lửa" % fv.get_parent().name)
 	_check(emitting.is_empty(), "TC10: không hạt lửa lốc nào còn phát %s" % str(emitting))
+
+
+func _tc11_tc12_breath_into_vortex() -> void:
+	# [hướng quay, mong bốc lửa]: quay về hố (-z) thì lửa phun vào hố; quay ngược (+z) thì không
+	for c: Array in [[Vector3.FORWARD, true], [Vector3.BACK, false]]:
+		await _reset()
+		await _wait(1.5)
+		var v := _new_vortex()
+		v.global_position = EMPTY
+		_p.teleport(EMPTY + Vector3(0, -0.3, 3.5), c[0])
+		await _f(8)
+		_perform(v)
+		_p.energy.set_current(_p.energy.get_max())
+		Input.action_press(&"skill_fire")
+		await _f(1)
+		_p.face_instantly(c[0])
+		await _f(1)
+		Input.action_release(&"skill_fire")
+		await _wait(0.5)
+		var lit := (v.get_node("FireVortex") as FireVortex).is_lit()
+		var label := "TC11: hố trống, Q phun thẳng vào -> bốc lửa" if c[1] else "TC12: Q phun ngược ra xa hố -> không bốc lửa"
+		_check(lit == c[1], "%s (lit=%s)" % [label, lit])
+		await _finish(v)
+
+
+func _tc13_to_tc15_catch_radius() -> void:
+	# [hệ số vùng bắt lửa, khoảng cách tâm quái tới tâm hố, mong bốc lửa]
+	var cases: Array = [
+		[1.25, 3.3, true],
+		[1.25, 4.2, false],
+		[1.0, 3.3, false],
+		[2.0, 4.2, true],
+	]
+	var row3 := _lv.get_node("EnemyRow3") as Enemy
+	var home3 := row3.global_position
+	for c: Array in cases:
+		await _reset()
+		var v := _new_vortex()
+		v.global_position = EMPTY
+		(v.get_node("FireVortex") as FireVortex).catch_radius_scale = c[0]
+		row3.global_position = Vector3(EMPTY.x + c[1], 0.0, EMPTY.z)
+		row3.velocity = Vector3.ZERO
+		await _f(4)
+		_burn("EnemyRow3").ignite(_p)
+		_perform(v)
+		await _wait(0.4)
+		var lit := (v.get_node("FireVortex") as FireVortex).is_lit()
+		var tc := "TC13" if c[0] == 1.25 and c[2] else ("TC14" if c[0] == 1.25 else "TC15")
+		_check(lit == c[2], "%s: hệ số %.2f, quái cháy cách tâm %.1f m -> %s" % [tc, c[0], c[1], "bốc lửa" if lit else "không bốc lửa"])
+		await _finish(v)
+	row3.global_position = home3
+
+
+func _tc16_idle_vortex() -> void:
+	await _reset()
+	var v := _new_vortex()
+	v.global_position = EMPTY
+	await _f(4)
+	# Một vùng lửa tự đứng chạm vào hố lúc hố CHƯA hút (đang nằm trong pool)
+	var igniter := IgniterArea.new()
+	var shape := CollisionShape3D.new()
+	var sphere := SphereShape3D.new()
+	sphere.radius = 1.0
+	shape.shape = sphere
+	igniter.add_child(shape)
+	_lv.add_child(igniter)
+	igniter.global_position = EMPTY
+	igniter.activate()
+	await _f(6)
+	var fv := v.get_node("FireVortex") as FireVortex
+	var self_burnable := fv.get_node("SelfBurnable") as BurnableComponent
+	_check(not fv.is_lit() and not self_burnable.is_burning(), "TC16: hố chưa hút bị lửa chạm -> không bốc lửa, vùng nhận lửa của hố đang tắt")
+	igniter.queue_free()
+	v.queue_free()
+	await _f(2)
+
+
+func _tc17_tc18_pooled_vortex() -> void:
+	var wind_effect := (load("res://resources/combat/fusion/wind/bow_wind.tres") as FusionData).effects[0]
+	var fire_burst := (load("res://resources/combat/fusion/fire/bow_fire.tres") as FusionData).effects[0] as IgniteOnImpactEffect
+	for source: String in ["Q", "Cung Lửa"]:
+		await _reset()
+		await _wait(1.5)
+		_p.teleport(EMPTY + Vector3(0, -0.3, 3.5), Vector3.FORWARD)
+		await _f(8)
+		# Hố nở từ pool của chính Player, đúng đường đi của mũi tên Cung Gió trúng đích
+		wind_effect.on_projectile_impact(_p, EMPTY, Vector3.FORWARD)
+		var v: WindVortex = null
+		for n: Node in _p.find_children("*", "WindVortex", true, false):
+			if n.is_physics_processing():
+				v = n as WindVortex
+		_check(v != null and _p.is_ancestor_of(v), "TC17/18: hố lấy từ pool nằm dưới Player")
+		if v == null:
+			continue
+		if source == "Q":
+			_p.energy.set_current(_p.energy.get_max())
+			Input.action_press(&"skill_fire")
+			await _f(1)
+			_p.face_instantly(Vector3.FORWARD)
+			await _f(1)
+			Input.action_release(&"skill_fire")
+			await _wait(0.5)
+		else:
+			fire_burst.on_projectile_impact(_p, EMPTY + Vector3(1.0, 0, 0), Vector3.FORWARD)
+			await _wait(0.3)
+		var lit := (v.get_node("FireVortex") as FireVortex).is_lit()
+		_check(lit, "%s: hố từ pool dưới Player, nguồn lửa %s chạm vào -> bốc lửa (lit=%s)" % ["TC17" if source == "Q" else "TC18", source, lit])
+		await _wait(v.lifetime + v.linger + 0.3)
 
 
 # ---------- tiện ích ----------

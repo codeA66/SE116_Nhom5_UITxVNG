@@ -40,6 +40,7 @@
 [ext_resource type="Script" path="res://components/elements/fire/igniter/igniter_area.gd" id="47_igniter"]
 [ext_resource type="PackedScene" path="res://components/elements/fire/fire_wind/fire_wind.tscn" id="48_firewind"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_sword/fire_sword_vfx.tscn" id="49_firesword"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_bow/fire_bow_vfx.tscn" id="50_firebow"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -95,6 +96,9 @@ follow_hitbox = NodePath("../FlameHitbox")
 
 [node name="WindBlastCone" parent="." node_paths=PackedStringArray("area") instance=ExtResource("35_windcone")]
 area = NodePath("../Model/WindBlastArea")
+
+[node name="FireBowVfx" parent="." node_paths=PackedStringArray("player") instance=ExtResource("50_firebow")]
+player = NodePath("..")
 
 [node name="FireSwordVfx" parent="." node_paths=PackedStringArray("player") instance=ExtResource("49_firesword")]
 player = NodePath("..")

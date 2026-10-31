@@ -103,4 +103,5 @@ func _extend_from(burnable: BurnableComponent) -> void:
 
 ## Đúng khi vật thuộc chính thực thể đang thổi (sau này player có BurnableComponent thì không tự dẫn lửa từ mình)
 func _is_own(burnable: BurnableComponent) -> bool:
-	return owner != null and owner.is_ancestor_of(burnable)
+	# Theo chuỗi owner, không theo cây node: hố hút Cung Gió nằm trong pool dưới Player vẫn phải bắt lửa được
+	return IgniterArea.belongs_to(burnable, owner)
