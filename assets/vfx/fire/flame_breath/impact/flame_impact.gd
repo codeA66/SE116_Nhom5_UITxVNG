@@ -28,6 +28,8 @@ extends Node3D
 ## Thời gian còn lại của lượt hiện tại; FlameBreathVfx đọc để chọn node rảnh trong pool
 var remaining: float = 0.0
 
+var _play_generation: int = 0
+
 var _meshes: Array[GeometryInstance3D] = []
 var _previous: Array[Material] = []
 # instance_id của mục tiêu -> mesh của nó; mục tiêu bị đốt liên tục nên tìm một lần là đủ
@@ -39,6 +41,9 @@ var _mesh_cache: Dictionary[int, Array] = {}
 
 func _ready() -> void:
 	set_process(false)
+	_contact.hide()
+	_sparks.hide()
+	_sparks.emitting = false
 
 
 func _process(delta: float) -> void:
@@ -56,6 +61,9 @@ func _exit_tree() -> void:
 
 ## ĐẠT: phát hiệu ứng tại mục tiêu. Nếu node đang bận (pool hết chỗ) thì lượt cũ bị cắt và trả màu trước.
 func play(target: HurtboxComponent) -> void:
+	_play_generation += 1
+	_sparks.scale = Vector3.ONE
+	_sparks.show()
 	_restore()
 	global_position = target.global_position + Vector3.UP * hit_height
 	for mesh: GeometryInstance3D in _get_meshes(target.get_parent()):
@@ -75,16 +83,26 @@ func play(target: HurtboxComponent) -> void:
 ## ĐẠT: gọi một lần lúc tải (từ FlameBreathVfx._prepare_render) để biên dịch shader trước.
 ## Không chạy ở headless vì không có gì để vẽ.
 func prepare_render() -> void:
+	if remaining > 0.0:
+		return
+	var generation: int = _play_generation
 	_contact.position = Vector3.UP * preparation_height
-	_contact.scale = Vector3.ONE * preparation_scale
+	_contact.scale = Vector3.ONE * 0.000001
 	_contact.show()
-	await RenderingServer.frame_post_draw
-	_contact.hide()
-	_sparks.transparency = 0.999
+	_sparks.scale = Vector3.ONE * 0.000001
+	_sparks.show()
 	_sparks.restart()
+	await RenderingServer.frame_post_draw
+	if generation != _play_generation:
+		return
+	_contact.hide()
 	await get_tree().create_timer(duration).timeout
+	if generation != _play_generation:
+		return
 	_sparks.emitting = false
-	_sparks.transparency = 0.0
+	_sparks.hide()
+	_sparks.scale = Vector3.ONE
+
 
 
 ## ĐẠT: tìm mesh một lần cho mỗi mục tiêu rồi lưu; mục tiêu đã bị xoá thì tìm lại.

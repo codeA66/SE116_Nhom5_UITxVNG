@@ -1,4 +1,5 @@
 shader_type spatial;
+uniform float prewarm_scale = 1.0;
 render_mode unshaded, cull_disabled, blend_mix, depth_prepass_alpha;
 uniform sampler2D masks : repeat_enable, filter_linear;
 uniform vec4 core_color : source_color = vec4(1.0,0.94,0.67,1.0);
@@ -19,6 +20,11 @@ uniform float height_scale = 0.35;
 uniform float turns = 2.0;
 uniform sampler2D flame_atlas : source_color, filter_linear_mipmap, repeat_disable;
 uniform bool burning_volume = false;
+uniform bool status_crown = false;
+uniform float tick_expansion = 0.38;
+uniform float wind_clock = 0.0;
+uniform sampler2D wind_flow : source_color, repeat_disable, filter_linear_mipmap;
+uniform float wind_lean = 0.0;
 uniform bool burning_textured = false;
 uniform bool burning_stream_mode = false;
 uniform vec3 stream_direction = vec3(0.0,0.0,1.0);
@@ -29,6 +35,7 @@ uniform int burning_flame_count = 8;
 uniform float burning_ember_rise = 1.3;
 varying float particle_ember;
 varying float particle_frame;
+varying vec2 wind_uv;
 void vertex(){
  float clock=TIME*speed+phase;
  particle_seed=0.0;
@@ -45,6 +52,10 @@ void vertex(){
    VERTEX.xz+=vec2(sin(h*6.0-clock*3.0+particle_seed),cos(h*8.0-clock*2.5+particle_seed))*h*h*0.20;
    VERTEX.xz*=1.0+sin(clock*4.0+h*9.0+particle_seed)*0.12;
    VERTEX*=1.0+pulse*0.16;
+   if(status_crown){
+    VERTEX*=1.0+pulse*tick_expansion;
+    VERTEX.y+=sin(clock*3.0+phase)*0.045*UV.y;
+   }
    if(burning_stream_mode){
     float tip=1.0-UV.y;
     VERTEX.xz*=mix(1.0,0.06,tip);
@@ -70,14 +81,19 @@ void vertex(){
   VERTEX.xz+=tangent*sin(h*5.5-beat)*curl*h*h;
   VERTEX.y+=sin(beat+h*3.0)*0.08*h;
  }else if(mode<1.5){
-  float ridge=pow(abs(sin(UV.x*15.708)),2.0);
-  VERTEX.y+=ridge*height_scale*(0.65+0.35*sin(UV.y*12.0-clock+UV.x*14.0))*sqrt(UV.y);
+  if(COLOR.b>0.5){ VERTEX.z+=front-0.5; }
+  wind_uv=vec2(VERTEX.x+0.5,VERTEX.z+0.5);
+  float lift=VERTEX.y*height_scale;
+  VERTEX.y=lift*(0.9+0.1*sin(wind_clock*20.0+COLOR.r*20.0+UV.y*8.0));
+  VERTEX.z+=lift*wind_lean;
+
  }else{
   float a=clock+UV.y*8.0;
   mat2 r=mat2(vec2(cos(a),sin(a)),vec2(-sin(a),cos(a)));
   VERTEX.xz=r*VERTEX.xz;
   VERTEX.xz*=1.0+curl*sin(UV.y*16.0-clock);
  }
+ VERTEX*=prewarm_scale;
 }
 void fragment(){
  float clock=TIME*speed+phase;
@@ -92,6 +108,9 @@ void fragment(){
    float facing=abs(dot(normalize(NORMAL),normalize(VIEW)));
    ALBEDO=col*mix(0.60,1.10,facing)*(1.0+pulse*0.15);
    ALBEDO=mix(ALBEDO,core_color.rgb,particle_ember);
+   if(status_crown){
+    ALBEDO=mix(ALBEDO,core_color.rgb,pulse*0.75)*(1.0+pulse*0.35);
+   }
    ALPHA=COLOR.a*opacity;
   }else if(burning_textured && particle_ember<0.5){
    vec2 cell=vec2(mod(particle_frame,4.0),floor(particle_frame/4.0));
@@ -131,6 +150,22 @@ void fragment(){
   flame=mix(flame,core_color.rgb,smoothstep(0.90,0.90+edge,heat)*(1.0-smoothstep(0.3,0.6,h)));
   ALBEDO=flame*(1.0+pulse*0.45);
   ALPHA=shape*opacity;
+ }else if(mode<1.5){
+  float t=wind_uv.y;
+  float x=wind_uv.x*2.0-1.0;
+  vec4 art=texture(wind_flow,vec2(1.0-UV.y,clamp(UV.x+sin(UV.y*9.0-wind_clock*18.0+COLOR.r*9.0)*0.07,0.0,1.0)));
+  float head=exp(-pow((t-front+0.035)/0.085,2.0));
+  float gate=smoothstep(tail-edge,tail,t)*(1.0-smoothstep(front-edge,front,t));
+  float ripple=0.80+0.20*sin(UV.y*16.0-wind_clock*25.0+COLOR.r*12.0);
+  ALBEDO=mix(art.rgb,core_color.rgb,head*0.65)*ripple;
+  ALPHA=art.a*gate*opacity;
+  if(COLOR.b>0.5){
+   float across=sin(UV.x*3.14159);
+   float band=sin(UV.y*3.14159);
+   ALBEDO=mix(flame_color.rgb,hot_color.rgb,band*0.85);
+   ALPHA=across*band*(0.45+0.55*pow(sin(UV.x*23.0+wind_clock*12.0),2.0))*opacity*smoothstep(0.0,0.08,front)*(1.0-tail);
+  }
+
  }else{
  float h=1.0-UV.y;
  vec2 flow=vec2(UV.x*noise_scale,UV.y*2.0+clock);

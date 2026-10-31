@@ -51,6 +51,14 @@ func _ready() -> void:
 		await _test_lifecycle(_case == "lifecycle_original")
 		get_tree().quit(1 if _test_fails > 0 else 0)
 		return
+	if _case == "startup":
+		await _test_startup()
+		get_tree().quit(1 if _test_fails else 0)
+		return
+	if _case == "anchor_unit":
+		await _test_anchor()
+		get_tree().quit(1 if _test_fails else 0)
+		return
 	if _case == "status_unit":
 		_setup_burning()
 		await _test_status_readability()
@@ -112,6 +120,9 @@ func _ready() -> void:
 			images.append(get_viewport().get_texture().get_image())
 		for i: int in range(images.size()):
 			images[i].save_png(output.path_join(_case + "_%.2f.png" % samples[i]))
+	if _case == "wind" and not _bench:
+		var surface: MeshInstance3D = _wind.get_node("Vfx/FireSurface") as MeshInstance3D
+		_test_check(not surface.visible, "FireSurface ẩn sau khi đòn gió kết thúc")
 	if _vortex:
 		_vortex.stopped.emit()
 	for burn: BurnableComponent in _burns:
@@ -428,3 +439,105 @@ func _test_status_readability() -> void:
 		var vfx: BurningVfx = burn.get_node("BurningVfx") as BurningVfx
 		_test_check(not vfx.is_processing() and not (vfx.get_node("StatusCrown") as MeshInstance3D).visible, "UC7 dập lặp không lóe và không còn xử lý")
 	print("STATUS_READABILITY_RESULT fails=", _test_fails)
+
+
+## UC: collider lệch không làm lửa phát ở chỗ trống; bám mesh sau khi di chuyển/xoay và khi ẩn model.
+func _test_anchor() -> void:
+	var host: StaticBody3D = StaticBody3D.new()
+	add_child(host)
+	var model: Node3D = Node3D.new()
+	model.name = "Model"
+	host.add_child(model)
+	var visual: Node3D = Node3D.new()
+	visual.name = "Visual"
+	model.add_child(visual)
+	var body: MeshInstance3D = MeshInstance3D.new()
+	body.mesh = BoxMesh.new()
+	body.position = Vector3(1.0, 1.0, -0.8)
+	visual.add_child(body)
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	shape.shape = BoxShape3D.new()
+	shape.position = Vector3(-3.0, 0.5, 2.0)
+	host.add_child(shape)
+	var burn: BurnableComponent = BurnableComponent.new()
+	burn.match_shape_of = shape
+	burn.data = load("res://resources/combat/fire/burn_default.tres") as BurnData
+	host.add_child(burn)
+	var vfx: BurningVfx = (load("res://assets/vfx/fire/burning/burning_vfx.tscn") as PackedScene).instantiate() as BurningVfx
+	vfx.burnable = burn
+	host.add_child(vfx)
+	await get_tree().create_timer(0.15).timeout
+	burn.ignite()
+	body.position += Vector3(0.6, 0.2, -0.3)
+	model.rotation.y = 0.8
+	await get_tree().create_timer(0.15).timeout
+	var particles: CPUParticles3D = vfx.get_node("Flames") as CPUParticles3D
+	var arrays: Array = body.mesh.surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var match_point: Vector3 = body.global_transform * vertices[0]
+	var emitter_point: Vector3 = particles.global_transform * particles.emission_points[0]
+	_test_check(emitter_point.distance_to(match_point) < 0.001, "Lửa bám vertex mesh thật sau di chuyển và xoay; không bám collider lệch")
+	var crown: MeshInstance3D = vfx.get_node("StatusCrown") as MeshInstance3D
+	var actual_top: float = -INF
+	for vertex: Vector3 in vertices:
+		actual_top = maxf(actual_top, (body.global_transform * vertex).y)
+	_test_check(absf(crown.global_position.y - actual_top - vfx.crown_clearance) < 0.001, "Chân silhouette chạm model thật, không treo ở đỉnh hurtbox")
+	model.hide()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_test_check(not vfx.is_visible_in_tree(), "Ẩn model thì không để lửa trên vùng trống")
+	model.show()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_test_check(vfx.is_visible_in_tree(), "Model trở lại thì hiện trạng thái cháy đang còn")
+	burn.extinguish()
+	await get_tree().create_timer(0.3).timeout
+	_test_check(not vfx.is_processing(), "Dập xong nghỉ cả cập nhật điểm neo")
+	print("ANCHOR_RESULT fails=", _test_fails)
+
+
+## UC: kiểm tra các frame đầu sandbox thật; phần được pre-warm phải bị thu nhỏ trước khi vẽ.
+func _test_startup() -> void:
+	DirAccess.make_dir_recursive_absolute(output)
+	var level: Node = (load("res://tests/fire/sandbox/fire_sandbox.tscn") as PackedScene).instantiate()
+	add_child(level)
+	var visuals: Array[Node] = []
+	for node: Node in level.find_children("*", "Node3D", true, false):
+		if node is BurningVfx or node is FireWindVfx or node is FlameBreathVfx:
+			visuals.append(node)
+	for frame: int in range(35):
+		for node: Node in visuals:
+			if node is FireWindVfx:
+				var surface: MeshInstance3D = node.get_node("FireSurface") as MeshInstance3D
+				var mat: ShaderMaterial = surface.material_override as ShaderMaterial
+				if surface.visible:
+					if float(mat.get_shader_parameter("prewarm_scale")) > 0.00001:
+						_test_check(false, "FireWind idle còn vẽ surface cỡ thật")
+			elif node is BurningVfx:
+				var flames: CPUParticles3D = node.get_node("Flames") as CPUParticles3D
+				var mat: ShaderMaterial = flames.mesh.surface_get_material(0) as ShaderMaterial
+				if flames.visible and float(mat.get_shader_parameter("prewarm_scale")) > 0.00001:
+					_test_check(false, "Burning startup còn hạt cỡ thật")
+			elif node is FlameBreathVfx:
+				for name: String in ["Nozzle/FlameBody", "Nozzle/GroundGlow"]:
+					var mesh: MeshInstance3D = node.get_node(name) as MeshInstance3D
+					var mat: ShaderMaterial = mesh.material_override as ShaderMaterial
+					if mesh.visible and float(mat.get_shader_parameter("prewarm_scale")) > 0.00001:
+						_test_check(false, "Q startup còn mesh cỡ thật")
+		await RenderingServer.frame_post_draw
+		if frame in [0, 1, 2, 6, 16, 34]:
+			get_viewport().get_texture().get_image().save_png(output.path_join("startup_%02d.png" % frame))
+		await get_tree().process_frame
+	print("STARTUP_IDLE_RESULT fails=", _test_fails, " vfx_checked=", visuals.size())
+	var player: Player = level.get_node("Player") as Player
+	player.state_machine.transition_to(&"FlameBreath")
+	player.face_instantly(Vector3(1, 0, 1).normalized())
+	await get_tree().create_timer(0.25).timeout
+	for node: Node in visuals:
+		if node is FlameBreathVfx:
+			var body: MeshInstance3D = node.get_node("Nozzle/FlameBody") as MeshInstance3D
+			var mat: ShaderMaterial = body.material_override as ShaderMaterial
+			_test_check(body.visible and is_equal_approx(float(mat.get_shader_parameter("prewarm_scale")), 1.0), "Q thật sau prewarm khôi phục cỡ đầy đủ")
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(output.path_join("first_cast.png"))
+	print("STARTUP_RESULT fails=", _test_fails, " vfx_checked=", visuals.size())

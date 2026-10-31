@@ -1,4 +1,5 @@
 shader_type spatial;
+uniform float prewarm_scale = 1.0;
 render_mode unshaded, cull_disabled, blend_mix, depth_prepass_alpha;
 uniform sampler2D masks : source_color, filter_linear_mipmap_anisotropic, repeat_disable;
 uniform vec4 core_color : source_color = vec4(1.0,0.94,0.67,1.0);
@@ -28,6 +29,7 @@ void vertex(){
   VERTEX.xy+=vec2(sin(UV.y*12.0-clock*wave_speed),cos(UV.y*9.0-clock*wave_speed))*wave_amplitude*envelope;
   VERTEX.xy*=1.0-smoothstep(0.80,1.0,UV.y);
  }
+ VERTEX*=prewarm_scale;
 }
 void fragment(){
  if(accent_mode>0.5){

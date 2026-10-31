@@ -218,6 +218,8 @@ func _build_wake_mesh() -> ArrayMesh:
 	var vertices := PackedVector3Array()
 	var uvs := PackedVector2Array()
 	var indices := PackedInt32Array()
+	# Chia lấy phần nguyên là cố ý: số đoạn của mỗi sợi là nửa số đoạn của vệt
+	@warning_ignore("integer_division")
 	var count := maxi(style.segments / 2, 4)
 	for strand in 3:
 		var start := vertices.size()

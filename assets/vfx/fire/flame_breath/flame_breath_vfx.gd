@@ -111,6 +111,8 @@ func _ready() -> void:
 	_core.mesh = core_mesh
 	_core_mat.set_shader_parameter(&"burning_volume", true)
 	_streams = [_core, _embers, _smoke]
+	for particles: CPUParticles3D in _streams:
+		particles.hide()
 	_core.amount = maxi(core_count, 1)
 	_embers.amount = maxi(ember_count, 1)
 	_smoke.amount = maxi(smoke_count, 1)
@@ -168,6 +170,8 @@ func _process(delta: float) -> void:
 		_heat.hide()
 		_body.hide()
 		_ground.hide()
+		for particles: CPUParticles3D in _streams:
+			particles.hide()
 		_light.hide()
 		set_process(false)
 
@@ -186,6 +190,9 @@ func _align() -> void:
 
 ## ĐẠT: hitbox bật = bắt đầu phun; thời gian phun lấy từ hitbox nên đổi active_time trong .tres là VFX theo.
 func _on_activated(_attack: AttackData) -> void:
+	_body_mat.set_shader_parameter(&"prewarm_scale", 1.0)
+	_ground_mat.set_shader_parameter(&"prewarm_scale", 1.0)
+	_core_mat.set_shader_parameter(&"prewarm_scale", 1.0)
 	_body.show()
 	_ground.show()
 	_light.show()
@@ -238,6 +245,10 @@ func _fit_shape() -> void:
 ## Ngắt phát cả ba nhóm hạt cùng hitbox, không tự kéo dài gameplay.
 func _set_emitting(on: bool) -> void:
 	for particles: CPUParticles3D in _streams:
+		if on:
+			particles.scale = Vector3.ONE
+			particles.show()
+			particles.restart()
 		particles.emitting = on
 
 
@@ -271,7 +282,7 @@ func _on_state_changed(from: StringName, to: StringName) -> void:
 		_set_emitting(false)
 
 
-## ĐẠT: renderer Compatibility chỉ biên dịch shader khi thật sự vẽ, nên vẽ gần như trong suốt vài khung lúc tải.
+## ĐẠT: Thu nhỏ vertex trong shader lúc biên dịch; không dùng transparency của GeometryInstance3D.
 ## Chỉ làm cho VFX này, không warmup cả map.
 func _prepare_render() -> void:
 	if _active > 0.0 or _fade > 0.0 or _ignition > 0.0:
@@ -279,9 +290,12 @@ func _prepare_render() -> void:
 	_align()
 	_body.show()
 	_ground.show()
-	_body_mat.set_shader_parameter(&"strength", 0.001)
+	_body_mat.set_shader_parameter(&"prewarm_scale", 0.000001)
+	_ground_mat.set_shader_parameter(&"prewarm_scale", 0.000001)
+	_core_mat.set_shader_parameter(&"prewarm_scale", 0.000001)
+	_body_mat.set_shader_parameter(&"strength", 1.0)
 	# Chớp mới có biến thể billboard riêng, phải vẽ thật trước lần Q đầu.
-	_heat.scale = Vector3.ONE * preparation_flash_scale
+	_heat.scale = Vector3.ONE * 0.000001
 	_heat_mat.set_shader_parameter(&"intensity", 0.001)
 	_heat.show()
 	_ground_mat.set_shader_parameter(&"strength", 0.001)
@@ -289,19 +303,23 @@ func _prepare_render() -> void:
 	_light.light_energy = 0.0
 	_light.show()
 	for particles: CPUParticles3D in _streams:
-		particles.transparency = 0.999
-	_set_emitting(true)
+		particles.scale = Vector3.ONE * 0.000001
+		particles.show()
+		particles.emitting = true
 	for slot: FlameImpact in _pool:
 		slot.prepare_render()
 	for frame: int in range(preparation_frames):
 		await RenderingServer.frame_post_draw
-	for particles: CPUParticles3D in _streams:
-		particles.transparency = 0.0
-		particles.restart()
-	_set_emitting(_active > 0.0)
 	# Nếu người chơi vừa phun khi chờ frame_post_draw, không dọn mất chiêu đang chạy.
 	if _active > 0.0 or _fade > 0.0:
 		return
+	for particles: CPUParticles3D in _streams:
+		particles.emitting = false
+		particles.hide()
+		particles.scale = Vector3.ONE
+	_body_mat.set_shader_parameter(&"prewarm_scale", 1.0)
+	_ground_mat.set_shader_parameter(&"prewarm_scale", 1.0)
+	_core_mat.set_shader_parameter(&"prewarm_scale", 1.0)
 	_body_mat.set_shader_parameter(&"strength", 0.0)
 	_ground_mat.set_shader_parameter(&"strength", 0.0)
 	_body.hide()
