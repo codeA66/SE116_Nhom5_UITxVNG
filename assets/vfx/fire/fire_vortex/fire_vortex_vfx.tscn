@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://assets/vfx/fire/fire_vortex/fire_vortex_vfx.gd" id="1_vfx"]
 
+[ext_resource type="Shader" path="res://assets/vfx/fire/burning/shaders/fire_family.gdshader" id="2_family"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/flame_breath/textures/flame_masks.svg" id="3_masks"]
 [sub_resource type="Gradient" id="PuffShape"]
 offsets = PackedFloat32Array(0, 0.45, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
@@ -50,16 +52,34 @@ particles_anim_loop = false
 
 [sub_resource type="QuadMesh" id="RingMesh"]
 material = SubResource("RingMat")
-size = Vector2(0.6, 0.6)
+size = Vector2(0.045, 0.16)
 
+[sub_resource type="ShaderMaterial" id="FireSurface"]
+resource_local_to_scene = true
+shader = ExtResource("2_family")
+shader_parameter/masks = ExtResource("3_masks")
+shader_parameter/mode = 2.0
+[sub_resource type="CylinderMesh" id="FireGeometry"]
+top_radius = 0.48
+bottom_radius = 0.24
+height = 1.0
+radial_segments = 32
+rings = 10
+cap_top = false
+cap_bottom = false
 [node name="FireVortexVfx" type="Node3D"]
 script = ExtResource("1_vfx")
 
 [node name="Ring" type="GPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 36
+amount = 28
 lifetime = 0.6
 visibility_aabb = AABB(-9, -1, -9, 18, 5, 18)
 process_material = SubResource("RingProcess")
 draw_pass_1 = SubResource("RingMesh")
+
+[node name="FireSurface" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("FireGeometry")
+material_override = SubResource("FireSurface")

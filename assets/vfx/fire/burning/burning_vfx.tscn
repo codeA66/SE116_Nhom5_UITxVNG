@@ -1,78 +1,53 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://assets/vfx/fire/burning/burning_vfx.gd" id="1_vfx"]
-
-[sub_resource type="Gradient" id="PuffShape"]
-offsets = PackedFloat32Array(0, 0.45, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="PuffTex"]
-gradient = SubResource("PuffShape")
-width = 32
-height = 32
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0.5, 0)
+[ext_resource type="Shader" path="res://assets/vfx/fire/burning/shaders/fire_family.gdshader" id="2_family"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/flame_breath/textures/flame_masks.svg" id="3_masks"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/burning/textures/flame_atlas.png" id="4_atlas"]
 
 [sub_resource type="Gradient" id="FlameColor"]
-offsets = PackedFloat32Array(0, 0.2, 0.6, 1)
-colors = PackedColorArray(1, 0.9, 0.5, 0, 1, 0.6, 0.15, 0.95, 0.9, 0.25, 0.05, 0.7, 0.3, 0.08, 0.04, 0)
-
-[sub_resource type="GradientTexture1D" id="FlameColorTex"]
-gradient = SubResource("FlameColor")
+offsets = PackedFloat32Array(0, 0.15, 0.55, 1)
+colors = PackedColorArray(1, 0.9, 0.5, 0, 1, 0.6, 0.15, 1, 0.9, 0.25, 0.05, 1, 0.3, 0.08, 0.04, 0)
 
 [sub_resource type="Curve" id="FlameSize"]
-_data = [Vector2(0, 0.4), 0.0, 0.0, 0, 0, Vector2(0.3, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.1), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 0.45), 0.0, 0.0, 0, 0, Vector2(0.35, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.15), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="CurveTexture" id="FlameSizeTex"]
-curve = SubResource("FlameSize")
-
-[sub_resource type="ParticleProcessMaterial" id="FlameProcess"]
-emission_shape = 3
-emission_box_extents = Vector3(0.3, 0.5, 0.3)
-direction = Vector3(0, 1, 0)
-spread = 15.0
-initial_velocity_min = 1.0
-initial_velocity_max = 1.8
-gravity = Vector3(0, 0.5, 0)
-angle_min = -180.0
-angle_max = 180.0
-scale_min = 0.5
-scale_max = 0.8
-scale_curve = SubResource("FlameSizeTex")
-color_ramp = SubResource("FlameColorTex")
-
-[sub_resource type="StandardMaterial3D" id="FlameMat"]
-transparency = 1
-shading_mode = 0
-vertex_color_use_as_albedo = true
-albedo_texture = SubResource("PuffTex")
-billboard_mode = 3
-particles_anim_h_frames = 1
-particles_anim_v_frames = 1
-particles_anim_loop = false
+[sub_resource type="ShaderMaterial" id="FireSurface"]
+resource_local_to_scene = true
+shader = ExtResource("2_family")
+shader_parameter/masks = ExtResource("3_masks")
+shader_parameter/mode = 3.0
+shader_parameter/edge = 0.045
+shader_parameter/burning_single_system = true
+shader_parameter/burning_flame_count = 6
+shader_parameter/flame_atlas = ExtResource("4_atlas")
+shader_parameter/burning_textured = true
 
 [sub_resource type="QuadMesh" id="FlameMesh"]
-material = SubResource("FlameMat")
-size = Vector2(0.5, 0.5)
+resource_local_to_scene = true
+material = SubResource("FireSurface")
+size = Vector2(0.95, 1.35)
 
 [node name="BurningVfx" type="Node3D"]
 script = ExtResource("1_vfx")
 
-[node name="Flames" type="GPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+[node name="Flames" type="CPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 18
-lifetime = 0.6
-local_coords = false
-visibility_aabb = AABB(-1.5, -1, -1.5, 3, 4, 3)
-process_material = SubResource("FlameProcess")
-draw_pass_1 = SubResource("FlameMesh")
-
-[node name="Light" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-visible = false
-light_color = Color(1, 0.55, 0.2, 1)
-omni_range = 3.0
+amount = 9
+fixed_fps = 30
+lifetime = 0.72
+randomness = 0.3
+local_coords = true
+visibility_aabb = AABB(-2, -1, -2, 4, 5, 4)
+mesh = SubResource("FlameMesh")
+emission_shape = 3
+emission_box_extents = Vector3(0.3, 0.5, 0.3)
+direction = Vector3(0, 1, 0)
+spread = 12.0
+gravity = Vector3(0, 0, 0)
+angle_min = -12.0
+angle_max = 12.0
+scale_amount_curve = SubResource("FlameSize")
+color_ramp = SubResource("FlameColor")

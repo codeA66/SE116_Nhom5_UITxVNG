@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://assets/vfx/fire/fire_wind/fire_wind_vfx.gd" id="1_vfx"]
 
+[ext_resource type="Shader" path="res://assets/vfx/fire/burning/shaders/fire_family.gdshader" id="2_family"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/flame_breath/textures/flame_masks.svg" id="3_masks"]
 [sub_resource type="Gradient" id="PuffShape"]
 offsets = PackedFloat32Array(0, 0.45, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
@@ -48,8 +50,17 @@ particles_anim_loop = false
 
 [sub_resource type="QuadMesh" id="TrailMesh"]
 material = SubResource("TrailMat")
-size = Vector2(0.7, 0.7)
+size = Vector2(0.045, 0.16)
 
+[sub_resource type="ShaderMaterial" id="FireSurface"]
+resource_local_to_scene = true
+shader = ExtResource("2_family")
+shader_parameter/masks = ExtResource("3_masks")
+shader_parameter/mode = 1.0
+[sub_resource type="PlaneMesh" id="FireGeometry"]
+size = Vector2(1,1)
+subdivide_width = 12
+subdivide_depth = 24
 [node name="FireWindVfx" type="Node3D"]
 script = ExtResource("1_vfx")
 
@@ -57,10 +68,15 @@ script = ExtResource("1_vfx")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 cast_shadow = 0
 emitting = false
-amount = 32
+amount = 20
 lifetime = 0.5
 one_shot = true
 explosiveness = 0.7
 visibility_aabb = AABB(-5, -1, -2, 10, 4, 16)
 process_material = SubResource("TrailProcess")
 draw_pass_1 = SubResource("TrailMesh")
+
+[node name="FireSurface" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("FireGeometry")
+material_override = SubResource("FireSurface")

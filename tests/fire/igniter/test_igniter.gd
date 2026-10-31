@@ -97,7 +97,7 @@ func _tc1_hit_burns() -> void:
 	await _wait(0.6)
 	_check(_hp(e) == hp - 1, "TC1: Q trúng -> mất 1 máu ngay (%d -> %d)" % [hp, _hp(e)])
 	_check(_burn(e).is_burning(), "TC1: quái đang cháy")
-	_check((_lv.get_node(e + "/BurningVfx/Flames") as GPUParticles3D).emitting, "TC1: VFX tạm bật")
+	_check((_lv.get_node(e + "/BurningVfx/Flames") as CPUParticles3D).emitting, "TC1: VFX tạm bật")
 	# Cú phun trúng trực tiếp là đòn thường (vẫn khựng như trước); chỉ tick cháy là không khựng -> đưa về Idle rồi đo lúc tick
 	(_lv.get_node(e) as Enemy).state_machine.transition_to(&"Idle")
 	# Bắt lửa ở ~0.16 s sau khi bấm; tick ở +1.5 s
