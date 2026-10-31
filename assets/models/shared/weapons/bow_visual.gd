@@ -180,6 +180,11 @@ func _ready() -> void:
 
 
 ## Bật / tắt mũi tên trên dây, đèn và hạt (Player gọi khi bắt đầu / thôi nhắm)
+## false: không bật cụm tụ lực mặc định (sao, vòng, tia) khi nhắm, vì cung đang ghép nguyên tố có VFX tụ lực riêng
+## (lửa, gió...) thay thế. Dây sáng, mũi tên trên dây, chớp lúc buông vẫn giữ. Player đặt trước mỗi lần nhắm
+var default_charge_enabled: bool = true
+
+
 func set_aiming(on: bool) -> void:
 	_aiming = on
 	if _nocked_arrow:
@@ -189,7 +194,7 @@ func set_aiming(on: bool) -> void:
 	for particles in _aim_particles:
 		particles.emitting = on
 		particles.visible = on
-	_set_charge_active(on)
+	_set_charge_active(on and default_charge_enabled)
 	_charge_time = 0.0
 	_pulsed = false
 	_pulse_left = 0.0

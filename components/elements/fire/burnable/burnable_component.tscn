@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://components/elements/fire/burnable/burnable_component.gd" id="1_burnable"]
+[ext_resource type="Resource" path="res://resources/combat/fire/burn_default.tres" id="2_data"]
+
+[node name="BurnableComponent" type="Area3D"]
+collision_layer = 512
+collision_mask = 0
+script = ExtResource("1_burnable")
+data = ExtResource("2_data")

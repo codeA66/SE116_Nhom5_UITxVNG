@@ -1,19 +1,18 @@
-[gd_resource type="Resource" script_class="FlameBreathData" format=3]
+[gd_resource type="Resource" script_class="FlameBreathData" format=3 uid="uid://b2yjak7ax5op5"]
 
-[ext_resource type="Script" path="res://abilities/flame_breath/flame_breath_data.gd" id="1_data"]
-[ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="2_attack"]
+[ext_resource type="Script" uid="uid://cupw6oyebi8t3" path="res://abilities/flame_breath/flame_breath_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://bco0nr7ogmwo" path="res://entities/_base/data/attack_data.gd" id="2_attack"]
 
 [sub_resource type="Resource" id="FlameAttack"]
 script = ExtResource("2_attack")
-damage = 1
 knockback = 0.0
 hitstop = 0.03
 
 [resource]
 script = ExtResource("1_data")
 attack = SubResource("FlameAttack")
+input_action = &"skill_fire"
+state = &"FlameBreath"
 id = &"flame_breath"
 display_name = "Phun lửa"
 energy_cost = 1
-input_action = &"skill_fire"
-state = &"FlameBreath"

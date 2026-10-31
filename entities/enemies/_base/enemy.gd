@@ -175,7 +175,8 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 	if info.source is Node3D and target == null:
 		target = info.source as Node3D
 	_flash_hit()
-	if is_dead() or resists_knockback():
+	# Đòn không làm khựng (tick cháy) thì cũng không đẩy nhẹ: lửa không bao giờ đẩy
+	if is_dead() or resists_knockback() or not info.staggers:
 		return
 	if data.stagger_on_hit:
 		state_machine.transition_to(EnemyState.HURT)

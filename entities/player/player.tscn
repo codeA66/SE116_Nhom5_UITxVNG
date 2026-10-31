@@ -37,6 +37,10 @@
 [ext_resource type="Script" path="res://entities/player/states/action/bow_aim.gd" id="38_bowaim"]
 [ext_resource type="Script" path="res://entities/player/states/action/flame_breath.gd" id="45_flamestate"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/flame_breath/flame_breath_vfx.tscn" id="46_flamevfx"]
+[ext_resource type="Script" path="res://components/elements/fire/igniter/igniter_area.gd" id="47_igniter"]
+[ext_resource type="PackedScene" path="res://components/elements/fire/fire_wind/fire_wind.tscn" id="48_firewind"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_sword/fire_sword_vfx.tscn" id="49_firesword"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_bow/fire_bow_vfx.tscn" id="50_firebow"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -68,6 +72,9 @@ shape = SubResource("BoxShape3D_hitbox")
 
 [node name="WindBlastArea" parent="Model" instance=ExtResource("26_blast")]
 
+[node name="FireWind" parent="Model" node_paths=PackedStringArray("wind_area") instance=ExtResource("48_firewind")]
+wind_area = NodePath("../WindBlastArea")
+
 [node name="FlameHitbox" type="Area3D" parent="Model"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 collision_layer = 8
@@ -78,8 +85,23 @@ script = ExtResource("13_hitbox")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.25)
 shape = SubResource("BoxShape3D_flame")
 
+[node name="FlameIgniter" type="Area3D" parent="Model" node_paths=PackedStringArray("follow_hitbox")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+collision_layer = 0
+collision_mask = 512
+monitoring = false
+monitorable = false
+script = ExtResource("47_igniter")
+follow_hitbox = NodePath("../FlameHitbox")
+
 [node name="WindBlastCone" parent="." node_paths=PackedStringArray("area") instance=ExtResource("35_windcone")]
 area = NodePath("../Model/WindBlastArea")
+
+[node name="FireBowVfx" parent="." node_paths=PackedStringArray("player") instance=ExtResource("50_firebow")]
+player = NodePath("..")
+
+[node name="FireSwordVfx" parent="." node_paths=PackedStringArray("player") instance=ExtResource("49_firesword")]
+player = NodePath("..")
 
 [node name="FlameBreathVfx" parent="." node_paths=PackedStringArray("hitbox", "follow") instance=ExtResource("46_flamevfx")]
 hitbox = NodePath("../Model/FlameHitbox")

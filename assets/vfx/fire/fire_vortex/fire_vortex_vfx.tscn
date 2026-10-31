@@ -1,0 +1,85 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/fire/fire_vortex/fire_vortex_vfx.gd" id="1_vfx"]
+
+[ext_resource type="Shader" path="res://assets/vfx/fire/burning/shaders/fire_family.gdshader" id="2_family"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/flame_breath/textures/flame_masks.svg" id="3_masks"]
+[sub_resource type="Gradient" id="PuffShape"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="PuffTex"]
+gradient = SubResource("PuffShape")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="Gradient" id="RingColor"]
+offsets = PackedFloat32Array(0, 0.2, 0.65, 1)
+colors = PackedColorArray(1, 0.9, 0.55, 0, 1, 0.55, 0.12, 0.95, 0.9, 0.22, 0.05, 0.6, 0.25, 0.06, 0.04, 0)
+
+[sub_resource type="GradientTexture1D" id="RingColorTex"]
+gradient = SubResource("RingColor")
+
+[sub_resource type="ParticleProcessMaterial" id="RingProcess"]
+resource_local_to_scene = true
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.2
+emission_ring_radius = 2.0
+emission_ring_inner_radius = 1.0
+emission_ring_cone_angle = 90.0
+direction = Vector3(0, 1, 0)
+spread = 10.0
+initial_velocity_min = 1.5
+initial_velocity_max = 2.5
+gravity = Vector3(0, 0.5, 0)
+scale_min = 0.6
+scale_max = 1.0
+color_ramp = SubResource("RingColorTex")
+
+[sub_resource type="StandardMaterial3D" id="RingMat"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("PuffTex")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="RingMesh"]
+material = SubResource("RingMat")
+size = Vector2(0.045, 0.16)
+
+[sub_resource type="ShaderMaterial" id="FireSurface"]
+resource_local_to_scene = true
+shader = ExtResource("2_family")
+shader_parameter/masks = ExtResource("3_masks")
+shader_parameter/mode = 2.0
+[sub_resource type="CylinderMesh" id="FireGeometry"]
+top_radius = 0.48
+bottom_radius = 0.24
+height = 1.0
+radial_segments = 32
+rings = 10
+cap_top = false
+cap_bottom = false
+[node name="FireVortexVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+
+[node name="Ring" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 28
+lifetime = 0.6
+visibility_aabb = AABB(-9, -1, -9, 18, 5, 18)
+process_material = SubResource("RingProcess")
+draw_pass_1 = SubResource("RingMesh")
+
+[node name="FireSurface" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("FireGeometry")
+material_override = SubResource("FireSurface")

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FusionData" format=3 uid="uid://bm4k4wqspo7wi"]
+
+[ext_resource type="Script" uid="uid://cl4mdi2sit16p" path="res://abilities/fusion/_base/fusion_data.gd" id="1_fusion"]
+[ext_resource type="Resource" path="res://resources/combat/fusion/wind/wind.tres" id="2_wind"]
+[ext_resource type="Script" uid="uid://1ilnk1okyh1o" path="res://abilities/fusion/_base/fusion_effect.gd" id="3_effect_base"]
+[ext_resource type="Script" uid="uid://cgx38nsco5hws" path="res://abilities/fusion/wind/effects/vortex_on_hit_effect.gd" id="4_vortex_effect"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/wind/moves/wind_vortex.tscn" id="5_vortex"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/wind/vfx/vortex/wind_vortex_vfx.tscn" id="6_flight"]
+[ext_resource type="Resource" path="res://abilities/fusion/wind/vfx/style/fusion_wind_style.tres" id="7_style"]
+
+[sub_resource type="Resource" id="VortexOnHit"]
+script = ExtResource("4_vortex_effect")
+move_scene = ExtResource("5_vortex")
+flight_scene = ExtResource("6_flight")
+vfx_style = ExtResource("7_style")
+
+[resource]
+script = ExtResource("1_fusion")
+weapon_slot = 1
+element = ExtResource("2_wind")
+display_name = "Cung Gió"
+description = "Mũi tên trúng đâu thì nở hố hút gió tại đó, hút quái quanh 2.5 m gom về một chỗ."
+effects = Array[ExtResource("3_effect_base")]([SubResource("VortexOnHit")])

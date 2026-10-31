@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ElementData" format=3]
+
+[ext_resource type="Script" path="res://abilities/fusion/_base/element_data.gd" id="1_element"]
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="2_ability"]
+
+[resource]
+script = ExtResource("1_element")
+id = &"wind"
+display_name = "Gió"
+ability = ExtResource("2_ability")
+color = Color(0.78, 0.95, 1, 1)

@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/fire/burnable_crate/burnable_crate.gd" id="1_crate"]
+[ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="2_burn"]
+[ext_resource type="Resource" path="res://tests/fire/burnable_crate/crate_burn.tres" id="3_data"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="6_vfx"]
+
+[sub_resource type="BoxShape3D" id="CrateShape"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="CrateMat"]
+albedo_color = Color(0.55, 0.36, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="CrateMesh"]
+material = SubResource("CrateMat")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxShape3D" id="CrateZone"]
+size = Vector3(1.2, 1.2, 1.2)
+
+[node name="BurnableCrate" type="StaticBody3D"]
+script = ExtResource("1_crate")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CrateShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("CrateMesh")
+
+[node name="BurnableComponent" parent="." instance=ExtResource("2_burn")]
+data = ExtResource("3_data")
+
+[node name="Zone" type="CollisionShape3D" parent="BurnableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CrateZone")
+
+[node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("6_vfx")]
+burnable = NodePath("../BurnableComponent")

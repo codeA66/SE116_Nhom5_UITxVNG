@@ -1,0 +1,48 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://components/elements/fire/fire_vortex/fire_vortex.gd" id="1_vortex"]
+[ext_resource type="Script" path="res://components/elements/fire/igniter/igniter_area.gd" id="2_igniter"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_vortex/fire_vortex_vfx.tscn" id="3_vfx"]
+[ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="4_burnable"]
+
+[sub_resource type="SphereShape3D" id="DetectShape"]
+resource_local_to_scene = true
+radius = 2.5
+
+[sub_resource type="SphereShape3D" id="FireShape"]
+resource_local_to_scene = true
+radius = 2.5
+
+[sub_resource type="SphereShape3D" id="SelfShape"]
+resource_local_to_scene = true
+radius = 2.5
+
+[node name="FireVortex" type="Node3D"]
+script = ExtResource("1_vortex")
+
+[node name="Detector" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 512
+monitoring = false
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="Detector"]
+shape = SubResource("DetectShape")
+
+[node name="Igniter" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 512
+monitoring = false
+monitorable = false
+script = ExtResource("2_igniter")
+
+[node name="Shape" type="CollisionShape3D" parent="Igniter"]
+shape = SubResource("FireShape")
+
+[node name="SelfBurnable" parent="." instance=ExtResource("4_burnable")]
+
+[node name="Shape" type="CollisionShape3D" parent="SelfBurnable"]
+shape = SubResource("SelfShape")
+
+[node name="Vfx" parent="." node_paths=PackedStringArray("fire_vortex") instance=ExtResource("3_vfx")]
+fire_vortex = NodePath("..")

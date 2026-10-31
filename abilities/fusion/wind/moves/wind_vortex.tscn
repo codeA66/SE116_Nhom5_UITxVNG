@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://abilities/fusion/wind/moves/wind_vortex.gd" id="1_vortex"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/wind/vfx/vortex/wind_vortex_vfx.tscn" id="2_swirl"]
+[ext_resource type="PackedScene" path="res://components/elements/fire/fire_vortex/fire_vortex.tscn" id="3_firevortex"]
+
+[sub_resource type="SphereShape3D" id="VortexShape"]
+radius = 2.5
+
+[node name="WindVortex" type="Node3D"]
+script = ExtResource("1_vortex")
+
+[node name="Area" type="Area3D" parent="."]
+
+[node name="Shape" type="CollisionShape3D" parent="Area"]
+shape = SubResource("VortexShape")
+
+[node name="Swirl" parent="." instance=ExtResource("2_swirl")]
+
+[node name="FireVortex" parent="." node_paths=PackedStringArray("vortex") instance=ExtResource("3_firevortex")]
+vortex = NodePath("..")

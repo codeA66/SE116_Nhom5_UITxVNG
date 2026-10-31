@@ -9,6 +9,15 @@ signal bow_cooldown_started(duration: float)
 signal wind_blast_cooldown_started(duration: float)
 ## Vừa dùng một kỹ năng chủ động bất kỳ (SkillData), bắt đầu thời gian khoá của nó
 signal skill_cooldown_started(skill_id: StringName, duration: float)
+## Một nhát cận chiến vừa bật khi vũ khí đang ghép nguyên tố element_id (VFX kiếm Lửa / Băng... tự lọc theo id).
+## Nhát cuối combo: combo_index == combo_size - 1. Chung cho mọi nguyên tố để thêm nguyên tố mới không sửa Player
+signal fusion_melee_swing(element_id: StringName, attack: AttackData, combo_index: int, combo_size: int, direction: Vector3, active_time: float)
+## Độ kéo cung (0..1) khi cung đang ghép nguyên tố element_id (VFX tụ lửa / băng... tự lọc theo id)
+signal fusion_bow_draw(element_id: StringName, amount: float)
+## Vừa buông dây bắn khi cung đang ghép element_id
+signal fusion_bow_released(element_id: StringName)
+## Cất cung (sau khi bắn hoặc huỷ kéo) khi cung đang ghép element_id: VFX tắt hẳn
+signal fusion_bow_aim_ended(element_id: StringName)
 
 const ANIM_IDLE := &"Rig_Medium_General/Idle_A"
 const ANIM_RUN := &"Rig_Medium_MovementBasic/Running_A"
@@ -289,6 +298,8 @@ func notify_melee_active(attack: AttackData, combo_index: int, combo_size: int, 
 		return
 	for effect in fusion.effects:
 		effect.on_melee_active(self, attack, combo_index, combo_size, direction, active_time)
+	if fusion.element:
+		fusion_melee_swing.emit(fusion.element.id, attack, combo_index, combo_size, direction, active_time)
 
 
 ## Bảng UI dùng chuột đang mở thì không nhận nút đánh (chuột trái)
@@ -347,6 +358,8 @@ func begin_bow_aim() -> void:
 	_bow_hold.basis = Basis(limbs.cross(forward), limbs, forward)
 	_bow_model.visible = true
 	if _bow_model is BowVisual:
+		# Cung đang ghép nguyên tố: VFX tụ lực của nguyên tố thay cho cụm tụ lực mặc định
+		(_bow_model as BowVisual).default_charge_enabled = _bow_element_id() == &""
 		(_bow_model as BowVisual).set_aiming(true)
 	play_action(bow.draw_animation, 0.0)
 	set_bow_draw(0.0)
@@ -394,6 +407,9 @@ func set_bow_draw(amount: float) -> void:
 	if visual:
 		visual.draw_amount = amount
 	_on_bow_draw_changed(amount)
+	var element_id := _bow_element_id()
+	if element_id != &"":
+		fusion_bow_draw.emit(element_id, amount)
 
 
 ## Buông dây sau khi bắn: dây bật về, chạy animation buông
@@ -403,6 +419,9 @@ func release_bow() -> void:
 		play_action(bow.release_animation)
 	if _bow_model is BowVisual:
 		(_bow_model as BowVisual).play_release_flash()
+	var element_id := _bow_element_id()
+	if element_id != &"":
+		fusion_bow_released.emit(element_id)
 	# Sau play_action: clip buông chạy từ tư thế đang kéo, không bị tua về đầu clip kéo trước
 	set_bow_draw(0.0)
 
@@ -414,6 +433,23 @@ func end_bow_aim() -> void:
 		if _bow_model is BowVisual:
 			(_bow_model as BowVisual).set_aiming(false)
 		_bow_model.visible = false
+	var element_id := _bow_element_id()
+	if element_id != &"":
+		fusion_bow_aim_ended.emit(element_id)
+
+
+## Vị trí + hướng tay cầm cung (thế giới; +Z = hướng bắn): VFX tụ lực đặt ở mũi tên lúc kéo
+func get_bow_grip_transform() -> Transform3D:
+	return _bow_hold.global_transform
+
+
+## Id nguyên tố đang ghép vào cung; &"" nếu chưa ghép
+func _bow_element_id() -> StringName:
+	var bow := get_bow()
+	if bow == null:
+		return &""
+	var element := GameState.get_fused_element(bow.slot)
+	return element.id if element else &""
 
 
 func _on_progress_replaced() -> void:
@@ -752,6 +788,9 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 		return
 	last_hit = info
 	_start_blink(_hurtbox.invincibility_time)
+	# Đòn không làm khựng (tick cháy) giống quái: chỉ nháy + mất máu, không chuyển Hurt, không huỷ dash / đòn đang đánh
+	if not info.staggers:
+		return
 	state_machine.transition_to(PlayerState.HURT)
 
 

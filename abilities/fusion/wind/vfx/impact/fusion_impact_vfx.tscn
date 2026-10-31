@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/vfx/wind/impact/wind_impact_vfx.tscn" id="1_impact"]
+[ext_resource type="Resource" path="res://abilities/fusion/wind/vfx/impact/fusion_impact_style.tres" id="2_style"]
+
+[node name="FusionImpactVfx" instance=ExtResource("1_impact")]
+style = ExtResource("2_style")

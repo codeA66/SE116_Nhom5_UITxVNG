@@ -1,0 +1,93 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/fire/fire_touch/fire_touch_vfx.gd" id="1_vfx"]
+
+[sub_resource type="Gradient" id="PuffShape"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="PuffTex"]
+gradient = SubResource("PuffShape")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="Gradient" id="BurstColor"]
+offsets = PackedFloat32Array(0, 0.15, 0.6, 1)
+colors = PackedColorArray(1, 0.92, 0.6, 0, 1, 0.55, 0.12, 0.95, 0.9, 0.22, 0.05, 0.6, 0.25, 0.06, 0.04, 0)
+
+[sub_resource type="GradientTexture1D" id="BurstColorTex"]
+gradient = SubResource("BurstColor")
+
+[sub_resource type="ParticleProcessMaterial" id="BurstProcess"]
+resource_local_to_scene = true
+emission_shape = 3
+emission_box_extents = Vector3(1, 0.5, 1)
+direction = Vector3(0, 1, 0)
+spread = 35.0
+initial_velocity_min = 1.5
+initial_velocity_max = 3.0
+gravity = Vector3(0, 0.5, 0)
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 0.6
+scale_max = 1.0
+color_ramp = SubResource("BurstColorTex")
+
+[sub_resource type="StandardMaterial3D" id="BurstMat"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("PuffTex")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="BurstMesh"]
+material = SubResource("BurstMat")
+size = Vector2(0.9, 0.9)
+
+[sub_resource type="Gradient" id="RingShape"]
+offsets = PackedFloat32Array(0, 0.55, 0.78, 0.9, 1)
+colors = PackedColorArray(1, 0.5, 0.1, 0, 1, 0.55, 0.12, 0.35, 1, 0.85, 0.4, 1, 1, 0.45, 0.1, 0.6, 1, 0.3, 0.05, 0)
+
+[sub_resource type="GradientTexture2D" id="RingTex"]
+gradient = SubResource("RingShape")
+width = 128
+height = 128
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="RingMat"]
+resource_local_to_scene = true
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+albedo_texture = SubResource("RingTex")
+
+[sub_resource type="PlaneMesh" id="RingMesh"]
+size = Vector2(1, 1)
+
+[node name="FireTouchVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+
+[node name="Burst" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 32
+lifetime = 0.45
+one_shot = true
+explosiveness = 0.8
+visibility_aabb = AABB(-6, -2, -6, 12, 6, 12)
+process_material = SubResource("BurstProcess")
+draw_pass_1 = SubResource("BurstMesh")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+mesh = SubResource("RingMesh")
+material_override = SubResource("RingMat")
