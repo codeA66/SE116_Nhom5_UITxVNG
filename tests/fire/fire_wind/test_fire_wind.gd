@@ -31,6 +31,8 @@ extends Node
 ## TC10 (UC10) Tầm gió 2 m -> SpreadB không cháy; tầm 12 m -> SpreadC cháy; rộng 0.5 m -> SpreadB (thẳng hàng) cháy;
 ##             rộng 8 m -> SpreadSide cháy; extra_time 0 -> SpreadB vẫn cháy.
 ## TC11 (UC11) Quái, hình nộm, thùng không còn node FireSpread; BurnableComponent không còn export fire_spread.
+## TC12 (UC8)  5 cú gió liên tiếp (lần nào SpreadA cũng đang cháy): 1 s sau cú cuối FireWind tắt xử lý, igniter tắt,
+##              không hạt nào dưới FireWind còn phát, không mesh nào của FireWind còn hiện.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
 const ROW: Array[String] = ["SpreadA", "SpreadB", "SpreadC", "SpreadSide"]
@@ -68,6 +70,7 @@ func _run() -> void:
 	await _tc9_crate_source()
 	await _tc10_extremes()
 	_tc11_old_removed()
+	await _tc12_five_gusts()
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
 
@@ -228,6 +231,24 @@ func _tc11_old_removed() -> void:
 		ok = ok and _lv.get_node(n).get_node_or_null("FireSpread") == null
 	ok = ok and not ("fire_spread" in _burn("SpreadA"))
 	_check(ok, "TC11: không còn FireSpread (phụt sau lưng) trên quái / hình nộm / thùng")
+
+
+func _tc12_five_gusts() -> void:
+	var fw := _p.get_node(FIRE_WIND_PATH) as FireWind
+	var igniter := fw.get_node("Igniter") as IgniterArea
+	for i: int in 5:
+		await _reset()
+		_burn("SpreadA").ignite(_p)
+		await _blow_from("SpreadA", 1.5)
+	await _wait(1.0)
+	_check(not fw.is_physics_processing() and not igniter.is_active() and not igniter.monitoring, "TC12: sau 5 cú gió FireWind + igniter đã tắt")
+	var left: PackedStringArray = []
+	for n: Node in fw.find_children("*", "", true, false):
+		if (n is GPUParticles3D and (n as GPUParticles3D).emitting) or (n is CPUParticles3D and (n as CPUParticles3D).emitting):
+			left.append("hạt:" + String(fw.get_path_to(n)))
+		elif n is MeshInstance3D and (n as MeshInstance3D).is_visible_in_tree():
+			left.append("mesh:" + String(fw.get_path_to(n)))
+	_check(left.is_empty(), "TC12: 1 s sau cú cuối không còn gì của lửa theo gió đang phát / hiện %s" % str(left))
 
 
 # ---------- tiện ích ----------

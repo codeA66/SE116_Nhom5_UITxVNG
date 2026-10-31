@@ -25,6 +25,12 @@ extends Node
 ##           -> EnemyRow2 cháy.
 ## TC8 (UC8) Vùng chém đẩy xa 6 m -> chém đủ combo không cháy; vùng chém 8 x 4 x 8 m -> Dummy2 (cách ~3 m) cháy;
 ##           bán kính bùng 0.2 m -> thùng cách 0.8 m không cháy; bán kính 5 m -> thùng cách 3 m cháy.
+## TC9  (UC6) Bắn 3 phát Cung Lửa (trúng quái, trúng thùng, trượt xuống sàn): 4 s sau không vệt lửa nào còn chạy / phát hạt,
+##            mọi vệt đã về pool (kiểm tra signal kết thúc của mũi tên thật sự gọi được hàm nhận).
+## TC10 (UC6) Sau khi vùng lửa chỗ trúng xong + vòng mờ hết: mọi FireTouch và FireTouchVfx tắt xử lý, vòng ẩn.
+## TC11 (UC4) Bắn EnemyRow3 còn 1 máu (chỉ dùng ở case này vì nó sẽ chết): nó chết, không cháy; thùng đứng cạnh vẫn cháy.
+## TC12 (UC6) Kiếm Lửa chém đủ combo 5 lần liên tiếp: số FireTouch không tăng, xong không cái nào bận.
+## TC13 (UC6) 3 s sau mọi lượt: không còn node lửa nào của fusion đang hiện (hạt đang phát / mesh hiện) trong sân thử.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
 const SWORD := WeaponData.Slot.SWORD
@@ -60,6 +66,11 @@ func _run() -> void:
 	await _tc6_pool()
 	await _tc7_fire_sword_wind_bow()
 	await _tc8_extremes()
+	await _tc9_trails_end()
+	await _tc10_touch_vfx_ends()
+	await _tc11_dying_target()
+	await _tc12_combo_repeat()
+	_tc13_nothing_left()
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
 
@@ -221,7 +232,115 @@ func _tc8_extremes() -> void:
 	bow.radius = r0
 
 
+func _tc9_trails_end() -> void:
+	await _reset()
+	GameState.fuse(&"fire", BOW)
+	# Không bật vật lý thân quái: thân chạy thì quái tự trôi khỏi đường tên; tên vẫn trúng thân đứng hình
+	await _shoot_at("Enemy")
+	_move("CrateA", Vector3(14, 0, 14))
+	await _shoot_at("CrateA")
+	# Trượt: đứng giữa sân trống bắn thẳng, tên rơi xuống sàn / bay hết tầm
+	_p.teleport(Vector3(16, 0.2, -16), Vector3.FORWARD)
+	await _f(8)
+	_p.face_instantly(Vector3.FORWARD)
+	_p.energy.set_current(_p.energy.get_max())
+	Input.action_press(&"aim")
+	await _wait(0.9)
+	Input.action_release(&"aim")
+	await _wait(4.0)
+	var running := 0
+	var emitting := 0
+	var trails := _p.find_children("*", "FireArrowTrail", true, false)
+	for t: Node in trails:
+		running += 1 if t.is_processing() else 0
+		emitting += 1 if (t.get_node("Flames") as GPUParticles3D).emitting else 0
+	_check(trails.size() > 0, "TC9: có vệt lửa bám tên (%d node)" % trails.size())
+	_check(running == 0 and emitting == 0, "TC9: 4 s sau 3 phát (trúng quái / thùng / trượt) không vệt nào còn chạy (%d) hay phát lửa (%d)" % [running, emitting])
+	GameState.unfuse(BOW)
+
+
+func _tc10_touch_vfx_ends() -> void:
+	await _reset()
+	var effect := (load(BOW_FIRE) as FusionData).effects[0] as IgniteOnImpactEffect
+	effect.on_projectile_impact(_p, Vector3(14, 0.5, -14), Vector3.FORWARD)
+	await _wait(0.1)
+	var vfx_busy := false
+	for v: Node in _p.find_children("*", "FireTouchVfx", true, false):
+		vfx_busy = vfx_busy or v.is_processing()
+	_check(vfx_busy, "TC10: lúc vừa bùng, VFX vùng lửa đang chạy")
+	await _wait(1.0)
+	var busy := 0
+	var ring_visible := 0
+	for t: FireTouch in _touches():
+		busy += 1 if t.is_active() or t.is_physics_processing() else 0
+	for v: Node in _p.find_children("*", "FireTouchVfx", true, false):
+		busy += 1 if v.is_processing() else 0
+		ring_visible += 1 if (v.get_node("Ring") as Node3D).visible else 0
+	_check(busy == 0 and ring_visible == 0, "TC10: 1 s sau vùng lửa + VFX tắt hết xử lý (%d bận), vòng ẩn (%d hiện)" % [busy, ring_visible])
+
+
+func _tc11_dying_target() -> void:
+	await _reset()
+	GameState.fuse(&"fire", BOW)
+	# Đưa ra chỗ trống: chỗ cũ nằm thẳng hàng sau EnemyRow2, tên sẽ trúng con chắn giữa
+	_move("EnemyRow3", Vector3(16, 0, -8))
+	# Không bật vật lý thân quái: thân chạy thì quái tự trôi khỏi đường tên (test chập chờn); tên vẫn trúng thân đứng hình
+	(_lv.get_node("EnemyRow3/HealthComponent") as HealthComponent).current_health = 1
+	_move("CrateA", (_lv.get_node("EnemyRow3") as Node3D).global_position + Vector3(0.8, 0, 0))
+	await _shoot_at("EnemyRow3")
+	var enemy := _lv.get_node_or_null("EnemyRow3") as Enemy
+	var dead := enemy == null or enemy.is_dead()
+	_check(dead, "TC11: quái còn 1 máu trúng tên -> chết")
+	_check(enemy == null or not _burn("EnemyRow3").is_burning(), "TC11: quái đã chết không cháy")
+	_check(_burn("CrateA").is_burning(), "TC11: thùng đứng cạnh vẫn cháy")
+	GameState.unfuse(BOW)
+
+
+func _tc12_combo_repeat() -> void:
+	await _reset()
+	GameState.fuse(&"fire", SWORD)
+	await _combo_on("Dummy1")
+	var created := _touches().size()
+	for i: int in 4:
+		(_lv.get_node("Dummy1/HealthComponent") as HealthComponent).heal_full()
+		await _combo_on("Dummy1")
+	await _wait(0.5)
+	var busy := 0
+	for t: FireTouch in _touches():
+		busy += 1 if t.is_active() else 0
+	_check(_touches().size() == created, "TC12: 5 combo liên tiếp không tạo thêm FireTouch (%d -> %d)" % [created, _touches().size()])
+	_check(busy == 0, "TC12: xong mọi combo không FireTouch nào còn bận (%d)" % busy)
+	GameState.unfuse(SWORD)
+
+
+func _tc13_nothing_left() -> void:
+	var left: PackedStringArray = []
+	for n: Node in _p.find_children("*", "", true, false):
+		var owner_scene := n.owner if n.owner else n
+		if not (owner_scene is FireTouch or owner_scene is FireArrowTrail or n is FireTouch or n is FireArrowTrail):
+			continue
+		if n is GPUParticles3D and (n as GPUParticles3D).emitting:
+			left.append(String(_p.get_path_to(n)))
+		elif n is MeshInstance3D and (n as MeshInstance3D).is_visible_in_tree():
+			left.append(String(_p.get_path_to(n)))
+	_check(left.is_empty(), "TC13: hết lượt không còn lửa fusion nào đang hiện %s" % str(left))
+
+
 # ---------- tiện ích ----------
+
+## Bật thân quái chạy vật lý (tên trúng / hố kéo thật); xoá lực đẩy dồn lúc thân đứng hình
+func _wake(n: String) -> void:
+	var receiver := _lv.get_node(n).get_node("WindReceiverComponent") as WindReceiverComponent
+	receiver.set_push_immunity(true)
+	receiver.set_push_immunity(false)
+	(_lv.get_node(n) as Enemy).set_physics_process(true)
+
+
+## Đứng hình lại thân quái (state machine vẫn tắt từ setup)
+func _sleep(n: String) -> void:
+	var e := _lv.get_node_or_null(n) as Enemy
+	if e:
+		e.set_physics_process(false)
 
 ## Đứng trước mục tiêu 1.4 m, chém liên tục tới hết combo; trả về mảng "đang cháy" sau từng nhát
 func _combo_on(target: String) -> Array[bool]:

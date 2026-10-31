@@ -56,8 +56,9 @@ func pool_released() -> void:
 	set_process(false)
 
 
-## Tên kết thúc: thôi phát hạt, đợi hạt đang bay tàn hết
-func _on_flight_ended() -> void:
+## Tên kết thúc: thôi phát hạt, đợi hạt đang bay tàn hết.
+## Tham số tuỳ chọn: ArrowProjectile.finished gửi kèm mũi tên, còn tree_exiting thì không gửi gì
+func _on_flight_ended(_projectile_arg: Node = null) -> void:
 	_disconnect_projectile()
 	_projectile = null
 	_flames.emitting = false

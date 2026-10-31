@@ -752,6 +752,9 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 		return
 	last_hit = info
 	_start_blink(_hurtbox.invincibility_time)
+	# Đòn không làm khựng (tick cháy) giống quái: chỉ nháy + mất máu, không chuyển Hurt, không huỷ dash / đòn đang đánh
+	if not info.staggers:
+		return
 	state_machine.transition_to(PlayerState.HURT)
 
 

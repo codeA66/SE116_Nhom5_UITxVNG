@@ -28,6 +28,7 @@ extends Node
 ## TC9  (UC9)  Mỗi lần phun, signal ignited_target phát đúng 1 lần cho mỗi mục tiêu.
 ## TC10 (UC10) IgniterArea tự đứng (không follow_hitbox) có shape riêng: activate() -> hình nộm trong vùng cháy;
 ##             deactivate() rồi activate() lại vẫn đốt được lần nữa; trước activate() không đốt gì.
+## TC11 (UC7)  Quái còn 1 máu (đưa ra chỗ trống) trúng Q: chết, không cháy, không lỗi.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
 const IGNITER_PATH := ^"Model/FlameIgniter"
@@ -63,6 +64,7 @@ func _run() -> void:
 	await _tc8_no_self_burn()
 	await _tc9_once_per_breath()
 	await _tc10_standalone()
+	await _tc11_dying()
 	_data.reach = _reach0
 	_data.width = _width0
 	print("RESULT fails=%d" % _fails)
@@ -242,6 +244,20 @@ func _tc10_standalone() -> void:
 	await _f(5)
 	_check(target.is_burning(), "TC10: tắt rồi bật lại vẫn đốt được lần nữa")
 	igniter.queue_free()
+
+
+func _tc11_dying() -> void:
+	# Đưa ra chỗ trống để Q chỉ trúng con này; chỉ dùng ở case cuối vì nó sẽ chết
+	var e := "EnemyRow3"
+	var enemy := _lv.get_node(e) as Enemy
+	enemy.global_position = Vector3(16, 0, -8)
+	(enemy.get_node("HealthComponent") as HealthComponent).current_health = 1
+	await _f(4)
+	await _breath_at(e)
+	await _wait(0.6)
+	var alive := _lv.get_node_or_null(e) as Enemy
+	_check(alive == null or alive.is_dead(), "TC11: quái còn 1 máu trúng Q -> chết")
+	_check(alive == null or not _burn(e).is_burning(), "TC11: quái đã chết không cháy")
 
 
 # ---------- tiện ích ----------

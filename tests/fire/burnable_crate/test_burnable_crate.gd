@@ -22,6 +22,8 @@ extends Node
 ## TC7 (UC6)   Không thùng nào cháy, bấm E: không cháy, CrateA không xê dịch;
 ##             sau đó đốt CrateB bằng ignite() (không gió): CrateA không cháy.
 ## TC8 (UC7)   duration 0.1, respawn_delay 0.1: cháy -> tan -> hồi lại trong < 0.5 s.
+## TC9 (UC3)   3 vòng liên tiếp cháy -> tan -> hồi (thời gian rút ngắn): mỗi vòng thùng tan rồi hiện lại đúng,
+##             cuối cùng không cháy, không xử lý, VFX lửa không phát.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
 const STAND_OFFSET := Vector3(0, 0.2, 1.5)
@@ -53,6 +55,7 @@ func _run() -> void:
 	await _tc6_spread()
 	await _tc7_no_fire_wind()
 	await _tc8_extremes()
+	await _tc9_three_cycles()
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
 
@@ -139,6 +142,31 @@ func _tc8_extremes() -> void:
 	_check(gone and crate.is_present(), "TC8: cháy 0.1 s -> tan -> hồi lại sau 0.1 s")
 	data.duration = duration0
 	crate.respawn_delay = delay0
+
+
+func _tc9_three_cycles() -> void:
+	await _ensure_present()
+	var crate := _crate("CrateA")
+	var data := _burn("CrateA").data
+	var duration0 := data.duration
+	var delay0 := crate.respawn_delay
+	data.duration = 0.3
+	crate.respawn_delay = 0.3
+	var ok := true
+	for i: int in 3:
+		_burn("CrateA").ignite(_p)
+		await _wait(0.45)
+		var gone := not crate.is_present() and not crate.visible
+		await _wait(0.4)
+		var back := crate.is_present() and crate.visible
+		ok = ok and gone and back
+		_check(gone and back, "TC9: vòng %d cháy -> tan -> hồi đúng (tan=%s, hồi=%s)" % [i + 1, gone, back])
+	data.duration = duration0
+	crate.respawn_delay = delay0
+	var flames := _crate("CrateA").get_node("BurningVfx/Flames")
+	var emitting: bool = flames.get(&"emitting")
+	_check(not _burn("CrateA").is_burning() and not _burn("CrateA").is_physics_processing() and not crate.is_physics_processing(), "TC9: sau 3 vòng không cháy, không còn xử lý")
+	_check(not emitting, "TC9: sau 3 vòng VFX lửa của thùng không còn phát")
 
 
 # ---------- tiện ích ----------

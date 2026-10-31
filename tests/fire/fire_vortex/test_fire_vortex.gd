@@ -23,6 +23,8 @@ extends Node
 ## TC8 (UC8) radius 0.5 -> Enemy cháy cách tâm 1.5 m không làm hố bốc lửa; radius 8 -> EnemyRow3 (4.5 m) cháy theo;
 ##           lifetime 0.1 -> vẫn bốc lửa và đốt EnemyRow2.
 ## TC9 (UC9) Ghép Gió vào cung, Enemy đang cháy, EnemyRow2 đứng cách 2 m: giữ aim rồi thả bắn tên vào Enemy -> EnemyRow2 cháy.
+## TC10 (UC5) Bắn tên gió thật 3 lần (hố hút lấy từ pool, dùng lại): lần 1 Enemy cháy -> EnemyRow2 cháy; dập hết lửa,
+##           lần 2, 3 không ai cháy -> hố KHÔNG bốc lửa (không giữ trạng thái lần trước); cuối cùng không hạt lửa nào còn phát.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
 const VORTEX_SCENE := "res://abilities/fusion/wind/moves/wind_vortex.tscn"
@@ -57,6 +59,7 @@ func _run() -> void:
 	await _tc5_after_lifetime()
 	await _tc8_extremes()
 	await _tc9_real_arrow()
+	await _tc10_vortex_reuse()
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
 
@@ -210,6 +213,50 @@ func _tc9_real_arrow() -> void:
 	GameState.unfuse(BOW_SLOT)
 	for n: String in ENEMIES:
 		(_lv.get_node(n) as Enemy).set_physics_process(false)
+
+
+func _tc10_vortex_reuse() -> void:
+	await _reset()
+	_check(GameState.fuse(&"wind", BOW_SLOT), "TC10: ghép Gió vào cung")
+	var enemy := _lv.get_node("Enemy") as Enemy
+	var row2 := _lv.get_node("EnemyRow2") as Enemy
+	for shot: int in 3:
+		await _reset()
+		for n: String in ENEMIES:
+			var receiver := _lv.get_node(n).get_node("WindReceiverComponent") as WindReceiverComponent
+			receiver.set_push_immunity(true)
+			receiver.set_push_immunity(false)
+			(_lv.get_node(n) as Enemy).set_physics_process(true)
+		# Lần 1 có lửa; lần 2, 3 không ai cháy: hố lấy lại từ pool không được giữ "đang bốc lửa"
+		if shot == 0:
+			_burn("Enemy").ignite(_p)
+		_p.teleport(_home["Enemy"] + Vector3(0, 0.2, 3.5), Vector3.FORWARD)
+		await _f(8)
+		_p.face_instantly(Vector3.FORWARD)
+		_p.energy.set_current(_p.energy.get_max())
+		Input.action_press(&"aim")
+		await _wait(0.9)
+		row2.global_position = enemy.global_position + Vector3(1.5, 0, 0)
+		row2.velocity = Vector3.ZERO
+		Input.action_release(&"aim")
+		await _wait(0.6)
+		var lit := _burn("EnemyRow2").is_burning()
+		if shot == 0:
+			_check(lit, "TC10: lần 1 (Enemy cháy) -> EnemyRow2 cháy")
+		else:
+			_check(not lit, "TC10: lần %d không ai cháy -> hố dùng lại KHÔNG bốc lửa" % (shot + 1))
+		for n: String in ENEMIES:
+			(_lv.get_node(n) as Enemy).set_physics_process(false)
+		await _wait(1.2)
+	GameState.unfuse(BOW_SLOT)
+	# Không hạt lửa nào dưới FireVortex còn phát sau khi các hố đã xong
+	var emitting: PackedStringArray = []
+	for fv: Node in get_tree().root.find_children("*", "FireVortex", true, false):
+		for p: Node in fv.find_children("*", "", true, false):
+			if (p is GPUParticles3D and (p as GPUParticles3D).emitting) or (p is CPUParticles3D and (p as CPUParticles3D).emitting):
+				emitting.append(String(fv.get_path_to(p)))
+		_check(not (fv as FireVortex).is_lit(), "TC10: hố %s đã tắt lửa" % fv.get_parent().name)
+	_check(emitting.is_empty(), "TC10: không hạt lửa lốc nào còn phát %s" % str(emitting))
 
 
 # ---------- tiện ích ----------
