@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/fire/burning/burning_vfx.gd" id="1_vfx"]
+[ext_resource type="Shader" path="res://assets/vfx/fire/burning/shaders/fire_family.gdshader" id="2_family"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/flame_breath/textures/flame_masks.svg" id="3_masks"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/burning/textures/flame_atlas.png" id="4_atlas"]
+
+[sub_resource type="Gradient" id="FlameColor"]
+offsets = PackedFloat32Array(0, 0.15, 0.55, 1)
+colors = PackedColorArray(1, 0.9, 0.5, 0, 1, 0.6, 0.15, 1, 0.9, 0.25, 0.05, 1, 0.3, 0.08, 0.04, 0)
+
+[sub_resource type="Curve" id="FlameSize"]
+_data = [Vector2(0, 0.45), 0.0, 0.0, 0, 0, Vector2(0.35, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.15), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="ShaderMaterial" id="FireSurface"]
+resource_local_to_scene = true
+shader = ExtResource("2_family")
+shader_parameter/masks = ExtResource("3_masks")
+shader_parameter/mode = 3.0
+shader_parameter/edge = 0.045
+shader_parameter/burning_single_system = true
+shader_parameter/burning_flame_count = 6
+shader_parameter/flame_atlas = ExtResource("4_atlas")
+shader_parameter/burning_textured = true
+
+[sub_resource type="QuadMesh" id="FlameMesh"]
+resource_local_to_scene = true
+material = SubResource("FireSurface")
+size = Vector2(0.95, 1.35)
+
+[node name="BurningVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+
+[node name="Flames" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 9
+fixed_fps = 30
+lifetime = 0.72
+randomness = 0.3
+local_coords = true
+visibility_aabb = AABB(-2, -1, -2, 4, 5, 4)
+mesh = SubResource("FlameMesh")
+emission_shape = 3
+emission_box_extents = Vector3(0.3, 0.5, 0.3)
+direction = Vector3(0, 1, 0)
+spread = 12.0
+gravity = Vector3(0, 0, 0)
+angle_min = -12.0
+angle_max = 12.0
+scale_amount_curve = SubResource("FlameSize")
+color_ramp = SubResource("FlameColor")

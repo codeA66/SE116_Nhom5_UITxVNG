@@ -43,7 +43,7 @@ Nguyên tắc:
 6. **Chuyển file:** dùng `map_build_tmp/mvdir.sh` (git mv + sửa mọi `res://`). Phòng level lưu nhị phân `.scn`: đổi sang `.tscn` trước khi chuyển rồi đổi lại (Godot không tự tìm lại phụ thuộc qua UID trong file nhị phân).
 
 ```
-abilities/     dash/, wind_blast/, ... (mỗi kỹ năng 1 thư mục); fusion/ {data, effects, moves, vfx}
+abilities/     dash/, wind_blast/, ... (mỗi kỹ năng 1 thư mục); fusion/ {_base (khung chung), wind/, fire/, ...} (mỗi nguyên tố 1 thư mục)
 assets/
   characters/  foxy/ + gói KayKit (ngoại lệ)
   materials/
@@ -54,7 +54,7 @@ assets/
   audio/       music/, sfx/, ambience/
   ui/          icons/, fonts/, theme/
 autoload/      game_state, save_manager, scene_manager, combat_fx, ...
-components/    ai/, combat/ (health, hitbox, hurtbox), core/ (state_machine, object_pool), feedback/, utility/, wind/
+components/    ai/, combat/ (health, hitbox, hurtbox), core/ (state_machine, object_pool), feedback/, utility/, elements/ {wind, fire, ...}
 entities/      _base/ {character, data/}
                player/ {player, camera/, data/, foxy/, states/{ground, air, action, status}}
                enemies/ {_base/ (states/{movement, attack, status}), palace/, wildlife/}
@@ -63,7 +63,7 @@ levels/        _base/, boot/, zone_1_wind/ (level_1/{rooms/{tier_1, tier_2, tier
                zone_2_ice/, zone_3_fire/, zone_4_thunder/, temple_center/ (Đền Trung Tâm + Final Boss)
 objects/       core/ (checkpoint, pickups, encounter), gates/, traversal/, combat/, world/,
                wind_puzzle/ (map sau: ice_puzzle/... ; quá 6 thì gom vào puzzles/)
-resources/     player/, combat/ {attacks/{sword, bow}, weapons, fusion}, enemies/, feedback/, world/, vfx/
+resources/     player/, combat/ {attacks/{sword, bow}, weapons, fusion/{wind, fire, ...}, fire}, enemies/, feedback/, world/, vfx/
 ui/            hud/ {health, energy, skills, prompt, icons}, menus/ {main, pause, inventory, settings, game_over},
                transition/
 tests/         player/, enemies/, wind/, levels/, kits/

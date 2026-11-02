@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_zone"]
+[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="3_spawn"]
+[ext_resource type="Script" path="res://tests/fire/sandbox/fire_sandbox.gd" id="4_sandbox"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/sword.tres" id="5_sword"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/bow.tres" id="13_bow"]
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="6_wind"]
+[ext_resource type="Resource" path="res://abilities/flame_breath/flame_breath.tres" id="7_flame"]
+[ext_resource type="PackedScene" path="res://objects/combat/training_dummy/training_dummy.tscn" id="8_dummy"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="9_enemy"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/shield_bearer/shield_bearer.tscn" id="10_shield"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="11_wisp"]
+[ext_resource type="PackedScene" path="res://tests/fire/burnable_crate/burnable_crate.tscn" id="12_crate"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+sky_top_color = Color(0.32, 0.4, 0.55, 1)
+sky_horizon_color = Color(0.55, 0.58, 0.62, 1)
+ground_bottom_color = Color(0.12, 0.12, 0.14, 1)
+ground_horizon_color = Color(0.55, 0.58, 0.62, 1)
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+ambient_light_energy = 0.6
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.3, 0.31, 0.34, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="FloorMesh"]
+material = SubResource("FloorMat")
+size = Vector3(40, 1, 40)
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(40, 1, 40)
+
+[node name="FireSandbox" type="Node3D"]
+script = ExtResource("1_zone")
+shader_warmup = null
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8660254, -0.38302222, 0.32139382, 0, 0.6427876, 0.76604444, -0.5, -0.66341394, 0.5566704, 0, 10, 0)
+light_energy = 0.8
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="Start" type="Marker3D" parent="."]
+script = ExtResource("3_spawn")
+spawn_id = &"start"
+
+[node name="Sandbox" type="Node" parent="."]
+script = ExtResource("4_sandbox")
+weapons = Array[Resource]([ExtResource("5_sword"), ExtResource("13_bow")])
+abilities = Array[Resource]([ExtResource("6_wind"), ExtResource("7_flame")])
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+
+[node name="Dummy1" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -4)
+
+[node name="Dummy2" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -5)
+
+[node name="Dummy3" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -3.5)
+
+[node name="Enemy" parent="." instance=ExtResource("9_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -10)
+
+[node name="EnemyRow2" parent="." instance=ExtResource("9_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -13)
+
+[node name="EnemyRow3" parent="." instance=ExtResource("9_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -16)
+
+[node name="ShieldBearer" parent="." instance=ExtResource("10_shield")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -12)
+
+[node name="WispCaster" parent="." instance=ExtResource("11_wisp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -6)
+
+[node name="SpreadA" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 6)
+wind_enabled = true
+
+[node name="SpreadB" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 3)
+wind_enabled = true
+
+[node name="SpreadC" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)
+wind_enabled = true
+
+[node name="SpreadSide" parent="." instance=ExtResource("8_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 3)
+wind_enabled = true
+
+[node name="CrateA" parent="." instance=ExtResource("12_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
+
+[node name="CrateB" parent="." instance=ExtResource("12_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 3)

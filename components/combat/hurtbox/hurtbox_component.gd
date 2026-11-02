@@ -36,6 +36,11 @@ func is_invincible() -> bool:
 	return _invincible_timer > 0.0
 
 
+## Thời gian bất tử còn lại (s), 0 nếu không bất tử
+func get_invincible_time() -> float:
+	return _invincible_timer
+
+
 ## Dùng cho i-frames chủ động (dash, hồi sinh...)
 func set_invincible(duration: float) -> void:
 	_invincible_timer = maxf(_invincible_timer, duration)
@@ -49,7 +54,8 @@ func is_alive() -> bool:
 func receive_hit(info: DamageInfo) -> bool:
 	if not is_alive() or (is_invincible() and not info.ignores_invincibility):
 		return false
-	_invincible_timer = invincibility_time
+	# Lấy cái dài hơn: đòn xuyên bất tử (tick cháy, bẫy) trúng lúc đang dash không được cắt ngắn bất tử của dash
+	_invincible_timer = maxf(_invincible_timer, invincibility_time)
 	var damage_taken := _resolve_damage(info)
 	if health:
 		health.take_damage(damage_taken)

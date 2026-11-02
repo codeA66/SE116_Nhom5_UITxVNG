@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ElementData" format=3]
+
+[ext_resource type="Script" path="res://abilities/fusion/_base/element_data.gd" id="1_element"]
+[ext_resource type="Resource" path="res://abilities/flame_breath/flame_breath.tres" id="2_ability"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/fire.svg" id="3_icon"]
+
+[resource]
+script = ExtResource("1_element")
+id = &"fire"
+display_name = "Lửa"
+ability = ExtResource("2_ability")
+color = Color(1, 0.55, 0.18, 1)
+icon = ExtResource("3_icon")
