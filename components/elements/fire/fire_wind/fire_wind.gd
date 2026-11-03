@@ -8,6 +8,8 @@ extends Node3D
 
 ## Vết lửa bật hoặc kéo dài (VFX / âm thanh nghe). start, length tính theo trục +Z của node (hướng gió), width = bề rộng gió
 signal fired(start: float, length: float, width: float)
+## Một vật đang cháy bị gió thổi trúng vừa bùng lửa ra sau lưng (âm thanh / rung camera nghe). direction = hướng gió
+signal flared(burnable: BurnableComponent, direction: Vector3)
 
 ## Vùng gió để bám theo (Model/WindBlastArea)
 @export var wind_area: WindBlastArea
@@ -18,6 +20,8 @@ var _blowing: bool = false
 var _start: float = INF
 var _off_left: float = 0.0
 var _wind_shape: CollisionShape3D
+var _flared: Array[BurnableComponent] = []
+var _flare_pool: ObjectPool
 
 @onready var _detector: Area3D = $Detector
 @onready var _detector_shape: CollisionShape3D = $Detector/Shape
@@ -35,6 +39,7 @@ func _ready() -> void:
 	_detector.monitoring = false
 	_detector.area_entered.connect(_on_area_entered)
 	_igniter.skip_burning = true
+	_setup_flare_pool()
 	if wind_area == null:
 		return
 	_wind_shape = wind_area.get_node("CollisionShape3D") as CollisionShape3D
@@ -59,6 +64,7 @@ func _on_blast_started(_wind: WindBlastData) -> void:
 	global_transform = wind_area.global_transform
 	_detector_shape.transform = _wind_shape.transform
 	_start = INF
+	_flared.clear()
 	_blowing = true
 	_detector.set_deferred(&"monitoring", true)
 
@@ -79,6 +85,7 @@ func _on_area_entered(area: Area3D) -> void:
 	if not _blowing or burnable == null or not burnable.is_burning() or _is_own(burnable):
 		return
 	_extend_from(burnable)
+	_flare(burnable)
 
 
 ## Đặt vết lửa từ vị trí vật cháy (chiếu lên trục gió) tới cuối tầm; vật cháy gần người thổi hơn thì kéo dài vết
@@ -99,6 +106,36 @@ func _extend_from(burnable: BurnableComponent) -> void:
 		_igniter.ignite_source = burnable.get_source()
 		_igniter.activate()
 	fired.emit(z, length, wind_box.size.x)
+
+
+## Bùng lửa sau lưng vật cháy, xuôi theo gió: mỗi vật một lần mỗi cú thổi, tối đa flare_max vật
+func _flare(burnable: BurnableComponent) -> void:
+	if _flare_pool == null or burnable in _flared or _flared.size() >= data.flare_max:
+		return
+	_flared.append(burnable)
+	var direction := global_basis.z
+	direction.y = 0.0
+	if direction.length_squared() < 0.0001:
+		return
+	direction = direction.normalized()
+	var flare := _flare_pool.acquire() as FireFlare
+	var size := Vector3(data.flare_width, data.flare_height, data.flare_length)
+	var source := burnable.get_source() if burnable.get_source() else owner
+	flare.play(burnable.global_position + direction * data.flare_offset, direction, size, data.flare_time, source)
+	flared.emit(burnable, direction)
+
+
+## Pool bùng lửa tạo sẵn lúc vào khu (không instantiate giữa trận); không có scene thì tắt tính năng
+func _setup_flare_pool() -> void:
+	if data == null or data.flare_scene == null:
+		return
+	_flare_pool = ObjectPool.new()
+	_flare_pool.name = "FlarePool"
+	_flare_pool.scene = data.flare_scene
+	_flare_pool.initial_size = data.flare_max
+	_flare_pool.configure_instance = func(node: Node) -> void:
+		node.finished.connect(_flare_pool.release.bind(node))
+	add_child(_flare_pool)
 
 
 ## Đúng khi vật thuộc chính thực thể đang thổi (sau này player có BurnableComponent thì không tự dẫn lửa từ mình)
