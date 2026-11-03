@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/environment/monkey_garden/stable_floor.gdshader" id="1_80irv"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_80irv")
+shader_parameter/stone = false
+shader_parameter/earth_color = Color(0.22, 0.17, 0.12, 1)
+shader_parameter/stone_color = Color(0.31, 0.3, 0.23, 1)

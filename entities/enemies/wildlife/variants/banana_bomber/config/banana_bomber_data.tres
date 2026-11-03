@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WildEnemyData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/wild_enemy_data.gd" id="s"]
+[ext_resource type="Resource" path="res://entities/enemies/wildlife/variants/banana_bomber/movement.tres" id="m"]
+[resource]
+script = ExtResource("s")
+display_name = "Banana Bomber"
+max_health = 3
+movement = ExtResource("m")
+detect_range = 14.0
+lose_range = 1000.0
+leash_range = 1000.0
+patrol_radius = 0.0
+model_scale = 0.38
+stagger_on_hit = true
+idle_animation = &"Bomb/Bomber_Idle"
+walk_animation = &"Bomb/Bomber_Run"
+run_animation = &"Bomb/Bomber_Run"
+alert_animation = &""

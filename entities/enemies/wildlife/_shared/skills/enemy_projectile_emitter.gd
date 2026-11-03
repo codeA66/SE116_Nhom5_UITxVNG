@@ -76,5 +76,8 @@ func launch(skill: ProjectileSkillData, facing: Vector3) -> EnemyProjectile:
 		var target_at: Vector3 = _actor.target.global_position + Vector3.UP * 0.95
 		direction = (target_at - at).normalized()
 	projectile.launch(skill, at, direction, _actor, _actor.target)
+	if _actor.has_method("get_projectile_exclusions"):
+		for body: CollisionObject3D in _actor.call("get_projectile_exclusions"):
+			if is_instance_valid(body): projectile.ignore_collision(body)
 	projectile_fired.emit(projectile)
 	return projectile

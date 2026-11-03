@@ -4,7 +4,8 @@
 [ext_resource type="Resource" path="res://abilities/dash/dash.tres" id="4_0etxy"]
 [ext_resource type="Resource" uid="uid://cnkajx20i5gbp" path="res://resources/player/foxy_animation_markers.tres" id="5_o54rx"]
 [ext_resource type="Script" uid="uid://cabvd0p6t1m7a" path="res://entities/_base/data/weapon_data.gd" id="6_y8xkj"]
-[ext_resource type="Resource" path="res://resources/combat/weapons/bow.tres" id="7_0kcie"]
+[ext_resource type="Resource" uid="uid://bgc2p5bkgqoq7" path="res://resources/combat/weapons/bow.tres" id="7_0kcie"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/variants/banana_bomber/banana_bomber.tscn" id="15_5qixk"]
 [ext_resource type="PackedScene" path="res://entities/enemies/wildlife/armored_polar_bear/armored_polar_bear.tscn" id="bear"]
 [ext_resource type="PackedScene" path="res://entities/enemies/wildlife/variants/polar_bear_cub/polar_bear_cub.tscn" id="bear_cub"]
 [ext_resource type="PackedScene" path="res://entities/enemies/wildlife/monkey_chieftain/monkey_chieftain.tscn" id="chief"]
@@ -165,35 +166,29 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.445822, 0.05, 6)
 hit_flash_time = 0.06
 
 [node name="WerewolfCub" parent="." unique_id=380689946 instance=ExtResource("wolf_cub")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.09804, 0.05, 9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.11119, 0.05, -10.736923)
 hit_flash_time = 0.06
 
 [node name="MonkeySquad" type="Node3D" parent="." unique_id=1327012690 node_paths=PackedStringArray("leader", "members")]
 script = ExtResource("squad")
 leader = NodePath("Chieftain")
-members = [NodePath("Grunt1"), NodePath("Grunt2"), NodePath("Grunt3")]
+members = [NodePath(""), NodePath("Grunt2"), NodePath("")]
 
 [node name="Chieftain" parent="MonkeySquad" unique_id=1189427893 instance=ExtResource("chief")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.05, -6)
+transform = Transform3D(0.99999976, 0.00061548984, -0.00013326076, -0.00061546086, 0.99999976, 0.00019881177, 0.00013339453, -0.00019872205, 1, 6, 0.05, -6)
 battlecry_radius = 8.0
 battlecry_duration = 10.0
 battlecry_cooldown = 20.0
-hit_flash_time = 0.06
-
-[node name="Grunt1" parent="MonkeySquad" unique_id=1514320419 instance=ExtResource("grunt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0.05, -4)
+summon_cooldown = 20.0
+display_minimum_gap = 6.0
 hit_flash_time = 0.06
 
 [node name="Grunt4" parent="MonkeySquad" unique_id=1666908142 instance=ExtResource("grunt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6954768, 0.05, 8.012437)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.72939, 0.05, 8.012437)
 hit_flash_time = 0.06
 
 [node name="Grunt2" parent="MonkeySquad" unique_id=1197726246 instance=ExtResource("grunt")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.3, 0.05, -4)
-hit_flash_time = 0.06
-
-[node name="Grunt3" parent="MonkeySquad" unique_id=1036923036 instance=ExtResource("grunt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.05, -9)
 hit_flash_time = 0.06
 
 [node name="OverviewCamera" type="Camera3D" parent="." unique_id=2090014405]
@@ -216,3 +211,10 @@ offset_right = -16.0
 offset_bottom = -16.0
 button_pressed = true
 text = "Bất tử"
+
+[node name="BananaBomberExample" parent="." unique_id=1522389383 instance=ExtResource("15_5qixk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0.05, -6)
+fuse_time = 5.0
+blast_radius = 3.2
+blast_push = 9.0
+hit_flash_time = 0.06

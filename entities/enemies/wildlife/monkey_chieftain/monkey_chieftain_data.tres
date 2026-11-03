@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/skills/enemy_skill_data.gd" id="skill"]
 [ext_resource type="Resource" path="res://entities/enemies/wildlife/monkey_chieftain/movement.tres" id="move"]
 [ext_resource type="Resource" path="res://entities/enemies/wildlife/monkey_chieftain/skills/leap_claw.tres" id="s0"]
+[ext_resource type="Resource" path="res://entities/enemies/wildlife/monkey_chieftain/skills/boulder_throw.tres" id="s1"]
 [resource]
 script = ExtResource("data")
 display_name = "Monkey Chieftain"
@@ -30,4 +31,4 @@ walk_animation = &"Gorilla_Locomotion"
 run_animation = &"Gorilla_Quadrupedal_Run_Fast"
 alert_animation = &"Gorilla_ChestBeat_Roar"
 
-skills = Array[ExtResource("skill")]([ExtResource("s0")])
+skills = Array[ExtResource("skill")]([ExtResource("s0"), ExtResource("s1")])

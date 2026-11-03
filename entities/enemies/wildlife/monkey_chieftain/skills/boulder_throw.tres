@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BoulderThrowSkillData" format=3]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/monkey_chieftain/skills/boulder_throw_skill_data.gd" id="s"]
+[resource]
+script = ExtResource("s")
+skill_id = &"boulder_throw"
+state = &"BoulderThrow"
+animation = &"Boulder/Monkey_Chieftain_Boulder_Throw"
+duration = 2.8
+windup_end = 1.35
+release_time = 1.35
+melee_enabled = false
+maximum_range = 11.5
+track_during_windup = true
+cooldown = 1.0
+damage = 3
+knockback = 3.0
+hitstop = 0.025

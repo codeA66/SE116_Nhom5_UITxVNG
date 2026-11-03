@@ -1,0 +1,39 @@
+[gd_scene format=4]
+
+[ext_resource type="Material" path="res://assets/models/map_wind/tier_3_monkey_garden/garden_vertex_color.tres" id="1_ngwe7"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_rofdw"]
+resource_name = "moss_patch_s_Soft_Moss_Island"
+_surfaces = [{
+"aabb": AABB(-0.2953395, 0.003, -0.20306374, 0.5727136, 0.0010000002, 0.4061647),
+"attribute_data": PackedByteArray("ExwK/xMcCv8THAr/ExwK/xMcCv8THAr/ExwK/xMcCv8THAr/ExwK/yE0FP8hNBT/ITQU/yE0FP8hNBT/ITQU/yAzFP8gMxT/IDMU/w=="),
+"format": 34896613391,
+"index_count": 33,
+"index_data": PackedByteArray("AAABAAIAAwACAAEABAADAAEAAwAEAAUAAQAAAAYABwAGAAAABgAHAAgACAAHAAkACgALAAwADQAOAA8AEAARABIA"),
+"material": ExtResource("1_ngwe7"),
+"name": "Garden_VertexColor",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 19,
+"vertex_data": PackedByteArray("AF8AAKDz///BqwAA0AP///usAAD/////4ugAAGPK///l6gAAGTT/////AAD8f///DVsAAAAA//+YLAAAd8D//ysdAAAgNP//AAAAAPx///9hxP///H///3jU//+bUv//Puf//9xw//+MVP//AVL//6Rk//+gJP//anf//+FC//+lif//y8P//7yZ//9qlv//gqz//6u0////f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+/")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ngwe7"]
+size = Vector3(0.5727136, 0.02, 0.4061647)
+
+[node name="MossPatchS" type="StaticBody3D" unique_id=556088485]
+editor_description = "Mảng rêu nhỏ | Model + collider đi cùng root. Kéo/copy cả node này. Nguồn: res://assets/models/map_wind/tier_3_monkey_garden/ground/accents/moss_patch_s.glb | Trang trí: collider tắt sẵn; bật Disabled=false nếu muốn chặn. | Collider tối giản: khối nguyên thủy, không dùng trimesh."
+collision_mask = 0
+metadata/garden_asset = "moss_patch_s"
+metadata/simple_collision = true
+
+[node name="Model" type="Node3D" parent="." unique_id=1591346772]
+
+[node name="Body_moss_patch_s_001" type="MeshInstance3D" parent="Model" unique_id=204819351]
+mesh = SubResource("ArrayMesh_rofdw")
+
+[node name="Collision_Optional" type="CollisionShape3D" parent="." unique_id=503370591]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.008982688, 0.0035, 1.861155e-05)
+shape = SubResource("BoxShape3D_ngwe7")
+disabled = true
