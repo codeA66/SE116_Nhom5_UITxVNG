@@ -57,7 +57,8 @@ void fragment(){
  }else{
   vec4 art=texture(flow,vec2(fract(UV.x-clock*flow_speed),clamp(UV.y,0.02,0.98)));
   float facing=abs(dot(normalize(NORMAL),normalize(VIEW)));
-  float heat=clamp(art.g*0.30+facing*0.70+pulse*0.20,0.0,1.0);
+  float rolling=sin(UV.x*18.85+UV.y*12.0-clock*flow_speed*5.0)*0.5+0.5;
+  float heat=clamp(art.g*0.48+facing*0.38+rolling*0.20+pulse*0.20,0.0,1.0);
   vec3 col=mix(edge_color.rgb,flame_color.rgb,step(0.24,heat));
   col=mix(col,hot_color.rgb,step(0.53,heat));
   col=mix(col,core_color.rgb,step(0.84,heat));

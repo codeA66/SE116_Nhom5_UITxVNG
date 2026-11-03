@@ -41,6 +41,8 @@
 [ext_resource type="PackedScene" path="res://components/elements/fire/fire_wind/fire_wind.tscn" id="48_firewind"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_sword/fire_sword_vfx.tscn" id="49_firesword"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_bow/fire_bow_vfx.tscn" id="50_firebow"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/wind/vfx/slash/wind_sword_slash_vfx.tscn" id="51_windslash"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/wind/vfx/charge/wind_bow_charge_vfx.tscn" id="52_windcharge"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -101,6 +103,12 @@ area = NodePath("../Model/WindBlastArea")
 player = NodePath("..")
 
 [node name="FireSwordVfx" parent="." node_paths=PackedStringArray("player") instance=ExtResource("49_firesword")]
+player = NodePath("..")
+
+[node name="WindSwordSlashVfx" parent="." node_paths=PackedStringArray("player") instance=ExtResource("51_windslash")]
+player = NodePath("..")
+
+[node name="WindBowChargeVfx" parent="." node_paths=PackedStringArray("player") instance=ExtResource("52_windcharge")]
 player = NodePath("..")
 
 [node name="FlameBreathVfx" parent="." node_paths=PackedStringArray("hitbox", "follow") instance=ExtResource("46_flamevfx")]

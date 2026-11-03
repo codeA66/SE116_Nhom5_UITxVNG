@@ -50,6 +50,8 @@ var _traveled: float = 0.0
 var _fade_left: float = 0.0
 var _fading: bool = false
 var _trail_intensity: float = 1.0
+var _default_visual_enabled: bool = true
+var _visual_trail_length: float = 0.0
 ## Truy vấn quét khối cầu tạo một lần, mỗi frame chỉ đổi vị trí / quãng (không cấp phát trong vòng lặp nóng)
 var _sweep: PhysicsShapeQueryParameters3D
 var _sweep_shape: SphereShape3D
@@ -83,6 +85,8 @@ func launch(attack: AttackData, speed: float, lifetime: float, direction: Vector
 	_previous_position = origin
 	_traveled = 0.0
 	_fading = false
+	_visual_trail_length = 0.0
+	set_default_visual_enabled(true)
 	_model.visible = true
 	_trail_material.set_shader_parameter(&"intensity", _trail_intensity)
 	_set_trail_length(0.0)
@@ -195,10 +199,20 @@ func _update_fade(delta: float) -> void:
 ## Shader streak lấy trục và độ dài từ trục Y của node: Y hướng theo +Z (hướng bay)
 func _set_trail_length(length: float) -> void:
 	var l := minf(length, trail_length)
-	_trail.visible = l > 0.001
+	_visual_trail_length = l
+	_trail.visible = _default_visual_enabled and l > 0.001
 	if not _trail.visible:
 		return
 	_trail.transform = Transform3D(Basis(Vector3.RIGHT, Vector3.BACK * l, Vector3.DOWN), Vector3(0.0, 0.0, -trail_head_offset - l * 0.5))
+
+
+## Nguyên tố có VFX riêng chỉ thay lớp vệt/hạt mặc định; không đổi model hoặc đạn đạo.
+func set_default_visual_enabled(enabled: bool) -> void:
+	_default_visual_enabled = enabled
+	_set_trail_length(_visual_trail_length)
+	for particles: CPUParticles3D in flight_particles:
+		particles.visible = enabled
+		particles.emitting = enabled and is_physics_processing() and not _fading
 
 
 ## Ngừng phát hạt mới; hạt đã phát (toạ độ thế giới) tự tàn hết
