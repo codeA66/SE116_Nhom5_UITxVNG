@@ -28,7 +28,7 @@ SceneManager="*res://autoload/scene_manager.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/stretch/mode="viewport"
+window/stretch/mode="canvas_items"
 mouse_cursor/custom_image="res://assets/ui/cursor_arrow.png"
 mouse_cursor/custom_image_hotspot=Vector2(2, 2)
 
@@ -135,4 +135,5 @@ textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+anti_aliasing/quality/msaa_3d=1
 anti_aliasing/canvas_textures/default_texture_filter=1

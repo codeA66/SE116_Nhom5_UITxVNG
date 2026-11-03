@@ -208,6 +208,9 @@ func _build_mesh_and_points() -> void:
 
 
 func _on_activated(attack: AttackData) -> void:
+	var fusion := GameState.get_active_fusion()
+	if fusion and fusion.replaces_default_trail:
+		return
 	_fit_to_reach()
 	var window := hitbox.get_active_duration()
 	_current_sweep = window if match_hitbox_window and window > 0.0 else sweep_time

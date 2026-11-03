@@ -37,8 +37,12 @@ func _process(delta: float) -> void:
 
 ## Gắn vệt lửa vào một mũi tên vừa bắn
 func start(projectile: Node3D) -> void:
+	_disconnect_projectile()
 	_projectile = projectile
+	_linger = 0.0
 	global_position = projectile.global_position
+	if projectile is ArrowProjectile:
+		(projectile as ArrowProjectile).set_default_visual_enabled(false)
 	projectile.tree_exiting.connect(_on_flight_ended, CONNECT_ONE_SHOT)
 	# Tên dùng pool không rời cây khi kết thúc, nên nghe cả signal thu hồi của nó
 	if projectile.has_signal(&"finished"):

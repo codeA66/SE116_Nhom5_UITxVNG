@@ -4,10 +4,11 @@ extends Node3D
 ## rồi mờ dần, cùng một chùm lửa + tàn lửa bắn lên. Chỉ nghe signal fired của FireTouch; chỉ chạy _process trong lúc
 ## vòng đang mờ, xong tự tắt.
 ##
-## TRẠNG THÁI (2026-10-31): bản tạm để nhìn thấy rõ vùng bị đốt. CHƯA ĐẠT về thẩm mỹ: sẽ giao AI VFX làm bản đẹp
-## (giữ nguyên cách nối signal, không đụng FireTouch). Kiếm bốc lửa / tên bốc lửa lúc bay cũng chưa làm.
+## DONE: công tắc hình ảnh cho từng instance; tắt bỏ cả ring, burst và process, không đổi vùng đốt.
+## NOT DONE: hình tạm của cung được giữ nguyên trong lượt sửa kiếm này.
 
 @export var touch: FireTouch
+@export var visual_enabled: bool = true
 @export_group("Ground ring")
 ## Thời gian vòng lửa trên sàn bùng ra rồi mờ hết (s)
 @export var ring_time: float = 0.4
@@ -37,6 +38,19 @@ func _ready() -> void:
 	_ring.hide()
 	if touch:
 		touch.fired.connect(_on_fired)
+	set_visual_enabled(visual_enabled)
+
+
+## Có thể gọi trước ready khi pool vừa thêm slot; chỉ chạm node sau khi onready đã gán.
+func set_visual_enabled(enabled: bool) -> void:
+	visual_enabled = enabled
+	if not is_instance_valid(_burst): return
+	_burst.visible = enabled
+	if enabled: return
+	_burst.emitting = false
+	_ring.hide()
+	_ring_left = 0.0
+	set_process(false)
 
 
 ## Chỉ chạy lúc vòng đang mờ: nở ra rồi nhạt dần, hết thì ẩn và tắt xử lý
@@ -53,6 +67,7 @@ func _process(delta: float) -> void:
 
 ## Vùng lửa bật: chùm lửa phủ đúng vùng + vòng trên sàn đúng kích thước vùng
 func _on_fired(size: Vector3, sphere: bool) -> void:
+	if not visual_enabled: return
 	var mat := _burst.process_material as ParticleProcessMaterial
 	var extent := size.x if sphere else maxf(size.x, size.z) * 0.5
 	if sphere:
