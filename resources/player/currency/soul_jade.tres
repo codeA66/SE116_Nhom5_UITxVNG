@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CurrencyData" format=3]
+
+[ext_resource type="Script" path="res://entities/player/data/currency_data.gd" id="1_currency"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/currency/soul_jade/soul_jade_pickup.tscn" id="2_pickup"]
+
+[resource]
+script = ExtResource("1_currency")
+id = &"soul_jade"
+display_name = "Soul Jade"
+color = Color(0.25, 0.95, 0.85, 1)
+pickup_scene = ExtResource("2_pickup")

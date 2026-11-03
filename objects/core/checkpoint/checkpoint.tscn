@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="2_spawn"]
 
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/wind_shrine_visual.tscn" id="3_visual"]
+[ext_resource type="PackedScene" path="res://assets/vfx/ambient/heal_burst/heal_burst_vfx.tscn" id="4_heal"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_trigger"]
 radius = 1.4
@@ -24,3 +25,5 @@ shape = SubResource("SphereShape3D_trigger")
 
 [node name="Spawn" type="Marker3D" parent="."]
 script = ExtResource("2_spawn")
+
+[node name="HealVfx" parent="." instance=ExtResource("4_heal")]

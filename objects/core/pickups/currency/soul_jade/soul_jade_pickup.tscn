@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/currency/currency_pickup.gd" id="1_pickup"]
+
+[sub_resource type="SphereMesh" id="Crystal"]
+radius = 0.12
+height = 0.36
+radial_segments = 4
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="CrystalMat"]
+albedo_color = Color(0.25, 0.95, 0.85, 1)
+metallic = 0.2
+roughness = 0.25
+emission_enabled = true
+emission = Color(0.25, 0.95, 0.85, 1)
+emission_energy_multiplier = 2.2
+
+[sub_resource type="StandardMaterial3D" id="TrailMat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="TrailQuad"]
+material = SubResource("TrailMat")
+size = Vector2(0.1, 0.1)
+
+[sub_resource type="Gradient" id="TrailFade"]
+colors = PackedColorArray(0.25, 0.95, 0.85, 0.8, 0.25, 0.95, 0.85, 0)
+
+[node name="SoulJadePickup" type="Node3D"]
+script = ExtResource("1_pickup")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Crystal")
+surface_material_override/0 = SubResource("CrystalMat")
+
+[node name="Trail" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 10
+lifetime = 0.25
+local_coords = false
+mesh = SubResource("TrailQuad")
+gravity = Vector3(0, 0, 0)
+color_ramp = SubResource("TrailFade")
