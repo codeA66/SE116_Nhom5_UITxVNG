@@ -13,3 +13,6 @@ extends Resource
 @export var color: Color = Color.WHITE
 ## Scene viên rơi của loại tiền này (root dùng script CurrencyPickup); để trống thì nhặt cộng thẳng, không có viên bay
 @export var pickup_scene: PackedScene
+## Hiệu ứng ở chỗ rơi (một lần mỗi lần rơi) và ở người nhặt (mỗi lần nhặt, có giới hạn tần suất); root dùng PickupVfx. Để trống = không có
+@export var drop_vfx_scene: PackedScene
+@export var collect_vfx_scene: PackedScene

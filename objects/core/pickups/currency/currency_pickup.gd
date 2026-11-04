@@ -27,6 +27,12 @@ signal collected(pickup: CurrencyPickup)
 @export_group("Look")
 ## Tốc độ xoay của node Visual (rad/s)
 @export var spin_speed: float = 6.0
+## Lúc rơi ra viên nở từ 0 lên spawn_overshoot rồi về 1 trong spawn_scale_time giây (0 = không nở)
+@export_range(0.0, 1.0, 0.01) var spawn_scale_time: float = 0.12
+@export_range(1.0, 2.0, 0.01) var spawn_overshoot: float = 1.25
+## Dư ảnh (node Echoes tuỳ chọn, mỗi con là một bản sao hình): xếp cách nhau echo_spacing mét theo quãng đường đã bay,
+## nên bay nhanh hay chậm chuỗi bóng vẫn đều
+@export_range(0.05, 2.0, 0.01) var echo_spacing: float = 0.35
 
 ## Loại tiền và số tiền viên này mang (rơi nhiều: ít viên, mỗi viên mang nhiều hơn)
 var currency: CurrencyData
@@ -36,6 +42,11 @@ var _target: Node3D
 var _velocity: Vector3 = Vector3.ZERO
 var _age: float = 0.0
 var _speed: float = 0.0
+var _echoes: Array[Node3D] = []
+## Các điểm đã đi qua, mới nhất trước; cấp phát một lần lúc _ready (không tạo mảng mỗi frame)
+var _path: PackedVector3Array
+var _path_last: Vector3
+var _path_dist: float = 0.0
 
 @onready var _visual: Node3D = get_node_or_null(^"Visual") as Node3D
 @onready var _trail: Node = get_node_or_null(^"Trail")
@@ -45,6 +56,15 @@ func _ready() -> void:
 	top_level = true
 	set_process(false)
 	_set_trail(false)
+	var holder := get_node_or_null(^"Echoes")
+	if holder:
+		for child in holder.get_children():
+			if child is Node3D:
+				# Dư ảnh đứng yên theo toạ độ thế giới, không đi theo viên
+				(child as Node3D).top_level = true
+				_echoes.append(child)
+		_path.resize(_echoes.size())
+	_hide_echoes()
 
 
 ## Rơi ra ở origin rồi bay về target
@@ -58,6 +78,10 @@ func launch(origin: Vector3, target: Node3D, kind: CurrencyData, amount: int) ->
 	_velocity = flat + Vector3.UP * randf_range(pop_up.x, pop_up.y)
 	_age = 0.0
 	_speed = 0.0
+	_apply_spawn_scale()
+	_path.fill(global_position)
+	_path_last = global_position
+	_path_dist = 0.0
 	_set_trail(true)
 	set_process(true)
 
@@ -67,12 +91,16 @@ func pool_released() -> void:
 	set_process(false)
 	_target = null
 	_set_trail(false)
+	_hide_echoes()
 
 
 func _process(delta: float) -> void:
 	_age += delta
 	if _visual:
 		_visual.rotate_y(spin_speed * delta)
+	if _age <= spawn_scale_time + delta:
+		_apply_spawn_scale()
+	_update_echoes()
 	if _age < pop_time:
 		_velocity.y -= pop_gravity * delta
 		global_position += _velocity * delta
@@ -94,6 +122,39 @@ func _process(delta: float) -> void:
 		collected.emit(self)
 		return
 	global_position += step
+
+
+## Nở 0 -> overshoot (60% thời gian) -> 1; chỉ đổi scale, không đổi chuyển động
+func _apply_spawn_scale() -> void:
+	if spawn_scale_time <= 0.0:
+		scale = Vector3.ONE
+		return
+	var t := clampf(_age / spawn_scale_time, 0.0, 1.0)
+	var s := lerpf(0.05, spawn_overshoot, t / 0.6) if t < 0.6 else lerpf(spawn_overshoot, 1.0, (t - 0.6) / 0.4)
+	scale = Vector3.ONE * s
+
+
+## Mỗi khi đi thêm echo_spacing mét thì đẩy điểm mới vào đầu đường đi; dư ảnh thứ i đứng ở điểm thứ i.
+## Dư ảnh chỉ hiện khi đã có điểm khác vị trí rơi (lúc mới rơi không chồng cả chuỗi vào một chỗ)
+func _update_echoes() -> void:
+	if _echoes.is_empty():
+		return
+	_path_dist += global_position.distance_to(_path_last)
+	_path_last = global_position
+	if _path_dist >= echo_spacing:
+		_path_dist = 0.0
+		for i in range(_path.size() - 1, 0, -1):
+			_path[i] = _path[i - 1]
+		_path[0] = global_position
+	for i in _echoes.size():
+		var echo := _echoes[i]
+		echo.global_position = _path[i]
+		echo.visible = _path[i].distance_squared_to(global_position) > 0.0001 and (i == 0 or _path[i] != _path[i - 1])
+
+
+func _hide_echoes() -> void:
+	for echo in _echoes:
+		echo.visible = false
 
 
 func _set_trail(on: bool) -> void:

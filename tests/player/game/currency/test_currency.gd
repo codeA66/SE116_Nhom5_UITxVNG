@@ -14,7 +14,8 @@ extends Node
 ## UC9  Lưu / nạp giữ đủ mọi loại tiền; file save hỏng / sửa tay (số âm, chữ) không làm hỏng tiến trình.
 ## UC10 Số tiền rất lớn vẫn cộng / trừ đúng.
 ## UC11 HUD hiện số tiền của đúng loại được gán; loại tiền mới dùng lại cùng bộ đếm (chỉ đổi dữ liệu).
-## UC12 Tiền tăng -> số nảy nhẹ; tiền giảm (nộp tiền) / chết / nạp save -> cập nhật, không nảy.
+## UC12 Bộ đếm kiểu Death's Door: ẩn khi đánh nhau, chỉ hiện vài giây khi tiền đổi (nhặt / nộp) rồi mờ đi; không có "+N".
+##      Chết / nạp save -> số cập nhật, vẫn ẩn.
 ## UC13 Bộ đếm lấy màu / icon từ CurrencyData; quên gán loại tiền -> báo lỗi rõ, không làm hỏng game.
 ##
 ## ===== TEST CASE =====
@@ -31,8 +32,9 @@ extends Node
 ##             Dữ liệu sửa tay: số âm -> 0, chữ -> bỏ qua, "currencies" không phải từ điển -> rỗng, không lỗi.
 ##             Save cũ có khoá "soul_jade" (bản thử trước) -> chuyển thành currencies[soul_jade].
 ## TC10 (UC10) add 2_000_000_000 hai lần -> 4_000_000_000; spend 3_999_999_999 -> còn 1.
-## TC11 (UC11) Hai bộ đếm (soul_jade, test_gem) cùng lúc: add soul_jade chỉ đổi bộ soul_jade; add test_gem chỉ đổi bộ kia.
-## TC12 (UC12) add -> đang nảy (is_popping); spend -> số giảm đúng, không nảy; restore_checkpoint -> số về đúng, không nảy.
+## TC11 (UC11) Hai bộ đếm (soul_jade, test_gem): add soul_jade -> chỉ bộ soul_jade hiện ra với tổng mới; bộ kia vẫn ẩn, số không đổi.
+## TC12 (UC12) Mặc định ẩn; add -> hiện ngay với tổng mới; add tiếp giữa chừng -> giữ hiện thêm; hết show_time + fade -> ẩn hẳn.
+##              spend -> hiện với số đã giảm; chết (restore) -> số về số chốt, ẩn ngay.
 ## TC13 (UC13) Bộ đếm soul_jade dùng màu của soul_jade.tres; CurrencyData có icon -> bộ đếm hiện icon đó.
 ##             Bộ đếm không gán currency -> vẫn vào cây được, hiện 0, không văng lỗi script.
 
@@ -70,7 +72,7 @@ func _run() -> void:
 	_tc9_save(id)
 	_tc10_large()
 	await _tc11_counter_filters()
-	await _tc12_counter_pop()
+	await _tc12_counter_show()
 	await _tc13_counter_look()
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
@@ -178,6 +180,8 @@ func _tc10_large() -> void:
 	_check(GameState.get_currency(id) == 1, "TC10: trừ số lớn đúng (%d)" % GameState.get_currency(id))
 
 
+
+
 func _tc11_counter_filters() -> void:
 	var gem := CurrencyData.new()
 	gem.id = OTHER
@@ -186,31 +190,33 @@ func _tc11_counter_filters() -> void:
 	await get_tree().process_frame
 	var jade0 := jade_counter.get_shown_value()
 	var gem0 := gem_counter.get_shown_value()
-	_check(jade0 == GameState.get_currency(SOUL_JADE.id) and gem0 == GameState.get_currency(OTHER), "TC11: lúc vào cây hiện đúng số đang có")
+	_check(jade0 == GameState.get_currency(SOUL_JADE.id) and gem0 == GameState.get_currency(OTHER), "TC11: lúc vào cây số đúng")
 	GameState.add_currency(SOUL_JADE.id, 3)
-	_check(jade_counter.get_shown_value() == jade0 + 3 and gem_counter.get_shown_value() == gem0, "TC11: add soul_jade chỉ đổi bộ soul_jade")
-	GameState.add_currency(OTHER, 4)
-	_check(gem_counter.get_shown_value() == gem0 + 4 and jade_counter.get_shown_value() == jade0 + 3, "TC11: add test_gem chỉ đổi bộ test_gem")
+	_check(jade_counter.is_showing() and jade_counter.get_shown_value() == jade0 + 3, "TC11: bộ soul_jade hiện với tổng mới")
+	_check(not gem_counter.is_showing() and gem_counter.get_shown_value() == gem0, "TC11: bộ test_gem vẫn ẩn, số không đổi")
 	jade_counter.queue_free()
 	gem_counter.queue_free()
 
 
-func _tc12_counter_pop() -> void:
+func _tc12_counter_show() -> void:
 	var counter := _make_counter(SOUL_JADE)
 	await get_tree().process_frame
+	_check(not counter.is_showing(), "TC12: mặc định ẩn")
 	GameState.add_currency(SOUL_JADE.id, 5)
-	_check(counter.is_popping(), "TC12: tiền tăng -> số nảy")
-	await get_tree().create_timer(counter.pop_time + 0.1).timeout
-	_check(not counter.is_popping(), "TC12: nảy xong thì dừng")
-	var before := counter.get_shown_value()
+	_check(counter.is_showing() and counter.get_shown_value() == GameState.get_currency(SOUL_JADE.id), "TC12: nhặt -> hiện ngay với tổng mới")
+	await get_tree().create_timer(counter.show_time * 0.7).timeout
+	GameState.add_currency(SOUL_JADE.id, 1)
+	await get_tree().create_timer(counter.show_time * 0.7).timeout
+	_check(counter.is_showing(), "TC12: nhặt tiếp giữa chừng -> vẫn hiện (giữ thêm)")
+	await get_tree().create_timer(counter.show_time + counter.fade_time + 0.2).timeout
+	_check(not counter.is_showing() and not counter.visible, "TC12: hết thời gian -> ẩn hẳn")
 	GameState.spend_currency(SOUL_JADE.id, 2)
-	_check(counter.get_shown_value() == before - 2 and not counter.is_popping(), "TC12: nộp tiền -> giảm đúng, không nảy")
+	_check(counter.is_showing() and counter.get_shown_value() == GameState.get_currency(SOUL_JADE.id), "TC12: nộp tiền -> hiện với số đã giảm")
 	GameState.set_checkpoint("res://tests/player/game/currency/test_currency.tscn", &"test")
 	var committed := GameState.get_currency(SOUL_JADE.id)
 	GameState.add_currency(SOUL_JADE.id, 9)
-	await get_tree().create_timer(counter.pop_time + 0.1).timeout
 	GameState.restore_checkpoint()
-	_check(counter.get_shown_value() == committed and not counter.is_popping(), "TC12: chết -> về %d, không nảy (%d)" % [committed, counter.get_shown_value()])
+	_check(counter.get_shown_value() == committed and not counter.is_showing(), "TC12: chết -> về %d, ẩn ngay (%d)" % [committed, counter.get_shown_value()])
 	counter.queue_free()
 
 

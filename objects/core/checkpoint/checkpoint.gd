@@ -18,8 +18,6 @@ extends Node3D
 @onready var _trigger: Area3D = $Trigger
 @onready var _spawn: SpawnPoint = $Spawn
 @onready var _visual: WindShrineVisual = $WindShrineVisual
-## Tuỳ chọn: checkpoint cũ / biến thể không có hiệu ứng hồi máu vẫn chạy
-@onready var _heal_vfx: HealBurstVfx = get_node_or_null(^"HealVfx") as HealBurstVfx
 
 
 ## Nghe GameState chỉ khi đang ở trong cây (vào lại cây thì nối lại)
@@ -70,14 +68,12 @@ func _on_body_entered(body: Node3D) -> void:
 
 
 ## Chạm checkpoint (mỗi lần bước vào) là hồi phục toàn bộ. Checkpoint không biết bên trong người chơi:
-## chỉ gọi RestoreComponent; không có component thì không hồi, không hiệu ứng
+## chỉ gọi RestoreComponent; không có component thì không hồi
 func _restore(body: Node3D) -> void:
 	var restore := RestoreComponent.find_on(body)
 	if restore == null:
 		return
 	restore.restore_all()
-	if _heal_vfx:
-		_heal_vfx.play(body.global_position)
 
 
 func _on_checkpoint_changed(_zone: String, _spawn_id: StringName) -> void:

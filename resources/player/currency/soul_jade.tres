@@ -2,10 +2,14 @@
 
 [ext_resource type="Script" path="res://entities/player/data/currency_data.gd" id="1_currency"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/currency/soul_jade/soul_jade_pickup.tscn" id="2_pickup"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/currency/soul_jade/soul_jade_drop_vfx.tscn" id="3_drop"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/currency/soul_jade/soul_jade_collect_vfx.tscn" id="4_collect"]
 
 [resource]
 script = ExtResource("1_currency")
 id = &"soul_jade"
 display_name = "Soul Jade"
-color = Color(0.25, 0.95, 0.85, 1)
+color = Color(1, 0.36, 0.68, 1)
 pickup_scene = ExtResource("2_pickup")
+drop_vfx_scene = ExtResource("3_drop")
+collect_vfx_scene = ExtResource("4_collect")

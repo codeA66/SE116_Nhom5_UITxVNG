@@ -16,9 +16,12 @@ extends Node
 ## UC10 Bộ đếm tiền trên HUD thật không đè lên cụm kỹ năng / thanh máu / thanh năng lượng, nằm trọn trong màn hình.
 ## UC11 Hình viên rơi nằm trong scene (node thật), chỉnh được trong editor; script không tự dựng hình.
 ##      Đổi màu / số hạt trong scene thì lúc chạy dùng đúng giá trị đó.
+## UC12 Nhận tiền phải "thấy được": viên nở ra lúc rơi, có vòng sáng ở chỗ quái gục (1 vòng mỗi lần rơi),
+##      chớp sáng nhỏ lúc nhặt (giới hạn tần suất để 12 viên về cùng lúc không thành mảng chói); mọi hiệu ứng tự tắt hẳn.
+##      Loại tiền khác có thể có hình rơi / nhặt riêng (khai báo trong CurrencyData).
 ##
 ## ===== TEST CASE =====
-## TC1  (UC1)   Bảng [soul_jade x2]: giết quái -> 2 viên bay; 3 s sau +2 đúng, HUD đúng, pool rỗng. Lặp 3 lần đều +2 (không ngẫu nhiên).
+## TC1  (UC1)   Bảng [soul_jade x2]: giết quái -> 1 viên bay; 3 s sau +2 đúng, HUD đúng, pool rỗng. Lặp 3 lần đều +2 (không ngẫu nhiên).
 ## TC2  (UC2)   Bảng [soul_jade x3, test_gem x5] -> soul_jade +3, test_gem +5.
 ## TC3  (UC3)   drop_normal / drop_large / drop_boss .tres nạp được, số cố định > 0 và tăng dần thường < lớn < boss;
 ##              quái thường, gấu giáp, khỉ trưởng, boss 1 gắn đúng bảng.
@@ -30,6 +33,16 @@ extends Node
 ## TC11 (UC5)   3 s sau mọi test: không còn viên nào hiện / đang chạy _process.
 ## TC12 (UC10)  Khung bộ đếm (kể cả khi số lên 6 chữ số) không giao khung SkillCluster, HealthPanel, EnergyBar; nằm trong viewport.
 ## TC15 (UC11)  soul_jade_pickup.tscn có sẵn Visual + Trail trong file scene; sau _ready số node con không tăng.
+## TC16 (UC12)  soul_jade.tres có drop_vfx_scene (không vòng sáng trên sàn, theo ảnh Death's Door) + collect_vfx_scene có Ring.
+## TC24 (UC12)  Đốm có vệt sáng liền (Trail phát sáng cộng màu, đủ dày) + dư ảnh; màu loại tiền là hồng như ảnh tham khảo.
+## TC17 (UC12)  Rơi 12: ngay sau đó đúng 1 vòng sáng đang chạy; viên vừa rơi có scale < 1, 0.3 s sau scale về 1.
+## TC18 (UC12)  12 viên về người: số chớp sáng lúc nhặt > 0 và <= số viên, cách nhau >= collect_vfx_interval.
+## TC19 (UC12)  3 s sau: mọi vòng / chớp sáng đã về pool (ẩn, không _process).
+## TC20 (UC12)  Mọi viên Soul Jade dùng chung một material tinh thể (không duplicate từng viên).
+## TC21 (UC1)   Mỗi lần rơi đúng 1 viên bay về người (kiểu Death's Door), viên mang toàn bộ số tiền: rơi 2 / 40 -> 1 viên, tổng +2 / +40.
+## TC22 (UC12)  Không hiện chữ số nào ở chỗ quái gục (kiểu Death's Door): hiệu ứng rơi không có Label3D.
+## TC23 (UC12)  Lúc bay: 4 dư ảnh (node Echoes) hiện sau đốm, cách nhau theo quãng đường (không chồng một chỗ), nhỏ và mờ dần;
+##              nhặt xong thì dư ảnh ẩn hết; viên mới rơi không mang dư ảnh cũ từ lần trước.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
 const ENEMY := "res://entities/enemies/palace/enemy_1/enemy_1.tscn"
@@ -66,6 +79,15 @@ func _run() -> void:
 	await _tc11_nothing_left()
 	await _tc12_hud_no_overlap()
 	await _tc15_pickup_scene()
+	_tc16_vfx_data()
+	await _tc17_drop_ring_and_scale_in()
+	await _tc18_collect_flash()
+	await _tc19_vfx_end()
+	_tc20_shared_material()
+	await _tc21_few_pickups()
+	await _tc22_no_world_number()
+	await _tc23_echoes()
+	_tc24_streak_and_color()
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
 
@@ -94,7 +116,7 @@ func _tc1_fixed() -> void:
 		_kill(_spawn_enemy(Vector3(2, 0, -3)), _table([[SOUL_JADE, 2]]))
 		await _wait(0.1)
 		if round_i == 0:
-			_check(_collector.get_active_count() == 2, "TC1: 2 viên đang bay (%d)" % _collector.get_active_count())
+			_check(_collector.get_active_count() == 1, "TC1: 1 viên đang bay (%d)" % _collector.get_active_count())
 		await _wait(3.0)
 		_check(GameState.get_currency(id) == before + 2, "TC1 lần %d: +2 cố định (%d -> %d)" % [round_i + 1, before, GameState.get_currency(id)])
 	_check(_counter.get_shown_value() == GameState.get_currency(id), "TC1: HUD hiện %d" % _counter.get_shown_value())
@@ -283,3 +305,125 @@ func _check(ok: bool, label: String) -> void:
 	print(("PASS " if ok else "FAIL ") + label)
 	if not ok:
 		_fails += 1
+
+
+func _tc16_vfx_data() -> void:
+	_check(SOUL_JADE.drop_vfx_scene != null and not "Ring" in _scene_node_names(SOUL_JADE.drop_vfx_scene), "TC16: hiệu ứng rơi không có vòng sáng trên sàn")
+	_check(SOUL_JADE.collect_vfx_scene != null and "Ring" in _scene_node_names(SOUL_JADE.collect_vfx_scene), "TC16: hiệu ứng nhặt có Ring")
+
+
+func _tc17_drop_ring_and_scale_in() -> void:
+	_kill(_spawn_enemy(Vector3(3, 0, -3)), _table([[SOUL_JADE, 12]]))
+	await get_tree().process_frame
+	_check(_collector.get_active_drop_vfx_count() == 1, "TC17: rơi 12 -> đúng 1 vòng sáng (%d)" % _collector.get_active_drop_vfx_count())
+	var pickups := _collector.find_children("*", "CurrencyPickup", true, false).filter(func(n: Node) -> bool: return n.is_processing())
+	_check(not pickups.is_empty() and (pickups[0] as Node3D).scale.x < 1.0, "TC17: viên vừa rơi đang nở (scale %.2f < 1)" % ((pickups[0] as Node3D).scale.x if not pickups.is_empty() else -1.0))
+	await _wait(0.3)
+	var settled := pickups.filter(func(n: Node) -> bool: return n.is_processing())
+	_check(settled.is_empty() or is_equal_approx(snappedf((settled[0] as Node3D).scale.x, 0.01), 1.0), "TC17: 0.3 s sau scale về 1 (%s)" % ((settled[0] as Node3D).scale.x if not settled.is_empty() else "đã nhặt"))
+	await _wait(3.0)
+
+
+func _tc18_collect_flash() -> void:
+	var times: Array[float] = []
+	_collector.collect_vfx_played.connect(func() -> void: times.append(Time.get_ticks_msec() / 1000.0))
+	_kill(_spawn_enemy(Vector3(-3, 0, -3)), _table([[SOUL_JADE, 12]]))
+	await _wait(3.0)
+	_check(times.size() > 0 and times.size() <= 12, "TC18: số chớp sáng lúc nhặt %d (1..12)" % times.size())
+	var min_gap := INF
+	for i in range(1, times.size()):
+		min_gap = minf(min_gap, times[i] - times[i - 1])
+	_check(times.size() < 2 or min_gap >= _collector.collect_vfx_interval - 0.02, "TC18: chớp cách nhau >= %.2f s (nhỏ nhất %.3f)" % [_collector.collect_vfx_interval, min_gap])
+
+
+func _tc19_vfx_end() -> void:
+	await _wait(3.0)
+	_check(_collector.get_active_drop_vfx_count() == 0 and _collector.get_active_collect_vfx_count() == 0, "TC19: mọi vòng / chớp sáng đã về pool")
+	var left := 0
+	for vfx: Node in _collector.find_children("*", "PickupVfx", true, false):
+		if (vfx as Node3D).visible or vfx.is_processing():
+			left += 1
+	_check(left == 0, "TC19: không còn hiệu ứng nào hiện / chạy (%d)" % left)
+
+
+func _tc20_shared_material() -> void:
+	var mats := {}
+	for pickup: Node in _collector.find_children("*", "CurrencyPickup", true, false):
+		var visual := pickup.get_node_or_null("Visual") as MeshInstance3D
+		if visual:
+			mats[visual.get_active_material(0)] = true
+	_check(mats.size() == 1, "TC20: các viên dùng chung 1 material tinh thể (%d)" % mats.size())
+
+
+func _tc21_few_pickups() -> void:
+	_check(_collector.max_visual_pickups == 1, "TC21: mỗi lần rơi 1 viên (kiểu Death's Door) (%d)" % _collector.max_visual_pickups)
+	for amount: int in [2, 40]:
+		await _wait(3.0)
+		var before := GameState.get_currency(SOUL_JADE.id)
+		_kill(_spawn_enemy(Vector3(2, 0, -3)), _table([[SOUL_JADE, amount]]))
+		await get_tree().process_frame
+		var expect := mini(amount, _collector.max_visual_pickups)
+		_check(_collector.get_active_count() == expect, "TC21: rơi %d -> %d viên (%d)" % [amount, expect, _collector.get_active_count()])
+		await _wait(4.0)
+		_check(GameState.get_currency(SOUL_JADE.id) == before + amount, "TC21: rơi %d -> tổng +%d (%d)" % [amount, amount, GameState.get_currency(SOUL_JADE.id) - before])
+
+
+func _tc22_no_world_number() -> void:
+	_check(not "Amount" in _scene_node_names(SOUL_JADE.drop_vfx_scene), "TC22: scene hiệu ứng rơi không có node chữ số")
+	_kill(_spawn_enemy(Vector3(-2, 0, -3)), _table([[SOUL_JADE, 40]]))
+	await get_tree().process_frame
+	var labels := _collector.find_children("*", "Label3D", true, false)
+	_check(labels.is_empty(), "TC22: lúc rơi không có chữ nào trên đầu quái (%d)" % labels.size())
+	await _wait(4.0)
+
+
+func _tc23_echoes() -> void:
+	await _wait(3.0)
+	_kill(_spawn_enemy(Vector3(6, 0, -5)), _table([[SOUL_JADE, 2]]))
+	await get_tree().process_frame
+	var pickup: Node3D = null
+	for n: Node in _collector.find_children("*", "CurrencyPickup", true, false):
+		if n.is_processing():
+			pickup = n
+	_check(pickup != null, "TC23: có viên đang bay")
+	if pickup == null:
+		return
+	var echoes := pickup.get_node_or_null("Echoes")
+	_check(echoes != null and echoes.get_child_count() == 4, "TC23: có 4 dư ảnh")
+	if echoes == null:
+		return
+	var start := pickup.global_position
+	await _wait(0.6)
+	var shown := 0
+	var min_gap := INF
+	var prev := Vector3.INF
+	var prev_scale := 2.0
+	var shrinking := true
+	for echo: Node in echoes.get_children():
+		var e := echo as Node3D
+		if e.visible:
+			shown += 1
+			if prev != Vector3.INF:
+				min_gap = minf(min_gap, e.global_position.distance_to(prev))
+			shrinking = shrinking and e.scale.x < prev_scale
+			prev_scale = e.scale.x
+			prev = e.global_position
+	_check(shown == 4, "TC23: lúc bay 4 dư ảnh đang hiện (%d)" % shown)
+	_check(min_gap > 0.15, "TC23: các dư ảnh cách nhau theo quãng đường (gần nhất %.2f m, đã bay %.1f m)" % [min_gap, start.distance_to(pickup.global_position)])
+	_check(shrinking, "TC23: dư ảnh nhỏ dần về phía sau")
+	await _wait(4.0)
+	var left := 0
+	for echo: Node in echoes.get_children():
+		left += 1 if (echo as Node3D).visible else 0
+	_check(left == 0, "TC23: nhặt xong dư ảnh ẩn hết (%d)" % left)
+
+
+func _tc24_streak_and_color() -> void:
+	var pickup := SOUL_JADE.pickup_scene.instantiate()
+	var trail := pickup.get_node_or_null("Trail") as CPUParticles3D
+	var mat := (trail.mesh as QuadMesh).material as StandardMaterial3D if trail and trail.mesh is QuadMesh else null
+	_check(trail != null and trail.amount >= 12 and not trail.local_coords, "TC24: vệt sáng đủ dày, để lại theo đường bay (%d hạt)" % (trail.amount if trail else 0))
+	_check(mat != null and mat.blend_mode == BaseMaterial3D.BLEND_MODE_ADD, "TC24: vệt sáng phát sáng (cộng màu)")
+	var c := SOUL_JADE.color
+	_check(c.r > 0.8 and c.b > 0.4 and c.g < 0.5, "TC24: màu loại tiền hồng cánh sen %s" % c)
+	pickup.free()

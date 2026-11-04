@@ -1,7 +1,8 @@
 class_name CurrencyCounter
 extends HBoxContainer
 ## HUD số tiền của một loại tiền (gán CurrencyData): icon + con số. Dùng lại cho mọi loại tiền, chỉ đổi dữ liệu.
-## Nghe GameState (không kiểm tra mỗi frame). Tăng -> số nảy nhẹ; giảm (nộp tiền) / chết / nạp save -> cập nhật, không nảy.
+## Kiểu Death's Door: ẩn khi đánh nhau, chỉ hiện show_time giây khi tiền đổi (nhặt / nộp) rồi mờ đi; không có "+N".
+## Chết / nạp save (progress_replaced) -> số cập nhật, ẩn ngay. Nghe GameState, không kiểm tra mỗi frame.
 ## Icon lấy từ CurrencyData.icon; chưa có icon thì vẽ hình thoi theo CurrencyData.color.
 
 @export var currency: CurrencyData
@@ -9,9 +10,11 @@ extends HBoxContainer
 @export var icon_outline: Color = Color(0.05, 0.2, 0.2)
 @export var icon_size: Vector2 = Vector2(14, 20)
 @export var font_size: int = 20
-## Nảy khi tăng: phóng to tới mức này rồi về 1 trong pop_time giây
-@export var pop_scale: float = 1.3
-@export_range(0.05, 1.0, 0.01) var pop_time: float = 0.18
+@export_group("Show")
+## Hiện bao lâu sau lần đổi tiền cuối (s), rồi mờ trong fade_time (s); hiện ra trong appear_time (s)
+@export_range(0.1, 10.0, 0.05) var show_time: float = 2.5
+@export_range(0.05, 2.0, 0.01) var fade_time: float = 0.4
+@export_range(0.0, 1.0, 0.01) var appear_time: float = 0.12
 
 var _shown: int = 0
 var _tween: Tween
@@ -23,6 +26,7 @@ var _tween: Tween
 func _ready() -> void:
 	_icon.custom_minimum_size = icon_size
 	_label.add_theme_font_size_override(&"font_size", font_size)
+	_hide_now()
 	if currency == null:
 		push_error("%s chưa gán currency (CurrencyData)" % get_path())
 		_set_value(0)
@@ -40,9 +44,9 @@ func get_shown_value() -> int:
 	return _shown
 
 
-## Đang nảy sau khi tiền tăng (test)
-func is_popping() -> bool:
-	return _tween != null and _tween.is_running()
+## Đang hiện trên màn hình (kể cả lúc đang hiện dần / mờ dần; test)
+func is_showing() -> bool:
+	return visible
 
 
 ## Màu icon (màu của loại tiền; test)
@@ -58,15 +62,13 @@ func get_icon_texture() -> Texture2D:
 func _on_changed(id: StringName, total: int) -> void:
 	if id != currency.id:
 		return
-	var grew := total > _shown
 	_set_value(total)
-	if grew:
-		_pop()
+	_show_then_fade()
 
 
 func _on_replaced() -> void:
-	_stop_pop()
 	_set_value(GameState.get_currency(currency.id))
+	_hide_now()
 
 
 func _set_value(value: int) -> void:
@@ -74,19 +76,24 @@ func _set_value(value: int) -> void:
 	_label.text = str(value)
 
 
-func _pop() -> void:
-	_stop_pop()
-	_label.pivot_offset = _label.size * 0.5
-	_label.scale = Vector2.ONE * pop_scale
+## Hiện (hoặc giữ hiện nếu đang hiện), đếm lại show_time từ lần đổi tiền này rồi mờ đi
+func _show_then_fade() -> void:
+	if _tween:
+		_tween.kill()
+	visible = true
 	_tween = create_tween()
-	_tween.tween_property(_label, "scale", Vector2.ONE, pop_time).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_tween.tween_property(self, "modulate:a", 1.0, appear_time * (1.0 - modulate.a))
+	_tween.tween_interval(show_time)
+	_tween.tween_property(self, "modulate:a", 0.0, fade_time)
+	_tween.tween_callback(_hide_now)
 
 
-func _stop_pop() -> void:
+func _hide_now() -> void:
 	if _tween:
 		_tween.kill()
 		_tween = null
-	_label.scale = Vector2.ONE
+	modulate.a = 0.0
+	visible = false
 
 
 ## Hình thoi tinh thể có viền khi loại tiền chưa có icon (Control chỉ vẽ lại khi cần)
