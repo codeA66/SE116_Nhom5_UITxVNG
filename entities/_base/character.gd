@@ -18,6 +18,7 @@ var external_forces_enabled: bool = true
 ## Không bắt buộc: nhân vật không có node này thì không chịu gió
 @onready var wind_receiver: WindReceiverComponent = get_node_or_null(^"WindReceiverComponent")
 @onready var _anim: AnimationPlayer = $AnimationPlayer
+@onready var banana_slip: BananaSlip = get_node_or_null(^"BananaSlip") as BananaSlip
 
 
 func _ready() -> void:
@@ -36,6 +37,8 @@ func _physics_process(delta: float) -> void:
 		wind_receiver.move_with_wind(self, delta)
 	else:
 		move_and_slide()
+	if banana_slip != null and banana_slip.active:
+		banana_slip.after_movement()
 
 
 func apply_gravity(delta: float) -> void:
@@ -80,6 +83,10 @@ func face_direction(direction: Vector3, delta: float) -> void:
 
 ## Dịch chuyển tức thời (cổng, hồi sinh, rơi vực): xóa vận tốc và không nội suy từ vị trí cũ
 func teleport(target_position: Vector3, facing: Vector3 = Vector3.ZERO) -> void:
+	if banana_slip != null and banana_slip.active:
+		banana_slip.stop()
+		if state_machine.current_state.name == &"Slip":
+			state_machine.transition_to(banana_slip.recovery_state())
 	global_position = target_position
 	velocity = Vector3.ZERO
 	reset_physics_interpolation()
@@ -135,3 +142,16 @@ func _pre_state_update(_delta: float) -> void:
 ## Lớp con ghi đè nếu có "giữ nút nhảy" (player).
 func _is_holding_jump() -> bool:
 	return false
+
+
+## Giao diện trượt dùng chung; lớp con cung cấp input/AI và state hồi phục phù hợp.
+func get_slip_steering() -> Vector3:
+	return Vector3.ZERO
+
+
+func get_slip_recovery_state() -> StringName:
+	return &"Idle"
+
+
+func play_slip_animation() -> void:
+	if _anim.has_animation(&"Idle"): play_anim(&"Idle")

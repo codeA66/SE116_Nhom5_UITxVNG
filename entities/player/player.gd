@@ -95,6 +95,8 @@ var _model_meshes: Array[MeshInstance3D] = []
 var _flash_tween: Tween
 ## Bảng UI đang mở và dùng chuột (tủ đồ): chuột trái cũng là nút đánh nên phải bỏ qua, nếu không kéo thả sẽ chém
 var _attack_blocked_by_ui: bool = false
+## Mỗi cơ chế giữ khóa riêng; thả vật không vô tình gỡ khóa của UI hay cơ chế khác.
+var _combat_locks: Dictionary[Node, bool] = {}
 ## Model cung đang gắn ở BowHold (tạo một lần, ẩn khi không nhắm) và scene đã dùng để tạo nó
 var _bow_model: Node3D
 var _bow_model_scene: PackedScene
@@ -244,6 +246,20 @@ func get_move_direction() -> Vector3:
 	return right * input.x - forward * input.y
 
 
+func get_slip_steering() -> Vector3:
+	return get_move_direction()
+
+
+func get_slip_recovery_state() -> StringName:
+	if health.is_dead(): return &"Dead"
+	if not is_on_floor(): return &"Fall"
+	return &"Idle" if get_move_direction().is_zero_approx() else &"Run"
+
+
+func play_slip_animation() -> void:
+	play_action(ANIM_HURT)
+
+
 ## Hướng ngang từ player tới điểm con trỏ chuột chỉ trên mặt phẳng ngang ở độ cao chân player.
 ## Trả về Vector3.ZERO nếu không xác định được (chuột ngoài cửa sổ, tia song song mặt phẳng, chuột trùng chân player)
 func get_mouse_aim_direction() -> Vector3:
@@ -282,7 +298,7 @@ func has_weapon() -> bool:
 
 ## Đúng khi đang cầm vũ khí, có lệnh đánh trong buffer và đủ năng lượng (cung tiêu năng lượng mỗi phát)
 func can_attack() -> bool:
-	return has_weapon() and not get_weapon().combo.is_empty() and _attack_buffer_timer > 0.0 \
+	return not combat_locked() and has_weapon() and not get_weapon().combo.is_empty() and _attack_buffer_timer > 0.0 \
 		and energy.can_spend(get_weapon().energy_cost)
 
 
@@ -311,6 +327,30 @@ func set_attack_blocked_by_ui(blocked: bool) -> void:
 
 func consume_attack_input() -> void:
 	_attack_buffer_timer = 0.0
+
+
+## Khóa tấn công/cung/kỹ năng chủ động; vẫn đi, nhảy, dash và tương tác khi mang vật.
+func set_combat_locked(source: Node, locked: bool) -> void:
+	if locked:
+		_combat_locks[source] = true
+		var release := _release_combat_lock.bind(source)
+		if not source.tree_exiting.is_connected(release):
+			source.tree_exiting.connect(release, CONNECT_ONE_SHOT)
+		_attack_buffer_timer = 0.0
+		_skill_buffers.clear()
+	else:
+		_release_combat_lock(source)
+
+
+func combat_locked() -> bool:
+	return not _combat_locks.is_empty()
+
+
+func _release_combat_lock(source: Node) -> void:
+	_combat_locks.erase(source)
+	var release := _release_combat_lock.bind(source)
+	if is_instance_valid(source) and source.tree_exiting.is_connected(release):
+		source.tree_exiting.disconnect(release)
 
 
 ## Gọi từ vật phẩm khi được tương tác: chuyển sang state nhặt, vũ khí gắn vào tay trong lúc nhặt
@@ -342,7 +382,7 @@ func is_holding_aim() -> bool:
 ## Đúng khi đang giữ phím aim, có cung bắn được và đã hết thời gian hồi
 func can_aim_bow() -> bool:
 	var bow := get_bow()
-	return bow != null and bow.is_ranged() and not bow.combo.is_empty() and is_holding_aim() \
+	return not combat_locked() and bow != null and bow.is_ranged() and not bow.combo.is_empty() and is_holding_aim() \
 			and _bow_cooldown_timer <= 0.0
 
 
@@ -531,6 +571,8 @@ func start_dash() -> DashData:
 ## Kỹ năng chủ động vừa được bấm và dùng được ngay (đã mở khóa, không đang ghép vào vũ khí, có lệnh trong buffer,
 ## hết thời gian khoá, đủ năng lượng); null nếu không có. State nền / trên không chuyển sang skill.state
 func get_ready_skill() -> SkillData:
+	if combat_locked():
+		return null
 	for ability in GameState.get_abilities():
 		var skill := ability as SkillData
 		if skill == null or not is_skill_available(skill.id):
@@ -692,6 +734,9 @@ func _pre_state_update(delta: float) -> void:
 	for id: StringName in _skill_cooldowns:
 		_skill_cooldowns[id] = maxf(_skill_cooldowns[id] - delta, 0.0)
 	_bow_cooldown_timer = maxf(_bow_cooldown_timer - delta, 0.0)
+	if combat_locked():
+		_attack_buffer_timer = 0.0
+		_skill_buffers.clear()
 
 
 func _attach_weapon_model(data: WeaponData) -> void:
@@ -809,7 +854,7 @@ func _on_energy_changed(current: int, _max_value: int) -> void:
 
 ## Bấm cung / kỹ năng mà thiếu năng lượng: báo một lần lúc bấm (HUD nháy, âm báo), không báo mỗi frame
 func _report_unaffordable_input() -> void:
-	if not controls_enabled:
+	if not controls_enabled or combat_locked():
 		return
 	if not _attack_blocked_by_ui and Input.is_action_just_pressed(&"attack") and has_weapon() \
 			and not energy.can_spend(get_weapon().energy_cost):

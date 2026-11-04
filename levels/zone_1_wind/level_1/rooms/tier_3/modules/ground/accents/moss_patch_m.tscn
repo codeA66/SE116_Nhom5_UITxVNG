@@ -1,0 +1,39 @@
+[gd_scene format=4]
+
+[ext_resource type="Material" path="res://assets/models/map_wind/tier_3_monkey_garden/garden_vertex_color.tres" id="1_2ge2e"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_crxkm"]
+resource_name = "moss_patch_m_Soft_Moss_Island_001"
+_surfaces = [{
+"aabb": AABB(-0.7383487, 0.003, -0.5076594, 1.4317839, 0.0010000002, 1.0154119),
+"attribute_data": PackedByteArray("ExwK/xMcCv8THAr/ExwK/xMcCv8THAr/ExwK/xMcCv8THAr/ExwK/yAzFP8gMxT/IDMU/yAzFP8gMxT/IDMU/yE1FP8hNRT/ITUU/yE0FP8hNBT/ITQU/yE0FP8hNBT/ITQU/yI1FP8iNRT/IjUU/w=="),
+"format": 34896613391,
+"index_count": 42,
+"index_data": PackedByteArray("AAABAAIAAwACAAEABAADAAEAAwAEAAUAAQAAAAYABwAGAAAABgAHAAgACAAHAAkACgALAAwADQAOAA8AEAARABIAEwAUABUAFgAXABgAGQAaABsA"),
+"material": ExtResource("1_2ge2e"),
+"name": "Garden_VertexColor",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 28,
+"vertex_data": PackedByteArray("AF8AAKDz///BqwAA0AP///usAAD/////4ugAAGPK///l6gAAGTT/////AAD8f///DVsAAAAA//+YLAAAd8D//ysdAAAgNP//AAAAAPx///9hxP///H///3jU//+bUv//Puf//9xw//+MVP//AVL//6Rk//+gJP//anf//+FC//+lif//y8P//7yZ//9qlv//gqz//6u0//8rq///9kn//0O7//+UHP//Cc7//9U6//+hRP//2ov//7lU//95Xv//f2f//7l8//9Uuv//gqT//2vK//8hd///Md3//2KV////f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+//3//v/9//7//f/+/")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2ge2e"]
+size = Vector3(1.4317839, 0.02, 1.0154119)
+
+[node name="MossPatchM" type="StaticBody3D" unique_id=1975973580]
+editor_description = "Mảng rêu vừa | Model + collider đi cùng root. Kéo/copy cả node này. Nguồn: res://assets/models/map_wind/tier_3_monkey_garden/ground/accents/moss_patch_m.glb | Trang trí: collider tắt sẵn; bật Disabled=false nếu muốn chặn. | Collider tối giản: khối nguyên thủy, không dùng trimesh."
+collision_mask = 0
+metadata/garden_asset = "moss_patch_m"
+metadata/simple_collision = true
+
+[node name="Model" type="Node3D" parent="." unique_id=1132990389]
+
+[node name="Body_moss_patch_m_001" type="MeshInstance3D" parent="Model" unique_id=1314153247]
+mesh = SubResource("ArrayMesh_crxkm")
+
+[node name="Collision_Optional" type="CollisionShape3D" parent="." unique_id=600651715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.022456765, 0.0035, 4.6551228e-05)
+shape = SubResource("BoxShape3D_2ge2e")
+disabled = true

@@ -12,6 +12,10 @@
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/attack/wild_skill_attack.gd" id="skill_attack"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/attack/wild_leap_attack.gd" id="leap_attack"]
 [ext_resource type="Script" path="res://assets/vfx/enemies/monkey/earth_slam/chieftain_slam_presenter.gd" id="slam_vfx"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/monkey_chieftain/skills/abilities/chieftain_summoner.gd" id="summoner"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/monkey_chieftain/skills/abilities/chieftain_boulder_emitter.gd" id="boulder_emitter"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/monkey_chieftain/skills/states/chieftain_boulder_throw.gd" id="boulder_state"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_chieftain/animations/boulder_throw.tres" id="boulder_anim"]
 [ext_resource type="Resource" path="res://resources/enemies/loot/drop_large.tres" id="jade_loot_large"]
 [sub_resource type="CapsuleShape3D" id="Body"]
 resource_local_to_scene = true
@@ -45,7 +49,8 @@ shape = SubResource("Hit")
 [node name="AnimationPlayer" parent="." index="2"]
 callback_mode_process = 0
 libraries = {
-&"": ExtResource("anim0")
+&"": ExtResource("anim0"),
+&"Boulder": ExtResource("boulder_anim")
 }
 [node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
 position = Vector3(0, 1.175, 0)
@@ -74,6 +79,13 @@ script = ExtResource("slam_vfx")
 
 [node name="LeapAttack" type="Node" parent="StateMachine"]
 script = ExtResource("leap_attack")
+[node name="BoulderThrow" type="Node" parent="StateMachine"]
+script = ExtResource("boulder_state")
+[node name="Summoner" type="Node" parent="."]
+script = ExtResource("summoner")
+[node name="BoulderEmitter" type="Node3D" parent="."]
+script = ExtResource("boulder_emitter")
 
 [node name="LootDropComponent" parent="."]
 drop_table = ExtResource("jade_loot_large")
+

@@ -1,0 +1,16 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/monkey_grunt/monkey_grunt.tscn" id="base"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/variants/banana_bomber/banana_bomber.gd" id="s"]
+[ext_resource type="Resource" path="res://entities/enemies/wildlife/variants/banana_bomber/config/banana_bomber_data.tres" id="d"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/variants/banana_bomber/states/bomber_chase.gd" id="c"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_grunt/animations/bomber_hold.tres" id="a"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_grunt/animations/all.tres" id="all"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_grunt/animations/throw_actions.tres" id="throws"]
+[node name="BananaBomber" instance=ExtResource("base")]
+script = ExtResource("s")
+data = ExtResource("d")
+chase_state = &"BomberChase"
+[node name="AnimationPlayer" parent="." index="2"]
+libraries = {&"":ExtResource("all"),&"Throws":ExtResource("throws"),&"Bomb":ExtResource("a")}
+[node name="BomberChase" type="Node" parent="StateMachine"]
+script = ExtResource("c")

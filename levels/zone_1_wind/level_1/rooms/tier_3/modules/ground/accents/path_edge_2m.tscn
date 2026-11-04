@@ -1,0 +1,38 @@
+[gd_scene format=4]
+
+[ext_resource type="Material" path="res://assets/models/map_wind/tier_3_monkey_garden/garden_vertex_color.tres" id="1_isaxm"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_1yvfm"]
+resource_name = "path_edge_2m_Chipped_Edging"
+_surfaces = [{
+"aabb": AABB(-0.98, 0, -0.15, 1.97, 0.16, 0.3),
+"attribute_data": PackedByteArray("OzUp/zs1Kf87NSn/OzUp/zozKP86Myj/OjMo/zozKP86NCj/OjQo/zo0KP86NCj/OjMo/zozKP86Myj/OjMo/zw1Kf88NSn/PDUp/zw1Kf84Mif/ODIn/zgyJ/84Mif/ODIn/zw1Kf88NSn/PDUp/zw1Kf8+Nyr/Pjcq/z43Kv8+Nyr/OjQo/zo0KP86NCj/OjQo/zs1Kf87NSn/OzUp/zs1Kf8/OCv/Pzgr/z84K/8/OCv/OzUp/zs1Kf87NSn/OzUp/zs1Kf89Nir/PTYq/z02Kv89Nir/OTMn/zkzJ/85Myf/OTMn/zs0KP87NCj/OzQo/zs0KP87NSn/OzUp/zs1Kf87NSn/PTYq/z02Kv89Nir/PTYq/z84K/8/OCv/Pzgr/z84K/8/OCv/Pjcr/z43K/8+Nyv/Pjcr/z84K/8/OCv/Pzgr/z84K/89Nir/PTYq/z02Kv89Nir/OzQo/zs0KP87NCj/OzQo/zo0KP86NCj/OjQo/zo0KP89Nir/PTYq/z02Kv89Nir/PTYq/zgyJ/84Mif/ODIn/zgyJ/84Mif/ODIn/zgyJ/84Mif/Pjcr/z43K/8+Nyv/Pjcr/zs0Kf87NCn/OzQp/zs0Kf85Myf/OTMn/zkzJ/85Myf/PDYp/zw2Kf88Nin/PDYp/zw2Kf8="),
+"format": 34896613391,
+"index_count": 195,
+"index_data": PackedByteArray("AAABAAIAAAACAAMABAAFAAYABAAGAAcACAAJAAoACAAKAAsADAANAA4ADAAOAA8AEAARABIAEAASABMAFAAVABYAFwAVABQAGAAVABcAGQAaABsAGQAbABwAHQAeAB8AHQAfACAAIQAiACMAIQAjACQAJQAmACcAJQAnACgAKQAqACsAKQArACwALQAuAC8AMAAuAC0AMQAuADAAMgAzADQAMgA0ADUANgA3ADgANgA4ADkAOgA7ADwAOgA8AD0APgA/AEAAPgBAAEEAQgBDAEQAQgBEAEUARgBHAEgASQBHAEYASgBHAEkASwBMAE0ASwBNAE4ATwBQAFEATwBRAFIAUwBUAFUAUwBVAFYAVwBYAFkAVwBZAFoAWwBcAF0AWwBdAF4AXwBgAGEAYgBgAF8AYwBgAGIAZABlAGYAZABmAGcAaABpAGoAaABqAGsAbABtAG4AbABuAG8AcABxAHIAcAByAHMAdAB1AHYAdAB2AHcAeAB5AHoAewB5AHgAfAB5AHsA"),
+"material": ExtResource("1_isaxm"),
+"name": "Garden_VertexColor",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 125,
+"vertex_data": PackedByteArray("4SoAAHb3PcEAAAAA//89wQAA/7///z3B4Sr/v3b3PcEUMAAAzEzC/uEqAAB298L+4Sr/v3b3wv4UMP+/zEzC/mIkAAAAAIf2FDAAAMxMh/YUMP+/zEyH9mIk/78AAIf2TAEAABERyf1iJAAAAADJ/WIk/78AAMn9TAH/vxERyf0AAAAA//9zwUwBAAAREXPBTAH/vxERc8EAAP+///9zweEq/7929///YiT/vwAA//8UMP+/zEz//wAA/7//////TAH/vxER///cXgAAdvc9wfozAAD//z3B+jP/////PcHcXv//dvc9wQ9kAADMTML+3F4AAHb3wv7cXv//dvfC/g9k///MTML+XVgAAAAAh/YPZAAAzEyH9g9k///MTIf2XVj//wAAh/ZHNQAAERHJ/V1YAAAAAMn9XVj//wAAyf1HNf//ERHJ/fozAAD//3PBRzUAABERc8FHNf//ERFzwfoz/////3PB3F7//3b3//9dWP//AAD//w9k///MTP//+jP///////9HNf//ERH//9eSAAB29z3B9WcAAP//PcH1Z/+v//89wdeS/6929z3BCZgAAMxMwv7XkgAAdvfC/teS/69298L+CZj/r8xMwv5XjAAAAACH9gmYAADMTIf2CZj/r8xMh/ZXjP+vAACH9kFpAAAREcn9V4wAAAAAyf1XjP+vAADJ/UFp/68REcn99WcAAP//c8FBaQAAERFzwUFp/68REXPB9Wf/r///c8HXkv+vdvf//1eM/68AAP//CZj/r8xM///1Z/+v/////0Fp/68REf//0cYAAHb3PcHvmwAA//89we+b/+///z3B0cb/73b3PcEEzAAAzEzC/tHGAAB298L+0cb/73b3wv4EzP/vzEzC/lLAAAAAAIf2BMwAAMxMh/YEzP/vzEyH9lLA/+8AAIf2PJ0AABERyf1SwAAAAADJ/VLA/+8AAMn9PJ3/7xERyf3vmwAA//9zwTydAAAREXPBPJ3/7xERc8Hvm//v//9zwdHG/+929///UsD/7wAA//8EzP/vzEz//++b/+//////PJ3/7xER///M+gAAdvc9werPAAD//z3B6s//z///PcHM+v/Pdvc9wf//AADMTML+zPoAAHb3wv7M+v/PdvfC/v///8/MTML+TfQAAAAAh/b//wAAzEyH9v///8/MTIf2TfT/zwAAh/Y30QAAERHJ/U30AAAAAMn9TfT/zwAAyf030f/PERHJ/erPAAD//3PBN9EAABERc8E30f/PERFzwerP/8///3PBzPr/z3b3//9N9P/PAAD//////8/MTP//6s//z/////830f/PERH//+GBK37hgSt+4YErfuGBK34nueB+J7ngfie54H4nueB+5cmCaOXJgmjlyYJo5cmCaHNDNcFzQzXBc0M1wXNDNcHqf9b/6n/W/+p/1v/qf9b//3//v/9//7//f/+//3//v/9//7/hgSt+4YErfuGBK37hgSt+J7ngfie54H4nueB+J7ngfuXJgmjlyYJo5cmCaOXJgmhzQzXBc0M1wXNDNcFzQzXB6n/W/+p/1v/qf9b/6n/W//9//7//f/+//3//v/9//7//f/+/4YErfuGBK37hgSt+4YErfie54H4nueB+J7ngfie54H7lyYJo5cmCaOXJgmjlyYJoc0M1wXNDNcFzQzXBc0M1wep/1v/qf9b/6n/W/+p/1v//f/+//3//v/9//7//f/+//3//v+GBK37hgSt+4YErfuGBK34nueB+J7ngfie54H4nueB+5cmCaOXJgmjlyYJo5cmCaHNDNcFzQzXBc0M1wXNDNcHqf9b/6n/W/+p/1v/qf9b//3//v/9//7//f/+//3//v/9//7/hgSt+4YErfuGBK37hgSt+J7ngfie54H4nueB+J7ngfuXJgmjlyYJo5cmCaOXJgmhzQzXBc0M1wXNDNcFzQzXB6n/W/+p/1v/qf9b/6n/W//9//7//f/+//3//v/9//7//f/+/")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_isaxm"]
+size = Vector3(1.97, 0.16, 0.3)
+
+[node name="PathEdge2m" type="StaticBody3D" unique_id=1305449494]
+editor_description = "Viền đá đường đi | Model + collider đi cùng root. Kéo/copy cả node này. Nguồn: res://assets/models/map_wind/tier_3_monkey_garden/ground/accents/path_edge_2m.glb | Collider tối giản: khối nguyên thủy, không dùng trimesh."
+collision_mask = 0
+metadata/garden_asset = "path_edge_2m"
+metadata/simple_collision = true
+
+[node name="Model" type="Node3D" parent="." unique_id=447231026]
+
+[node name="Body_path_edge_2m_001" type="MeshInstance3D" parent="Model" unique_id=1423140807]
+mesh = SubResource("ArrayMesh_1yvfm")
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=2107425686]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.004999995, 0.08, 0)
+shape = SubResource("BoxShape3D_isaxm")

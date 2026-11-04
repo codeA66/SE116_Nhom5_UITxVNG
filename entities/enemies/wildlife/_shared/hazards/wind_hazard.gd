@@ -2,6 +2,7 @@ extends EnemyHazard
 ## Vùng hút riêng rộng hơn vùng gây sát thương, theo dõi body bằng signal.
 @export var pull_speed: float = 1.8
 @export var pull_stop_radius: float = 0.55
+@export var pull_during_tail: bool = false
 var _bodies: Array[CharacterBody3D] = []
 @onready var attraction: Area3D = $Attraction
 
@@ -21,7 +22,8 @@ func pool_released() -> void:
 
 func _physics_process(delta: float) -> void:
 	super(delta)
-	if not running or not hitbox.is_active(): return
+	if not running: return
+	if not hitbox.is_active() and not (pull_during_tail and age>=active_start and age<lifetime): return
 	for body: CharacterBody3D in _bodies:
 		if not is_instance_valid(body): continue
 		var toward: Vector3 = global_position - body.global_position

@@ -10,12 +10,14 @@ var _effect_started: bool = false
 var _completed: bool = false
 var _effect: EnemyHazard
 var _speed_scale: float = 1.0
+var _cooldown_started: bool = false
 
 func enter(_previous: StringName) -> void:
 	_actor = enemy as WildEnemy
 	_skill = _actor.pending_skill
 	assert(_skill != null)
 	_elapsed = 0.0; _hit_started = false; _effect_started = false; _completed = false; _effect = null
+	_cooldown_started = false
 	# Snapshot speed for the full attack: a buff expiring mid-swing cannot desync the hit.
 	_speed_scale = _actor.battle_attack_scale()
 	_facing = _actor.direction_to_target()
@@ -32,7 +34,7 @@ func exit() -> void:
 	_actor.hitbox.deactivate()
 	_actor.velocity.x = 0.0; _actor.velocity.z = 0.0
 	if not _completed and is_instance_valid(_effect): _effect.cancel()
-	_actor.complete_skill(_skill, _completed)
+	_actor.complete_skill(_skill, _completed, _cooldown_started)
 
 func physics_update(delta: float) -> void:
 	var previous: float = _elapsed
