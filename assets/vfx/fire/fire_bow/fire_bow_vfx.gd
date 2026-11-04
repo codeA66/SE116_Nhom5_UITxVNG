@@ -1,7 +1,7 @@
 class_name FireBowVfx
 extends Node3D
 ## DONE 2026-10-31: ba hook generic, tụ ở đầu tên, ready một lần, release/cancel có giới hạn.
-## NOT DONE: chờ người dùng gắn scene dưới Player; không tạo tên hoặc flying trail.
+## NOT DONE: chờ duyệt mỹ thuật trong combat; chưa xác minh export/cache sạch.
 ## NOTES: 36 hạt CPU tối đa, không đèn; warmup thu nhỏ vertex, nghỉ hoàn toàn khi idle.
 enum Phase { IDLE, DRAWING, RELEASED, CANCELLING }
 @export_group("Wiring")
@@ -16,8 +16,8 @@ enum Phase { IDLE, DRAWING, RELEASED, CANCELLING }
 @export var flame_forward: float = 0.10
 @export_group("Fire Coils")
 @export var coil_radius: float = 0.24
-@export var coil_length: float = 0.66
-@export_range(0.0,1.0,0.01) var coil_origin_ratio: float = 0.65
+@export var coil_length: float = 1.15
+@export_range(0.0,1.0,0.01) var coil_origin_ratio: float = 0.80
 @export var coil_width: float = 0.16
 @export var coil_turns: float = 0.80
 @export_range(12,64,1) var coil_segments: int = 36

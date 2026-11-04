@@ -7,6 +7,7 @@ var vfx: Node3D
 var fails: int = 0
 var output: String = "user://fire_bow_review"
 @export var closeup_fov: float = 28.0
+var perf_only: bool = false
 var motion: bool = false
 var closeup: bool = false
 var dark: bool = false
@@ -23,6 +24,7 @@ func _run() -> void:
 		if arg == "--dark": dark = true
 		if arg == "--closeup": closeup = true
 		if arg == "--motion": motion = true
+		if arg == "--perf-only": perf_only = true
 	DirAccess.make_dir_recursive_absolute(output)
 	Engine.max_fps = 0
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
@@ -51,6 +53,30 @@ func _run() -> void:
 	var flame: MeshInstance3D = vfx.get_node("Flame") as MeshInstance3D
 	var gather: CPUParticles3D = vfx.get_node("Gather") as CPUParticles3D
 	var burst: CPUParticles3D = vfx.get_node("Release") as CPUParticles3D
+	if perf_only:
+		for frame: int in range(5): await RenderingServer.frame_post_draw
+		player.begin_bow_aim()
+		_draw(1.0)
+		await get_tree().create_timer(2.0).timeout
+		samples.resize(5000)
+		await _measure("all_first")
+		flame.hide()
+		(vfx.get_node("Coils") as MeshInstance3D).hide()
+		gather.hide()
+		await _measure("all_hidden_but_script_running")
+		gather.show()
+		await _measure("gather_only")
+		gather.hide()
+		flame.show()
+		await _measure("core_only")
+		(vfx.get_node("Coils") as MeshInstance3D).show()
+		gather.show()
+		await _measure("all_second")
+		player.end_bow_aim()
+		await get_tree().create_timer(0.3).timeout
+		print("ABLATION_COMPLETE")
+		get_tree().quit()
+		return
 	for frame: int in range(5):
 		await RenderingServer.frame_post_draw
 		if frame == 0: await _capture("warmup")
@@ -79,7 +105,7 @@ func _run() -> void:
 		camera.fov = 40.0
 		camera.look_at(focus)
 		camera.make_current()
-		for frame: int in range(24):
+		for frame: int in range(10):
 			_draw(1.0)
 			await _capture("coil_%02d" % frame)
 			await get_tree().create_timer(0.025).timeout

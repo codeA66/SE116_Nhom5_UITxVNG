@@ -8,3 +8,5 @@ extends Resource
 @export var display_name: String = ""
 @export_multiline var description: String = ""
 @export var effects: Array[FusionEffect] = []
+## Bật khi tổ hợp có VFX chém riêng: vệt chém gốc (SlashTrail) không vẽ, để VFX nguyên tố thay hẳn chứ không đè lên
+@export var replaces_default_trail: bool = false

@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/currency/collector/pickup_vfx.gd" id="1_vfx"]
+
+
+
+
+
+
+[sub_resource type="StandardMaterial3D" id="SparkMat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="SparkQuad"]
+material = SubResource("SparkMat")
+size = Vector2(0.07, 0.07)
+
+[sub_resource type="Gradient" id="SparkFade"]
+colors = PackedColorArray(1, 0.85, 0.95, 1, 1, 0.3, 0.65, 0)
+
+[node name="SoulJadeDropVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+ring_time = 0.3
+ring_start_size = 0.2
+ring_end_size = 1.0
+ring_flat = true
+
+
+[node name="Sparks" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 6
+lifetime = 0.45
+one_shot = true
+explosiveness = 0.9
+mesh = SubResource("SparkQuad")
+direction = Vector3(0, 1, 0)
+spread = 60.0
+gravity = Vector3(0, -6, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 3.5
+color_ramp = SubResource("SparkFade")

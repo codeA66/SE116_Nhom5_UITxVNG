@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://abilities/fusion/wind/vfx/impact/melee/wind_sword_hit_vfx.gd" id="1"]
+[node name="WindSwordHitVfx" type="Node3D"]
+script = ExtResource("1")
+[node name="Burst" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0

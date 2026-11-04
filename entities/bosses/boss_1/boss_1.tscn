@@ -21,6 +21,8 @@
 [ext_resource type="Script" path="res://entities/bosses/boss_1/states/status/boss_dead.gd" id="19_dead"]
 [ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="20_pool"]
 [ext_resource type="PackedScene" path="res://objects/combat/indicators/aoe_circle_indicator.tscn" id="21_indicator"]
+[ext_resource type="Resource" path="res://resources/enemies/loot/drop_boss.tres" id="jade_loot_boss"]
+[ext_resource type="Script" path="res://objects/core/pickups/currency/drop/loot_drop_component.gd" id="jade_drop"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss_body"]
 radius = 0.85
@@ -139,3 +141,9 @@ script = ExtResource("18_stunned")
 
 [node name="Dead" type="Node" parent="StateMachine" index="7"]
 script = ExtResource("19_dead")
+
+[node name="LootDropComponent" type="Node" parent="." node_paths=PackedStringArray("health", "body")]
+script = ExtResource("jade_drop")
+health = NodePath("../HealthComponent")
+body = NodePath("..")
+drop_table = ExtResource("jade_loot_boss")

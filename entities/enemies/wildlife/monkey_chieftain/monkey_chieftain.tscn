@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://entities/enemies/wildlife/monkey_chieftain/skills/abilities/chieftain_boulder_emitter.gd" id="boulder_emitter"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/monkey_chieftain/skills/states/chieftain_boulder_throw.gd" id="boulder_state"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_chieftain/animations/boulder_throw.tres" id="boulder_anim"]
+[ext_resource type="Resource" path="res://resources/enemies/loot/drop_large.tres" id="jade_loot_large"]
 [sub_resource type="CapsuleShape3D" id="Body"]
 resource_local_to_scene = true
 radius = 0.48
@@ -84,3 +85,7 @@ script = ExtResource("boulder_state")
 script = ExtResource("summoner")
 [node name="BoulderEmitter" type="Node3D" parent="."]
 script = ExtResource("boulder_emitter")
+
+[node name="LootDropComponent" parent="."]
+drop_table = ExtResource("jade_loot_large")
+
