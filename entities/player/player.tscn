@@ -43,6 +43,11 @@
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_bow/fire_bow_vfx.tscn" id="50_firebow"]
 [ext_resource type="PackedScene" path="res://abilities/fusion/wind/vfx/slash/wind_sword_slash_vfx.tscn" id="51_windslash"]
 [ext_resource type="PackedScene" path="res://abilities/fusion/wind/vfx/charge/wind_bow_charge_vfx.tscn" id="52_windcharge"]
+[ext_resource type="Script" path="res://objects/core/pickups/currency/collector/pickup_collector.gd" id="53_jadecollector"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/currency/hud/currency_counter.tscn" id="55_jadecounter"]
+[ext_resource type="Resource" path="res://resources/player/currency/soul_jade.tres" id="56_souljade"]
+[ext_resource type="Script" path="res://entities/player/data/currency_data.gd" id="56_souljade_type"]
+[ext_resource type="Script" path="res://components/utility/restore/restore_component.gd" id="57_restore"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
@@ -98,6 +103,16 @@ follow_hitbox = NodePath("../FlameHitbox")
 
 [node name="WindBlastCone" parent="." node_paths=PackedStringArray("area") instance=ExtResource("35_windcone")]
 area = NodePath("../Model/WindBlastArea")
+
+[node name="RestoreComponent" type="Node" parent="." node_paths=PackedStringArray("health", "energy")]
+script = ExtResource("57_restore")
+health = NodePath("../HealthComponent")
+energy = NodePath("../EnergyComponent")
+
+[node name="PickupCollector" type="Node" parent="." node_paths=PackedStringArray("target")]
+script = ExtResource("53_jadecollector")
+prewarm_currencies = Array[ExtResource("56_souljade_type")]([ExtResource("56_souljade")])
+target = NodePath("..")
 
 [node name="FireBowVfx" parent="." node_paths=PackedStringArray("player") instance=ExtResource("50_firebow")]
 player = NodePath("..")
@@ -163,6 +178,13 @@ offset_top = 46.0
 offset_right = 308.0
 offset_bottom = 64.0
 energy = NodePath("../../EnergyComponent")
+
+[node name="CurrencyCounter" parent="HUD" instance=ExtResource("55_jadecounter")]
+currency = ExtResource("56_souljade")
+offset_left = 164.0
+offset_top = 70.0
+offset_right = 264.0
+offset_bottom = 96.0
 
 [node name="InventoryMenu" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("44_inventory")]
 player = NodePath("../..")

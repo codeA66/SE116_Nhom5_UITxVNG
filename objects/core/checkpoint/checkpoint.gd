@@ -64,6 +64,16 @@ func is_active() -> bool:
 func _on_body_entered(body: Node3D) -> void:
 	if body is Player:
 		GameState.set_checkpoint(_zone_path(), checkpoint_id)
+		_restore(body)
+
+
+## Chạm checkpoint (mỗi lần bước vào) là hồi phục toàn bộ. Checkpoint không biết bên trong người chơi:
+## chỉ gọi RestoreComponent; không có component thì không hồi
+func _restore(body: Node3D) -> void:
+	var restore := RestoreComponent.find_on(body)
+	if restore == null:
+		return
+	restore.restore_all()
 
 
 func _on_checkpoint_changed(_zone: String, _spawn_id: StringName) -> void:

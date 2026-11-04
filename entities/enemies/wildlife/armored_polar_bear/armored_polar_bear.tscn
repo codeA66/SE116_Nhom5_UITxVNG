@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/movement/wild_watch.gd" id="watch"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/movement/wild_display.gd" id="display"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/attack/wild_skill_attack.gd" id="skill_attack"]
+[ext_resource type="Resource" path="res://resources/enemies/loot/drop_large.tres" id="jade_loot_large"]
 [sub_resource type="CapsuleShape3D" id="Body"]
 resource_local_to_scene = true
 radius = 0.64
@@ -77,3 +78,6 @@ script = ExtResource("skill_attack")
 
 [node name="SkillEmitter" type="Node" parent="."]
 script = ExtResource("emitter")
+
+[node name="LootDropComponent" parent="."]
+drop_table = ExtResource("jade_loot_large")

@@ -9,8 +9,8 @@ signal loaded
 
 const SAVE_PATH := "user://savegame.json"
 const TEMP_PATH := "user://savegame.json.tmp"
-## Tăng khi đổi định dạng file, kèm xử lý chuyển đổi trong _deserialize
-const SAVE_VERSION := 4
+## Tăng khi đổi định dạng file, kèm xử lý chuyển đổi trong from_dict
+const SAVE_VERSION := 5
 
 
 func _ready() -> void:
@@ -33,7 +33,7 @@ func save_game() -> bool:
 	if file == null:
 		push_error("SaveManager: không ghi được file tạm (lỗi %d)" % FileAccess.get_open_error())
 		return false
-	file.store_string(JSON.stringify(_serialize(GameState.progress), "\t"))
+	file.store_string(JSON.stringify(to_dict(GameState.progress), "\t"))
 	file.close()
 
 	# Ghi file tạm xong mới thay file chính: crash giữa chừng không làm hỏng save cũ
@@ -55,7 +55,7 @@ func load_game() -> bool:
 	if not parsed is Dictionary:
 		push_warning("SaveManager: file save hỏng hoặc sai định dạng, bỏ qua")
 		return false
-	GameState.replace_progress(_deserialize(parsed as Dictionary))
+	GameState.replace_progress(from_dict(parsed as Dictionary))
 	loaded.emit()
 	return true
 
@@ -72,7 +72,8 @@ func reset_game() -> void:
 	get_tree().reload_current_scene()
 
 
-func _serialize(progress: PlayerProgress) -> Dictionary:
+## Tiến trình -> từ điển ghi file JSON (public để test kiểm định dạng mà không ghi file thật)
+func to_dict(progress: PlayerProgress) -> Dictionary:
 	var weapon_paths: Array[String] = []
 	for weapon in progress.weapons:
 		weapon_paths.append(weapon.resource_path)
@@ -91,10 +92,13 @@ func _serialize(progress: PlayerProgress) -> Dictionary:
 		# Từ version 4: nguyên tố đang ghép ở từng ô vũ khí (ô -> id nguyên tố)
 		"fusions": _serialize_fusions(progress),
 		"checkpoint": {"zone": progress.checkpoint_zone, "spawn": String(progress.checkpoint_spawn_id)},
+		# Từ version 5: tiền theo loại (CurrencyData.id -> số)
+		"currencies": _serialize_currencies(progress),
 	}
 
 
-func _deserialize(data: Dictionary) -> PlayerProgress:
+## Từ điển đọc từ file (có thể là save cũ / sửa tay) -> tiến trình hợp lệ
+func from_dict(data: Dictionary) -> PlayerProgress:
 	var progress := PlayerProgress.new()
 	if int(data.get("version", 0)) > SAVE_VERSION:
 		push_warning("SaveManager: file save được tạo từ phiên bản game mới hơn")
@@ -139,7 +143,29 @@ func _deserialize(data: Dictionary) -> PlayerProgress:
 		if _is_valid_scene_path(zone):
 			progress.checkpoint_zone = zone
 			progress.checkpoint_spawn_id = StringName(str((checkpoint as Dictionary).get("spawn", "")))
+	# Save cũ chưa có tiền: bắt đầu từ 0
+	var currencies: Variant = data.get("currencies", {})
+	if currencies is Dictionary:
+		for id: Variant in currencies:
+			_read_currency(progress, StringName(str(id)), (currencies as Dictionary)[id])
+	# Bản thử trước khi có từ điển tiền lưu riêng khoá "soul_jade"
+	if data.has("soul_jade") and not progress.currencies.has(&"soul_jade"):
+		_read_currency(progress, &"soul_jade", data["soul_jade"])
 	return progress
+
+
+func _serialize_currencies(progress: PlayerProgress) -> Dictionary:
+	var result := {}
+	for id: StringName in progress.currencies:
+		result[String(id)] = progress.currencies[id]
+	return result
+
+
+## Một mục tiền đọc từ file: chỉ nhận số (JSON đọc số thành float), âm thì về 0, chữ / sai kiểu thì bỏ qua
+func _read_currency(progress: PlayerProgress, id: StringName, value: Variant) -> void:
+	if id.is_empty() or not (value is int or value is float):
+		return
+	progress.currencies[id] = maxi(int(value), 0)
 
 
 func _serialize_fusions(progress: PlayerProgress) -> Dictionary:

@@ -16,6 +16,8 @@ signal checkpoint_changed(zone_path: String, spawn_id: StringName)
 signal progress_replaced
 ## Ghép / tháo / chuyển nguyên tố giữa các vũ khí
 signal fusion_changed
+## Tiền loại id vừa đổi (HUD, âm thanh nghe). Chết / nạp save thì nghe progress_replaced
+signal currency_changed(id: StringName, total: int)
 
 const NEW_GAME: NewGameData = preload("res://resources/player/new_game.tres")
 const FUSIONS: FusionTable = preload("res://resources/combat/fusion/fusion_table.tres")
@@ -150,6 +152,35 @@ func unfuse(slot: WeaponData.Slot) -> void:
 	progress_changed.emit()
 
 
+## Số tiền đang có của loại id (CurrencyData.id); loại chưa từng có = 0
+func get_currency(id: StringName) -> int:
+	return progress.currencies.get(id, 0)
+
+
+## Đủ tiền để trả amount không (hỏi trước khi hiện nút / mở cổng); không đổi tiền
+func can_afford(id: StringName, amount: int) -> bool:
+	return amount >= 0 and get_currency(id) >= amount
+
+
+## Cộng tiền. Không phát progress_changed: nhặt tiền liên tục không cần cổng / trận kiểm tra lại
+func add_currency(id: StringName, amount: int) -> void:
+	if not _is_valid_currency_call(id, amount) or amount == 0:
+		return
+	progress.currencies[id] = get_currency(id) + amount
+	currency_changed.emit(id, progress.currencies[id])
+
+
+## Trừ tiền nếu đủ (người gác cổng, cửa hàng). Thiếu thì không trừ, không phát signal, trả về false
+func spend_currency(id: StringName, amount: int) -> bool:
+	if not _is_valid_currency_call(id, amount) or not can_afford(id, amount):
+		return false
+	if amount == 0:
+		return true
+	progress.currencies[id] = get_currency(id) - amount
+	currency_changed.emit(id, progress.currencies[id])
+	return true
+
+
 func has_flag(id: StringName) -> bool:
 	return progress.flags.has(id)
 
@@ -247,3 +278,14 @@ func _grant_starting_abilities() -> void:
 	for ability in NEW_GAME.starting_abilities:
 		if ability and not has_ability(ability.id):
 			progress.abilities.append(ability)
+
+
+## Lời gọi tiền hợp lệ: id không rỗng, số không âm. Sai thì cảnh báo (lỗi code gọi), không đổi tiền
+func _is_valid_currency_call(id: StringName, amount: int) -> bool:
+	if id.is_empty():
+		push_warning("GameState: gọi tiền với id rỗng")
+		return false
+	if amount < 0:
+		push_warning("GameState: số tiền âm (%d) cho '%s', dùng spend_currency để trừ" % [amount, id])
+		return false
+	return true

@@ -12,6 +12,8 @@ extends Resource
 @export var fusions: Dictionary[int, StringName] = {}
 ## Cờ thế giới theo persistent_id, ví dụ "test_movement.sword_pickup" = vật đã nhặt
 @export var flags: Dictionary[StringName, bool] = {}
+## Tiền theo CurrencyData.id -> số đang có (không có khoá = 0). Đi theo bản chụp checkpoint như mọi tiến trình khác
+@export var currencies: Dictionary[StringName, int] = {}
 
 @export_group("Checkpoint")
 ## Scene của khu chứa checkpoint gần nhất; rỗng = chưa có checkpoint
@@ -30,6 +32,7 @@ func snapshot() -> PlayerProgress:
 	copy.abilities = abilities.duplicate()
 	copy.fusions = fusions.duplicate()
 	copy.flags = flags.duplicate()
+	copy.currencies = currencies.duplicate()
 	copy.checkpoint_zone = checkpoint_zone
 	copy.checkpoint_spawn_id = checkpoint_spawn_id
 	return copy
