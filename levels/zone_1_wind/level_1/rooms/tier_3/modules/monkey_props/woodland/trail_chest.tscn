@@ -1,0 +1,18 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/tier_3_monkey_garden/woodland/trail_chest/trail_chest.glb" id="model"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/woodland_surface.tres" id="surface"]
+[sub_resource type="BoxShape3D" id="collision_0"]
+size = Vector3(2.18,1.3,1.3)
+
+[node name="TrailChest" type="StaticBody3D"]
+collision_mask = 0
+editor_description = "RƯƠNG TIẾP TẾ • Model gỗ low-poly phối xanh, collision nguyên thủy. Copy cả root."
+metadata/simple_collision = true
+[node name="Model" parent="." instance=ExtResource("model")]
+[node name="WoodlandMesh" parent="Model" index="0"]
+material_override = ExtResource("surface")
+[node name="Collision0" type="CollisionShape3D" parent="."]
+position = Vector3(0,0.65,0)
+shape = SubResource("collision_0")
+
+[editable path="Model"]

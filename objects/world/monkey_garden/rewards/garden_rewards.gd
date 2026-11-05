@@ -54,6 +54,8 @@ static func loot(parent: Node3D, at: Vector3, gun: bool, amount: int, falling: b
 		else:
 			weapon.add_ammo(amount+inventory.reserved_ammo); inventory.reserved_ammo=0
 		inventory.announce(&"gun" if gun else &"ammo"); root.queue_free())
+	var beam: LootItemBeam = LootItemBeam.attach_to(root,Color("ffd447") if gun else Color("ff352b"))
+	root.landed.connect(beam.set_active.bind(true))
 	if gun and falling: root.start(at,interaction)
 	else: root.settle(at,interaction)
 	return root

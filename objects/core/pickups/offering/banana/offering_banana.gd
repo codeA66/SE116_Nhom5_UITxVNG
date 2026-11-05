@@ -17,6 +17,7 @@ var location: Location = Location.WORLD
 var was_rewarded: bool = false
 var _clock: float = 0.0
 var _world_parent: Node
+var _beam: LootItemBeam
 
 @onready var visual: Node3D = $Visual
 @onready var interaction: InteractableComponent = $InteractableComponent
@@ -24,6 +25,7 @@ var _world_parent: Node
 
 func _ready() -> void:
 	_world_parent = get_parent()
+	_beam = LootItemBeam.attach_to(self,Color("ffd447"))
 	visual.scale = Vector3.ONE * visual_scale
 	_clock = global_position.x * 0.13 + global_position.z * 0.11
 	interaction.enabled = available
@@ -44,17 +46,20 @@ func set_available(value: bool) -> void:
 	visible = value
 	if is_instance_valid(interaction): interaction.enabled = value and location == Location.WORLD
 	set_process(value)
+	if is_instance_valid(_beam): _beam.set_active(value and was_rewarded and location == Location.WORLD)
 	navigation_changed.emit()
 
 
 func on_carried(_carrier: CarryComponent) -> void:
 	location = Location.CARRIED
+	_beam.set_active(false)
 	interaction.enabled = false
 	navigation_changed.emit()
 
 
 func on_offered(_pedestal: Node3D) -> void:
 	location = Location.OFFERED
+	_beam.set_active(false)
 	interaction.enabled = false
 	navigation_changed.emit()
 
@@ -63,6 +68,7 @@ func return_to_world(at: Vector3) -> void:
 	reparent(_world_parent, true)
 	global_position = at
 	location = Location.WORLD
+	_beam.set_active(available and was_rewarded)
 	interaction.enabled = available
 	navigation_changed.emit()
 

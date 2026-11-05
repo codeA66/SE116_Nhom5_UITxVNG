@@ -3,6 +3,12 @@ extends CanvasLayer
 signal dismissed
 @export var allow_cancel: bool = false
 const BLUR: Shader = preload("res://assets/shaders/screen/item_discovery/discovery_blur.gdshader")
+const ILLUSTRATIONS: Dictionary[StringName,Texture2D] = {
+	&"gun":preload("res://ui/hud/icons/banana_weapon/banana_weapon.svg"),
+	&"healing":preload("res://ui/hud/icons/banana_weapon/healing_banana.svg"),
+	&"ammo":preload("res://ui/hud/icons/banana_items/explosive_ammo.svg"),
+	&"boots":preload("res://ui/hud/icons/banana_items/banana_boots.svg")
+}
 const MESSAGES: Dictionary[StringName,String] = {
 	&"gun":"Khẩu súng chuối huyền thoại bắn ra đạn nổ một phạm vi nhỏ xung quanh, hữu ích cho việc tiêu diệt đám khỉ. Hãy cẩn thận khi sử dụng!!!\n\nĐạn nổ có thể được rớt ra từ những con khỉ cầm bom đặc biệt mà bạn sẽ gặp trên đường đi!",
 	&"ammo":"Đạn cho súng bAKa-47, bọn khỉ cầm bom có vẻ mang theo rất nhiều!",
@@ -11,6 +17,7 @@ const MESSAGES: Dictionary[StringName,String] = {
 }
 var _panel: PanelContainer
 var _title: Label
+var _illustration: TextureRect
 var _body: Label
 var _player: Player
 var _opened_at: int
@@ -27,18 +34,23 @@ func _ready() -> void:
 	style.content_margin_left = 22; style.content_margin_right = 22; style.content_margin_top = 18; style.content_margin_bottom = 18
 	_panel.add_theme_stylebox_override("panel",style)
 	var column: VBoxContainer = VBoxContainer.new(); column.add_theme_constant_override("separation",12); _panel.add_child(column)
-	_title = Label.new(); _title.modulate = Color("7fcaff"); _title.add_theme_font_size_override("font_size",18); column.add_child(_title)
+	var header: HBoxContainer = HBoxContainer.new(); header.add_theme_constant_override("separation",14); column.add_child(header)
+	_illustration = TextureRect.new(); _illustration.custom_minimum_size = Vector2(88,64)
+	_illustration.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; _illustration.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	header.add_child(_illustration)
+	_title = Label.new(); _title.modulate = Color("7fcaff"); _title.add_theme_font_size_override("font_size",18); header.add_child(_title)
 	_body = Label.new(); _body.custom_minimum_size.x = 410; _body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body.add_theme_font_size_override("font_size",18); column.add_child(_body)
 	var hint: Label = Label.new(); hint.text = "F  ·  Tiếp tục"; hint.modulate = Color("7fcaff"); hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT; column.add_child(hint)
 	hide(); set_process_input(false)
 
 func present(player: Player, kind: StringName) -> void:
-	present_text(player, {&"gun":"bAKa-47",&"ammo":"ĐẠN CHUỐI NỔ",&"boots":"GIÀY CHUỐI",&"healing":"CHUỐI DINH DƯỠNG"}.get(kind,""), MESSAGES[kind])
+	present_text(player, {&"gun":"bAKa-47",&"ammo":"ĐẠN CHUỐI NỔ",&"boots":"GIÀY CHUỐI",&"healing":"CHUỐI DINH DƯỠNG"}.get(kind,""), MESSAGES[kind],ILLUSTRATIONS.get(kind))
 
-func present_text(player: Player, heading: String, message: String) -> void:
+func present_text(player: Player, heading: String, message: String, illustration: Texture2D = null) -> void:
 	_player = player; _was_paused = get_tree().paused; _was_enabled = player.controls_enabled
 	_title.text = heading
+	_illustration.texture = illustration; _illustration.visible = illustration != null
 	_body.text = message; _panel.size = Vector2(454,0); _panel.reset_size()
 	var at: Vector2 = player.get_viewport().get_camera_3d().unproject_position(player.global_position+Vector3.UP)
 	var viewport_size: Vector2 = player.get_viewport().get_visible_rect().size

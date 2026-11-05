@@ -4,13 +4,13 @@ signal cleared
 signal changed(ammo: int, score: int)
 const BULLET: PackedScene = preload("res://objects/world/monkey_garden/ricochet_range/projectiles/ricochet_banana.tscn")
 const WEAPON: Script = preload("res://objects/world/monkey_garden/ricochet_range/weapon/baka_weapon.gd")
-@export var magazine_size: int = 7
+@export var magazine_size: int = 10
 @export var experiment_reward_available: bool = true
 @export var reward: OfferingBanana
 @export var targets: Array[RicochetStar] = []
 @export var offering_drop_point: Node3D
 @export var gun_drop_point: Node3D
-var ammo: int = 7
+var ammo: int = 10
 var score: int = 0
 var _pool: ObjectPool
 var _weapon: BakaWeapon
@@ -22,7 +22,7 @@ func begin(_actor: Player) -> void: pass
 @onready var _display: Label3D = $Score
 @onready var _pickup: InteractableComponent = $GunPickup/InteractableComponent
 func _ready() -> void:
-	_pool = ObjectPool.new(); _pool.scene = BULLET; _pool.initial_size = 7; add_child(_pool)
+	_pool = ObjectPool.new(); _pool.scene = BULLET; _pool.initial_size = magazine_size; add_child(_pool)
 	_pickup.interacted.connect(_equip)
 	_pickup.availability_check = func(actor: Node3D) -> bool: return actor is Player and _weapon == null
 	$Reset/InteractableComponent.interacted.connect(func(_actor: Node3D) -> void: reset_range())

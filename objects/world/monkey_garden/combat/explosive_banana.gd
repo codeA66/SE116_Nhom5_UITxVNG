@@ -24,7 +24,9 @@ func _explode() -> void:
 		if hurt==null: continue
 		var actor: CharacterBody3D=hurt.get_parent() as CharacterBody3D
 		if actor==null: continue
-		var direction: Vector3=actor.global_position-global_position; direction.y=0; direction=direction.normalized()
-		hurt.receive_hit(DamageInfo.new(2,DamageInfo.Type.PHYSICAL,Vector3.ZERO,_source))
+		var direction: Vector3=actor.global_position-global_position; direction.y=0
+		if direction.is_zero_approx(): direction = -_direction if not _direction.is_zero_approx() else Vector3.BACK
+		direction=direction.normalized()
+		if actor != _source: hurt.receive_hit(DamageInfo.new(2,DamageInfo.Type.PHYSICAL,Vector3.ZERO,_source))
 		ForcedImpulse.push(actor,direction*7)
 	queue_free()
