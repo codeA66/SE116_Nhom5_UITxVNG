@@ -11,7 +11,7 @@ const SWORD := preload("res://resources/combat/weapons/sword.tres")
 @export var boss_decoration: Node3D
 @export var room_cutaways: Array[RoomCutaway] = []
 @export var standalone_test: bool = true
-@export var main_hud_position: Vector2 = Vector2(24,190)
+@export var main_hud_position: Vector2 = Vector2(24,245)
 @export var main_hud_line_gap: float = 28.0
 
 var _player: Player

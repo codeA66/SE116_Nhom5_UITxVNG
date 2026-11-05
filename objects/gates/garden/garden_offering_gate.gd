@@ -14,6 +14,9 @@ func _ready() -> void:
 func _sink() -> void:
 	if _sinking: return
 	_sinking = true
+	for name: String in ["Interactive_Cyan_Lock","LockBase"]:
+		var lock_part: Node3D = $Visual/OldGardenDoor.get_node_or_null(name)
+		if lock_part: lock_part.hide()
 	unlock_started.emit()
 	var tween: Tween = create_tween().set_parallel(true)
 	var model: Node3D=$Visual/OldGardenDoor

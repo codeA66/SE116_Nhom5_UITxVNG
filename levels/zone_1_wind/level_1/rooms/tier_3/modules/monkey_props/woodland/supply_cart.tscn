@@ -1,0 +1,23 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/tier_3_monkey_garden/woodland/supply_cart/supply_cart.glb" id="model"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/woodland_surface.tres" id="surface"]
+[sub_resource type="BoxShape3D" id="collision_0"]
+size = Vector3(1.8,1.25,1.8)
+[sub_resource type="BoxShape3D" id="collision_1"]
+size = Vector3(1.35,0.22,1.45)
+
+[node name="SupplyCart" type="StaticBody3D"]
+collision_mask = 0
+editor_description = "XE CHỞ ĐỒ • Model gỗ low-poly phối xanh, collision nguyên thủy. Copy cả root."
+metadata/simple_collision = true
+[node name="Model" parent="." instance=ExtResource("model")]
+[node name="WoodlandMesh" parent="Model" index="0"]
+material_override = ExtResource("surface")
+[node name="Collision0" type="CollisionShape3D" parent="."]
+position = Vector3(0,0.85,0)
+shape = SubResource("collision_0")
+[node name="Collision1" type="CollisionShape3D" parent="."]
+position = Vector3(0,0.52,1.32)
+shape = SubResource("collision_1")
+
+[editable path="Model"]

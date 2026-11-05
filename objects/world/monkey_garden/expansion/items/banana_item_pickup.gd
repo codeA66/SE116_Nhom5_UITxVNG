@@ -5,9 +5,11 @@ var available: bool = false
 var interaction: InteractableComponent
 var _visual: Node3D
 var _time: float = 0.0
+var _beam: LootItemBeam
 
 func _ready() -> void:
 	_visual = BananaItemModels.boots_pair() if kind == "boots" else BananaItemModels.fruit(Color("4ce86e"))
+	_beam = LootItemBeam.attach_to(self,Color("ffd447") if kind == "boots" else Color("4ce86e"))
 	add_child(_visual)
 	interaction = InteractableComponent.new(); interaction.collision_layer = 32; interaction.collision_mask = 0
 	interaction.prompt_text = "Nhặt giày chuối" if kind == "boots" else "Nhặt chuối dinh dưỡng"
@@ -19,7 +21,7 @@ func _ready() -> void:
 func reveal() -> void:
 	var landing: Vector3 = global_position; global_position += Vector3.UP*7; show()
 	var tween: Tween = create_tween(); tween.tween_property(self,"global_position",landing,2.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tween.tween_callback(func() -> void: available = true; interaction.enabled = true; set_process(true))
+	tween.tween_callback(func() -> void: available = true; interaction.enabled = true; _beam.set_active(true); set_process(true))
 
 func _process(delta: float) -> void:
 	_time += delta; _visual.position.y = 0.65+sin(_time*2.4)*0.08; _visual.rotation.y += delta*0.5

@@ -18,6 +18,8 @@ func _ready() -> void:
 
 func _setup() -> void:
 	_resolve_moving_seals()
+	for mover: ShiftingGardenSeal in moving_seals:
+		mover.configure_clearance(seals,hazards)
 	reward.set_available(false)
 	for seal: GardenSwitch in seals:
 		if is_instance_valid(seal): seal.activated.connect(_check); seal.interaction.enabled = false

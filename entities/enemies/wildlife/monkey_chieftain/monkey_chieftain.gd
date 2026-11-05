@@ -16,6 +16,12 @@ var _display_elapsed: float = 0.0
 var _buff_applied: bool = false
 @onready var summoner: ChieftainSummoner = $Summoner
 
+func complete_introduction() -> void:
+	# Vừa diễn vỗ ngực trước trận: không lặp ngay một lần nữa khi AI bắt đầu đánh.
+	_battlecry_left = maxf(_battlecry_left,battlecry_cooldown)
+	_summon_left = maxf(_summon_left,display_minimum_gap)
+	_display_gap_left = maxf(_display_gap_left,display_minimum_gap)
+
 func choose_skill() -> EnemySkillData:
 	var desired: StringName = &"boulder_throw" if _next_boulder else &"leap_claw"
 	for skill: EnemySkillData in wildlife.skills:

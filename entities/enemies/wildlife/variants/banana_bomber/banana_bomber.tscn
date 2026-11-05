@@ -6,6 +6,7 @@
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_grunt/animations/bomber_hold.tres" id="a"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_grunt/animations/all.tres" id="all"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_grunt/animations/throw_actions.tres" id="throws"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/variants/banana_bomber/warning/banana_bomb_warning.gd" id="warning"]
 [node name="BananaBomber" instance=ExtResource("base")]
 script = ExtResource("s")
 data = ExtResource("d")
@@ -14,3 +15,7 @@ chase_state = &"BomberChase"
 libraries = {&"":ExtResource("all"),&"Throws":ExtResource("throws"),&"Bomb":ExtResource("a")}
 [node name="BomberChase" type="Node" parent="StateMachine"]
 script = ExtResource("c")
+
+[node name="WarningIndicator" type="Node3D" parent="."]
+position = Vector3(0, 2.65, 0)
+script = ExtResource("warning")

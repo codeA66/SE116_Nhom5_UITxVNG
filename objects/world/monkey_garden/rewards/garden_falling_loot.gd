@@ -1,5 +1,6 @@
 class_name GardenFallingLoot
 extends Node3D
+signal landed
 ## Chuyển động rơi có điểm đích cố định và bước chốt; không phụ thuộc tween/animation của model nhập.
 @export var fall_duration: float=2.2
 var landing: Vector3
@@ -16,9 +17,11 @@ func settle(at: Vector3, interaction: InteractableComponent) -> void:
 	top_level=true; global_position=at; pickup.enabled=true
 	reset_physics_interpolation()
 	set_physics_process(false)
+	landed.emit()
 func _physics_process(delta: float) -> void:
 	_elapsed+=delta
 	var t: float=clampf(_elapsed/maxf(fall_duration,0.01),0,1)
 	global_position=_origin.lerp(landing,sin(t*PI*0.5))
 	if t>=1:
 		global_position=landing; pickup.enabled=true; set_physics_process(false)
+		landed.emit()

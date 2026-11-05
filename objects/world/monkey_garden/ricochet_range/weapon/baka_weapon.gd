@@ -33,7 +33,7 @@ func _ready() -> void:
 	arena.changed.connect(_changed); _changed(arena.ammo,arena.score)
 func _changed(ammo: int, score: int) -> void:
 	if _score==null: return
-	_score.text=str(score); _ammo.text="Ammo: %d/7"%ammo
+	_score.text=str(score); _ammo.text="Ammo: %d/%d"%[ammo,arena.magazine_size]
 	_score.modulate=[Color.WHITE,Color("fff3a1"),Color("ffd22b"),Color("ff8c20"),Color("ff2424"),Color("ff2424")][mini(score,5)]
 	_score.scale=Vector2.ONE
 	if _score_tween: _score_tween.kill()

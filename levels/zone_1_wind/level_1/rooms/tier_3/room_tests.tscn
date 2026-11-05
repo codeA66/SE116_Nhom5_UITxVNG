@@ -24,6 +24,15 @@
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="38_boxk5"]
 [ext_resource type="PackedScene" path="res://objects/core/kill_zone/kill_zone.tscn" id="39_sklit"]
 
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/sculptures/wooden_chieftain.tscn" id="statue_wood"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/sculptures/stone_chieftain.tscn" id="statue_stone"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/jungle_drum.tscn" id="decor_jungle_drum"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/trail_chest.tscn" id="decor_trail_chest"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/jungle_lantern.tscn" id="decor_jungle_lantern"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/spear_rack.tscn" id="decor_spear_rack"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/supply_cart.tscn" id="decor_supply_cart"]
+
 [sub_resource type="ArrayMesh" id="ArrayMesh_fjgrp"]
 resource_name = "floor_dirt_4m_Painted_Packed_Earth_001"
 _surfaces = [{
@@ -2131,6 +2140,16 @@ roughness = 0.95
 
 [sub_resource type="BoxMesh" id="BoxMesh_chdet"]
 size = Vector3(10, 0.4, 28)
+
+[sub_resource type="BoxMesh" id="WoodlandDisplayMesh"]
+size = Vector3(24,0.4,10)
+
+[sub_resource type="BoxShape3D" id="WoodlandDisplayShape"]
+size = Vector3(24,0.4,10)
+
+[sub_resource type="StandardMaterial3D" id="WoodlandDisplayMaterial"]
+albedo_color = Color(0.28,0.29,0.24,1)
+roughness = 1.0
 
 [node name="RoomTests" type="Node3D" unique_id=228413994 node_paths=PackedStringArray("overview_camera")]
 editor_description = "F6: đi thử. F2: toàn cảnh / camera Player. GardenRoom là phòng mẫu; CopyLibrary đủ 39 StaticBody3D; SpecialExamples chứa các cụm gameplay để copy. Không thuộc Level1."
@@ -5775,3 +5794,89 @@ shape = SubResource("BoxShape3D_8m8x0")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
 material_override = SubResource("StandardMaterial3D_t3iby")
 mesh = SubResource("BoxMesh_chdet")
+
+[node name="ChieftainStatueGallery" type="Node3D" parent="."]
+position = Vector3(0, 0, 19)
+
+[node name="DisplayFill" type="OmniLight3D" parent="ChieftainStatueGallery"]
+position = Vector3(0, 5, 7)
+light_energy = 1.2
+omni_range = 14.0
+
+[node name="WoodenChieftain" parent="ChieftainStatueGallery" instance=ExtResource("statue_wood")]
+position = Vector3(-4,0,0)
+
+[node name="WoodenChieftainLabel" type="Label3D" parent="ChieftainStatueGallery"]
+position = Vector3(-4,0.15,2.6)
+text = "TƯỢNG KHỈ ĐẦU ĐÀN • GỖ"
+font_size = 36
+pixel_size = 0.008
+billboard = 1
+
+[node name="StoneChieftain" parent="ChieftainStatueGallery" instance=ExtResource("statue_stone")]
+position = Vector3(4,0,0)
+
+[node name="StoneChieftainLabel" type="Label3D" parent="ChieftainStatueGallery"]
+position = Vector3(4,0.15,2.6)
+text = "TƯỢNG KHỈ ĐẦU ĐÀN • ĐÁ"
+font_size = 36
+pixel_size = 0.008
+billboard = 1
+
+[node name="WoodlandDecorGallery" type="Node3D" parent="."]
+position = Vector3(0,0,27)
+
+[node name="DisplayGround" type="StaticBody3D" parent="WoodlandDecorGallery"]
+position = Vector3(0,-0.2,1)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="WoodlandDecorGallery/DisplayGround"]
+mesh = SubResource("WoodlandDisplayMesh")
+material_override = SubResource("WoodlandDisplayMaterial")
+
+[node name="Collision" type="CollisionShape3D" parent="WoodlandDecorGallery/DisplayGround"]
+shape = SubResource("WoodlandDisplayShape")
+[node name="jungle_drum" parent="WoodlandDecorGallery" instance=ExtResource("decor_jungle_drum")]
+position = Vector3(-8,0,0)
+[node name="Label_0" type="Label3D" parent="WoodlandDecorGallery"]
+position = Vector3(-8,0.15,2.6)
+text = "1. TRỐNG NGHI LỄ"
+font_size = 30
+pixel_size = 0.009
+billboard = 1
+[node name="trail_chest" parent="WoodlandDecorGallery" instance=ExtResource("decor_trail_chest")]
+position = Vector3(-4,0,0)
+[node name="Label_1" type="Label3D" parent="WoodlandDecorGallery"]
+position = Vector3(-4,0.15,2.6)
+text = "2. RƯƠNG TIẾP TẾ"
+font_size = 30
+pixel_size = 0.009
+billboard = 1
+[node name="jungle_lantern" parent="WoodlandDecorGallery" instance=ExtResource("decor_jungle_lantern")]
+position = Vector3(0,0,0)
+[node name="Label_2" type="Label3D" parent="WoodlandDecorGallery"]
+position = Vector3(0,0.15,2.6)
+text = "3. ĐÈN GÁC RỪNG"
+font_size = 30
+pixel_size = 0.009
+billboard = 1
+[node name="spear_rack" parent="WoodlandDecorGallery" instance=ExtResource("decor_spear_rack")]
+position = Vector3(4,0,0)
+[node name="Label_3" type="Label3D" parent="WoodlandDecorGallery"]
+position = Vector3(4,0.15,2.6)
+text = "4. GIÁ GIÁO GỖ"
+font_size = 30
+pixel_size = 0.009
+billboard = 1
+[node name="supply_cart" parent="WoodlandDecorGallery" instance=ExtResource("decor_supply_cart")]
+position = Vector3(8,0,0)
+[node name="Label_4" type="Label3D" parent="WoodlandDecorGallery"]
+position = Vector3(8,0.15,2.6)
+text = "5. XE CHỞ ĐỒ"
+font_size = 30
+pixel_size = 0.009
+billboard = 1
+[node name="DisplayFill" type="OmniLight3D" parent="WoodlandDecorGallery"]
+position = Vector3(0,5,3)
+light_energy = 1.5
+omni_range = 18.0
