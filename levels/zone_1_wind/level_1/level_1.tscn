@@ -28,11 +28,9 @@
 [ext_resource type="PackedScene" path="res://levels/_base/tier_zone.tscn" id="26_t5yoq"]
 [ext_resource type="Environment" uid="uid://djoxdkrdij57e" path="res://levels/zone_1_wind/level_1/lighting/wind_palace_dd_environment.tres" id="27_go2tw"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient/ambient_wind.tscn" id="28_riknd"]
-
-[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/tier3_test.tscn" id="tier3_map"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/tier3_connection.tscn" id="tier3_bridge"]
-
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint.tscn" id="tier3_checkpoint"]
+[ext_resource type="PackedScene" uid="uid://6b38aottgqnl" path="res://levels/zone_1_wind/level_1/rooms/tier_3/tier3_test.tscn" id="tier3_map"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_11p2m"]
 render_priority = -1
@@ -64,7 +62,7 @@ size = Vector3(120, 18, 158)
 size = Vector3(200, 50, 160)
 
 [sub_resource type="BoxShape3D" id="Tier3VisibilityShape"]
-size = Vector3(260,90,250)
+size = Vector3(260, 90, 250)
 
 [node name="Level1" type="Node3D" unique_id=497319913]
 script = ExtResource("1_5r1qf")
@@ -79,37 +77,37 @@ mesh = SubResource("PlaneMesh_pta3x")
 [node name="BackgroundIsland" parent="." unique_id=1683345417 instance=ExtResource("4_t4n2c")]
 transform = Transform3D(1.2380035, 0, 0.84696376, 0, 1.5, 0, -0.84696376, 0, 1.2380035, -95, -10, -30)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland" index="0" unique_id=1047673014]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland" index="0" unique_id=2030169461]
 cast_shadow = 0
 
 [node name="BackgroundIsland2" parent="." unique_id=780542823 instance=ExtResource("5_u0yyv")]
 transform = Transform3D(-0.8239016, 0, 1.1318948, 0, 1.4, 0, -1.1318948, 0, -0.8239016, 120, -8, -40)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland2" index="0" unique_id=1384746216]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland2" index="0" unique_id=660822754]
 cast_shadow = 0
 
 [node name="BackgroundIsland3" parent="." unique_id=2068030902 instance=ExtResource("4_t4n2c")]
 transform = Transform3D(-0.84973663, 0, -0.9838432, 0, 1.3, 0, 0.9838432, 0, -0.84973663, -70, -12, 75)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland3" index="0" unique_id=1047673014]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland3" index="0" unique_id=2030169461]
 cast_shadow = 0
 
 [node name="BackgroundIsland4" parent="." unique_id=2025986836 instance=ExtResource("5_u0yyv")]
 transform = Transform3D(0.32099867, 0, 1.1562699, 0, 1.2, 0, -1.1562699, 0, 0.32099867, 100, -10, 70)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland4" index="0" unique_id=1384746216]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland4" index="0" unique_id=660822754]
 cast_shadow = 0
 
 [node name="BackgroundIsland5" parent="." unique_id=71536971 instance=ExtResource("4_t4n2c")]
 transform = Transform3D(-1.5986162, 0, 0.066529214, 0, 1.6, 0, -0.066529214, 0, -1.5986162, 10, -14, -150)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland5" index="0" unique_id=1047673014]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland5" index="0" unique_id=2030169461]
 cast_shadow = 0
 
 [node name="BackgroundIsland6" parent="." unique_id=286441211 instance=ExtResource("5_u0yyv")]
 transform = Transform3D(0.31202844, 0, -1.0548167, 0, 1.1, 0, 1.0548167, 0, 0.31202844, -100, -6, -110)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland6" index="0" unique_id=1384746216]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland6" index="0" unique_id=660822754]
 cast_shadow = 0
 
 [node name="SafetyNet" parent="." unique_id=904097796 instance=ExtResource("6_272vo")]
@@ -179,6 +177,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -176)
 [node name="T2Room2cKeyShrine" parent="Rooms/Tier2" unique_id=1187230685 instance=ExtResource("25_w3hun")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -176)
 
+[node name="Tier3" parent="Rooms" unique_id=1842536933 instance=ExtResource("tier3_map")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -300)
+standalone_test = false
+
 [node name="SecretZone" parent="." unique_id=429125787 node_paths=PackedStringArray("hide_when_inside", "show_when_inside", "sun", "world_environment") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44, 6.6, -28)
 hide_when_inside = [NodePath("../Rooms/Tier1/Room08RelicRoom/SecretCover")]
@@ -217,36 +219,32 @@ shape = SubResource("BoxShape3D_tier1")
 [node name="AmbientWind" parent="." unique_id=259223168 instance=ExtResource("28_riknd")]
 wind_direction = Vector3(0.6, 0, -1)
 
-[node name="Tier3" parent="Rooms" instance=ExtResource("tier3_map")]
-position = Vector3(-8, 21.62, -300)
-standalone_test = false
+[node name="Tier3Bridge" parent="." unique_id=1995548834 instance=ExtResource("tier3_bridge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -231.645)
 
-[node name="Tier3Bridge" parent="." instance=ExtResource("tier3_bridge")]
-position = Vector3(-8, 21.62, -231.645)
-
-[node name="Tier3Zone" parent="." node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
-position = Vector3(-8, 26, -310)
-hide_when_inside = [NodePath("../Rooms/Tier1"),NodePath("../Rooms/Tier2")]
+[node name="Tier3Zone" parent="." unique_id=1038946771 node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -310)
+hide_when_inside = [NodePath("../Rooms/Tier1"), NodePath("../Rooms/Tier2")]
 
 [node name="Shape" parent="Tier3Zone" index="0"]
 shape = SubResource("Tier3ZoneShape")
 
-[node name="Tier3EntryCheckpoint" parent="." instance=ExtResource("tier3_checkpoint")]
-position = Vector3(-8, 21.62, -263)
+[node name="Tier3EntryCheckpoint" parent="." unique_id=2090428911 instance=ExtResource("tier3_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -263)
 checkpoint_id = &"level_1.tier3_entry"
 
-[node name="Tier3RangeCheckpoint" parent="." instance=ExtResource("tier3_checkpoint")]
-position = Vector3(-28, 21.62, -280)
+[node name="Tier3RangeCheckpoint" parent="." unique_id=921076827 instance=ExtResource("tier3_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 21.62, -280)
 checkpoint_id = &"level_1.tier3_range_entry"
 
-[node name="Tier3TrapCheckpoint" parent="." instance=ExtResource("tier3_checkpoint")]
-position = Vector3(12, 21.62, -284)
+[node name="Tier3TrapCheckpoint" parent="." unique_id=181999268 instance=ExtResource("tier3_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 21.62, -284)
 checkpoint_id = &"level_1.tier3_trap_entry"
 
-[node name="Tier3VisibilityZone" parent="." node_paths=PackedStringArray("show_when_inside", "suspend_when_outside") instance=ExtResource("26_t5yoq")]
-position = Vector3(-8,26,-295)
-show_when_inside = [NodePath("../Rooms/Tier3"),NodePath("../Tier3Bridge")]
-suspend_when_outside = [NodePath("../Rooms/Tier3"),NodePath("../Tier3Bridge")]
+[node name="Tier3VisibilityZone" parent="." unique_id=697991845 node_paths=PackedStringArray("show_when_inside", "suspend_when_outside") instance=ExtResource("26_t5yoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -295)
+show_when_inside = [NodePath("../Rooms/Tier3"), NodePath("../Tier3Bridge")]
+suspend_when_outside = [NodePath("../Rooms/Tier3"), NodePath("../Tier3Bridge")]
 initialize_outside = true
 
 [node name="Shape" parent="Tier3VisibilityZone" index="0"]
@@ -262,3 +260,6 @@ shape = SubResource("Tier3VisibilityShape")
 [editable path="BackgroundIsland6"]
 [editable path="SecretZone"]
 [editable path="Tier2Zone"]
+[editable path="Tier1Zone"]
+[editable path="Tier3Zone"]
+[editable path="Tier3VisibilityZone"]
