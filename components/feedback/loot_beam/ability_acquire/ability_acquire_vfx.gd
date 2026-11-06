@@ -1,7 +1,7 @@
 class_name AbilityAcquireVfx
 extends Node3D
 ## DONE: pha node-FSM, slot cố định, dữ liệu nguyên tố, cleanup cả trước và sau khi trao kỹ năng.
-## NOT DONE: chưa có audio/artwork riêng nếu dữ liệu để trống.
+## NOT DONE: audio riêng vẫn cần gán vào dữ liệu nếu muốn phát cue âm thanh.
 ## NOTES: chỉ nâng model; hình và UI được warmup bằng hệ thống hiện có.
 signal phase_started(phase: StringName)
 signal burst_peaked

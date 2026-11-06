@@ -1,4 +1,7 @@
 [gd_resource type="Resource" format=3]
 [ext_resource type="Script" path="res://resources/feedback/ability_acquire/ability_acquire_data.gd" id="1"]
+[sub_resource type="SystemFont" id="RevealHeading"]
+font_names = PackedStringArray("Georgia", "Noto Serif", "serif")
 [resource]
 script = ExtResource("1")
+title_typeface = SubResource("RevealHeading")

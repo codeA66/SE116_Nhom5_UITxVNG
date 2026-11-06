@@ -44,10 +44,10 @@ func _draw() -> void:
 	if _panel_mode:
 		for index: int in range(clampi(data.panel_motes,0,24)):
 			var angle: float = float(index)*2.399963 + _age*data.panel_mote_speed
-			var position: Vector2 = _center + Vector2(cos(angle),sin(angle))*data.panel_mote_radius
-			var tint: Color = _accent
-			tint.a = 0.25 + 0.25*sin(angle+_age)
-			draw_circle(position,data.panel_mote_size,tint)
+			var mote_position: Vector2 = _center + Vector2(cos(angle),sin(angle))*data.panel_mote_radius
+			var mote_tint: Color = _accent
+			mote_tint.a = 0.25 + 0.25*sin(angle+_age)
+			draw_circle(mote_position,data.panel_mote_size,mote_tint)
 		return
 	var progress: float = clampf(_age / maxf(data.slot_time, data.minimum_time), 0.0, 1.0)
 	var radius: float = data.pulse_radius * (1.0 + progress * 0.35)

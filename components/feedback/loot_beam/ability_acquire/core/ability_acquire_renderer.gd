@@ -6,7 +6,7 @@ const MOTE_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire
 const RAY_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/spatial/acquire_rays.gdshader")
 const RING_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/spatial/acquire_ring.gdshader")
 const BOOK_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/book/acquire_book.gdshader")
-const MAX_RAYS: int = 12
+const MAX_RAYS: int = 24
 @export var data: Tuning = preload("res://resources/feedback/ability_acquire/ability_acquire_default.tres")
 static var _quad: QuadMesh
 static var _ray_meshes: Dictionary[int, ArrayMesh] = {}
@@ -30,6 +30,12 @@ var _emitter_visibility: PackedByteArray = PackedByteArray()
 var _actor_visual: Node3D
 var _active_slots: int = 0
 var _accent: Color
+var _ambient_meshes: Array[MeshInstance3D] = []
+var _ambient_states: PackedByteArray = PackedByteArray()
+var _launch_times: PackedFloat32Array = PackedFloat32Array()
+var _flight_times: PackedFloat32Array = PackedFloat32Array()
+var _gather_window: float = 0.0
+var _random: RandomNumberGenerator = RandomNumberGenerator.new()
 ## Tạo tất cả slot và material trước màn nhận kỹ năng, không tạo ở nhịp bùng.
 func _ready() -> void:
 	_live_count += 1
@@ -52,6 +58,10 @@ func _ready() -> void:
 	motes.multimesh.use_custom_data = true
 	motes.multimesh.mesh = _quad
 	motes.multimesh.instance_count = clampi(data.pool_capacity, 1, 96)
+	_launch_times.resize(motes.multimesh.instance_count)
+	_flight_times.resize(motes.multimesh.instance_count)
+	_random.seed = data.particle_seed
+	if data.randomize_gather: _random.randomize()
 	var random: RandomNumberGenerator = RandomNumberGenerator.new()
 	random.seed = data.particle_seed
 	for index: int in range(motes.multimesh.instance_count):
@@ -92,11 +102,17 @@ func prepare_source(source: Node3D) -> void:
 		if node is MeshInstance3D:
 			var mesh: MeshInstance3D = node as MeshInstance3D
 			if mesh.mesh == null: continue
+			var old: Material = mesh.get_active_material(0)
+			if old is ShaderMaterial:
+				var solid_color: Variant = (old as ShaderMaterial).get_shader_parameter(&"book_color")
+				if not solid_color is Color:
+					_ambient_meshes.append(mesh)
+					_ambient_states.append(1 if mesh.visible else 0)
+					continue
 			_meshes.append(mesh)
 			_originals.append(mesh.material_override)
 			var material: ShaderMaterial = _make_material(BOOK_SHADER)
 			var base: Color = data.book_fallback
-			var old: Material = mesh.get_active_material(0)
 			if old is BaseMaterial3D: base = (old as BaseMaterial3D).albedo_color
 			elif old is ShaderMaterial:
 				var old_color: Variant = (old as ShaderMaterial).get_shader_parameter(&"book_color")
@@ -104,6 +120,10 @@ func prepare_source(source: Node3D) -> void:
 			material.set_shader_parameter(&"base_color", base)
 			material.set_shader_parameter(&"grain_scale", data.book_grain)
 			material.set_shader_parameter(&"edge_width", data.book_edge)
+			material.set_shader_parameter(&"fade_range",data.book_fade)
+			material.set_shader_parameter(&"edge_strength",data.book_edge_strength)
+			material.set_shader_parameter(&"height_min",mesh.mesh.get_aabb().position.y)
+			material.set_shader_parameter(&"height_span",maxf(mesh.mesh.get_aabb().size.y,data.minimum_time))
 			_dissolves.append(material)
 			var probe: MeshInstance3D = MeshInstance3D.new()
 			probe.mesh = mesh.mesh
@@ -119,6 +139,7 @@ func prepare_source(source: Node3D) -> void:
 func bind_actor(actor: Node3D, visual: Node3D, ability: AbilityData) -> void:
 	global_transform = Transform3D(Basis.IDENTITY, actor.global_position)
 	_actor_visual = visual
+	_prepare_flights()
 	_accent = ability.accent_color if ability != null else data.fallback_accent
 	for material: ShaderMaterial in [_mote_mat, _ray_mat, _ring_mat]:
 		material.set_shader_parameter(&"accent", _accent)
@@ -129,6 +150,8 @@ func bind_actor(actor: Node3D, visual: Node3D, ability: AbilityData) -> void:
 	if is_instance_valid(_source):
 		_source_transform = _source.global_transform
 		_source_visible = _source.visible
+		for ambient: MeshInstance3D in _ambient_meshes:
+			if is_instance_valid(ambient): ambient.hide()
 		for index: int in range(_meshes.size()):
 			_meshes[index].material_override = _dissolves[index]
 			_dissolves[index].set_shader_parameter(&"accent", _accent)
@@ -139,17 +162,18 @@ func bind_actor(actor: Node3D, visual: Node3D, ability: AbilityData) -> void:
 ## Chuyển số slot một lần khi vào pha; số không luôn có nghĩa là không vẽ hạt.
 func enter_phase(phase: int) -> void:
 	clear_visuals()
-	var count: int = data.mote_count
+	var count: int = data.book_mote_count if phase == 0 else data.mote_count
 	if phase == 2: count = data.spark_count
-	elif phase == 3: count = data.dust_count
+	elif phase == 3: count = mini(data.linger_count,data.spark_count)+data.dust_count
 	if phase == 2 and data.burst_intensity <= 0.0: count = 0
 	_active_slots = clampi(count, 0, motes.multimesh.instance_count)
 	motes.multimesh.visible_instance_count = _active_slots
 	motes.visible = _active_slots > 0
-	rays.visible = phase <= 2 and (phase != 2 or data.burst_intensity > 0.0)
+	rays.visible = phase >= 1 and phase <= 2 and (phase != 2 or data.burst_intensity > 0.0)
 	ring.visible = phase == 2 and data.burst_intensity > 0.0
 	_mote_mat.set_shader_parameter(&"phase", phase)
 	_mote_mat.set_shader_parameter(&"total_count",maxi(_active_slots,1))
+	_mote_mat.set_shader_parameter(&"linger_count",mini(data.linger_count,data.spark_count))
 	_ray_mat.set_shader_parameter(&"phase", phase)
 	_ray_mat.set_shader_parameter(&"ray_count", float(data.ray_count if phase == 2 else data.stream_count))
 	update_phase(phase, 0.0, 0.0)
@@ -166,10 +190,12 @@ func update_phase(phase: int, progress: float, clock: float) -> void:
 	_ray_mat.set_shader_parameter(&"clock", clock)
 	_ray_mat.set_shader_parameter(&"progress", progress)
 	_ray_mat.set_shader_parameter(&"focus_height", focus)
+	_ray_mat.set_shader_parameter(&"expansion",clampf(maxf(clock-data.hitstop,0.0)/maxf(data.burst_expand_time,data.minimum_time),0.0,1.0))
 	if is_instance_valid(_source): _ray_mat.set_shader_parameter(&"source_point", _source.global_position-global_position)
-	_ray_mat.set_shader_parameter(&"opacity", alpha * (1.0 - progress if phase == 2 else 1.0))
+	if is_instance_valid(_source): _mote_mat.set_shader_parameter(&"source_point", _source.global_position-global_position)
+	_ray_mat.set_shader_parameter(&"opacity", alpha * (pow(1.0-progress,maxf(data.ray_decay,data.minimum_time)) if phase == 2 else 1.0))
 	_ring_mat.set_shader_parameter(&"progress", progress)
-	_ring_mat.set_shader_parameter(&"opacity", strength)
+	_ring_mat.set_shader_parameter(&"opacity", strength*data.ring_opacity)
 ## Sách thật đi lên rồi bị xói, thay vì biến mất ngay khi bấm nhặt.
 func update_book(progress: float) -> void:
 	if not is_instance_valid(_source): return
@@ -191,6 +217,8 @@ func restore_source(consumed: bool) -> void:
 	if not is_instance_valid(_source): return
 	_source.global_transform = _source_transform
 	_source.visible = _source_visible and not consumed
+	for index: int in range(_ambient_meshes.size()):
+		if is_instance_valid(_ambient_meshes[index]): _ambient_meshes[index].visible = _ambient_states[index] == 1 and not consumed
 	for index: int in range(_meshes.size()):
 		if is_instance_valid(_meshes[index]): _meshes[index].material_override = _originals[index]
 	for index: int in range(_emitters.size()):
@@ -200,6 +228,38 @@ func restore_source(consumed: bool) -> void:
 ## API kiểm tra pool cố định mà không truy cập biến riêng.
 func get_active_slot_count() -> int:
 	return _active_slots
+## API quan sát từng hạt để test thời điểm xuất phát/đến, không đọc mảng private từ bên ngoài.
+func get_gather_flight(index: int) -> Vector2:
+	if index < 0 or index >= get_gather_flight_count(): return Vector2.ZERO
+	return Vector2(_launch_times[index],_flight_times[index])
+## Pool giữ nguyên sức chứa; số hạt tham gia được giới hạn theo cấu hình từng lượt.
+func get_gather_flight_count() -> int:
+	return clampi(data.mote_count,0,motes.multimesh.instance_count)
+## Một cửa sổ tụ không bao gồm nhịp nén cuối pha.
+func get_gather_window() -> float:
+	return _gather_window
+## Lập lịch một lần: mỗi đợt có nhóm riêng, mỗi hạt có độ trễ và thời gian bay riêng.
+func _prepare_flights() -> void:
+	if not data.randomize_gather: _random.seed = data.particle_seed
+	_gather_window = maxf(data.gather_time-data.breath_time,data.minimum_time)
+	var waves: int = clampi(data.gather_waves,1,8)
+	var wave_window: float = _gather_window/(float(waves)+0.5)
+	var requested_max: float = maxf(data.gather_flight_time.x,data.gather_flight_time.y)
+	var flight_max: float = clampf(requested_max,wave_window*0.3,minf(wave_window*data.gather_wave_overlap,_gather_window*0.9))
+	var requested_min: float = minf(data.gather_flight_time.x,data.gather_flight_time.y)
+	var flight_min: float = flight_max*clampf(requested_min/maxf(requested_max,data.minimum_time),0.3,1.0)
+	var jitter: float = minf(absf(data.gather_launch_jitter),wave_window*0.35)
+	var span: float = maxf(_gather_window-flight_max-jitter*2.0,0.0)*clampf(data.gather_stagger,0.0,1.0)
+	var spacing: float = span/maxf(float(waves-1),1.0)
+	for index: int in range(motes.multimesh.instance_count):
+		var wave: int = index%waves
+		var start: float = jitter+spacing*float(wave)+_random.randf_range(-jitter,jitter)
+		if waves == 1: start += span*0.5
+		_launch_times[index] = start
+		_flight_times[index] = _random.randf_range(flight_min,flight_max)
+		motes.multimesh.set_instance_custom_data(index,Color(start,_flight_times[index],_random.randf(),_random.randf()))
+	## Lịch mới là một lượt riêng, không được nội suy custom data với lượt cũ khi world đang pause.
+	motes.multimesh.reset_instances_physics_interpolation()
 ## Nguồn warmup gồm cả biến thể instancing và material sách đã chuẩn bị.
 func get_shader_warmup_sources() -> Array[Node]:
 	return [self]
@@ -216,6 +276,7 @@ func _make_material(shader: Shader) -> ShaderMaterial:
 ## Ghi tham số cố định một lần để giữ vòng lặp nóng nhỏ.
 func _prepare_parameters() -> void:
 	_mote_mat.set_shader_parameter(&"hot_color", data.hot_color)
+	_mote_mat.set_shader_parameter(&"book_mote_size",data.book_mote_size)
 	_mote_mat.set_shader_parameter(&"landing_start", data.landing_start)
 	_mote_mat.set_shader_parameter(&"dust_size", data.dust_size)
 	_mote_mat.set_shader_parameter(&"dust_height", data.dust_height)
@@ -225,6 +286,7 @@ func _prepare_parameters() -> void:
 	_mote_mat.set_shader_parameter(&"gather_acceleration",data.gather_acceleration)
 	_mote_mat.set_shader_parameter(&"gather_stagger",data.gather_stagger)
 	_mote_mat.set_shader_parameter(&"mote_stretch",data.mote_stretch)
+	_mote_mat.set_shader_parameter(&"streak_ratio",data.streak_ratio)
 	_mote_mat.set_shader_parameter(&"mote_size", data.mote_size)
 	_mote_mat.set_shader_parameter(&"foreground_size", data.foreground_size)
 	_mote_mat.set_shader_parameter(&"foreground_depth", data.foreground_depth)
@@ -237,12 +299,16 @@ func _prepare_parameters() -> void:
 	_ray_mat.set_shader_parameter(&"ray_width", data.ray_width)
 	_ray_mat.set_shader_parameter(&"core_size", data.core_size)
 	_ray_mat.set_shader_parameter(&"charge_core_ratio",data.charge_core_ratio)
+	_ray_mat.set_shader_parameter(&"charge_core_opacity",data.charge_core_opacity)
 	_ray_mat.set_shader_parameter(&"charge_power",data.charge_power)
+	_ray_mat.set_shader_parameter(&"core_decay",data.core_decay)
 	_ray_mat.set_shader_parameter(&"ray_length_variation",data.ray_length_variation)
 	_ray_mat.set_shader_parameter(&"ray_curl",data.ray_curl)
+	_ray_mat.set_shader_parameter(&"ray_angle_jitter",data.ray_angle_jitter)
 	_ray_mat.set_shader_parameter(&"stream_width", data.stream_width)
 	_ray_mat.set_shader_parameter(&"stream_radius", data.stream_radius)
 	_ray_mat.set_shader_parameter(&"stream_height", data.stream_height)
+	_ray_mat.set_shader_parameter(&"stream_compression",data.stream_compression)
 	_ring_mat.set_shader_parameter(&"radius", data.ring_radius)
 	_ring_mat.set_shader_parameter(&"width", data.ring_width)
 	_ring_mat.set_shader_parameter(&"floor_height", data.ring_floor)

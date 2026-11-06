@@ -23,7 +23,11 @@ const BOOK_SCENE: PackedScene = preload("res://objects/core/pickups/ability/wind
 @export var baseline_seconds: float = 2.0
 @export var preview_heading: float = PI
 @export var gather_capture_beats: PackedFloat32Array = PackedFloat32Array([0.1,0.45,0.82,0.96])
+@export var lift_capture_beats: PackedFloat32Array = PackedFloat32Array([0.1,0.35,0.65,0.90])
+@export var schedule_tolerance: float = 0.002
+@export var burst_capture_beats: PackedFloat32Array = PackedFloat32Array([0.03,0.55])
 @export var orientation_tolerance: float = 0.99
+@export var film_capture_step: float = 0.08
 @export var output: String = "user://ability_acquire"
 var _world: Node3D
 var _actor: Player
@@ -54,17 +58,36 @@ var _max_draws: float = 0.0
 var _pickup_phase: StringName
 var _reveal_started: int = 0
 var _warmup_baseline: bool = false
+var _perf_toggle: bool = false
+var _showcase: bool = false
+var _film: bool = false
+var _flight_only: bool = false
+var _confirmation_only: bool = false
+var _transfer_count: int = 0
+var _snapshot_armed: bool = false
+var _graphics_snapshot: Transform3D
+var _camera_snapshot: Vector2
+var _pose_skeleton: Skeleton3D
+var _bone_indices: PackedInt32Array = PackedInt32Array()
+var _bone_snapshot: Array[Quaternion] = []
 ## Deferred chờ autoload và save manager sẵn sàng trước khi tách tiến trình thử.
 func _ready() -> void:
+	if OS.get_cmdline_user_args().has("--trace"): print("ACQUIRE_TRACE ready")
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(false)
 	_run.call_deferred()
 ## Fixture tự khôi phục tiến trình; không ghi save thật của người dùng.
 func _run() -> void:
+	if OS.get_cmdline_user_args().has("--trace"): print("ACQUIRE_TRACE run")
 	for arg: String in OS.get_cmdline_user_args():
 		if arg == "--verify": _verify = true
 		if arg == "--capture": _capture_enabled = true
 		if arg == "--perf": _perf = true; _verify = true
+		if arg == "--perf-toggle": _perf = true; _verify = true; _perf_toggle = true
+		if arg == "--showcase": _showcase = true; _verify = true
+		if arg == "--film": _film = true
+		if arg == "--flight-only": _flight_only = true; _verify = true
+		if arg == "--confirmation-only": _confirmation_only = true; _verify = true
 		if arg == "--warmup-baseline": _warmup_baseline = true
 		if arg.begins_with("--output="): output = arg.trim_prefix("--output=")
 	_headless = DisplayServer.get_name() == "headless"
@@ -73,6 +96,7 @@ func _run() -> void:
 	if GameState.progress_committed.is_connected(SaveManager.save_game): GameState.progress_committed.disconnect(SaveManager.save_game)
 	GameState.ability_unlocked.connect(_on_unlocked)
 	_wind = load("res://abilities/wind_blast/wind_blast.tres") as AbilityData
+	if OS.get_cmdline_user_args().has("--trace"): print("ACQUIRE_TRACE wind_loaded")
 	_fire = load("res://abilities/flame_breath/flame_breath.tres") as AbilityData
 	_selected = _wind
 	var clean: PlayerProgress = _saved.snapshot()
@@ -80,14 +104,17 @@ func _run() -> void:
 	GameState.replace_progress(clean)
 	GameState.set_weapon(load("res://resources/combat/weapons/sword.tres") as WeaponData)
 	_build_world()
-	_data = Tuning.new()
+	if OS.get_cmdline_user_args().has("--trace"): print("ACQUIRE_TRACE world_built")
 	_sequence = SEQUENCE_SCENE.instantiate() as Sequence
+	_data = _sequence.data.duplicate(true) as Tuning
 	_sequence.data = _data
 	_sequence.source_visual = _book
 	_world.add_child(_sequence)
+	if OS.get_cmdline_user_args().has("--trace"): print("ACQUIRE_TRACE sequence_added")
 	_sequence.phase_started.connect(_on_phase)
 	_sequence.burst_peaked.connect(_on_burst)
 	_sequence.finished.connect(_on_finished)
+	_sequence.cancelled.connect(_on_stopped)
 	_sequence.ui.transfer_started.connect(_capture_transfer)
 	_sequence.ui.icon_landed.connect(_capture_landing)
 	_build_buttons()
@@ -123,11 +150,14 @@ func _run() -> void:
 			await get_tree().create_timer(baseline_seconds,true,false,true).timeout
 			_measuring = false
 			_report_burst()
-		await _tests()
+		if _perf_toggle: await _visual_cost_tests()
+		else: await _tests()
 		set_process(false)
 		_sequence.stop_all()
 		GameState.replace_progress(_saved)
 		print("ABILITY_ACQUIRE_RESULT fails=",_fails)
+		_epoch += 1
+		_capture_enabled = false
 		_world.free()
 		await get_tree().process_frame
 		await get_tree().process_frame
@@ -220,6 +250,7 @@ func _begin(ability: AbilityData, label: String) -> void:
 	if _played: _sequence.renderer.restore_source(false)
 	_book.show()
 	_played = true
+	_snapshot_presentation()
 	_check(_sequence.play(_actor,ability),"bắt đầu "+label)
 ## Commit trong preview mô phỏng đúng listener pickup thật, GameState tự chống trao trùng.
 func _on_burst() -> void:
@@ -241,8 +272,23 @@ func _on_phase(phase: StringName) -> void:
 	if _capture_enabled and not _perf: _capture_phase(phase,_epoch,_case)
 	if _capture_enabled and not _perf and phase == &"Gather":
 		for beat: float in gather_capture_beats: _capture_gather_beat(beat,_epoch,_case)
+		if _case == "wind_1": _dump_schedule()
+	if _capture_enabled and not _perf and phase == &"Lift":
+		for beat: float in lift_capture_beats: _capture_lift_beat(beat,_epoch,_case)
+	if _capture_enabled and not _perf and phase == &"Burst":
+		for beat: float in burst_capture_beats: _capture_burst_beat(beat,_epoch,_case)
 	if _capture_enabled and not _perf and phase == &"Settle": _capture_landing_dust(_epoch,_case)
+	if _film and not _perf and _case == "wind_1": _capture_film(phase,_epoch)
 	if is_instance_valid(_status): _status.text = String(phase)
+## Ghi khung hình thật và thời điểm thật để xem nhịp chuyển động; không bật trong benchmark.
+func _capture_film(phase: StringName, epoch: int) -> void:
+	if _headless: return
+	while epoch == _epoch and phase == _phase and is_instance_valid(_sequence) and not _sequence.is_idle():
+		await RenderingServer.frame_post_draw
+		if epoch != _epoch or not is_instance_valid(_sequence): return
+		var stamp: int = Time.get_ticks_msec()
+		get_viewport().get_texture().get_image().save_png(output.path_join("film_%012d.png" % stamp))
+		await get_tree().create_timer(maxf(film_capture_step,_data.minimum_time),true,false,true).timeout
 ## Screenshot lấy ở giữa pha và kiểm tra epoch để không chụp nhầm lượt sau.
 func _capture_phase(phase: StringName, epoch: int, label: String) -> void:
 	if _headless: return
@@ -250,16 +296,38 @@ func _capture_phase(phase: StringName, epoch: int, label: String) -> void:
 	var fraction: float = burst_capture_fraction if phase == &"Burst" else capture_fraction
 	if phase == &"Reveal": duration = maxf(_data.panel_time,_data.title_time)+confirm_read_time; fraction = 0.8
 	await get_tree().create_timer(maxf(duration*fraction,_data.minimum_time),true,false,true).timeout
-	if epoch != _epoch or phase != _phase or _sequence.is_idle(): return
+	if epoch != _epoch or phase != _phase or not is_instance_valid(_sequence) or _sequence.is_idle(): return
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(output.path_join(label+"_"+String(phase)+".png"))
 ## Chuỗi ảnh theo thời gian kiểm chứng hạt đang tụ và ánh sáng tăng, thay vì chỉ chọn một ảnh đẹp.
 func _capture_gather_beat(fraction: float, epoch: int, label: String) -> void:
 	if _headless: return
 	await get_tree().create_timer(_data.gather_time*fraction,true,false,true).timeout
-	if epoch != _epoch or _phase != &"Gather" or _sequence.is_idle(): return
+	if epoch != _epoch or _phase != &"Gather" or not is_instance_valid(_sequence) or _sequence.is_idle(): return
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(output.path_join(label+"_Gather_%03d.png" % roundi(fraction*100.0)))
+## Tách nhịp flash ngắn và đuôi sóng để ảnh đơn không đánh đồng cả pha là một khối trắng.
+func _capture_burst_beat(fraction: float, epoch: int, label: String) -> void:
+	if _headless: return
+	await get_tree().create_timer(_data.burst_time*fraction,true,false,true).timeout
+	if epoch != _epoch or _phase != &"Burst" or not is_instance_valid(_sequence) or _sequence.is_idle(): return
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(output.path_join(label+"_Burst_%03d.png" % roundi(fraction*100.0)))
+## Kiểm tra đầu/cuối sách tan để không bỏ sót nhiễu ở đoạn trước lúc tụ lực.
+func _capture_lift_beat(fraction: float, epoch: int, label: String) -> void:
+	if _headless: return
+	await get_tree().create_timer(_data.lift_time*fraction,true,false,true).timeout
+	if epoch != _epoch or _phase != &"Lift" or not is_instance_valid(_sequence) or _sequence.is_idle(): return
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(output.path_join(label+"_Lift_%03d.png" % roundi(fraction*100.0)))
+## Lưu lịch đang dùng thật cho GPU, không tạo một lịch mô phỏng khác để minh họa.
+func _dump_schedule() -> void:
+	var file: FileAccess = FileAccess.open(output.path_join("gather_schedule.csv"),FileAccess.WRITE)
+	if file == null: return
+	file.store_line("particle,start_seconds,flight_seconds,arrival_seconds")
+	for index: int in range(_sequence.renderer.get_gather_flight_count()):
+		var flight: Vector2 = _sequence.renderer.get_gather_flight(index)
+		file.store_line("%d,%.6f,%.6f,%.6f" % [index,flight.x,flight.y,flight.x+flight.y])
 ## Thời gian phục vụ fixture lấy cùng resource đang chạy.
 func _duration(phase: StringName) -> float:
 	var key: String = String(phase).to_snake_case()+"_time"
@@ -267,11 +335,12 @@ func _duration(phase: StringName) -> float:
 	return float(_data.get(key))
 ## Chụp icon thật đang bay, không dựng một hình UI thay thế để minh họa.
 func _capture_transfer() -> void:
+	_transfer_count += 1
 	if not _capture_enabled or _perf or _headless: return
 	var epoch: int = _epoch
 	var label: String = _case
 	await get_tree().create_timer(_data.fly_time*0.5,true,false,true).timeout
-	if epoch != _epoch or _sequence.is_idle(): return
+	if epoch != _epoch or not is_instance_valid(_sequence) or _sequence.is_idle(): return
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(output.path_join(label+"_Transfer.png"))
 ## Chụp ngay khi slot nhận signal để kiểm chứng đường bay vào HUD thật.
@@ -284,12 +353,50 @@ func _capture_landing() -> void:
 func _capture_landing_dust(epoch: int, label: String) -> void:
 	if _headless: return
 	await get_tree().create_timer(_data.settle_time*landing_capture_fraction,true,false,true).timeout
-	if epoch != _epoch or _phase != &"Settle" or _sequence.is_idle(): return
+	if epoch != _epoch or _phase != &"Settle" or not is_instance_valid(_sequence) or _sequence.is_idle(): return
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(output.path_join(label+"_Land.png"))
 ## Status preview là sự kiện, không cần vòng process khi idle.
 func _on_finished() -> void:
+	_check_presentation_restored()
 	if is_instance_valid(_status): _status.text = "Đã nhận kỹ năng."
+## Kiểm tra ngay trong signal hủy, trước khi animation gameplay được chạy lại ở frame sau.
+func _on_stopped(_committed: bool) -> void:
+	_check_presentation_restored()
+## Fixture chụp độc lập model/camera/xương để phát hiện cleanup thiếu một phần trạng thái.
+func _snapshot_presentation() -> void:
+	var graphics: Node3D = _actor.get_node(_data.visual_path) as Node3D
+	_graphics_snapshot = graphics.transform
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	_camera_snapshot = Vector2(camera.fov,camera.size)
+	_bone_indices.clear()
+	_bone_snapshot.clear()
+	_pose_skeleton = null
+	for node: Node in graphics.find_children("*","Skeleton3D",true,false):
+		_pose_skeleton = node as Skeleton3D
+		break
+	if _pose_skeleton != null:
+		for bone_name: StringName in _data.pose_children:
+			var index: int = _pose_skeleton.find_bone(String(bone_name))
+			if index >= 0:
+				_bone_indices.append(index)
+				_bone_snapshot.append(_pose_skeleton.get_bone_pose_rotation(index))
+	_snapshot_armed = true
+## So sánh trạng thái thật tại callback hoàn tất; không chờ animation idle làm mất dấu pose cũ.
+func _check_presentation_restored() -> void:
+	if not _snapshot_armed: return
+	_snapshot_armed = false
+	var graphics: Node3D = _actor.get_node(_data.visual_path) as Node3D
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	_check(graphics.transform.is_equal_approx(_graphics_snapshot),"graphic transform khôi phục đủ")
+	_check(Vector2(camera.fov,camera.size).is_equal_approx(_camera_snapshot),"camera zoom khôi phục đủ")
+	_check(_bones_match_snapshot(),"tư thế xương khôi phục đủ")
+## Chỉ đọc xương đã cache, không phụ thuộc các mảng nội bộ của controller.
+func _bones_match_snapshot() -> bool:
+	if not is_instance_valid(_pose_skeleton): return true
+	for index: int in range(_bone_indices.size()):
+		if not _pose_skeleton.get_bone_pose_rotation(_bone_indices[index]).is_equal_approx(_bone_snapshot[index]): return false
+	return true
 ## Mẫu đã cấp phát đủ trước combat; không append/resize ở frame được đo.
 func _process(_delta: float) -> void:
 	var now: int = Time.get_ticks_usec()
@@ -308,7 +415,13 @@ func _report_burst() -> void:
 	print("ACQUIRE_PERF ",_case,"_",_phase," fps=",1000.0*_sample_count/total," first_ms=",_samples[0]," median_ms=",ordered[_sample_count >> 1]," p95_ms=",ordered[mini(_sample_count-1,floori(_sample_count*0.95))]," worst_ms=",ordered[-1]," draws=",_max_draws," samples=",_sample_count)
 ## Use case đầy đủ, lặp lại và chống trao trùng cùng dùng instance duy nhất.
 func _tests() -> void:
-	for index: int in range(repeats):
+	if _confirmation_only:
+		await _confirmation_tests()
+		return
+	if _flight_only:
+		await _flight_tests()
+		return
+	for index: int in range(1 if _showcase else repeats):
 		_begin(_wind,"wind_%d" % (index+1))
 		await _wait_finished(_sequence)
 		_assert_clean(_sequence,"lặp gió")
@@ -317,17 +430,127 @@ func _tests() -> void:
 			_assert_clean(_sequence,"ba giây sau finished")
 			await RenderingServer.frame_post_draw
 			get_viewport().get_texture().get_image().save_png(output.path_join("after_three_seconds.png"))
-	_check(_grants.get(_wind.id,0) == 1,"3 replay chỉ mở khóa gió một lần")
+	_check(_grants.get(_wind.id,0) == 1,"các lượt phát chỉ mở khóa gió một lần")
 	_begin(_fire,"fire")
 	await _wait_finished(_sequence)
 	_assert_clean(_sequence,"đổi sang dữ liệu lửa")
-	if _perf: return
+	if _perf or _showcase: return
 	await _abort_tests()
 	await _orientation_tests()
+	await _presentation_tests()
+	await _flight_tests()
+	await _confirmation_tests()
 	await _extreme_tests()
 	await _pickup_test()
 	await _removal_tests()
 	await _paused_test()
+## Đối chứng xen kẽ trong cùng tiến trình: giữ timeline/control, chỉ bật tắt phần vẽ của VFX/UI.
+func _visual_cost_tests() -> void:
+	for index: int in range(4):
+		var enabled: bool = index%2 == 1
+		_sequence.renderer.visible = enabled
+		_sequence.ui.visible = enabled
+		_begin(_wind,"visual_%s_%d" % ["on" if enabled else "off",index])
+		await _wait_finished(_sequence)
+		_assert_clean(_sequence,"đối chứng phần vẽ")
+	_sequence.renderer.show()
+	_sequence.ui.show()
+## Kiểm tra pose/camera có tác dụng và các mức không đều thực sự tắt được phần đó.
+func _presentation_tests() -> void:
+	_begin(_wind,"ceremony_pose")
+	while _phase != &"Gather": await get_tree().process_frame
+	await get_tree().process_frame
+	_check(not _bones_match_snapshot(),"nâng tay đổi tư thế xương thật")
+	_check(get_viewport().get_camera_3d().fov<_camera_snapshot.x,"camera tiến gần khi lơ lửng")
+	_sequence.stop_all()
+	var push: float = _data.camera_push
+	var pose: bool = _data.pose_enabled
+	_data.camera_push = 0.0
+	_data.pose_enabled = false
+	_begin(_wind,"ceremony_disabled")
+	while _phase != &"Gather": await get_tree().process_frame
+	_check(_bones_match_snapshot(),"tắt pose giữ xương cũ")
+	_check(is_equal_approx(get_viewport().get_camera_3d().fov,_camera_snapshot.x),"zoom không giữ FOV cũ")
+	_sequence.stop_all()
+	_data.camera_push = push
+	_data.pose_enabled = pose
+## Lịch được kiểm tra ở một/nhiều đợt và thời gian rất ngắn; thời điểm đến phải lệch nhau.
+func _flight_tests() -> void:
+	var waves: int = _data.gather_waves
+	var duration: float = _data.gather_time
+	var deterministic: bool = _data.randomize_gather
+	for count: int in [1,4,8]:
+		_data.gather_waves = count
+		_data.randomize_gather = false
+		_begin(_wind,"flight_%d" % count)
+		await get_tree().process_frame
+		if not _headless: await RenderingServer.frame_post_draw
+		var valid: bool = true
+		var earliest: float = INF
+		var latest: float = 0.0
+		for index: int in range(_sequence.renderer.get_gather_flight_count()):
+			var flight: Vector2 = _sequence.renderer.get_gather_flight(index)
+			var stored: Color = _sequence.renderer.motes.multimesh.get_instance_custom_data(index)
+			if index == 0: print("FLIGHT_BUFFER waves=",count," cpu=",flight," gpu=",stored," window=",_sequence.renderer.get_gather_window())
+			valid = valid and flight.x >= 0.0 and flight.y > 0.0 and flight.x+flight.y <= _sequence.renderer.get_gather_window()+schedule_tolerance
+			valid = valid and absf(stored.r-flight.x)<schedule_tolerance and absf(stored.g-flight.y)<schedule_tolerance
+			earliest = minf(earliest,flight.x+flight.y)
+			latest = maxf(latest,flight.x+flight.y)
+		_check(valid,"lịch %d đợt hợp lệ và ghi đúng vào buffer GPU" % count)
+		_check(latest-earliest>_sequence.renderer.get_gather_window()*0.05,"hạt %d đợt đến không đồng loạt" % count)
+		var ribbon: Node3D = _book.find_child("BookWindRibbons",true,false) as Node3D
+		_check(ribbon == null or not ribbon.visible,"dải gió trang trí không bị biến thành mảng sách đục")
+		_sequence.stop_all()
+	_data.gather_time = short_time
+	_begin(_wind,"flight_short")
+	var bounded: bool = true
+	for index: int in range(_sequence.renderer.get_gather_flight_count()):
+		var flight: Vector2 = _sequence.renderer.get_gather_flight(index)
+		bounded = bounded and is_finite(flight.x) and is_finite(flight.y) and flight.y>0.0 and flight.x+flight.y <= _sequence.renderer.get_gather_window()+schedule_tolerance
+	_check(bounded,"pha cực ngắn vẫn có lịch hữu hạn, không chia cho không")
+	_sequence.stop_all()
+	_data.gather_waves = waves
+	_data.gather_time = duration
+	_data.randomize_gather = deterministic
+## Đi qua input của engine: nhả chuột/sai nút không đóng, chuột trái và Enter chỉ đóng một lần.
+func _confirmation_tests() -> void:
+	for keyboard: bool in [false,true]:
+		_begin(_wind,"confirm_keyboard" if keyboard else "confirm_mouse")
+		_sequence.play_settle()
+		while _phase != &"Reveal": await get_tree().process_frame
+		var before: int = _transfer_count
+		var mouse: InputEventMouseButton = InputEventMouseButton.new()
+		mouse.button_index = MOUSE_BUTTON_LEFT
+		mouse.pressed = true
+		Input.parse_input_event(mouse)
+		await get_tree().process_frame
+		_check(_transfer_count == before,"click sớm không bỏ qua phần giới thiệu")
+		while not _sequence.ui.is_waiting_for_confirm(): await get_tree().process_frame
+		mouse.button_index = MOUSE_BUTTON_RIGHT
+		Input.parse_input_event(mouse)
+		await get_tree().process_frame
+		_check(_transfer_count == before,"chuột phải không xác nhận")
+		mouse.button_index = MOUSE_BUTTON_LEFT
+		mouse.pressed = false
+		Input.parse_input_event(mouse)
+		await get_tree().process_frame
+		_check(_transfer_count == before,"nhả chuột không xác nhận")
+		if keyboard:
+			var key: InputEventKey = InputEventKey.new()
+			key.physical_keycode = KEY_ENTER
+			key.keycode = KEY_ENTER
+			key.pressed = true
+			Input.parse_input_event(key)
+		else:
+			mouse.pressed = true
+			Input.parse_input_event(mouse)
+		await get_tree().process_frame
+		_check(_transfer_count == before+1,"Enter xác nhận" if keyboard else "chuột trái xác nhận")
+		Input.parse_input_event(mouse)
+		await get_tree().process_frame
+		_check(_transfer_count == before+1,"input lặp không phát đường bay icon lần hai")
+		await _wait_finished(_sequence)
+		_assert_clean(_sequence,"xác nhận qua input")
 ## Caller vốn đang pause phải nhận lại trạng thái pause, thay vì bị ép mở game.
 func _paused_test() -> void:
 	get_tree().paused = true
@@ -363,8 +586,10 @@ func _abort_tests() -> void:
 func _extreme_tests() -> void:
 	var saved: Array[float] = [_data.lift_time,_data.gather_time,_data.burst_time,_data.settle_time,_data.panel_time,_data.fly_time,_data.slot_time,_data.title_time]
 	var counts: Vector3i = Vector3i(_data.mote_count,_data.spark_count,_data.dust_count)
+	var book_count: int = _data.book_mote_count
 	_set_times(short_time)
 	_data.mote_count = 0
+	_data.book_mote_count = 0
 	_data.spark_count = 0
 	_data.dust_count = 0
 	_data.burst_intensity = 0.0
@@ -374,6 +599,7 @@ func _extreme_tests() -> void:
 	await _wait_finished(_sequence)
 	_assert_clean(_sequence,"zero count, dark, intensity zero")
 	_data.mote_count = _data.pool_capacity
+	_data.book_mote_count = 16
 	_data.spark_count = _data.pool_capacity
 	_data.dust_count = _data.pool_capacity
 	_data.burst_intensity = _data.maximum_intensity
@@ -383,6 +609,7 @@ func _extreme_tests() -> void:
 	await _wait_finished(_sequence)
 	_assert_clean(_sequence,"max count, bright, intensity max")
 	_data.mote_count = counts.x
+	_data.book_mote_count = book_count
 	_data.spark_count = counts.y
 	_data.dust_count = counts.z
 	_data.burst_intensity = 1.0
@@ -411,9 +638,9 @@ func _orientation_tests() -> void:
 		_begin(_wind,"facing_%d" % index)
 		await get_tree().create_timer(_data.facing_time+_data.minimum_time,true,false,true).timeout
 		await get_tree().process_frame
-		var toward: Vector3 = camera.global_position-_actor.model.global_position
+		var toward: Vector3 = camera.global_position-_sequence.context.visual.global_position
 		toward.y = 0.0
-		var forward: Vector3 = _actor.model.global_basis.z
+		var forward: Vector3 = _sequence.context.visual.global_basis.z
 		forward.y = 0.0
 		_check(forward.normalized().dot(toward.normalized())>orientation_tolerance,"mặt hướng camera, hướng đầu %d" % index)
 		_sequence.stop_all()

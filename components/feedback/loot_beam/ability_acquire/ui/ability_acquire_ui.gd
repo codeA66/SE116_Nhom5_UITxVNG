@@ -58,13 +58,14 @@ func begin(ability: AbilityData) -> void:
 	_continue.text = data.continue_caption
 	_hint.text = _control_hint(ability)
 ## Lớp dim tồn tại ở pha thế giới; panel chỉ bật sau khi cáo đã hạ xuống.
-func set_grade(dim: float, desaturation: float, pulse: float = 0.0, charge: float = 0.0) -> void:
+func set_grade(dim: float, desaturation: float, pulse: float = 0.0, charge: float = 0.0, shock: float = -1.0) -> void:
 	_root.show()
 	_shade.show()
 	_screen_mat.set_shader_parameter(&"dim", clampf(dim, 0.0, 1.0))
 	_screen_mat.set_shader_parameter(&"desaturate", clampf(desaturation, 0.0, 1.0))
 	_screen_mat.set_shader_parameter(&"pulse", clampf(pulse, 0.0, 1.0))
 	_screen_mat.set_shader_parameter(&"charge",clampf(charge,0.0,data.maximum_intensity))
+	_screen_mat.set_shader_parameter(&"shock",shock)
 	_screen_mat.set_shader_parameter(&"local_focus", _mode == 0)
 ## Điểm tập trung theo camera game, không dựa vào kích thước ảnh chụp cố định.
 func set_focus(world: Vector3) -> void:
@@ -94,7 +95,12 @@ func request_close() -> void:
 	transfer_started.emit()
 ## Chỉ chặn input trong lượt modal, không thay InputMap.
 func _input(event: InputEvent) -> void:
-	if _mode == 1 and event.is_action_pressed(data.confirm_action) and not event.is_echo(): request_close()
+	if _mode == 1:
+		var confirm: bool = event.is_action_pressed(data.confirm_action) and not event.is_echo()
+		if event is InputEventMouseButton:
+			var mouse: InputEventMouseButton = event as InputEventMouseButton
+			confirm = confirm or (mouse.pressed and mouse.button_index == data.confirm_mouse_button)
+		if confirm: request_close()
 	if _root.visible: get_viewport().set_input_as_handled()
 ## Một icon được tái sử dụng cho đường bay và một glow cho ô đích.
 func _process(delta: float) -> void:
@@ -109,8 +115,8 @@ func _process(delta: float) -> void:
 		var t: float = clampf(_clock / maxf(data.fly_time, data.minimum_time), 0.0, 1.0)
 		var end: Vector2 = _target_center() if is_instance_valid(_target) else get_viewport().get_visible_rect().size * 0.5
 		var bend: Vector2 = (_fly_start + end) * 0.5 + Vector2.UP * data.illustration_size
-		var ease: float = t * t * (3.0 - 2.0 * t)
-		_fly.position = (1.0-ease)*(1.0-ease)*_fly_start + 2.0*(1.0-ease)*ease*bend + ease*ease*end - _fly.size*0.5
+		var eased: float = t * t * (3.0 - 2.0 * t)
+		_fly.position = (1.0-eased)*(1.0-eased)*_fly_start + 2.0*(1.0-eased)*eased*bend + eased*eased*end - _fly.size*0.5
 		_fly.scale = Vector2.ONE * lerpf(1.0, 0.7, t)
 		set_grade(data.reveal_dim * (1.0-t), data.gather_desaturation*(1.0-t))
 		if t >= 1.0 and not _landed:
@@ -173,6 +179,8 @@ func _build() -> void:
 	_screen_mat.set_shader_parameter(&"focus_radius", data.focus_radius)
 	_screen_mat.set_shader_parameter(&"exposure_gain", data.exposure_gain)
 	_screen_mat.set_shader_parameter(&"local_radiance", data.local_radiance)
+	_screen_mat.set_shader_parameter(&"shock_gain",data.shock_gain)
+	_screen_mat.set_shader_parameter(&"shock_width",data.shock_width)
 	_shade.material = _screen_mat
 	_panel = Control.new()
 	_root.add_child(_panel)
@@ -183,22 +191,23 @@ func _build() -> void:
 	_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_icon.size = Vector2.ONE * data.illustration_size
-	_icon.position = Vector2((data.panel_size.x-data.illustration_size)*0.5, data.panel_size.y*0.04)
+	_icon.position = Vector2((data.panel_size.x-data.illustration_size)*0.5,0)
 	_panel.add_child(_icon)
 	_icon_mat = ShaderMaterial.new()
 	_icon_mat.shader = REVEAL
 	_icon.material = _icon_mat
-	_caption = _label(data.caption_font, 0.40, Color(0.65,0.72,0.76))
-	_title = _label(data.title_font, 0.47, Color(0.94,0.98,1.0))
+	_caption = _label(data.caption_font, data.caption_y, Color(0.65,0.72,0.76))
+	_title = _label(data.title_font, data.title_y, Color(0.94,0.98,1.0))
+	if data.title_typeface != null: _title.add_theme_font_override(&"font",data.title_typeface)
 	var divider: ColorRect = ColorRect.new()
 	divider.color = Color(0.45,0.65,0.7,0.7)
-	divider.position = Vector2(data.panel_size.x*0.22,data.panel_size.y*0.63)
+	divider.position = Vector2(data.panel_size.x*0.22,data.panel_size.y*data.divider_y)
 	divider.size = Vector2(data.panel_size.x*0.56,1.0)
 	_panel.add_child(divider)
-	_hint = _label(data.hint_font, 0.67, Color(0.88,0.94,0.96))
-	_description = _label(data.body_font, 0.76, Color(0.55,0.64,0.68))
+	_hint = _label(data.hint_font, data.hint_y, Color(0.88,0.94,0.96))
+	_description = _label(data.body_font, data.description_y, Color(0.55,0.64,0.68))
 	_description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_continue = _label(data.hint_font, 0.91, Color(0.45,0.55,0.60))
+	_continue = _label(data.hint_font, data.continue_y, Color(0.45,0.55,0.60))
 	_fly = TextureRect.new()
 	_fly.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_fly.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
