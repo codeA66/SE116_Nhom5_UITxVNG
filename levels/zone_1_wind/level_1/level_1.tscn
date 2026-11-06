@@ -31,6 +31,11 @@
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/tier3_connection.tscn" id="tier3_bridge"]
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint.tscn" id="tier3_checkpoint"]
 [ext_resource type="PackedScene" uid="uid://6b38aottgqnl" path="res://levels/zone_1_wind/level_1/rooms/tier_3/tier3_test.tscn" id="tier3_map"]
+[ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="area_title_trigger"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/wind.tres" id="area_wind"]
+[ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_1.tres" id="area_tier_1"]
+[ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_2.tres" id="area_tier_2"]
+[ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_3.tres" id="area_tier_3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_11p2m"]
 render_priority = -1
@@ -250,7 +255,25 @@ initialize_outside = true
 [node name="Shape" parent="Tier3VisibilityZone" index="0"]
 shape = SubResource("Tier3VisibilityShape")
 
+[node name="AreaTitles" type="Node" parent="."]
+
+[node name="Zone" parent="AreaTitles" instance=ExtResource("area_title_trigger")]
+area = ExtResource("area_wind")
+
+[node name="Tier1" parent="AreaTitles" instance=ExtResource("area_title_trigger")]
+area = ExtResource("area_tier_1")
+
+[node name="Tier2" parent="AreaTitles" instance=ExtResource("area_title_trigger")]
+area = ExtResource("area_tier_2")
+
+[node name="Tier3" parent="AreaTitles" instance=ExtResource("area_title_trigger")]
+area = ExtResource("area_tier_3")
+
 [connection signal="player_spawned" from="." to="AmbientWind" method="set_follow_target"]
+[connection signal="combat_ready" from="." to="AreaTitles/Zone" method="announce"]
+[connection signal="player_entered" from="Tier1Zone" to="AreaTitles/Tier1" method="announce"]
+[connection signal="player_entered" from="Tier2Zone" to="AreaTitles/Tier2" method="announce"]
+[connection signal="player_entered" from="Tier3Zone" to="AreaTitles/Tier3" method="announce"]
 
 [editable path="BackgroundIsland"]
 [editable path="BackgroundIsland2"]

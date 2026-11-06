@@ -1,10 +1,9 @@
 class_name ZoneData
-extends Resource
+extends AreaData
 ## Một khu lớn của đảo (Gió, Lửa, Băng, Sét). Cổng ở khu trung tâm, dấu nguyên tố trên cửa đền
 ## và điều kiện "đã phá khu" đều đọc từ đây: thêm khu mới = thêm .tres, không sửa code.
+## Tên, dòng phụ (chữ giới thiệu khu vực) kế thừa từ AreaData.
 
-@export var id: StringName
-@export var display_name: String = ""
 ## Màu nguyên tố của khu (cổng, dấu trên cửa đền)
 @export var color: Color = Color.WHITE
 ## Scene của khu; để trống = khu chưa làm, cổng luôn đóng

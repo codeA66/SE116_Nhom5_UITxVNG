@@ -6,19 +6,21 @@
 [ext_resource type="PackedScene" path="res://objects/hub/element_seal/element_seal.tscn" id="4_seal"]
 [ext_resource type="PackedScene" path="res://objects/hub/temple_door/temple_door.tscn" id="5_door"]
 [ext_resource type="PackedScene" path="res://objects/hub/hub_key/hub_key.tscn" id="6_key"]
-[ext_resource type="Resource" path="res://resources/world/zones/wind.tres" id="7_wind"]
-[ext_resource type="Resource" path="res://resources/world/zones/fire.tres" id="8_fire"]
-[ext_resource type="Resource" path="res://resources/world/zones/ice.tres" id="9_ice"]
-[ext_resource type="Resource" path="res://resources/world/zones/thunder.tres" id="10_thunder"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/wind.tres" id="7_wind"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/fire.tres" id="8_fire"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/ice.tres" id="9_ice"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/thunder.tres" id="10_thunder"]
 [ext_resource type="Script" path="res://objects/hub/zone_gate/unlock_conditions/key_unlock.gd" id="11_key_unlock"]
 [ext_resource type="Script" path="res://objects/hub/zone_gate/unlock_conditions/zone_cleared_unlock.gd" id="12_cleared"]
 [ext_resource type="Script" path="res://objects/hub/zone_gate/unlock_conditions/unlock_condition.gd" id="13_cond"]
-[ext_resource type="Script" path="res://resources/world/zones/zone_data.gd" id="14_zdata"]
+[ext_resource type="Script" path="res://resources/world/zones/_base/zone_data.gd" id="14_zdata"]
 [ext_resource type="Script" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="15_camview"]
 [ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="16_viewdata"]
 [ext_resource type="PackedScene" path="res://objects/world/camera_cutscene/camera_cutscene.tscn" id="17_cut"]
 [ext_resource type="Resource" path="res://resources/world/cutscenes/hub_intro.tres" id="18_intro"]
 [ext_resource type="PackedScene" path="res://levels/temple_center/hub/hub_scenery.tscn" id="19_scenery"]
+[ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="20_title"]
+[ext_resource type="Resource" path="res://resources/world/zones/hub.tres" id="21_hub"]
 
 [sub_resource type="StandardMaterial3D" id="Wall"]
 albedo_color = Color(0.4, 0.4, 0.42, 1)
@@ -153,3 +155,9 @@ data = ExtResource("18_intro")
 focus_target = NodePath("../Temple")
 persistent_id = &"hub.intro_seen"
 trigger_size = Vector3(6, 4, 6)
+
+[node name="AreaTitleTrigger" parent="." node_paths=PackedStringArray("wait_for_cutscene") instance=ExtResource("20_title")]
+area = ExtResource("21_hub")
+wait_for_cutscene = NodePath("../IntroCutscene")
+
+[connection signal="combat_ready" from="." to="AreaTitleTrigger" method="announce"]

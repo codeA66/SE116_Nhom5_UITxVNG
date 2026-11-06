@@ -1,11 +1,12 @@
 [gd_resource type="Resource" script_class="ZoneData" format=3]
 
-[ext_resource type="Script" path="res://resources/world/zones/zone_data.gd" id="1_zone"]
+[ext_resource type="Script" path="res://resources/world/zones/_base/zone_data.gd" id="1_zone"]
 
 [resource]
 script = ExtResource("1_zone")
 id = &"wind"
 display_name = "Khu Gió"
+subtitle = "Cung Điện Trên Mây"
 color = Color(0.65, 0.88, 0.94, 1)
 scene_path = "res://levels/zone_1_wind/level_1/level_1.tscn"
 arrival_id = &"start"
