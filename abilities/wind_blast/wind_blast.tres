@@ -1,6 +1,11 @@
 [gd_resource type="Resource" script_class="WindBlastData" format=3 uid="uid://bpnwmld1wx3qe"]
 
 [ext_resource type="Script" uid="uid://cefi8gdxmntd1" path="res://abilities/wind_blast/wind_blast_data.gd" id="1_blast"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/wind.svg" id="2_icon"]
+
+[sub_resource type="DPITexture" id="AcquireIllustration"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" viewBox=\"0 0 64 64\"><g fill=\"none\" stroke-linecap=\"round\"><path d=\"M8 24h30a8 8 0 1 0-8-8\" stroke=\"#d8faff\" stroke-width=\"5\"/><path d=\"M6 36h40a8 8 0 1 1-8 8\" stroke=\"#91e9f5\" stroke-width=\"5\"/><path d=\"M14 48h12\" stroke=\"#d8faff\" stroke-width=\"4\"/></g></svg>"
+base_scale = 4.0
 
 [resource]
 script = ExtResource("1_blast")
@@ -9,3 +14,7 @@ state = &"WindBlast"
 id = &"wind_blast"
 display_name = "Thổi gió"
 energy_cost = 1
+icon = ExtResource("2_icon")
+illustration = SubResource("AcquireIllustration")
+accent_color = Color(0.65098, 0.87843, 0.93725, 1)
+description = "Thổi một luồng gió về phía trước để tác động lên vật thể và kẻ địch."

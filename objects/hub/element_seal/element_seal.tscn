@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/hub/element_seal/element_seal.gd" id="1_seal"]
+[ext_resource type="Script" path="res://objects/hub/progress_watcher/progress_watcher.gd" id="2_watch"]
+
+[sub_resource type="SphereMesh" id="SealMesh"]
+radius = 0.45
+height = 0.9
+radial_segments = 12
+rings = 6
+
+[node name="ElementSeal" type="MeshInstance3D"]
+mesh = SubResource("SealMesh")
+script = ExtResource("1_seal")
+
+[node name="ProgressWatcher" type="Node" parent="."]
+script = ExtResource("2_watch")

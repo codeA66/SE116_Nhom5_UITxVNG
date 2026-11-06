@@ -1,0 +1,188 @@
+[gd_scene format=3]
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 1
+background_color = Color(0.32, 0.36, 0.42, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.62, 0.66, 0.72, 1)
+ambient_light_energy = 0.7
+fog_enabled = true
+fog_light_color = Color(0.36, 0.4, 0.46, 1)
+fog_density = 0.004
+
+[sub_resource type="StandardMaterial3D" id="Floor"]
+albedo_color = Color(0.55, 0.55, 0.56, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Wall"]
+albedo_color = Color(0.4, 0.4, 0.42, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="FloorMesh"]
+material = SubResource("Floor")
+size = Vector3(60, 1, 60)
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(60, 1, 60)
+
+[sub_resource type="BoxMesh" id="RailNSMesh"]
+material = SubResource("Wall")
+size = Vector3(60, 1.1, 0.4)
+
+[sub_resource type="BoxShape3D" id="RailNSShape"]
+size = Vector3(60, 1.1, 0.4)
+
+[sub_resource type="BoxMesh" id="RailEWMesh"]
+material = SubResource("Wall")
+size = Vector3(0.4, 1.1, 60)
+
+[sub_resource type="BoxShape3D" id="RailEWShape"]
+size = Vector3(0.4, 1.1, 60)
+
+[sub_resource type="BoxMesh" id="TempleMesh"]
+material = SubResource("Wall")
+size = Vector3(14, 9, 12)
+
+[sub_resource type="BoxShape3D" id="TempleShape"]
+size = Vector3(14, 9, 12)
+
+[sub_resource type="StandardMaterial3D" id="VistaWind"]
+albedo_color = Color(0.5, 0.62, 0.66, 1)
+
+[sub_resource type="StandardMaterial3D" id="VistaFire"]
+albedo_color = Color(0.45, 0.28, 0.22, 1)
+
+[sub_resource type="StandardMaterial3D" id="VistaIce"]
+albedo_color = Color(0.7, 0.8, 0.88, 1)
+
+[sub_resource type="StandardMaterial3D" id="VistaThunder"]
+albedo_color = Color(0.32, 0.28, 0.4, 1)
+
+[sub_resource type="CylinderMesh" id="WindIsland"]
+material = SubResource("VistaWind")
+top_radius = 26.0
+bottom_radius = 8.0
+height = 30.0
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Volcano"]
+material = SubResource("VistaFire")
+top_radius = 6.0
+bottom_radius = 30.0
+height = 55.0
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="IcePeak"]
+material = SubResource("VistaIce")
+top_radius = 0.5
+bottom_radius = 22.0
+height = 70.0
+radial_segments = 5
+rings = 1
+
+[sub_resource type="BoxMesh" id="StormCloud"]
+material = SubResource("VistaThunder")
+size = Vector3(50, 14, 30)
+
+[sub_resource type="CylinderMesh" id="StormRock"]
+material = SubResource("VistaThunder")
+top_radius = 10.0
+bottom_radius = 16.0
+height = 40.0
+radial_segments = 6
+rings = 1
+
+[node name="HubScenery" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 20, 0)
+light_energy = 0.9
+shadow_enabled = true
+directional_shadow_max_distance = 80.0
+
+[node name="Plaza" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor" type="MeshInstance3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("FloorMesh")
+
+[node name="FloorShape" type="CollisionShape3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("FloorShape")
+
+[node name="RailN" type="MeshInstance3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -29.8)
+mesh = SubResource("RailNSMesh")
+
+[node name="RailNShape" type="CollisionShape3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -29.8)
+shape = SubResource("RailNSShape")
+
+[node name="RailS" type="MeshInstance3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 29.8)
+mesh = SubResource("RailNSMesh")
+
+[node name="RailSShape" type="CollisionShape3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 29.8)
+shape = SubResource("RailNSShape")
+
+[node name="RailW" type="MeshInstance3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.8, 0.55, 0)
+mesh = SubResource("RailEWMesh")
+
+[node name="RailWShape" type="CollisionShape3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.8, 0.55, 0)
+shape = SubResource("RailEWShape")
+
+[node name="RailE" type="MeshInstance3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.8, 0.55, 0)
+mesh = SubResource("RailEWMesh")
+
+[node name="RailEShape" type="CollisionShape3D" parent="Plaza"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.8, 0.55, 0)
+shape = SubResource("RailEWShape")
+
+[node name="Temple" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+collision_mask = 0
+
+[node name="Body" type="MeshInstance3D" parent="Temple"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0)
+mesh = SubResource("TempleMesh")
+
+[node name="BodyShape" type="CollisionShape3D" parent="Temple"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0)
+shape = SubResource("TempleShape")
+
+[node name="Vistas" type="Node3D" parent="."]
+
+[node name="WindIsland" type="MeshInstance3D" parent="Vistas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, -20, -60)
+cast_shadow = 0
+mesh = SubResource("WindIsland")
+
+[node name="Volcano" type="MeshInstance3D" parent="Vistas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, -10, -140)
+cast_shadow = 0
+mesh = SubResource("Volcano")
+
+[node name="IcePeak" type="MeshInstance3D" parent="Vistas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, -5, -140)
+cast_shadow = 0
+mesh = SubResource("IcePeak")
+
+[node name="StormRock" type="MeshInstance3D" parent="Vistas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, -15, -60)
+cast_shadow = 0
+mesh = SubResource("StormRock")
+
+[node name="StormCloud" type="MeshInstance3D" parent="Vistas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 28, -60)
+cast_shadow = 0
+mesh = SubResource("StormCloud")

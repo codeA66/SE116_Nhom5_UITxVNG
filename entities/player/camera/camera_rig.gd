@@ -77,3 +77,12 @@ func _get_desired_lookahead() -> Vector3:
 	var horizontal := Vector3(_target_body.velocity.x, 0.0, _target_body.velocity.z)
 	var ratio := minf(horizontal.length() / maxf(lookahead_full_speed, 0.01), 1.0)
 	return horizontal.normalized() * lookahead_distance * ratio
+
+
+## Đổi góc nhìn (khu trung tâm nhìn rộng). Gọi lúc vào khu nên đặt ngay, không lướt
+func apply_view(view: CameraViewData) -> void:
+	if view == null or _camera == null:
+		return
+	_camera.transform = view.get_local_transform()
+	_camera.fov = view.fov
+	_camera.reset_physics_interpolation()
