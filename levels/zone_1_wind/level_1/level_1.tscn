@@ -57,6 +57,9 @@ size = Vector3(23, 6, 23)
 [sub_resource type="BoxShape3D" id="BoxShape3D_nhm3y"]
 size = Vector3(110, 28, 124)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_tier1"]
+size = Vector3(120, 18, 158)
+
 [sub_resource type="BoxShape3D" id="Tier3ZoneShape"]
 size = Vector3(200, 50, 160)
 
@@ -118,7 +121,7 @@ size = Vector3(400, 2, 620)
 [node name="Tier1" type="Node3D" parent="Rooms" unique_id=1378608155]
 
 [node name="Room01Dock" parent="Rooms/Tier1" unique_id=1084988707 instance=ExtResource("7_p8727")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3216288, 1.4564548, 15.113472)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18)
 
 [node name="Room02Foyer" parent="Rooms/Tier1" unique_id=646146326 instance=ExtResource("8_kxfex")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -2)
@@ -207,6 +210,9 @@ shape = SubResource("BoxShape3D_nhm3y")
 [node name="Tier1Zone" parent="." unique_id=1958989838 node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, -39)
 hide_when_inside = [NodePath("../Rooms/Tier2")]
+
+[node name="Shape" parent="Tier1Zone" index="0"]
+shape = SubResource("BoxShape3D_tier1")
 
 [node name="AmbientWind" parent="." unique_id=259223168 instance=ExtResource("28_riknd")]
 wind_direction = Vector3(0.6, 0, -1)
