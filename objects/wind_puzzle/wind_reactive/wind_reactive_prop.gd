@@ -7,6 +7,8 @@ const DEFAULT_DATA: WindReactData = preload("res://resources/world/wind/wind_rea
 @export var data: WindReactData = DEFAULT_DATA
 @export var model_path: NodePath = ^"Model"
 
+# Lớp con (cờ, tán lá, cánh hoa, cối xay) dùng _model; lớp này không dùng nên tắt cảnh báo
+@warning_ignore("unused_private_class_variable")
 @onready var _model: Node3D = get_node(model_path) as Node3D
 @onready var _reactive: WindReactiveComponent = $WindReactive
 

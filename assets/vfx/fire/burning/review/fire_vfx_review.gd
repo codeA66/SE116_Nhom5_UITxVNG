@@ -225,14 +225,14 @@ func _setup_stage(dark: bool) -> void:
 	env.environment.ambient_light_color = Color.WHITE
 	env.environment.ambient_light_energy = 0.5
 	add_child(env)
-	var floor: MeshInstance3D = MeshInstance3D.new()
+	var floor_mesh: MeshInstance3D = MeshInstance3D.new()
 	var plane: PlaneMesh = PlaneMesh.new()
 	plane.size = Vector2(40,40)
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.albedo_color = Color(0.07,0.08,0.10) if dark else Color(0.65,0.65,0.62)
 	plane.material = mat
-	floor.mesh = plane
-	add_child(floor)
+	floor_mesh.mesh = plane
+	add_child(floor_mesh)
 	var sun: DirectionalLight3D = DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-60,-30,0)
 	sun.light_energy = 0.8
@@ -249,7 +249,7 @@ func _setup_stage(dark: bool) -> void:
 func _setup_burning() -> void:
 	for i: int in range(8):
 		var target: StaticBody3D = StaticBody3D.new()
-		target.position = Vector3(float(i % 4) * 2.6 - 3.9,0,float(i / 4) * 3.5 - 1.75)
+		target.position = Vector3(float(i % 4) * 2.6 - 3.9,0,floorf(i / 4.0) * 3.5 - 1.75)
 		var height: float = 3.6 if i == 7 else 1.8
 		var mesh: MeshInstance3D = MeshInstance3D.new()
 		var capsule: CapsuleMesh = CapsuleMesh.new()
@@ -368,7 +368,7 @@ func _setup_crowd() -> void:
 	var packed: PackedScene = load("res://entities/enemies/palace/enemy_1/enemy_1.tscn") as PackedScene
 	for i: int in range(8):
 		var actor: Enemy = packed.instantiate() as Enemy
-		actor.position = Vector3(float(i % 4) * 2.2 - 3.3, 0, float(i / 4) * 2.6 - 1.3)
+		actor.position = Vector3(float(i % 4) * 2.2 - 3.3, 0, floorf(i / 4.0) * 2.6 - 1.3)
 		add_child(actor)
 		actor.set_physics_process(false)
 		actor.get_node("StateMachine").process_mode = Node.PROCESS_MODE_DISABLED
@@ -519,8 +519,8 @@ func _test_startup() -> void:
 				if flames.visible and float(mat.get_shader_parameter("prewarm_scale")) > 0.00001:
 					_test_check(false, "Burning startup còn hạt cỡ thật")
 			elif node is FlameBreathVfx:
-				for name: String in ["Nozzle/FlameBody", "Nozzle/GroundGlow"]:
-					var mesh: MeshInstance3D = node.get_node(name) as MeshInstance3D
+				for node_path: String in ["Nozzle/FlameBody", "Nozzle/GroundGlow"]:
+					var mesh: MeshInstance3D = node.get_node(node_path) as MeshInstance3D
 					var mat: ShaderMaterial = mesh.material_override as ShaderMaterial
 					if mesh.visible and float(mat.get_shader_parameter("prewarm_scale")) > 0.00001:
 						_test_check(false, "Q startup còn mesh cỡ thật")

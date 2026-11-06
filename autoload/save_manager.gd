@@ -1,19 +1,32 @@
 extends Node
 ## Autoload "SaveManager": ghi/đọc tiến trình ra file JSON. Chỉ tự lưu khi chạm checkpoint (GameState.progress_committed):
 ## thoát game giữa chừng thì lần sau vào lại đúng trạng thái ở checkpoint gần nhất.
+## Có SLOT_COUNT ô hồ sơ, mỗi ô một file; mọi hàm đọc/ghi làm trên ô đang chọn (current_slot).
 ## Lưu đường dẫn res:// thay vì file .tres: đọc .tres từ bên ngoài có thể chạy script nhúng trong đó.
 ## Phải đứng sau GameState trong danh sách autoload.
 
 signal saved
 signal loaded
+signal slot_changed(slot: int)
+signal slot_deleted(slot: int)
 
-const SAVE_PATH := "user://savegame.json"
-const TEMP_PATH := "user://savegame.json.tmp"
+const SLOT_COUNT := 4
+const SLOT_FILE_FORMAT := "save_%d.json"
+## Ghi nhớ ô dùng lần cuối: chạy thẳng một khu bằng F6 vẫn nạp đúng hồ sơ đang chơi
+const META_FILE := "save_meta.cfg"
+## File save trước khi có nhiều ô: tự chuyển sang ô 1 lần đầu chạy bản mới
+const LEGACY_PATH := "user://savegame.json"
 ## Tăng khi đổi định dạng file, kèm xử lý chuyển đổi trong from_dict
 const SAVE_VERSION := 5
 
+var current_slot: int = 1
+## Thư mục chứa các file hồ sơ. Test đổi sang thư mục riêng để không bao giờ đụng save thật của người chơi
+var storage_dir: String = "user://"
+
 
 func _ready() -> void:
+	migrate_legacy_save(LEGACY_PATH)
+	current_slot = _read_last_slot()
 	load_game()
 	GameState.progress_committed.connect(save_game)
 
@@ -24,12 +37,49 @@ func _unhandled_input(event: InputEvent) -> void:
 		reset_game()
 
 
+## Đổi thư mục chứa hồ sơ (test dùng thư mục riêng). Đọc lại ô dùng lần cuối trong thư mục đó
+func use_storage_dir(dir: String) -> void:
+	storage_dir = dir
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
+	current_slot = _read_last_slot()
+
+
+## Chọn ô hồ sơ để đọc/ghi từ giờ (menu chọn hồ sơ gọi). Không tự nạp: nơi gọi quyết định nạp hay bắt đầu mới
+func select_slot(slot: int) -> void:
+	current_slot = clampi(slot, 1, SLOT_COUNT)
+	_write_last_slot(current_slot)
+	slot_changed.emit(current_slot)
+
+
+func get_slot_path(slot: int) -> String:
+	return storage_dir.path_join(SLOT_FILE_FORMAT % clampi(slot, 1, SLOT_COUNT))
+
+
+func slot_has_save(slot: int) -> bool:
+	return FileAccess.file_exists(get_slot_path(slot))
+
+
+## Đọc tiến trình của một ô để hiện trên menu, KHÔNG nạp vào GameState. Ô trống / hỏng trả về null
+func peek_slot(slot: int) -> PlayerProgress:
+	var data := _read_dict(get_slot_path(slot))
+	return from_dict(data) if not data.is_empty() else null
+
+
+func delete_slot(slot: int) -> void:
+	var path := get_slot_path(slot)
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	slot_deleted.emit(slot)
+
+
 func has_save() -> bool:
-	return FileAccess.file_exists(SAVE_PATH)
+	return slot_has_save(current_slot)
 
 
 func save_game() -> bool:
-	var file := FileAccess.open(TEMP_PATH, FileAccess.WRITE)
+	var path := get_slot_path(current_slot)
+	var temp := path + ".tmp"
+	var file := FileAccess.open(temp, FileAccess.WRITE)
 	if file == null:
 		push_error("SaveManager: không ghi được file tạm (lỗi %d)" % FileAccess.get_open_error())
 		return false
@@ -37,10 +87,10 @@ func save_game() -> bool:
 	file.close()
 
 	# Ghi file tạm xong mới thay file chính: crash giữa chừng không làm hỏng save cũ
-	var dir := DirAccess.open("user://")
-	if dir.file_exists(SAVE_PATH.get_file()):
-		dir.remove(SAVE_PATH.get_file())
-	var error := dir.rename(TEMP_PATH.get_file(), SAVE_PATH.get_file())
+	var dir := DirAccess.open(path.get_base_dir())
+	if dir.file_exists(path.get_file()):
+		dir.remove(path.get_file())
+	var error := dir.rename(temp.get_file(), path.get_file())
 	if error != OK:
 		push_error("SaveManager: không đổi tên file save (lỗi %d)" % error)
 		return false
@@ -49,20 +99,16 @@ func save_game() -> bool:
 
 
 func load_game() -> bool:
-	if not has_save():
+	var data := _read_dict(get_slot_path(current_slot))
+	if data.is_empty():
 		return false
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
-	if not parsed is Dictionary:
-		push_warning("SaveManager: file save hỏng hoặc sai định dạng, bỏ qua")
-		return false
-	GameState.replace_progress(from_dict(parsed as Dictionary))
+	GameState.replace_progress(from_dict(data))
 	loaded.emit()
 	return true
 
 
 func delete_save() -> void:
-	if has_save():
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
+	delete_slot(current_slot)
 
 
 ## Xóa save, về tiến trình trống và tải lại scene hiện tại
@@ -187,3 +233,38 @@ func _load_resource(path: String) -> Resource:
 
 func _is_valid_scene_path(path: String) -> bool:
 	return path.begins_with("res://") and path.ends_with(".tscn") and ResourceLoader.exists(path)
+
+
+## File không có / hỏng / sai định dạng -> từ điển rỗng
+func _read_dict(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not parsed is Dictionary:
+		push_warning("SaveManager: file save '%s' hỏng hoặc sai định dạng, bỏ qua" % path)
+		return {}
+	return parsed as Dictionary
+
+
+## Save trước khi có nhiều ô -> ô 1 (chỉ khi ô 1 còn trống). Public để test chạy với file giả
+func migrate_legacy_save(legacy_path: String) -> void:
+	if not FileAccess.file_exists(legacy_path) or slot_has_save(1):
+		return
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(storage_dir))
+	var error := DirAccess.rename_absolute(ProjectSettings.globalize_path(legacy_path), ProjectSettings.globalize_path(get_slot_path(1)))
+	if error != OK:
+		push_error("SaveManager: không chuyển được save cũ sang ô 1 (lỗi %d)" % error)
+
+
+func _read_last_slot() -> int:
+	var config := ConfigFile.new()
+	if config.load(storage_dir.path_join(META_FILE)) != OK:
+		return 1
+	return clampi(int(config.get_value("slots", "last", 1)), 1, SLOT_COUNT)
+
+
+func _write_last_slot(slot: int) -> void:
+	var config := ConfigFile.new()
+	config.load(storage_dir.path_join(META_FILE))
+	config.set_value("slots", "last", slot)
+	config.save(storage_dir.path_join(META_FILE))

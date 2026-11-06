@@ -39,8 +39,16 @@ func physics_update(delta: float) -> void:
 
 	# Animation cancel: từ cancel_start được hủy phần thu đòn bằng dash
 	if _elapsed >= _attack.cancel_start and player.can_dash():
+		player.hitbox.cancel()
 		state_machine.transition_to(DASH)
 		return
+	# Cùng mốc với dash: hủy phần thu đòn bằng kỹ năng; skill mới tự có, bật/tắt bằng SkillData.cancels_attack
+	if _elapsed >= _attack.cancel_start:
+		var skill := player.get_ready_skill()
+		if skill and skill.cancels_attack:
+			player.hitbox.cancel()
+			state_machine.transition_to(skill.state)
+			return
 
 	# Attack buffer nằm ở Player: bấm sớm trong lúc đòn chưa xong vẫn được ghi nhận
 	var has_next := _combo_index < _weapon.combo.size() - 1

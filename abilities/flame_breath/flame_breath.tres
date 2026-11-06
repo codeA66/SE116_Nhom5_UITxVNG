@@ -2,11 +2,16 @@
 
 [ext_resource type="Script" uid="uid://cupw6oyebi8t3" path="res://abilities/flame_breath/flame_breath_data.gd" id="1_data"]
 [ext_resource type="Script" uid="uid://bco0nr7ogmwo" path="res://entities/_base/data/attack_data.gd" id="2_attack"]
+[ext_resource type="Texture2D" uid="uid://bx25k2bdi8jfk" path="res://ui/hud/icons/fire.svg" id="3_icon"]
 
 [sub_resource type="Resource" id="FlameAttack"]
 script = ExtResource("2_attack")
 knockback = 0.0
 hitstop = 0.03
+
+[sub_resource type="DPITexture" id="AcquireIllustration"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"192\" viewBox=\"0 0 512 384\"><g fill=\"none\" stroke=\"#fff6df\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M135 289C66 229 73 145 113 107C93 160 132 168 150 192C129 120 176 94 188 52C176 121 217 133 216 183M377 289C446 229 439 145 399 107C419 160 380 168 362 192C383 120 336 94 324 52C336 121 295 133 296 183\" stroke-width=\"4\"/><path d=\"M113 261C102 300 135 329 164 314M399 261C410 300 377 329 348 314M189 317C171 346 215 365 234 337M323 317C341 346 297 365 278 337\" stroke-width=\"3\"/><path d=\"M100 188C48 123 94 51 162 38M412 188C464 123 418 51 350 38\" stroke-width=\"2\" opacity=\".5\"/><path d=\"M256 24V65M238 41L256 14L274 41L256 58Z\" stroke-width=\"2\"/></g><path d=\"M257 72C285 123 252 139 287 173C307 153 307 139 301 121C356 171 352 224 321 260C306 279 282 294 256 316C230 294 206 279 191 260C160 224 156 171 211 121C205 147 215 166 230 183C218 136 257 126 257 72Z\" fill=\"#fff6df\"/><path d=\"M255 178C270 210 243 215 269 237C278 227 278 215 278 207C303 244 278 272 256 289C234 273 212 247 232 221C232 240 241 244 244 249C236 224 257 210 255 178Z\" fill=\"#32201d\"/><path d=\"M169 193C155 234 181 265 204 278M343 193C357 234 331 265 308 278\" fill=\"none\" stroke=\"#f0cfa4\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>"
+base_scale = 2.0
 
 [resource]
 script = ExtResource("1_data")
@@ -15,4 +20,8 @@ input_action = &"skill_fire"
 state = &"FlameBreath"
 id = &"flame_breath"
 display_name = "Phun lửa"
+icon = ExtResource("3_icon")
+illustration = SubResource("AcquireIllustration")
+accent_color = Color(1, 0.47843, 0.03529, 1)
+description = "Phun lửa để đốt cháy mục tiêu trước mặt."
 energy_cost = 1

@@ -74,7 +74,7 @@ func _apply(inside: bool) -> void:
 		if is_instance_valid(node):
 			node.visible = inside
 	for node: Node in _process_modes:
-		if is_instance_valid(node): node.process_mode = _process_modes[node] if inside else Node.PROCESS_MODE_DISABLED
+		if is_instance_valid(node): node.process_mode = (_process_modes[node] as ProcessMode) if inside else Node.PROCESS_MODE_DISABLED
 	if world_environment and inside_environment:
 		world_environment.environment = inside_environment if inside else _outside_environment
 	if sun == null:

@@ -64,10 +64,10 @@ func _input(event: InputEvent) -> void:
 
 func _attach_boots() -> void:
 	var skeleton: Skeleton3D = _player.model.find_children("*","Skeleton3D",true,false)[0] as Skeleton3D
-	for name: String in ["foot.L","foot.R"]:
-		var index: int = skeleton.find_bone(name)
+	for bone_name: String in ["foot.L","foot.R"]:
+		var index: int = skeleton.find_bone(bone_name)
 		if index < 0: continue
-		var attachment: BoneAttachment3D = BoneAttachment3D.new(); attachment.bone_name = name; skeleton.add_child(attachment)
+		var attachment: BoneAttachment3D = BoneAttachment3D.new(); attachment.bone_name = bone_name; skeleton.add_child(attachment)
 		var shoe: Node3D = BananaItemModels.shoe(); attachment.add_child(shoe)
 		var basis: Basis = skeleton.get_bone_global_rest(index).basis.orthonormalized().inverse()
 		shoe.transform = Transform3D(basis,basis*Vector3(0,-0.03,0.08)); shoe.name = "BananaBoot"

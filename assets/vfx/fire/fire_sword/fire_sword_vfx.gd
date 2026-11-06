@@ -140,6 +140,7 @@ func _ready() -> void:
 		player.fusion_melee_swing.connect(_on_swing)
 		player.hitbox.hit.connect(_on_hit)
 		player.hitbox.deactivated.connect(_on_deactivated)
+		player.hitbox.cancelled.connect(_on_cancelled)
 		GameState.fusion_changed.connect(_configure_touch_visual)
 		_configure_touch_visual()
 	_update_visual_bounds()
@@ -387,3 +388,10 @@ func _prepare() -> void:
 		_ribbons.hide()
 		_material.set_shader_parameter(&"opacity", 0.0)
 	print("SWORD_SHADER_PREP main ", ELEMENT_ID, " root_pass opacity=", prepare_opacity)
+
+## Đòn bị hủy (dash, kỹ năng): xoá nét chém ngay. Giữ burst trúng đòn đang chạy: đó là phản hồi của cú đã trúng
+func _on_cancelled() -> void:
+	_epoch += 1
+	_armed = false
+	_ribbons.hide()
+	set_process(false)

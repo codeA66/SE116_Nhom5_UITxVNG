@@ -23,6 +23,6 @@ func _rebuild() -> void:
 	var batch: MultiMesh = MultiMesh.new()
 	batch.transform_format = MultiMesh.TRANSFORM_3D
 	batch.mesh = source_mesh
-	batch.instance_count = instance_data.size()/12
+	batch.instance_count = floori(instance_data.size() / 12.0)
 	batch.buffer = instance_data
 	multimesh = batch

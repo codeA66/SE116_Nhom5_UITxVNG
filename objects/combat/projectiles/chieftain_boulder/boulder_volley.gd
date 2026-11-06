@@ -38,7 +38,7 @@ static func stone() -> MeshInstance3D:
 		var indices: PackedInt32Array = source[Mesh.ARRAY_INDEX]
 		var surface: SurfaceTool = SurfaceTool.new()
 		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-		for triangle: int in int(indices.size() / 3):
+		for triangle: int in floori(indices.size() / 3.0):
 			var vertices: Array[Vector3] = []
 			for corner: int in 3:
 				var at: Vector3 = points[indices[triangle * 3 + corner]]

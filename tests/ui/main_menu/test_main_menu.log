@@ -1,0 +1,32 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS UC6: save cũ chuyển sang ô 1
+PASS UC6: dữ liệu ô 1 đúng sau khi chuyển
+PASS UC6: ô 1 đã có -> không ghi đè
+PASS UC1: mở menu ở màn tiêu đề
+PASS UC1: phím bất kỳ -> menu chính (Home)
+PASS UC1: chọn sẵn 'Bắt đầu' (Start:<Button#90513082613>)
+PASS UC2: mũi tên xuống -> Cài đặt
+PASS UC2: vào Cài đặt
+PASS UC2: Esc về menu, con trỏ ở Cài đặt (Settings:<Button#90563414264>)
+PASS UC3: Bắt đầu -> chọn hồ sơ
+PASS UC3: ô 1 trống ghi 'Hành trình mới'
+PASS UC3: ô 2 ghi nơi đang đứng ('Khu Gió')
+PASS UC3: ô 2 ghi số tiền ('120 Soul Jade   ·   1 kỹ năng')
+PASS UC3: ô trống không có nút Xóa, ô có dữ liệu có
+PASS UC3: chọn sẵn ô 1
+PASS UC4: Xóa -> hộp xác nhận
+PASS UC4: chọn sẵn 'Không' (No:<Button#91335166246>)
+PASS UC4: mũi tên xuống không lạc ra khỏi hộp
+PASS UC4: Enter ở 'Không' -> giữ hồ sơ 2
+PASS UC4: mũi tên phải -> 'Xóa'
+PASS UC4: xóa ô 2, ô 4 còn nguyên
+PASS UC4: ô 2 hiện lại là ô trống
+PASS UC4: con trỏ về ô vừa xóa
+PASS UC5: Esc ở hồ sơ -> menu chính
+PASS UC5: Esc ở menu chính -> màn tiêu đề
+PASS UC7: mũi tên xuống 2 lần -> ô 3
+PASS UC7: ô 3 trống -> hành trình mới, tiến trình trống
+PASS UC7: bắt đầu chuyển cảnh
+PASS UC7: bấm thêm không gọi chuyển cảnh lần 2
+RESULT fails=0

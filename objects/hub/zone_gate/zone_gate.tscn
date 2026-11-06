@@ -1,0 +1,68 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/hub/zone_gate/zone_gate.gd" id="1_gate"]
+[ext_resource type="PackedScene" path="res://objects/core/portal/portal.tscn" id="2_portal"]
+[ext_resource type="Script" path="res://objects/hub/progress_watcher/progress_watcher.gd" id="3_watch"]
+
+[sub_resource type="StandardMaterial3D" id="Grey"]
+albedo_color = Color(0.46, 0.46, 0.48, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="PillarMesh"]
+material = SubResource("Grey")
+size = Vector3(0.8, 5, 0.8)
+
+[sub_resource type="BoxMesh" id="LintelMesh"]
+material = SubResource("Grey")
+size = Vector3(4.8, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="PillarShape"]
+size = Vector3(0.8, 5, 0.8)
+
+[sub_resource type="BoxShape3D" id="BlockShape"]
+size = Vector3(3.2, 4, 1.2)
+
+[node name="ZoneGate" type="Node3D"]
+script = ExtResource("1_gate")
+
+[node name="Frame" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="PillarL" type="MeshInstance3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2.5, 0)
+mesh = SubResource("PillarMesh")
+
+[node name="PillarR" type="MeshInstance3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.5, 0)
+mesh = SubResource("PillarMesh")
+
+[node name="Lintel" type="MeshInstance3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.4, 0)
+mesh = SubResource("LintelMesh")
+
+[node name="ShapeL" type="CollisionShape3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2.5, 0)
+shape = SubResource("PillarShape")
+
+[node name="ShapeR" type="CollisionShape3D" parent="Frame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.5, 0)
+shape = SubResource("PillarShape")
+
+[node name="Portal" parent="." instance=ExtResource("2_portal")]
+
+[node name="Blocker" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BlockShape")
+
+[node name="Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.6, 0)
+billboard = 1
+font_size = 64
+outline_size = 12
+text = "Khu"
+
+[node name="ProgressWatcher" type="Node" parent="."]
+script = ExtResource("3_watch")

@@ -337,7 +337,7 @@ func _build_body() -> void:
 	var uvs: PackedVector2Array = PackedVector2Array()
 	var colors: PackedColorArray = PackedColorArray()
 	var indices: PackedInt32Array = PackedInt32Array()
-	var rings: int = clampi(body_rings / 3, 6, 16)
+	var rings: int = clampi(floori(body_rings / 3.0), 6, 16)
 	var sides: int = clampi(body_sides, 8, 12)
 	for puff: int in range(13):
 		var core: bool = puff == 0

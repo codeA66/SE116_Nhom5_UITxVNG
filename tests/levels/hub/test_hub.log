@@ -1,0 +1,25 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS UC1: START_ZONE là khu trung tâm
+PASS UC1: player ở điểm start (lệch 0.00 m)
+PASS UC2: cổng Gió đang khóa
+PASS UC2: bảng ghi cần chìa ('Khu Gió / Cần chìa khóa')
+PASS UC2: đẩy vào cổng khóa bị chặn (vị trí so với mặt cổng -0.95 m, chuyển khu=false)
+PASS UC2: FireGate khóa
+PASS UC2: IceGate khóa
+PASS UC2: ThunderGate khóa
+PASS UC3: bấm tương tác -> có chìa
+PASS UC3: chìa biến mất khỏi bệ
+PASS UC3: cổng Gió mở, opened phát 1 lần
+PASS UC4: dấu Gió tối khi chưa phá khu
+PASS UC4: phá khu Gió -> dấu Gió sáng
+PASS UC4: dấu Lửa vẫn tối
+PASS UC4: cổng Lửa đóng vì khu chưa có scene ('Khu Lửa / Chưa mở')
+PASS UC4: cổng Băng còn khóa
+PASS UC5: cửa đền đóng khi mới phá 1 khu
+PASS UC5: 3 khu vẫn chưa mở cửa đền
+PASS UC5: đủ 4 khu -> cửa đền mở, tắt va chạm
+PASS UC6: nạp lại -> chìa không xuất hiện lại
+PASS UC6: nạp lại -> cổng Gió vẫn mở
+PASS UC7: bước vào cổng Gió -> bắt đầu chuyển khu (sau 0.50 s)
+RESULT fails=0

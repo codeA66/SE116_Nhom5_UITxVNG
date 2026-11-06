@@ -1,0 +1,163 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_root"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://objects/hub/zone_gate/zone_gate.tscn" id="3_gate"]
+[ext_resource type="PackedScene" path="res://objects/hub/element_seal/element_seal.tscn" id="4_seal"]
+[ext_resource type="PackedScene" path="res://objects/hub/temple_door/temple_door.tscn" id="5_door"]
+[ext_resource type="PackedScene" path="res://objects/hub/hub_key/hub_key.tscn" id="6_key"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/wind.tres" id="7_wind"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/fire.tres" id="8_fire"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/ice.tres" id="9_ice"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/thunder.tres" id="10_thunder"]
+[ext_resource type="Script" path="res://objects/hub/zone_gate/unlock_conditions/key_unlock.gd" id="11_key_unlock"]
+[ext_resource type="Script" path="res://objects/hub/zone_gate/unlock_conditions/zone_cleared_unlock.gd" id="12_cleared"]
+[ext_resource type="Script" path="res://objects/hub/zone_gate/unlock_conditions/unlock_condition.gd" id="13_cond"]
+[ext_resource type="Script" path="res://resources/world/zones/_base/zone_data.gd" id="14_zdata"]
+[ext_resource type="Script" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="15_camview"]
+[ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="16_viewdata"]
+[ext_resource type="PackedScene" path="res://objects/world/camera_cutscene/camera_cutscene.tscn" id="17_cut"]
+[ext_resource type="Resource" path="res://resources/world/cutscenes/hub_intro.tres" id="18_intro"]
+[ext_resource type="PackedScene" path="res://levels/temple_center/hub/hub_scenery.tscn" id="19_scenery"]
+[ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="20_title"]
+[ext_resource type="Resource" path="res://resources/world/zones/hub.tres" id="21_hub"]
+
+[sub_resource type="StandardMaterial3D" id="Wall"]
+albedo_color = Color(0.4, 0.4, 0.42, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="PedestalMesh"]
+material = SubResource("Wall")
+size = Vector3(1.2, 0.8, 1.2)
+
+[sub_resource type="BoxShape3D" id="PedestalShape"]
+size = Vector3(1.2, 0.8, 1.2)
+
+[sub_resource type="Resource" id="HubView"]
+script = ExtResource("16_viewdata")
+distance = 46.0
+pitch_degrees = 38.0
+fov = 40.0
+
+[sub_resource type="Resource" id="WindKeyUnlock"]
+script = ExtResource("11_key_unlock")
+key_id = &"hub.wind_key"
+
+[sub_resource type="Resource" id="AfterWind"]
+script = ExtResource("12_cleared")
+zones = Array[ExtResource("14_zdata")]([ExtResource("7_wind")])
+hint = "Phá đảo Khu Gió"
+
+[sub_resource type="Resource" id="AfterFire"]
+script = ExtResource("12_cleared")
+zones = Array[ExtResource("14_zdata")]([ExtResource("8_fire")])
+hint = "Phá đảo Khu Lửa"
+
+[sub_resource type="Resource" id="AfterIce"]
+script = ExtResource("12_cleared")
+zones = Array[ExtResource("14_zdata")]([ExtResource("9_ice")])
+hint = "Phá đảo Khu Băng"
+
+[sub_resource type="Resource" id="AllZones"]
+script = ExtResource("12_cleared")
+zones = Array[ExtResource("14_zdata")]([ExtResource("7_wind"), ExtResource("8_fire"), ExtResource("9_ice"), ExtResource("10_thunder")])
+hint = "Phá đảo cả 4 khu"
+
+[node name="Hub" type="Node3D"]
+script = ExtResource("1_root")
+
+[node name="HubScenery" parent="." instance=ExtResource("19_scenery")]
+
+[node name="Temple" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+
+[node name="TempleDoor" parent="Temple" instance=ExtResource("5_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.2)
+conditions = Array[ExtResource("13_cond")]([SubResource("AllZones")])
+
+[node name="SealWind" parent="Temple" instance=ExtResource("4_seal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 6.6, 6.3)
+zone = ExtResource("7_wind")
+
+[node name="SealFire" parent="Temple" instance=ExtResource("4_seal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 6.6, 6.3)
+zone = ExtResource("8_fire")
+
+[node name="SealIce" parent="Temple" instance=ExtResource("4_seal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 6.6, 6.3)
+zone = ExtResource("9_ice")
+
+[node name="SealThunder" parent="Temple" instance=ExtResource("4_seal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 6.6, 6.3)
+zone = ExtResource("10_thunder")
+
+[node name="Gates" type="Node3D" parent="."]
+
+[node name="WindGate" parent="Gates" instance=ExtResource("3_gate")]
+transform = Transform3D(-0.3162, 0, 0.9487, 0, 1, 0, -0.9487, 0, -0.3162, -24, 0, 8)
+zone = ExtResource("7_wind")
+conditions = Array[ExtResource("13_cond")]([SubResource("WindKeyUnlock")])
+
+[node name="Portal" parent="Gates/WindGate" index="1"]
+portal_id = &"gate_wind"
+
+[node name="FireGate" parent="Gates" instance=ExtResource("3_gate")]
+transform = Transform3D(0.8638, 0, 0.5038, 0, 1, 0, -0.5038, 0, 0.8638, -14, 0, -24)
+zone = ExtResource("8_fire")
+conditions = Array[ExtResource("13_cond")]([SubResource("AfterWind")])
+
+[node name="Portal" parent="Gates/FireGate" index="1"]
+portal_id = &"gate_fire"
+
+[node name="IceGate" parent="Gates" instance=ExtResource("3_gate")]
+transform = Transform3D(0.8638, 0, -0.5038, 0, 1, 0, 0.5038, 0, 0.8638, 14, 0, -24)
+zone = ExtResource("9_ice")
+conditions = Array[ExtResource("13_cond")]([SubResource("AfterFire")])
+
+[node name="Portal" parent="Gates/IceGate" index="1"]
+portal_id = &"gate_ice"
+
+[node name="ThunderGate" parent="Gates" instance=ExtResource("3_gate")]
+transform = Transform3D(-0.3162, 0, -0.9487, 0, 1, 0, 0.9487, 0, -0.3162, 24, 0, 8)
+zone = ExtResource("10_thunder")
+conditions = Array[ExtResource("13_cond")]([SubResource("AfterIce")])
+
+[node name="Portal" parent="Gates/ThunderGate" index="1"]
+portal_id = &"gate_thunder"
+
+[node name="KeyPedestal" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -10)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="KeyPedestal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+mesh = SubResource("PedestalMesh")
+
+[node name="Shape" type="CollisionShape3D" parent="KeyPedestal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("PedestalShape")
+
+[node name="WindKey" parent="KeyPedestal" instance=ExtResource("6_key")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="Start" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 16)
+script = ExtResource("2_spawn")
+spawn_id = &"start"
+
+[node name="ZoneCameraView" type="Node" parent="."]
+script = ExtResource("15_camview")
+view = SubResource("HubView")
+
+[node name="IntroCutscene" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("17_cut")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 16)
+data = ExtResource("18_intro")
+focus_target = NodePath("../Temple")
+persistent_id = &"hub.intro_seen"
+trigger_size = Vector3(6, 4, 6)
+
+[node name="AreaTitleTrigger" parent="." node_paths=PackedStringArray("wait_for_cutscene") instance=ExtResource("20_title")]
+area = ExtResource("21_hub")
+wait_for_cutscene = NodePath("../IntroCutscene")
+
+[connection signal="combat_ready" from="." to="AreaTitleTrigger" method="announce"]

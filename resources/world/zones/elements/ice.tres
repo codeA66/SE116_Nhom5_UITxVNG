@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ZoneData" format=3]
+
+[ext_resource type="Script" path="res://resources/world/zones/_base/zone_data.gd" id="1_zone"]
+
+[resource]
+script = ExtResource("1_zone")
+id = &"ice"
+display_name = "Khu Băng"
+subtitle = "Đỉnh Băng Giá"
+color = Color(0.55, 0.8, 1, 1)
+scene_path = ""
+arrival_id = &"start"
+cleared_flag = &"zone.ice.cleared"
