@@ -116,8 +116,8 @@ func begin_skill(skill: EnemySkillData) -> void:
 	state_machine.transition_to(skill.state)
 
 func start_skill_cooldown(skill: EnemySkillData) -> void:
-	var scale: float = 0.88 if skill.cooldown_affected_by_buff and battle_buff_active() else 1.0
-	_cooldowns[skill.skill_id] = maxf(0.0, skill.cooldown) * scale
+	var cooldown_scale: float = 0.88 if skill.cooldown_affected_by_buff and battle_buff_active() else 1.0
+	_cooldowns[skill.skill_id] = maxf(0.0, skill.cooldown) * cooldown_scale
 
 func complete_skill(skill: EnemySkillData, completed: bool, cooldown_started: bool = false) -> void:
 	if not cooldown_started: start_skill_cooldown(skill)

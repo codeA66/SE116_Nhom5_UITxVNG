@@ -44,7 +44,7 @@ func _spawn() -> void:
 	for index: int in summon_count:
 		for attempt: int in 12:
 			var angle: float = float(index) * TAU / summon_count + float(attempt) * 0.18
-			var radius: float = summon_radius + float(attempt / 4) * 0.65
+			var radius: float = summon_radius + floorf(attempt / 4.0) * 0.65
 			var at: Vector3 = _actor.global_position + Vector3(cos(angle), 0, sin(angle)) * radius
 			var ground: Dictionary = space.intersect_ray(PhysicsRayQueryParameters3D.create(at + Vector3.UP * 2, at - Vector3.UP * 5, 257))
 			if ground.is_empty(): continue

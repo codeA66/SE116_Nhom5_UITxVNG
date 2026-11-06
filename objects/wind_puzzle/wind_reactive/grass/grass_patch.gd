@@ -14,7 +14,6 @@ const DEFAULT_DATA: WindReactData = preload("res://resources/world/wind/wind_rea
 var _material: ShaderMaterial
 
 @onready var _multi: MultiMeshInstance3D = $GrassMultiMesh
-@onready var _receiver: WindReceiverComponent = $WindReceiver
 @onready var _reactive: WindReactiveComponent = $WindReactive
 @onready var _shape: CollisionShape3D = $WindReceiver/CollisionShape3D
 
@@ -32,7 +31,7 @@ func _ready() -> void:
 	var row_count: int = ceili(float(grass_count) / float(columns))
 	for index in grass_count:
 		var x: float = (float(index % columns) - float(columns - 1) * 0.5) * spacing
-		var z: float = (float(index / columns) - float(row_count - 1) * 0.5) * spacing
+		var z: float = (floorf(index / float(columns)) - float(row_count - 1) * 0.5) * spacing
 		multi.set_instance_transform(index, Transform3D(Basis.IDENTITY, Vector3(x, 0.0, z)))
 	_multi.multimesh = multi
 	_multi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

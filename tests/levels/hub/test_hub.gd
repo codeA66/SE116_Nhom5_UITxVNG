@@ -31,7 +31,7 @@ func _run() -> void:
 	GameState.set_flag(&"hub.intro_seen")
 	_check(SceneManager.START_ZONE == HUB, "UC1: START_ZONE là khu trung tâm")
 	await _load_hub()
-	await _uc1_spawn()
+	_uc1_spawn()
 	await _uc2_locked()
 	await _uc3_key()
 	await _uc4_wind_cleared()

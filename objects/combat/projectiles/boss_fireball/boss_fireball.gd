@@ -22,7 +22,6 @@ var _boss_ref: Node3D = null
 var _pooled: bool = true
 
 @onready var _wind_receiver: WindReceiverComponent = $WindReceiverComponent
-@onready var _visual: Node3D = $Visual
 @onready var _light: OmniLight3D = $OmniLight3D
 
 
