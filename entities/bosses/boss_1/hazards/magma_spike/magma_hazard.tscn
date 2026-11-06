@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://entities/bosses/boss_1/hazards/magma_spike/magma_hazard.gd" id="1_hazard"]
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/bear/ice_spike/ice_spike.tscn" id="2_visual"]
+[ext_resource type="Resource" path="res://entities/bosses/boss_1/hazards/magma_spike/magma_spike_style.tres" id="3_style"]
+[ext_resource type="Script" path="res://components/combat/hitbox/hitbox_component.gd" id="4_hitbox"]
+
+[sub_resource type="BoxShape3D" id="Shape"]
+resource_local_to_scene = true
+size = Vector3(2.5, 2.0, 0.1)
+
+[node name="MagmaHazard" type="Node3D"]
+script = ExtResource("1_hazard")
+active_start = 0.05
+active_end = 3.0
+lifetime = 3.2
+
+[node name="Visual" parent="." instance=ExtResource("2_visual")]
+transform = Transform3D(-3.0598e-08, 0, 1.2, 0, 0.7, 0, -0.7, 0, -5.24537e-08, 0, 0, 0)
+style = ExtResource("3_style")
+
+[node name="Hitbox" type="Area3D" parent="."]
+collision_layer = 16
+collision_mask = 2
+monitoring = false
+monitorable = false
+script = ExtResource("4_hitbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("Shape")

@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://entities/bosses/boss_1/hazards/magma_spike/radial_magma_hazard.gd" id="1_radial"]
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/hazards/magma_spike/magma_hazard.tscn" id="2_magma_hazard"]
+
+[node name="RadialMagmaHazard" type="Node3D"]
+script = ExtResource("1_radial")
+magma_hazard_scene = ExtResource("2_magma_hazard")
