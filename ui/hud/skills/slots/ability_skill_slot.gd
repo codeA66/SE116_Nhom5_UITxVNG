@@ -1,6 +1,6 @@
 @tool
 class_name AbilitySkillSlot
-extends SkillSlot
+extends "res://ui/hud/skills/slots/skill_slot.gd"
 ## Ô kỹ năng mở khóa (wind blast, ...): rỗng khi chưa có kỹ năng trong tiến trình.
 signal acquire_pulse_requested(accent: Color)
 

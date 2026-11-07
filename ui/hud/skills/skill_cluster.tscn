@@ -1,83 +1,43 @@
 [gd_scene format=3]
-
-[ext_resource type="Script" path="res://ui/hud/skills/skill_cluster.gd" id="1_cluster"]
-[ext_resource type="Script" path="res://ui/hud/skills/weapon_skill_slot.gd" id="2_weapon"]
-[ext_resource type="Script" path="res://ui/hud/skills/ability_skill_slot.gd" id="3_ability"]
-[ext_resource type="Texture2D" path="res://ui/hud/icons/sword.svg" id="4_sword"]
-[ext_resource type="Texture2D" path="res://ui/hud/icons/bow.svg" id="5_bow"]
-[ext_resource type="Texture2D" path="res://ui/hud/icons/wind.svg" id="6_wind"]
-[ext_resource type="Script" path="res://ui/hud/skills/skill_slot.gd" id="7_slot"]
-[ext_resource type="Texture2D" path="res://ui/hud/icons/fire.svg" id="8_fire"]
-
+[ext_resource type="Script" path="res://ui/hud/skills/skill_cluster.gd" id="1"]
+[ext_resource type="Script" path="res://ui/hud/skills/slots/weapon_skill_slot.gd" id="2"]
+[ext_resource type="Script" path="res://ui/hud/skills/slots/ability_skill_slot.gd" id="3"]
 [node name="SkillCluster" type="Control"]
-custom_minimum_size = Vector2(140, 140)
-layout_mode = 3
-anchors_preset = 0
-offset_right = 140.0
-offset_bottom = 140.0
+custom_minimum_size = Vector2(132,132)
+offset_right = 132.0
+offset_bottom = 132.0
 mouse_filter = 2
-script = ExtResource("1_cluster")
-
+script = ExtResource("1")
 [node name="BowSlot" type="Control" parent="."]
-custom_minimum_size = Vector2(76, 76)
-layout_mode = 0
-offset_left = 32.0
-offset_right = 108.0
-offset_bottom = 76.0
-pivot_offset = Vector2(38, 38)
 mouse_filter = 2
-script = ExtResource("2_weapon")
+script = ExtResource("2")
 slot = 1
 always_ready = true
 input_action = &"aim"
-icon = ExtResource("5_bow")
+glyph_id = &"bow"
 cooldown_signal = &"bow_cooldown_started"
 active_states = Array[StringName]([&"BowAim"])
-
 [node name="SkillSlot" type="Control" parent="."]
-custom_minimum_size = Vector2(76, 76)
-layout_mode = 0
-offset_top = 32.0
-offset_right = 76.0
-offset_bottom = 108.0
-pivot_offset = Vector2(38, 38)
 mouse_filter = 2
-script = ExtResource("3_ability")
+script = ExtResource("3")
 ability_id = &"wind_blast"
 input_action = &"skill"
-icon = ExtResource("6_wind")
+glyph_id = &"wind_blast"
 cooldown_signal = &"wind_blast_cooldown_started"
 active_states = Array[StringName]([&"WindBlast"])
-
 [node name="SwordSlot" type="Control" parent="."]
-custom_minimum_size = Vector2(76, 76)
-layout_mode = 0
-offset_left = 64.0
-offset_top = 32.0
-offset_right = 140.0
-offset_bottom = 108.0
-pivot_offset = Vector2(38, 38)
 mouse_filter = 2
-script = ExtResource("2_weapon")
+script = ExtResource("2")
 input_action = &"attack"
-icon = ExtResource("4_sword")
+glyph_id = &"sword"
 active_states = Array[StringName]([&"Attack"])
-
 [node name="FireSlot" type="Control" parent="."]
-custom_minimum_size = Vector2(76, 76)
-layout_mode = 0
-offset_left = 32.0
-offset_top = 64.0
-offset_right = 108.0
-offset_bottom = 140.0
-pivot_offset = Vector2(38, 38)
 mouse_filter = 2
-script = ExtResource("3_ability")
+script = ExtResource("3")
 ability_id = &"flame_breath"
 input_action = &"skill_fire"
-icon = ExtResource("8_fire")
+glyph_id = &"flame_breath"
 active_states = Array[StringName]([&"FlameBreath"])
-
 [node name="BindingRefresh" type="Timer" parent="."]
 wait_time = 0.25
 autostart = true
