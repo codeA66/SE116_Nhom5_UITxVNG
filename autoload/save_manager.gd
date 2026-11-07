@@ -17,7 +17,7 @@ const META_FILE := "save_meta.cfg"
 ## File save trước khi có nhiều ô: tự chuyển sang ô 1 lần đầu chạy bản mới
 const LEGACY_PATH := "user://savegame.json"
 ## Tăng khi đổi định dạng file, kèm xử lý chuyển đổi trong from_dict
-const SAVE_VERSION := 5
+const SAVE_VERSION := 6
 
 var current_slot: int = 1
 ## Thư mục chứa các file hồ sơ. Test đổi sang thư mục riêng để không bao giờ đụng save thật của người chơi
@@ -140,6 +140,12 @@ func to_dict(progress: PlayerProgress) -> Dictionary:
 		"checkpoint": {"zone": progress.checkpoint_zone, "spawn": String(progress.checkpoint_spawn_id)},
 		# Từ version 5: tiền theo loại (CurrencyData.id -> số)
 		"currencies": _serialize_currencies(progress),
+		# Từ version 6: vật phẩm đếm số lượng, cấp kỹ năng, bùa
+		"items": _serialize_counts(progress.items),
+		"ability_levels": _serialize_counts(progress.ability_levels),
+		"charms": _serialize_ids(progress.charms),
+		"equipped_charms": _serialize_ids(progress.equipped_charms),
+		"charm_notches": progress.charm_notches,
 	}
 
 
@@ -194,10 +200,51 @@ func from_dict(data: Dictionary) -> PlayerProgress:
 	if currencies is Dictionary:
 		for id: Variant in currencies:
 			_read_currency(progress, StringName(str(id)), (currencies as Dictionary)[id])
+	# Save cũ chưa có vật phẩm / cấp / bùa: để trống (cấp 1, chưa có bùa, số ô khắc theo NewGameData)
+	_read_counts(data.get("items", {}), progress.items)
+	_read_counts(data.get("ability_levels", {}), progress.ability_levels)
+	_read_ids(data.get("charms", []), progress.charms)
+	_read_ids(data.get("equipped_charms", []), progress.equipped_charms)
+	var notches: Variant = data.get("charm_notches", -1)
+	if notches is int or notches is float:
+		progress.charm_notches = maxi(int(notches), -1)
 	# Bản thử trước khi có từ điển tiền lưu riêng khoá "soul_jade"
 	if data.has("soul_jade") and not progress.currencies.has(&"soul_jade"):
 		_read_currency(progress, &"soul_jade", data["soul_jade"])
 	return progress
+
+
+func _serialize_counts(counts: Dictionary[StringName, int]) -> Dictionary:
+	var result := {}
+	for id: StringName in counts:
+		result[String(id)] = counts[id]
+	return result
+
+
+func _serialize_ids(ids: Array[StringName]) -> Array[String]:
+	var result: Array[String] = []
+	for id: StringName in ids:
+		result.append(String(id))
+	return result
+
+
+## Từ điển id -> số đọc từ file: chỉ nhận số dương (JSON đọc số thành float), sai kiểu thì bỏ qua
+func _read_counts(source: Variant, target: Dictionary[StringName, int]) -> void:
+	if not source is Dictionary:
+		return
+	for key: Variant in source:
+		var value: Variant = (source as Dictionary)[key]
+		if (value is int or value is float) and int(value) > 0 and not str(key).is_empty():
+			target[StringName(str(key))] = int(value)
+
+
+func _read_ids(source: Variant, target: Array[StringName]) -> void:
+	if not source is Array:
+		return
+	for value: Variant in source:
+		var id := StringName(str(value))
+		if not id.is_empty() and not target.has(id):
+			target.append(id)
 
 
 func _serialize_currencies(progress: PlayerProgress) -> Dictionary:

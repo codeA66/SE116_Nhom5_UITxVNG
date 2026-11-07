@@ -14,6 +14,15 @@ extends Resource
 @export var flags: Dictionary[StringName, bool] = {}
 ## Tiền theo CurrencyData.id -> số đang có (không có khoá = 0). Đi theo bản chụp checkpoint như mọi tiến trình khác
 @export var currencies: Dictionary[StringName, int] = {}
+## Vật phẩm đếm theo số lượng: ItemData.id -> số đang có (vật liệu nâng cấp...). Chìa khóa theo cờ, không nằm đây
+@export var items: Dictionary[StringName, int] = {}
+## Cấp kỹ năng đã nâng: AbilityData.id -> cấp (không có khóa = cấp 1)
+@export var ability_levels: Dictionary[StringName, int] = {}
+## Bùa đã có và bùa đang đeo (theo CharmData.id)
+@export var charms: Array[StringName] = []
+@export var equipped_charms: Array[StringName] = []
+## Số ô khắc để đeo bùa; -1 = chưa đặt (lấy theo NewGameData)
+@export var charm_notches: int = -1
 
 @export_group("Checkpoint")
 ## Scene của khu chứa checkpoint gần nhất; rỗng = chưa có checkpoint
@@ -33,6 +42,11 @@ func snapshot() -> PlayerProgress:
 	copy.fusions = fusions.duplicate()
 	copy.flags = flags.duplicate()
 	copy.currencies = currencies.duplicate()
+	copy.items = items.duplicate()
+	copy.ability_levels = ability_levels.duplicate()
+	copy.charms = charms.duplicate()
+	copy.equipped_charms = equipped_charms.duplicate()
+	copy.charm_notches = charm_notches
 	copy.checkpoint_zone = checkpoint_zone
 	copy.checkpoint_spawn_id = checkpoint_spawn_id
 	return copy

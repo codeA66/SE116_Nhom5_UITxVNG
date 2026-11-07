@@ -1,0 +1,48 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/menus/inventory/pages/charms/charms_page.gd" id="1_page"]
+[ext_resource type="Script" path="res://ui/menus/inventory/pages/charms/notch_row.gd" id="2_notches"]
+
+[node name="CharmsPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_page")
+page_title = "Bùa"
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 14
+
+[node name="NotchLabel" type="Label" parent="Layout"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Notches" type="Control" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+script = ExtResource("2_notches")
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 5
+
+[node name="Status" type="Label" parent="Layout"]
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3

@@ -1,0 +1,17 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://ui/hud/layout/game_hud.gd" id="1"]
+[ext_resource type="PackedScene" path="res://ui/hud/skills/skill_cluster.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://ui/hud/health/health_bar.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://ui/hud/health/segment/health_segment.tscn" id="4"]
+[sub_resource type="StyleBoxEmpty" id="Empty"]
+[node name="GameHud" type="Control"]
+mouse_filter = 2
+script = ExtResource("1")
+[node name="SkillCluster" parent="." instance=ExtResource("2")]
+layout_mode = 0
+[node name="HealthPanel" type="PanelContainer" parent="."]
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Empty")
+[node name="HealthBar" parent="HealthPanel" instance=ExtResource("3")]
+layout_mode = 2
+segment_scene = ExtResource("4")

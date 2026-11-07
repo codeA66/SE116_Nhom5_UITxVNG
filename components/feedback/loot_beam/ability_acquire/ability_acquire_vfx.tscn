@@ -3,11 +3,13 @@
 [ext_resource type="Script" path="res://components/feedback/loot_beam/ability_acquire/core/ability_acquire_renderer.gd" id="2"]
 [ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/ui/ability_acquire_ui.tscn" id="3"]
 [ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="4"]
-[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/lift/acquire_lift.tscn" id="5"]
-[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/gather/acquire_gather.tscn" id="6"]
-[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/burst/acquire_burst.tscn" id="7"]
-[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/settle/acquire_settle.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/charge/lift/acquire_lift.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/charge/gather/acquire_gather.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/release/burst/acquire_burst.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/release/settle/acquire_settle.tscn" id="8"]
 [ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/reveal/acquire_reveal.tscn" id="9"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/charge/scatter/acquire_scatter.tscn" id="10"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/release/blackout/acquire_blackout.tscn" id="11"]
 [node name="AbilityAcquireVfx" type="Node3D"]
 process_mode = 3
 script = ExtResource("1")
@@ -18,9 +20,11 @@ script = ExtResource("2")
 script = ExtResource("4")
 initial_state = NodePath("Lift")
 [node name="Lift" parent="StateMachine" instance=ExtResource("5")]
+[node name="Scatter" parent="StateMachine" instance=ExtResource("10")]
 [node name="Gather" parent="StateMachine" instance=ExtResource("6")]
 [node name="Burst" parent="StateMachine" instance=ExtResource("7")]
 [node name="Settle" parent="StateMachine" instance=ExtResource("8")]
+[node name="Blackout" parent="StateMachine" instance=ExtResource("11")]
 [node name="Reveal" parent="StateMachine" instance=ExtResource("9")]
 [node name="Audio" type="Node" parent="."]
 [node name="Descend" type="AudioStreamPlayer" parent="Audio"]

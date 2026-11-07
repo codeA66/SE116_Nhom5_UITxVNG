@@ -7,22 +7,18 @@ signal transfer_started
 const Tuning = preload("res://resources/feedback/ability_acquire/ability_acquire_data.gd")
 const SlotFx = preload("res://components/feedback/loot_beam/ability_acquire/ui/ability_acquire_slot_fx.gd")
 const SCREEN: Shader = preload("res://assets/shaders/screen/ability_acquire/canvas/acquire_screen.gdshader")
-const REVEAL: Shader = preload("res://assets/shaders/screen/ability_acquire/canvas/acquire_reveal.gdshader")
+const PANEL_SCENE: PackedScene = preload("res://components/feedback/loot_beam/ability_acquire/ui/panel/ability_acquire_panel.tscn")
 const TARGET_GROUP: StringName = &"ability_acquire_target"
 @export var data: Tuning = preload("res://resources/feedback/ability_acquire/ability_acquire_default.tres")
 var _root: Control
 var _shade: ColorRect
-var _panel: Control
-var _icon: TextureRect
+## Màn đen trước bảng (pha Blackout); nằm trên lớp dim, dưới bảng
+var _black: ColorRect
+var _black_tween: Tween
+var _panel: AbilityAcquirePanel
 var _fly: TextureRect
-var _title: Label
-var _description: Label
-var _hint: Label
-var _caption: Label
-var _continue: Label
 var _slot_fx: SlotFx
 var _screen_mat: ShaderMaterial
-var _icon_mat: ShaderMaterial
 var _target: Control
 var _ability: AbilityData
 var _previous_pending: bool = false
@@ -48,15 +44,8 @@ func begin(ability: AbilityData) -> void:
 			node.call(&"set_acquisition_pending", true)
 			node.connect(&"acquire_pulse_requested", _on_slot_pulse)
 			break
-	_icon.texture = ability.illustration if ability.illustration != null else ability.icon
 	_fly.texture = ability.icon
-	_icon_mat.set_shader_parameter(&"accent", ability.accent_color)
 	_screen_mat.set_shader_parameter(&"accent", ability.accent_color)
-	_title.text = ability.display_name
-	_description.text = ability.description
-	_caption.text = data.caption
-	_continue.text = data.continue_caption
-	_hint.text = _control_hint(ability)
 ## Lớp dim tồn tại ở pha thế giới; panel chỉ bật sau khi cáo đã hạ xuống.
 func set_grade(dim: float, desaturation: float, pulse: float = 0.0, charge: float = 0.0, shock: float = -1.0) -> void:
 	_root.show()
@@ -67,6 +56,11 @@ func set_grade(dim: float, desaturation: float, pulse: float = 0.0, charge: floa
 	_screen_mat.set_shader_parameter(&"charge",clampf(charge,0.0,data.maximum_intensity))
 	_screen_mat.set_shader_parameter(&"shock",shock)
 	_screen_mat.set_shader_parameter(&"local_focus", _mode == 0)
+## Phủ đen toàn màn (0..1) cho pha Blackout; bảng kỹ năng hiện đè lên
+func set_black(amount: float) -> void:
+	_root.show()
+	_black.visible = amount > 0.0
+	_black.color.a = clampf(amount, 0.0, 1.0)
 ## Điểm tập trung theo camera game, không dựa vào kích thước ảnh chụp cố định.
 func set_focus(world: Vector3) -> void:
 	var camera: Camera3D = get_viewport().get_camera_3d()
@@ -76,18 +70,23 @@ func set_focus(world: Vector3) -> void:
 func show_panel() -> void:
 	_clock = 0.0
 	_mode = 1
-	_panel.show()
-	_panel.modulate.a = 0.0
-	_title.visible_characters = 0
+	_panel.play(_ability, _key_text(_ability))
 	set_process(true)
-	_slot_fx.play_panel(_icon.get_global_rect().get_center(),_ability.accent_color)
-## UI test và nút xác nhận cùng dùng một đường đóng.
+	_play_panel_fx()
+## UI test và nút xác nhận cùng dùng một đường đóng. Bấm khi bảng đang diễn = hiện hết ngay, bấm lần nữa mới đóng.
 func request_close() -> void:
-	if _mode != 1 or _clock < maxf(data.panel_time, data.title_time): return
-	_fly_start = _icon.get_global_rect().get_center()
+	if _mode != 1: return
+	if not _panel.is_intro_done():
+		_panel.skip_intro()
+		return
+	_fly_start = _panel.get_illustration_center()
 	_fly.position = _fly_start - _fly.size * 0.5
 	_fly.show()
-	_panel.hide()
+	_panel.close()
+	# Lớp đen tắt cùng nhịp với bảng để lộ lại cảnh game khi icon bay về HUD
+	if _black.visible:
+		_black_tween = create_tween()
+		_black_tween.tween_method(set_black, _black.color.a, 0.0, data.close_time)
 	_slot_fx.stop()
 	_clock = 0.0
 	_landed = false
@@ -107,9 +106,6 @@ func _process(delta: float) -> void:
 	_clock += delta / maxf(Engine.time_scale, data.minimum_time)
 	if _mode == 1:
 		var t: float = clampf(_clock / maxf(data.panel_time, data.minimum_time), 0.0, 1.0)
-		_panel.modulate.a = t
-		_icon_mat.set_shader_parameter(&"progress", t)
-		_title.visible_characters = floori(_title.text.length() * clampf(_clock / maxf(data.title_time, data.minimum_time), 0.0, 1.0))
 		set_grade(lerpf(data.gather_dim, data.reveal_dim, t), data.gather_desaturation)
 	elif _mode == 2:
 		var t: float = clampf(_clock / maxf(data.fly_time, data.minimum_time), 0.0, 1.0)
@@ -141,20 +137,27 @@ func stop_all() -> void:
 			_target.disconnect(&"acquire_pulse_requested", _on_slot_pulse)
 	_target = null
 	if is_instance_valid(_root): _root.hide()
-	if is_instance_valid(_panel): _panel.hide()
+	if is_instance_valid(_panel): _panel.stop()
+	if _black_tween and _black_tween.is_valid(): _black_tween.kill()
+	if is_instance_valid(_black): _black.hide()
 	if is_instance_valid(_fly): _fly.hide()
 	if is_instance_valid(_slot_fx): _slot_fx.stop()
 ## Trạng thái đọc công khai phục vụ fixture mà không truy cập biến UI riêng.
 func is_waiting_for_confirm() -> bool:
-	return _mode == 1 and _clock >= maxf(data.panel_time, data.title_time)
+	return _mode == 1 and _panel.is_intro_done()
 ## Vị trí target dùng transform canvas để chịu được HUD scale/resize.
 func _target_center() -> Vector2:
 	return _target.get_global_transform_with_canvas() * (_target.size * 0.5)
 ## Glow được phát từ signal của chính ô HUD.
 func _on_slot_pulse(accent: Color) -> void:
 	if is_instance_valid(_target): _slot_fx.play_at(_target_center(), accent)
-## Hint dùng binding thật, kỹ năng thụ động không tự bịa một nút bấm.
-func _control_hint(ability: AbilityData) -> String:
+## Chờ bảng xếp bố cục xong mới lấy tâm hình minh họa cho vòng hạt quanh hình.
+func _play_panel_fx() -> void:
+	await get_tree().process_frame
+	if _mode == 1 and is_instance_valid(_ability):
+		_slot_fx.play_panel(_panel.get_illustration_center(), _ability.accent_color)
+## Tên phím lấy từ binding thật; kỹ năng thụ động không tự bịa một nút bấm.
+func _key_text(ability: AbilityData) -> String:
 	if not ability is SkillData: return ""
 	var action: StringName = (ability as SkillData).input_action
 	if not InputMap.has_action(action): return ""
@@ -164,7 +167,7 @@ func _control_hint(ability: AbilityData) -> String:
 	if events[0] is InputEventKey:
 		var key: InputEventKey = events[0] as InputEventKey
 		label = OS.get_keycode_string(key.physical_keycode if key.physical_keycode != 0 else key.keycode)
-	return data.control_caption % label
+	return label
 ## Layout dùng tỷ lệ của khung cấu hình, không phụ thuộc độ phân giải cửa sổ.
 func _build() -> void:
 	_root = Control.new()
@@ -181,33 +184,16 @@ func _build() -> void:
 	_screen_mat.set_shader_parameter(&"local_radiance", data.local_radiance)
 	_screen_mat.set_shader_parameter(&"shock_gain",data.shock_gain)
 	_screen_mat.set_shader_parameter(&"shock_width",data.shock_width)
+	_screen_mat.set_shader_parameter(&"focus_dim_keep",data.focus_dim_keep)
 	_shade.material = _screen_mat
-	_panel = Control.new()
+	_black = ColorRect.new()
+	_black.color = Color(0.0, 0.0, 0.0, 0.0)
+	_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(_black)
+	_black.hide()
+	_panel = PANEL_SCENE.instantiate() as AbilityAcquirePanel
 	_root.add_child(_panel)
-	_panel.set_anchors_preset(Control.PRESET_CENTER)
-	_panel.size = data.panel_size
-	_panel.position = -data.panel_size * 0.5
-	_icon = TextureRect.new()
-	_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_icon.size = Vector2.ONE * data.illustration_size
-	_icon.position = Vector2((data.panel_size.x-data.illustration_size)*0.5,0)
-	_panel.add_child(_icon)
-	_icon_mat = ShaderMaterial.new()
-	_icon_mat.shader = REVEAL
-	_icon.material = _icon_mat
-	_caption = _label(data.caption_font, data.caption_y, Color(0.65,0.72,0.76))
-	_title = _label(data.title_font, data.title_y, Color(0.94,0.98,1.0))
-	if data.title_typeface != null: _title.add_theme_font_override(&"font",data.title_typeface)
-	var divider: ColorRect = ColorRect.new()
-	divider.color = Color(0.45,0.65,0.7,0.7)
-	divider.position = Vector2(data.panel_size.x*0.22,data.panel_size.y*data.divider_y)
-	divider.size = Vector2(data.panel_size.x*0.56,1.0)
-	_panel.add_child(divider)
-	_hint = _label(data.hint_font, data.hint_y, Color(0.88,0.94,0.96))
-	_description = _label(data.body_font, data.description_y, Color(0.55,0.64,0.68))
-	_description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_continue = _label(data.hint_font, data.continue_y, Color(0.45,0.55,0.60))
+	_panel.configure(data)
 	_fly = TextureRect.new()
 	_fly.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_fly.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -225,15 +211,4 @@ func _layout() -> void:
 	_shade.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	_root.size = get_viewport().get_visible_rect().size
 	_shade.size = _root.size
-	_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	_panel.position = (_root.size-data.panel_size)*0.5
-## Label tạo một lần; pha reveal chỉ cập nhật visible_characters.
-func _label(font_size: int, y: float, color: Color) -> Label:
-	var label: Label = Label.new()
-	label.position = Vector2(0,data.panel_size.y*y)
-	label.size = Vector2(data.panel_size.x,data.panel_size.y*0.12)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override(&"font_size",font_size)
-	label.add_theme_color_override(&"font_color",color)
-	_panel.add_child(label)
-	return label
+	_black.size = _root.size

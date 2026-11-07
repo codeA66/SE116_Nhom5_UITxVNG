@@ -4,3 +4,5 @@ extends Resource
 ## Thêm/bớt kỹ năng khởi đầu trong file .tres, không sửa code.
 
 @export var starting_abilities: Array[AbilityData] = []
+## Số ô khắc bùa lúc bắt đầu game
+@export_range(0, 12) var charm_notches: int = 3

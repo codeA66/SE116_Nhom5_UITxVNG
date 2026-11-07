@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://ogf07s4t0ew7" path="res://assets/models/shared/weapons/bow_visual.tscn" id="3"]
 [ext_resource type="Resource" path="res://resources/combat/attacks/bow/bow_shot.tres" id="4"]
 [ext_resource type="PackedScene" path="res://objects/combat/projectiles/wind_arrow/wind_arrow.tscn" id="5"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/bow.svg" id="ui_icon"]
 
 [resource]
 script = ExtResource("1")
@@ -13,6 +14,8 @@ release_recovery = 0.12
 min_speed_ratio = 0.55
 slot = 1
 display_name = "Cung"
+icon = ExtResource("ui_icon")
+description = "Giữ phím ngắm rồi bắn tên từ xa. Ghép nguyên tố để mũi tên có thêm hiệu ứng."
 model_scene = ExtResource("3")
 attack_range = 12.0
 combo = Array[ExtResource("2")]([ExtResource("4")])
