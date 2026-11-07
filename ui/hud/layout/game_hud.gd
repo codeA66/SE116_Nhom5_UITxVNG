@@ -49,15 +49,18 @@ func _layout() -> void:
 	var energy_size: Vector2 = energy_bar.get_combined_minimum_size() if is_instance_valid(energy_bar) else Vector2.ZERO
 	var health_offset: Vector2 = style.health_offset.clamp(Vector2.ZERO,viewport*0.4)
 	health_offset.x = maxf(health_offset.x,energy_offset.x+energy_size.x+gap)
-	var currency_offset: Vector2 = style.currency_offset.clamp(Vector2.ZERO,viewport*0.4)
-	currency_offset.x = maxf(currency_offset.x,health_offset.x)
-	currency_offset.y = maxf(currency_offset.y,health_offset.y+_health_bar.get_combined_minimum_size().y+gap)
-	var currency_height: float = currency_counter.get_combined_minimum_size().y if is_instance_valid(currency_counter) else 0.0
 	var skills_offset: Vector2 = style.skills_offset.clamp(Vector2.ZERO,viewport*0.4)
-	skills_offset.x = maxf(skills_offset.x,energy_offset.x+energy_size.x+gap)
-	skills_offset.y = maxf(skills_offset.y,currency_offset.y+currency_height+gap)
-	var height: float = maxf(energy_offset.y+energy_size.y,skills_offset.y+_cluster.size.y)
+	skills_offset.x = maxf(skills_offset.x, health_offset.x)
+	skills_offset.y = maxf(skills_offset.y, health_offset.y + _health_bar.get_combined_minimum_size().y + gap)
+	# Neo tiền bên dưới hàng kỹ năng để việc đếm hoặc ẩn không dời các ô.
+	var currency_offset: Vector2 = style.currency_offset.clamp(Vector2.ZERO,viewport*0.4)
+	currency_offset.x = maxf(currency_offset.x, skills_offset.x)
+	currency_offset.y = maxf(currency_offset.y, skills_offset.y + _cluster.size.y + gap)
+	var currency_height: float = currency_counter.get_combined_minimum_size().y if is_instance_valid(currency_counter) else 0.0
+	var height: float = maxf(energy_offset.y + energy_size.y, currency_offset.y + currency_height)
+	var width: float = maxf(energy_offset.x + energy_size.x, skills_offset.x + _cluster.size.x)
 	factor = minf(factor,maxf((viewport.y-position.y-maxf(style.safe_bottom_margin,0))/maxf(height,1),0.1))
+	factor = minf(factor, maxf((viewport.x - position.x * 2.0) / maxf(width, 1), 0.1))
 	scale = Vector2.ONE*factor
 	_health_bar.fit_width(maxf((viewport.x-position.x*2.0)/factor-health_offset.x,1))
 	_health_panel.position = health_offset

@@ -26,6 +26,10 @@ var _initialized: bool = false
 var _tint: Color
 var _font: Font
 var _shell: Resource
+var _fox_head: HudGlyph
+var _fox_cream: HudGlyph
+var _fox_ink: HudGlyph
+var _frame_rect: Rect2
 var _duration: float = 0.0
 ## Khởi tạo hình trước, chờ component sẵn sàng trước khi đọc giá trị ban đầu.
 func _ready() -> void:
@@ -73,13 +77,27 @@ func apply_style() -> void:
 	var inset: float = clampf(style.energy_rim,0.0,diameter*0.4)
 	_surface.position = Vector2((size.x-diameter)*0.5+inset,inset)
 	_surface.size = Vector2.ONE*maxf(diameter-inset*2.0,1.0)
+	_frame_rect = Rect2(Vector2((size.x-diameter)*0.5,0),Vector2.ONE*diameter)
+	var vessel_uv: Rect2 = style.energy_frame_vessel_uv.intersection(Rect2(Vector2.ZERO,Vector2.ONE))
+	if style.energy_frame_texture != null and vessel_uv.has_area():
+		var art_size: Vector2 = style.energy_frame_texture.get_size()
+		var available: Vector2 = Vector2(size.x,maxf(size.y-style.energy_font_size,1.0))
+		var fit: float = minf(available.x/art_size.x,available.y/art_size.y)
+		_frame_rect.size = art_size*fit
+		_frame_rect.position = Vector2((size.x-_frame_rect.size.x)*0.5,0)
+		_surface.position = _frame_rect.position+vessel_uv.position*_frame_rect.size
+		_surface.size = vessel_uv.size*_frame_rect.size
 	_material.set_shader_parameter(&"ink",style.empty_ink)
 	_material.set_shader_parameter(&"hot",style.ivory)
 	_material.set_shader_parameter(&"wave_height",clampf(style.energy_wave_height,0.0,0.12))
 	_material.set_shader_parameter(&"wave_speed",style.energy_wave_speed)
 	_material.set_shader_parameter(&"wave_frequency",style.energy_wave_frequency)
 	_material.set_shader_parameter(&"idle_wave",clampf(style.energy_idle_wave,0,1))
+	_material.set_shader_parameter(&"facet_strength",clampf(style.energy_facet_strength,0.0,0.3))
 	_shell = style.glyphs.get(&"energy_shell")
+	_fox_head = style.glyphs.get(&"energy_fox_head")
+	_fox_cream = style.glyphs.get(&"energy_fox_cream")
+	_fox_ink = style.glyphs.get(&"energy_fox_ink")
 	_material.set_shader_parameter(&"masked",style.energy_mask_texture != null)
 	if style.energy_mask_texture != null: _material.set_shader_parameter(&"mask_texture",style.energy_mask_texture)
 	_write_fill()
@@ -160,7 +178,12 @@ func _draw() -> void:
 	var radius: float = maxf(diameter*0.5-style.stroke_width()*2.0,1.0)
 	var rim: Color = style.gold.lerp(style.damage_color,_warning)
 	if style.energy_frame_texture != null:
-		draw_texture_rect(style.energy_frame_texture,Rect2(center-Vector2.ONE*diameter*0.5,Vector2.ONE*diameter),false)
+		draw_texture_rect(style.energy_frame_texture,_frame_rect,false)
+		if _warning > 0.0 or _pulse > 0.0:
+			var vessel: Rect2 = Rect2(_surface.position,_surface.size)
+			var feedback: Color = style.damage_color if _warning > 0.0 else style.ivory
+			draw_arc(vessel.get_center(),vessel.size.y*0.5,0,TAU,style.energy_curve_steps,
+				Color(feedback,maxf(_warning,_pulse)),style.stroke_width(),true)
 	else:
 		draw_arc(center,radius,0,TAU,style.energy_curve_steps,style.ink,style.stroke_width()*4.0,true)
 		draw_arc(center,radius,PI,TAU,style.energy_curve_steps,Color(rim,clampf(style.energy_inner_rim_opacity+_pulse,0,1)),style.stroke_width(),true)
@@ -176,6 +199,11 @@ func _draw() -> void:
 				var tint: Color = rim if index<style.energy_shell_tip_start else style.energy_shell_accent.lerp(style.ivory,_pulse)
 				if stroke.size()>=2: draw_polyline(stroke,tint,style.stroke_width()/extent,true)
 			draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
+		var crest: Vector2 = Vector2(center.x, diameter * clampf(style.energy_fox_height, 0, 0.35))
+		var crest_size: float = diameter * clampf(style.energy_fox_scale, 0, 0.35)
+		if _fox_head != null: _fox_head.draw_on(self, crest, crest_size, style.energy_fox_color, style.stroke_width())
+		if _fox_cream != null: _fox_cream.draw_on(self, crest, crest_size, style.ivory, style.stroke_width())
+		if _fox_ink != null: _fox_ink.draw_on(self, crest, crest_size, style.ink, style.stroke_width())
 	if _font != null:
 		draw_string(_font,Vector2(0,size.y-1),style.energy_label,HORIZONTAL_ALIGNMENT_CENTER,size.x,maxi(style.energy_font_size,1),style.ink)
 		draw_string(_font,Vector2(0,size.y-2),style.energy_label,HORIZONTAL_ALIGNMENT_CENTER,size.x,maxi(style.energy_font_size,1),Color(style.ivory,0.85))

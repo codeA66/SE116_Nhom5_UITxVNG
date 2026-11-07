@@ -74,6 +74,9 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var energy_shell_accent: Color = Color("#97b6a1")
 @export var energy_shell_tip_color: Color = Color("#dfd8b7")
 @export var energy_shell_tip_start: int = 1
+@export var energy_fox_color: Color = Color("#b86b41")
+@export_range(0,0.35) var energy_fox_scale: float = 0.30
+@export_range(0,0.35) var energy_fox_height: float = 0.065
 @export_range(0,1) var energy_inner_rim_opacity: float = 0.55
 @export var energy_full_time: float = 0.45
 @export var energy_warn_time: float = 0.32
@@ -82,6 +85,8 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var energy_label: String = "LINH LỰC"
 @export var energy_font_size: int = 12
 @export var energy_frame_texture: Texture2D
+@export var energy_frame_vessel_uv: Rect2
+@export_range(0,0.3) var energy_facet_strength: float = 0.0
 @export var energy_mask_texture: Texture2D
 @export var energy_fallback: Color = Color("#93c5a4")
 @export var element_colors: Dictionary[StringName,Color] = {&"wind":Color("#9fdce0"),&"fire":Color("#ee964e"),&"ice":Color("#a1cced"),&"thunder":Color("#e6cb6b")}
@@ -94,7 +99,11 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var skill_step: float = 32.0
 @export var skill_anchors: Dictionary[StringName,Vector2] = {&"bow":Vector2(0,-1),&"wind_blast":Vector2(-1,0),&"sword":Vector2(1,0),&"flame_breath":Vector2(0,1)}
 @export var skill_icon_scale: float = 0.65
+@export var skill_icon_colors: Dictionary[StringName,Color] = {}
+@export var skill_shared_panel: bool = false
+@export var skill_divider_column: float = 1.5
 @export var skill_icon_rotations: Dictionary[StringName,float] = {}
+@export var skill_font: Font
 @export var skill_show_key_badges: bool = true
 @export var skill_active_scale: float = 1.13
 @export var skill_active_time: float = 0.13

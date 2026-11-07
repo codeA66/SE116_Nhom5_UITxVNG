@@ -12,6 +12,11 @@ func is_available() -> bool:
 func is_ready() -> bool:
 	var equipped: WeaponData = GameState.get_weapon()
 	return always_ready or (equipped != null and equipped.slot == slot)
+## Phân biệt vũ khí đang trang bị với cung có thể dùng ngay.
+func is_selected() -> bool:
+	if not style.skill_shared_panel or Engine.is_editor_hint(): return false
+	var equipped: WeaponData = GameState.get_weapon()
+	return equipped != null and equipped.slot == slot
 ## Cache màu/huy hiệu sau signal, không truy vấn fusion khi cooldown đang vẽ.
 func refresh() -> void:
 	if not Engine.is_editor_hint(): _element = GameState.get_fused_element(slot)

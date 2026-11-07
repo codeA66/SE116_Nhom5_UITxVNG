@@ -165,6 +165,8 @@ func _energy_tests() -> void:
 	_check(_energy_bar.get_element_color()==hud_style.energy_fallback,"tháo ghép về màu ngà")
 ## Khoản lớn không lặp một vòng cho từng đồng; tổng logic và chữ hoạt họa được kiểm tra riêng.
 func _currency_tests() -> void:
+	var skill_cluster: Control = actor.get_node("HUD/GameHud/SkillCluster") as Control
+	var row_before: Rect2 = skill_cluster.get_global_rect()
 	var before: int = GameState.get_currency(&"soul_jade")
 	GameState.add_currency(&"soul_jade",137)
 	_check(_counter.visible and _counter.get_shown_value()==before+137,"Soul Jade signal cập nhật tổng ngay")
@@ -176,8 +178,10 @@ func _currency_tests() -> void:
 	_check(_counter.get_displayed_value()==GameState.get_currency(&"soul_jade"),"khoản lớn hội tụ chính xác")
 	await _shot("currency_large")
 	_check_no_overlap("tiền lớn")
+	_check(skill_cluster.get_global_rect().is_equal_approx(row_before),"Soul Jade đang hiện không dời hàng kỹ năng")
 	await wait_seconds(cleanup_wait)
 	_check(not _counter.visible and not _counter.is_processing(),"tiền tự ẩn, dừng process")
+	_check(skill_cluster.get_global_rect().is_equal_approx(row_before),"Soul Jade ẩn không dời hàng kỹ năng")
 	GameState.add_currency(&"other_test",10)
 	_check(not _counter.visible,"loại tiền khác không kích hoạt Soul Jade")
 ## Cooldown qua signal Player, press qua Input.parse_input_event; không gọi play_press trực tiếp.

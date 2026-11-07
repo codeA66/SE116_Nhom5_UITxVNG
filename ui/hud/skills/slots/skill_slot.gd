@@ -37,9 +37,12 @@ var _badge_rect: Rect2
 var _points: PackedVector2Array = PackedVector2Array()
 var _outline: PackedVector2Array = PackedVector2Array()
 var _inner: PackedVector2Array = PackedVector2Array()
+var _bevel: PackedVector2Array = PackedVector2Array()
+var _top_gem: PackedVector2Array = PackedVector2Array()
 var _sweep: PackedVector2Array = PackedVector2Array()
 var _glyph: Resource
 var _texture: Texture2D
+var _accent: Color
 ## Ready của con không đọc bất kỳ onready nào của Player.
 func _ready() -> void:
 	mouse_filter = MOUSE_FILTER_IGNORE
@@ -89,17 +92,17 @@ func set_active(value: bool) -> void:
 func refresh() -> void:
 	_available = Engine.is_editor_hint() or is_available()
 	highlighted = _available and (Engine.is_editor_hint() or is_ready()) and not is_cooling_down()
-	var previous: bool = selected
 	selected = _available and (_active or is_selected())
 	z_index = 1 if selected else 0
 	set_process_unhandled_input(not Engine.is_editor_hint() and _available and InputMap.has_action(input_action))
-	if previous != selected: _animate_scale(_base_scale(),style.skill_active_time)
+	var target_scale: float = _base_scale()
+	if not is_equal_approx(_scale_target,target_scale): _animate_scale(target_scale,style.skill_active_time)
 	refresh_binding()
 	queue_redraw()
 ## Cấu hình hình học chỉ chạy khi ready hoặc thay style, không ở mỗi nhát đánh.
 func apply_style() -> void:
 	theme = style.theme
-	_font = get_theme_default_font()
+	_font = style.skill_font if style.skill_font != null else get_theme_default_font()
 	radius = style.get_skill_radius()
 	padding = clampf(style.skill_padding,0,16)
 	custom_minimum_size = Vector2.ONE*(radius+padding)*2.0
@@ -107,10 +110,11 @@ func apply_style() -> void:
 	pivot_offset = size*0.5
 	_glyph = style.glyphs.get(glyph_id)
 	_texture = icon if icon != null else style.texture_overrides.get(glyph_id)
+	_accent = style.skill_icon_colors.get(glyph_id,style.ivory)
 	_badge_style.bg_color = style.ink
-	_badge_style.border_color = style.gold
+	_badge_style.border_color = Color(style.gold,0.65)
 	_badge_style.set_border_width_all(maxi(roundi(style.stroke_width()),1))
-	_badge_style.set_corner_radius_all(2)
+	_badge_style.set_corner_radius_all(3)
 	_sweep.resize(clampi(style.skill_sweep_steps,8,96)+2)
 	_cache_geometry()
 	refresh_binding()
@@ -151,7 +155,8 @@ func _shape_points(center: Vector2, extent: float) -> PackedVector2Array:
 	return PackedVector2Array([center+Vector2(0,-extent),center+Vector2(extent,0),center+Vector2(0,extent),center+Vector2(-extent,0)])
 ## Tách kích thước đang dùng với press ngắn hạn.
 func _base_scale() -> float:
-	return style.get_active_scale() if selected else 1.0
+	var emphasize: bool = selected and (not style.skill_shared_panel or _active)
+	return style.get_active_scale() if emphasize else 1.0
 ## Chỉ giữ một trạng thái scale, input dồn không tạo hàng đợi vô hạn.
 func _animate_scale(target: float, duration: float) -> void:
 	_scale_from = scale.x
@@ -166,6 +171,12 @@ func _cache_geometry() -> void:
 	_outline.append(_points[0])
 	_inner = _shape_points(get_center(),maxf(radius-style.skill_inner_gap,0.01))
 	_inner.append(_inner[0])
+	var center: Vector2 = get_center()
+	_bevel = PackedVector2Array([center + Vector2(-radius,0), center + Vector2(0,-radius),
+		center + Vector2(radius,0), center + Vector2(0,-radius+style.skill_inner_gap*2.0)])
+	var gem_y: float = -radius + style.skill_inner_gap
+	var gem_size: float = clampf(style.stroke_width(),0.5,radius*0.2)
+	_top_gem = _shape_points(center + Vector2(0,gem_y),gem_size)
 	_cache_badge()
 	if is_cooling_down(): _update_sweep()
 ## Kích thước chữ phím không phải đo lại trong từng frame cooldown.
@@ -189,7 +200,8 @@ func _update_sweep() -> void:
 	var tick: int = ceili(_cooldown_left*10.0)
 	if tick != _tick:
 		_tick = tick
-		_cooldown_text = "%.1f" % _cooldown_left if _cooldown_left<1.0 else "%d" % ceili(_cooldown_left)
+		var decimal_limit: float = 10.0 if style.skill_shared_panel else 1.0
+		_cooldown_text = "%.1f" % _cooldown_left if _cooldown_left<decimal_limit else "%d" % ceili(_cooldown_left)
 ## Chuỗi tên phím xuất phát từ InputMap, không gán cứng E/Q/F trong artwork.
 func _binding_label(event: InputEvent) -> String:
 	if event is InputEventMouseButton:
@@ -218,21 +230,57 @@ func _binding_label(event: InputEvent) -> String:
 func _draw() -> void:
 	if style == null or _points.size()<3: return
 	var center: Vector2 = get_center()
+	if style.skill_shared_panel:
+		_draw_shared_slot(center)
+		return
 	draw_colored_polygon(_points,style.skill_selected_fill if selected else style.skill_fill)
-	draw_polyline(_outline,style.ivory if selected else (style.gold if _available else style.muted),style.skill_active_line if selected else style.stroke_width(),true)
-	if selected: draw_polyline(_inner,Color(style.gold,0.5),style.stroke_width(),true)
 	if _available:
-		var tint: Color = style.ivory if highlighted else style.muted
-		if _texture != null:
-			var extent: float = radius*style.skill_icon_scale
-			draw_texture_rect(_texture,Rect2(center-Vector2.ONE*extent,Vector2.ONE*extent*2),false,tint)
-		elif _glyph != null:
-			_glyph.draw_on(self,center,radius*style.skill_icon_scale,tint,style.stroke_width(),deg_to_rad(icon_rotation_degrees))
+		draw_colored_polygon(_bevel,Color(_accent,0.14 if selected else 0.08))
+		draw_colored_polygon(_top_gem,Color(_accent,0.95 if selected else 0.72))
+		draw_polyline(_inner,Color(style.gold,0.54 if selected else 0.30),style.stroke_width(),true)
+	draw_polyline(_outline,style.ink,style.stroke_width()*2.6,true)
+	draw_polyline(_outline,style.ivory if selected else (style.gold if _available else style.muted),style.skill_active_line if selected else style.stroke_width(),true)
+	if _available:
+		var tint: Color = _accent if highlighted else _accent.lerp(style.muted,0.65)
+		_draw_icon(center,tint)
 		if is_cooling_down() and _cooldown_left/maxf(_cooldown_total,0.001)>0.001:
 			draw_colored_polygon(_sweep,style.skill_cooldown_color)
 			draw_line(center,_sweep[-1],style.skill_cooldown_line,style.stroke_width(),true)
 			draw_string(_font,center+Vector2(-radius,_font.get_ascent(maxi(style.skill_cooldown_font,1))*0.35),_cooldown_text,HORIZONTAL_ALIGNMENT_CENTER,radius*2,maxi(style.skill_cooldown_font,1),style.ivory)
 	if show_key_badge and _available: _draw_badge()
+	_draw_extra(center)
+## Giữ biểu tượng riêng để nền chung và khung rời dùng cùng dữ liệu.
+func _draw_icon(center: Vector2,tint: Color) -> void:
+	var extent: float = radius*style.skill_icon_scale
+	if _texture != null:
+		draw_texture_rect(_texture,Rect2(center-Vector2.ONE*extent,Vector2.ONE*extent*2),false,tint)
+	elif _glyph != null:
+		_glyph.draw_on(self,center,extent,tint,style.stroke_width(),deg_to_rad(icon_rotation_degrees))
+## Nhãn phím, dấu trang bị và thời gian hồi nằm riêng để giữ silhouette của kỹ năng.
+func _draw_shared_slot(center: Vector2) -> void:
+	if not _available: return
+	var tint: Color = _accent if highlighted else _accent.lerp(style.ink,0.50)
+	var icon_center: Vector2 = center-Vector2.DOWN*radius*0.12
+	_draw_icon(icon_center,tint)
+	var line: float = style.stroke_width()
+	var marker: Vector2 = center+Vector2.DOWN*radius*0.75
+	if is_cooling_down():
+		var progress: float = 1.0-clampf(_cooldown_left/maxf(_cooldown_total,style.minimum_duration),0.0,1.0)
+		var left: Vector2 = marker-Vector2.RIGHT*radius*0.47
+		var right: Vector2 = marker+Vector2.RIGHT*radius*0.47
+		draw_line(left,right,Color(_accent,0.30),line,true)
+		draw_line(left,left.lerp(right,progress),_accent,line,true)
+		if _font != null:
+			var font_size: int = maxi(style.skill_cooldown_font,1)
+			var baseline: Vector2 = icon_center+Vector2(-radius,_font.get_ascent(font_size)*0.35)
+			draw_string(_font,baseline+Vector2.ONE, _cooldown_text,HORIZONTAL_ALIGNMENT_CENTER,radius*2,font_size,style.ink)
+			draw_string(_font,baseline,_cooldown_text,HORIZONTAL_ALIGNMENT_CENTER,radius*2,font_size,style.ivory)
+	elif selected:
+		var extent: float = line*1.8
+		draw_set_transform(marker,PI*0.25)
+		draw_rect(Rect2(-Vector2.ONE*extent,Vector2.ONE*extent*2),_accent)
+		draw_set_transform(Vector2.ZERO)
+	if show_key_badge: _draw_badge()
 	_draw_extra(center)
 ## Điểm mở rộng cho huy hiệu nguyên tố; lớp gốc không biết hệ fusion.
 func _draw_extra(_center: Vector2) -> void:
@@ -240,7 +288,10 @@ func _draw_extra(_center: Vector2) -> void:
 ## Huy hiệu nhỏ và vuông nhẹ, dùng cùng nét mực của cả HUD.
 func _draw_badge() -> void:
 	if _font == null or _key_label.is_empty(): return
-	draw_style_box(_badge_style,_badge_rect)
 	var font_size: int = maxi(style.skill_key_font,1)
 	var baseline: Vector2 = Vector2(_badge_rect.position.x,_badge_rect.get_center().y+_font.get_ascent(font_size)*0.35)
+	if style.skill_shared_panel:
+		draw_string(_font,baseline+Vector2.ONE,_key_label,HORIZONTAL_ALIGNMENT_CENTER,_badge_rect.size.x,font_size,style.ink)
+	else:
+		draw_style_box(_badge_style,_badge_rect)
 	draw_string(_font,baseline,_key_label,HORIZONTAL_ALIGNMENT_CENTER,_badge_rect.size.x,font_size,style.ivory)

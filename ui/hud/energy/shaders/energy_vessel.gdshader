@@ -10,6 +10,7 @@ uniform float idle_wave = 0.18;
 uniform float clock = 0.0;
 uniform float activity = 0.0;
 uniform float flash = 0.0;
+uniform float facet_strength = 0.0;
 uniform bool masked = false;
 uniform sampler2D mask_texture : filter_linear;
 void fragment() {
@@ -24,6 +25,11 @@ void fragment() {
 	float shine = (1.0-smoothstep(0.0,0.016,abs(UV.y-surface)))*liquid*boundary;
 	float depth = clamp((UV.y-surface)/max(1.0-surface,0.001),0.0,1.0);
 	vec3 fluid = tint.rgb*mix(1.0,0.70,depth);
+	// Mặt cắt đi cùng màu chất lỏng để phần đã tiêu vẫn đọc như khoang rỗng.
+	float facets = mix(1.0,-0.65,step(p.x*0.7+0.15,p.y));
+	facets -= 0.65*step(0.12,p.x-p.y*0.74);
+	fluid = mix(fluid,hot.rgb,max(facets,0.0)*facet_strength);
+	fluid *= 1.0+min(facets,0.0)*facet_strength;
 	vec3 color = mix(ink.rgb,fluid,liquid);
 	color = mix(color,hot.rgb,clamp(shine*0.65+flash*0.35*liquid,0.0,1.0));
 	float alpha = circle*mix(ink.a,1.0,liquid);
