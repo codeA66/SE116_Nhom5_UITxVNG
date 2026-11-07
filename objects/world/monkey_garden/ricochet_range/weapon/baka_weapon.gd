@@ -61,9 +61,6 @@ func set_active(value: bool) -> void:
 	if not is_instance_valid(_player): return
 	if not is_instance_valid(_visual): value=false
 	_active = value
-	if value:
-		var real: RealBakaWeapon=_player.get_node_or_null("RealBakaWeapon") as RealBakaWeapon
-		if real: real.set_equipped(false)
 	_player.set_combat_locked(self,value)
 	_hold.set_held(value)
 	if is_instance_valid(_visual): _visual.visible = value

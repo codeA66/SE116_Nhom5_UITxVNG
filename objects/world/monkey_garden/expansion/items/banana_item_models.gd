@@ -5,10 +5,6 @@ static func material(color: Color) -> StandardMaterial3D:
 	var mat: StandardMaterial3D = StandardMaterial3D.new(); mat.albedo_color = color; mat.roughness = 0.85
 	return mat
 
-static func fruit(color: Color) -> MeshInstance3D:
-	var model: MeshInstance3D = MeshInstance3D.new(); model.mesh = BananaGeometry.fruit(); model.material_override = material(color)
-	model.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF; return model
-
 static func shoe() -> Node3D:
 	var root: Node3D = Node3D.new()
 	var body: MeshInstance3D = MeshInstance3D.new(); body.mesh = _boot_mesh()

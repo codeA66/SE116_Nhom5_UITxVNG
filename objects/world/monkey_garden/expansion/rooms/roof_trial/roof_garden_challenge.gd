@@ -3,7 +3,6 @@ extends Node3D
 signal cleared
 @export var guards: Array[Enemy] = []
 @export var reward: OfferingBanana
-@export var item: BananaItemPickup
 @export_range(0.0, 10.0, 0.1) var reward_delay: float = 2.2
 var started: bool = false
 var completed: bool = false
@@ -57,5 +56,5 @@ func _guard_died(_guard: Enemy) -> void:
 func _check() -> void:
 	if not started or completed or _alive>0: return
 	completed = true
-	GardenRewards.offering(reward); item.reveal()
+	GardenRewards.offering(reward)
 	get_tree().create_timer(reward_delay,false).timeout.connect(func() -> void: cleared.emit())

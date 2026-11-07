@@ -41,11 +41,11 @@ func _ready() -> void:
 	_embers.mesh = core; _embers.material_override = _glow(Color(1,0.45,0.06)); _embers.emitting = false
 	_embers.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF; add_child(_embers)
 	pool_released()
-func play(at: Vector3, radius: float, red: bool = false) -> void:
+func play(at: Vector3, radius: float) -> void:
 	global_position = at; scale = Vector3.ONE*radius; _age = 0.0
 	reset_physics_interpolation()
-	_material.albedo_color = Color(1,0.25,0.025) if red else Color(1,0.75,0.02)
-	_flash_material.albedo_color = Color(1,0.65,0.25) if red else Color(1,0.92,0.45)
+	_material.albedo_color = Color(1,0.75,0.02)
+	_flash_material.albedo_color = Color(1,0.92,0.45)
 	visible = true; set_process(true); _particles.restart(); _particles.emitting = true
 	_smoke.restart(); _smoke.emitting = true; _embers.restart(); _embers.emitting = true
 func _process(delta: float) -> void:
