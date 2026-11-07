@@ -11,6 +11,9 @@ var _measure_last_us: int = 0
 @export var weapons: Array[Resource] = []
 ## Kiểu Resource (không phải AbilityData): mảng trong .tscn ghi là Array[Resource], gán sai kiểu sẽ bị bỏ qua không báo
 @export var abilities: Array[Resource] = []
+## Tiền cho thêm khi mở sân để thử trả tiền kẻ gác cổng (không ghi save vì sân tắt tự lưu)
+@export var bonus_currency: CurrencyData = preload("res://resources/player/currency/soul_jade.tres")
+@export var bonus_amount: int = 60
 
 
 func _ready() -> void:
@@ -26,6 +29,8 @@ func _ready() -> void:
 	call_deferred(&"_review")
 	for ability in abilities:
 		GameState.unlock_ability(ability as AbilityData)
+	if bonus_currency and bonus_amount > 0:
+		GameState.add_currency(bonus_currency.id, bonus_amount)
 
 
 @export_group("VFX Review")

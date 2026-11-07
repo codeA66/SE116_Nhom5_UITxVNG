@@ -1,0 +1,128 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/npcs/_base/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="2_dialogue"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="3_line"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_condition.gd" id="4_condition"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/conditions/flag_condition.gd" id="5_flag"]
+[ext_resource type="Script" path="res://tests/fire/sandbox/npc/sandbox_choice_service.gd" id="6_service"]
+
+[sub_resource type="Resource" id="FirstLine1"]
+script = ExtResource("3_line")
+text = "(Chữ tạm) Ồ, một chú cáo. Lâu lắm rồi mới có kẻ lạc tới đây."
+
+[sub_resource type="Resource" id="FirstLine2"]
+script = ExtResource("3_line")
+text = "(Chữ tạm) Ta là người giữ lửa của sân này. Cứ thử sức thoải mái, đám bù nhìn kia không biết đau đâu."
+
+[sub_resource type="Resource" id="FirstLine3"]
+script = ExtResource("3_line")
+speaker = "Foxy"
+text = "(Chữ tạm) ..."
+
+[sub_resource type="Resource" id="NotMet"]
+script = ExtResource("5_flag")
+flag = &"test.sandbox_npc.met"
+must_be_set = false
+
+[sub_resource type="Resource" id="FirstMeet"]
+script = ExtResource("2_dialogue")
+priority = 10
+conditions = Array[ExtResource("4_condition")]([SubResource("NotMet")])
+lines = Array[ExtResource("3_line")]([SubResource("FirstLine1"), SubResource("FirstLine2"), SubResource("FirstLine3")])
+flag_on_finish = &"test.sandbox_npc.met"
+opens_service = true
+
+[sub_resource type="Resource" id="RepeatLine"]
+script = ExtResource("3_line")
+text = "(Chữ tạm) Lại là ngươi à."
+
+[sub_resource type="Resource" id="Repeat"]
+script = ExtResource("2_dialogue")
+lines = Array[ExtResource("3_line")]([SubResource("RepeatLine")])
+opens_service = true
+
+[sub_resource type="Resource" id="FarewellLine"]
+script = ExtResource("3_line")
+text = "(Chữ tạm) Đi cẩn thận."
+
+[sub_resource type="Resource" id="Farewell"]
+script = ExtResource("2_dialogue")
+context = &"farewell"
+lines = Array[ExtResource("3_line")]([SubResource("FarewellLine")])
+
+[sub_resource type="Resource" id="ReplyYes"]
+script = ExtResource("3_line")
+text = "(Chữ tạm) Chuyện dài lắm. Để lần sau vậy."
+
+[sub_resource type="Resource" id="ReplyNo"]
+script = ExtResource("3_line")
+text = "(Chữ tạm) Tùy ngươi."
+
+[sub_resource type="StandardMaterial3D" id="Robe"]
+albedo_color = Color(0.25, 0.36, 0.38, 1)
+roughness = 0.9
+
+[sub_resource type="CylinderMesh" id="RobeMesh"]
+material = SubResource("Robe")
+top_radius = 0.2
+bottom_radius = 0.42
+height = 1.1
+
+[sub_resource type="StandardMaterial3D" id="Skin"]
+albedo_color = Color(0.86, 0.76, 0.62, 1)
+roughness = 0.8
+
+[sub_resource type="SphereMesh" id="HeadMesh"]
+material = SubResource("Skin")
+radius = 0.26
+height = 0.52
+
+[sub_resource type="StandardMaterial3D" id="Hat"]
+albedo_color = Color(0.16, 0.14, 0.13, 1)
+roughness = 0.9
+
+[sub_resource type="CylinderMesh" id="HatMesh"]
+material = SubResource("Hat")
+top_radius = 0.0
+bottom_radius = 0.42
+height = 0.5
+
+[sub_resource type="StandardMaterial3D" id="Nose"]
+albedo_color = Color(0.95, 0.55, 0.25, 1)
+emission_enabled = true
+emission = Color(0.95, 0.5, 0.2, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="SphereMesh" id="NoseMesh"]
+material = SubResource("Nose")
+radius = 0.06
+height = 0.12
+
+[node name="SandboxNpc" instance=ExtResource("1_npc")]
+display_name = "Người giữ lửa"
+dialogues = Array[ExtResource("2_dialogue")]([SubResource("FirstMeet"), SubResource("Repeat"), SubResource("Farewell")])
+
+[node name="Robe" type="MeshInstance3D" parent="Visual" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+mesh = SubResource("RobeMesh")
+
+[node name="Head" type="MeshInstance3D" parent="Visual" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.33, 0)
+cast_shadow = 0
+mesh = SubResource("HeadMesh")
+
+[node name="Hat" type="MeshInstance3D" parent="Visual" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68, 0)
+cast_shadow = 0
+mesh = SubResource("HatMesh")
+
+[node name="Nose" type="MeshInstance3D" parent="Visual" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0.25)
+cast_shadow = 0
+mesh = SubResource("NoseMesh")
+
+[node name="ChoiceService" type="Node" parent="."]
+script = ExtResource("6_service")
+keep_dialogue_open = true
+replies = Array[ExtResource("3_line")]([SubResource("ReplyYes"), SubResource("ReplyNo")])

@@ -1,0 +1,93 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/npcs/_base/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://entities/npcs/gatekeeper/gatekeeper.gd" id="2_script"]
+[ext_resource type="PackedScene" path="res://assets/characters/npcs/gatekeeper/gatekeeper.glb" id="3_model"]
+[ext_resource type="Script" path="res://entities/npcs/gatekeeper/toll_service.gd" id="4_toll"]
+[ext_resource type="Script" path="res://entities/npcs/gatekeeper/toll_data.gd" id="5_data"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="6_dialogue"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="7_line"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_condition.gd" id="8_condition"]
+[ext_resource type="Script" path="res://entities/npcs/gatekeeper/toll_paid_condition.gd" id="9_paid"]
+
+[sub_resource type="CapsuleShape3D" id="Body"]
+radius = 0.6
+height = 2.0
+
+[sub_resource type="SphereShape3D" id="Talk"]
+radius = 1.9
+
+[sub_resource type="Resource" id="NotPaid"]
+script = ExtResource("9_paid")
+must_be_paid = false
+
+[sub_resource type="Resource" id="Paid"]
+script = ExtResource("9_paid")
+
+[sub_resource type="Resource" id="AskLine"]
+script = ExtResource("7_line")
+text = "(Chữ tạm) Đường này của ta. Qua thì phải trả tiền."
+
+[sub_resource type="Resource" id="AskGreeting"]
+script = ExtResource("6_dialogue")
+conditions = Array[ExtResource("8_condition")]([SubResource("NotPaid")])
+lines = Array[ExtResource("7_line")]([SubResource("AskLine")])
+opens_service = true
+
+[sub_resource type="Resource" id="PaidLine"]
+script = ExtResource("7_line")
+text = "(Chữ tạm) Trả rồi thì đi đi, đừng đứng đây cản việc ta."
+
+[sub_resource type="Resource" id="PaidGreeting"]
+script = ExtResource("6_dialogue")
+priority = 10
+conditions = Array[ExtResource("8_condition")]([SubResource("Paid")])
+lines = Array[ExtResource("7_line")]([SubResource("PaidLine")])
+
+[sub_resource type="Resource" id="Thanks"]
+script = ExtResource("7_line")
+text = "(Chữ tạm) Hừm. Đủ cả. Qua đi."
+
+[sub_resource type="Resource" id="Refuse"]
+script = ExtResource("7_line")
+text = "(Chữ tạm) Có {have} mà đòi qua? Đủ {price} rồi hẵng quay lại."
+
+[sub_resource type="Resource" id="Decline"]
+script = ExtResource("7_line")
+text = "(Chữ tạm) Vậy thì đứng đó mà ngắm."
+
+[sub_resource type="Resource" id="TollTexts"]
+script = ExtResource("5_data")
+thanks_lines = Array[ExtResource("7_line")]([SubResource("Thanks")])
+refuse_lines = Array[ExtResource("7_line")]([SubResource("Refuse")])
+decline_lines = Array[ExtResource("7_line")]([SubResource("Decline")])
+
+[node name="Gatekeeper" node_paths=PackedStringArray("animation_player") instance=ExtResource("1_npc")]
+script = ExtResource("2_script")
+display_name = "Kẻ giữ cửa"
+dialogues = Array[ExtResource("6_dialogue")]([SubResource("AskGreeting"), SubResource("PaidGreeting")])
+animation_player = NodePath("Visual/Model/AnimationPlayer")
+idle_animation = &"Idle"
+talk_animation = &"Talk"
+talk_bounce = 0.0
+
+[node name="Model" parent="Visual" index="0" instance=ExtResource("3_model")]
+
+[node name="Shadow" parent="." index="1"]
+transform = Transform3D(1.7, 0, 0, 0, 1, 0, 0, 0, 1.7, 0, 0.03, 0)
+
+[node name="CollisionShape3D" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("Body")
+
+[node name="InteractableComponent" parent="." index="3"]
+prompt_offset = Vector3(0, 2.6, 0)
+
+[node name="CollisionShape3D" parent="InteractableComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("Talk")
+
+[node name="TollService" type="Node" parent="."]
+script = ExtResource("4_toll")
+keep_dialogue_open = true
+data = SubResource("TollTexts")
