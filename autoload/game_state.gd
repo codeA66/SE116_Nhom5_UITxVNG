@@ -18,9 +18,18 @@ signal progress_replaced
 signal fusion_changed
 ## Tiền loại id vừa đổi (HUD, âm thanh nghe). Chết / nạp save thì nghe progress_replaced
 signal currency_changed(id: StringName, total: int)
+## Số lượng vật phẩm trong túi đổi (nhặt, NPC lấy đi khi nâng cấp)
+signal items_changed
+## Kỹ năng vừa được NPC nâng lên cấp level
+signal ability_level_changed(ability: AbilityData, level: int)
+## Đeo / tháo / có thêm bùa, đổi số ô khắc
+signal charms_changed
+## Vừa vào / ra khu đổi bùa (màn Tab bật / tắt việc đeo bùa)
+signal charm_station_changed(inside: bool)
 
 const NEW_GAME: NewGameData = preload("res://resources/player/new_game.tres")
 const FUSIONS: FusionTable = preload("res://resources/combat/fusion/fusion_table.tres")
+const ITEMS: ItemCatalog = preload("res://resources/player/items/catalog.tres")
 
 var progress: PlayerProgress = PlayerProgress.new()
 
@@ -28,6 +37,8 @@ var _player_health: int = -1
 var _player_energy: int = -1
 ## Bản chụp tiến trình ở lần chạm checkpoint gần nhất (hoặc lúc đọc save / bắt đầu game): chết thì quay về đây
 var _committed: PlayerProgress
+## Số khu đổi bùa player đang đứng trong (không lưu: rời khu / tải lại scene là về 0)
+var _charm_stations: int = 0
 
 
 func _ready() -> void:
@@ -179,6 +190,121 @@ func spend_currency(id: StringName, amount: int) -> bool:
 	progress.currencies[id] = get_currency(id) - amount
 	currency_changed.emit(id, progress.currencies[id])
 	return true
+
+
+## Số đang có của một vật phẩm (theo số lượng, hoặc theo cờ với chìa khóa)
+func get_item_count(item: ItemData) -> int:
+	return item.count_in(progress) if item else 0
+
+
+## Cộng vật phẩm đếm theo số lượng (nhặt được, phần thưởng). Vật phẩm theo cờ thì dùng set_flag
+func add_item(item: ItemData, amount: int = 1) -> void:
+	if item == null or amount <= 0 or not item.owned_flag.is_empty():
+		return
+	progress.items[item.id] = progress.items.get(item.id, 0) + amount
+	items_changed.emit()
+	progress_changed.emit()
+
+
+## Cấp hiện tại của kỹ năng; 0 nếu chưa có kỹ năng
+func get_ability_level(ability: AbilityData) -> int:
+	if ability == null or not has_ability(ability.id):
+		return 0
+	return clampi(progress.ability_levels.get(ability.id, 1), 1, ability.get_max_level())
+
+
+## Đủ điều kiện nâng lên cấp tiếp theo (đã có kỹ năng, chưa tối đa, đủ vật phẩm). Không đổi gì
+func can_upgrade_ability(ability: AbilityData) -> bool:
+	var level := get_ability_level(ability)
+	var step := ability.get_upgrade(level) if level > 0 else null
+	return step != null and step.is_affordable(progress)
+
+
+## NPC nâng cấp kỹ năng: lấy đi vật phẩm yêu cầu rồi tăng một cấp. Thiếu thì không đổi gì, trả về false
+func upgrade_ability(ability: AbilityData) -> bool:
+	if not can_upgrade_ability(ability):
+		return false
+	var level := get_ability_level(ability)
+	for cost: ItemCost in ability.get_upgrade(level).requirements:
+		progress.items[cost.item.id] = progress.items.get(cost.item.id, 0) - cost.count
+		if progress.items[cost.item.id] <= 0:
+			progress.items.erase(cost.item.id)
+	progress.ability_levels[ability.id] = level + 1
+	items_changed.emit()
+	ability_level_changed.emit(ability, level + 1)
+	progress_changed.emit()
+	return true
+
+
+func owns_charm(id: StringName) -> bool:
+	return progress.charms.has(id)
+
+
+func add_charm(charm: CharmData) -> void:
+	if charm == null or owns_charm(charm.id):
+		return
+	progress.charms.append(charm.id)
+	charms_changed.emit()
+	progress_changed.emit()
+
+
+func is_charm_equipped(id: StringName) -> bool:
+	return progress.equipped_charms.has(id)
+
+
+func get_charm_notches() -> int:
+	return progress.charm_notches if progress.charm_notches >= 0 else NEW_GAME.charm_notches
+
+
+## Số ô khắc đang bị bùa đeo chiếm
+func get_used_notches() -> int:
+	var used := 0
+	for id: StringName in progress.equipped_charms:
+		var charm := ITEMS.get_charm(id)
+		used += charm.notch_cost if charm else 0
+	return used
+
+
+## Chỉ đổi bùa được khi đứng trong khu đổi bùa
+func can_change_charms() -> bool:
+	return _charm_stations > 0
+
+
+## Đeo bùa: cần đang ở khu đổi bùa, đã có bùa và còn đủ ô khắc
+func equip_charm(id: StringName) -> bool:
+	var charm := ITEMS.get_charm(id)
+	if charm == null or not can_change_charms() or not owns_charm(id) or is_charm_equipped(id):
+		return false
+	if get_used_notches() + charm.notch_cost > get_charm_notches():
+		return false
+	progress.equipped_charms.append(id)
+	charms_changed.emit()
+	progress_changed.emit()
+	return true
+
+
+func unequip_charm(id: StringName) -> bool:
+	if not can_change_charms() or not is_charm_equipped(id):
+		return false
+	progress.equipped_charms.erase(id)
+	charms_changed.emit()
+	progress_changed.emit()
+	return true
+
+
+## CharmStation gọi khi player bước vào / ra khu đổi bùa
+func enter_charm_station() -> void:
+	_charm_stations += 1
+	if _charm_stations == 1:
+		charm_station_changed.emit(true)
+
+
+func exit_charm_station() -> void:
+	if _charm_stations <= 0:
+		return
+	_charm_stations -= 1
+	if _charm_stations == 0:
+		charm_station_changed.emit(false)
 
 
 func has_flag(id: StringName) -> bool:

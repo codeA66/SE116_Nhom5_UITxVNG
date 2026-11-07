@@ -1,105 +1,216 @@
 class_name InventoryMenu
-extends PanelContainer
-## Tủ đồ: ghép / tháo / chuyển nguyên tố giữa các vũ khí bằng kéo thả chuột. Bảng nằm một bên màn hình,
-## game KHÔNG dừng (quái vẫn đánh). Đang mở thì Player bỏ qua nút đánh (chuột trái cũng là nút đánh).
-## Chỉ dựng lại các ô khi đang mở và tiến trình đổi; không chạy mỗi frame.
+extends Control
+## Màn Tab: nhiều trang (Nguyên tố, Vật phẩm, Bùa...), tên trang ở giữa, tên trang hai bên ở mép đổi bằng Z / C;
+## bên trái là ô của trang, bên phải là bảng chi tiết dùng chung. Nền là cảnh game làm tối, hoa văn ở 4 góc.
+## Game KHÔNG dừng khi mở (quái vẫn đánh); đang mở thì Player bỏ qua nút đánh (chuột trái cũng là nút chọn).
+## Thêm trang = thêm node MenuPage vào Body/Pages. Chỉ làm mới khi đang mở và tiến trình đổi; không chạy mỗi frame.
 
 signal opened
 signal closed
 
-const HINT := "Kéo nguyên tố vào vũ khí để ghép, kéo ra hoặc chuột phải để tháo.\nNguyên tố đang ghép thì kỹ năng gốc tạm khóa."
-
 @export var player: Player
 @export var toggle_action: StringName = &"inventory"
+@export var previous_page_action: StringName = &"menu_prev_page"
+@export var next_page_action: StringName = &"menu_next_page"
+@export var style: InventoryStyle = preload("res://resources/ui/inventory_style.tres")
+## Tiền hiện ở góc trên phải
+@export var currency: CurrencyData = preload("res://resources/player/currency/soul_jade.tres")
 
-@onready var _elements: HBoxContainer = %Elements
-@onready var _weapons: VBoxContainer = %Weapons
-@onready var _info: Label = %Info
+var _pages: Array[MenuPage] = []
+var _page_index: int = 0
+var _tween: Tween
+var _page_tween: Tween
+
+@onready var _backdrop: ColorRect = $Backdrop
+@onready var _frame: CornerFrame = $Frame
+@onready var _tabs: PageTabs = $Header/Tabs
+@onready var _currency_label: Label = $Header/Currency
+@onready var _page_holder: Control = $Body/Pages
+@onready var _detail: DetailPanel = $Body/Detail
+@onready var _footer: Label = $Footer
+@onready var _sound: AudioStreamPlayer = $Sound
 
 
 func _ready() -> void:
 	visible = false
-	set_process(false)
-	GameState.fusion_changed.connect(_refresh_if_open)
-	GameState.progress_changed.connect(_refresh_if_open)
-	GameState.progress_replaced.connect(_refresh_if_open)
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	_frame.color = style.ornament
+	_frame.margin = style.frame_margin
+	_frame.corner_size = style.corner_size
+	(_backdrop.material as ShaderMaterial).set_shader_parameter(&"base_dim", style.backdrop_dim)
+	_tabs.configure(style, previous_page_action, next_page_action)
+	_tabs.previous_requested.connect(_change_page.bind(-1))
+	_tabs.next_requested.connect(_change_page.bind(1))
+	_detail.configure(style)
+	_currency_label.add_theme_font_size_override(&"font_size", style.tab_font)
+	_currency_label.add_theme_color_override(&"font_color", style.ink)
+	_footer.add_theme_font_size_override(&"font_size", style.key_font)
+	_footer.add_theme_color_override(&"font_color", style.faint)
+	_footer.text = "%s  Đóng      %s / %s  Đổi trang      %s  Xác nhận      %s  Quay lại" % [PageTabs.key_name(toggle_action),
+		PageTabs.key_name(previous_page_action), PageTabs.key_name(next_page_action), PageTabs.key_name(&"ui_accept"), PageTabs.key_name(&"ui_cancel")]
+	for node in _page_holder.get_children():
+		var page := node as MenuPage
+		if page == null:
+			continue
+		page.setup_style(style)
+		page.detail_changed.connect(_detail.show_entry)
+		page.sound_requested.connect(_play_sound)
+		page.hide()
+		_pages.append(page)
+	for progress_signal: Signal in [GameState.fusion_changed, GameState.progress_changed, GameState.progress_replaced,
+			GameState.items_changed, GameState.charms_changed]:
+		progress_signal.connect(_refresh_if_open)
+	GameState.charm_station_changed.connect(_refresh_if_open.unbind(1))
+	GameState.ability_level_changed.connect(_refresh_if_open.unbind(2))
+	GameState.currency_changed.connect(_refresh_if_open.unbind(2))
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not event.is_action_pressed(toggle_action):
+	if event.is_action_pressed(toggle_action):
+		get_viewport().set_input_as_handled()
+		if visible:
+			close()
+		elif player == null or player.controls_enabled:
+			open()
 		return
-	get_viewport().set_input_as_handled()
-	if visible:
-		close()
-	elif player == null or player.controls_enabled:
-		open()
+	if not visible:
+		return
+	if event.is_action_pressed(previous_page_action):
+		get_viewport().set_input_as_handled()
+		_change_page(-1)
+	elif event.is_action_pressed(next_page_action):
+		get_viewport().set_input_as_handled()
+		_change_page(1)
+	elif event.is_action_pressed(&"ui_cancel"):
+		get_viewport().set_input_as_handled()
+		var page := _current_page()
+		if page == null or not page.handle_cancel():
+			close()
 
 
 func open() -> void:
+	if visible:
+		return
+	var available := _available_pages()
+	if available.is_empty():
+		return
+	_page_index = clampi(_page_index, 0, available.size() - 1)
 	visible = true
-	_info.text = HINT
-	_refresh()
 	if player:
 		player.set_attack_blocked_by_ui(true)
+	_refresh_header()
+	_show_page(available[_page_index], 0)
+	_animate_open(true)
+	_play_sound(&"open")
 	opened.emit()
 
 
 func close() -> void:
-	visible = false
+	if not visible:
+		return
+	var page := _current_page()
+	if page:
+		page.handle_cancel()
 	if player:
 		player.set_attack_blocked_by_ui(false)
+	_detail.release()
+	_play_sound(&"close")
+	_animate_open(false)
 	closed.emit()
 
 
-## Ô kéo thả: chấm màu nguyên tố bám theo con trỏ
-static func make_drag_preview(element: ElementData) -> Control:
-	var dot := Panel.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = element.color
-	style.set_corner_radius_all(18)
-	dot.add_theme_stylebox_override(&"panel", style)
-	dot.size = Vector2(36, 36)
-	dot.position = -dot.size * 0.5
-	var holder := Control.new()
-	holder.add_child(dot)
-	return holder
+## Trang đang xem (null nếu đang đóng)
+func get_current_page() -> MenuPage:
+	return _current_page() if visible else null
+
+
+func _current_page() -> MenuPage:
+	var available := _available_pages()
+	return available[_page_index] if _page_index >= 0 and _page_index < available.size() else null
+
+
+func _available_pages() -> Array[MenuPage]:
+	var result: Array[MenuPage] = []
+	for page: MenuPage in _pages:
+		if page.is_available():
+			result.append(page)
+	return result
+
+
+## direction -1 = trang trước, 1 = trang sau (vòng tròn)
+func _change_page(direction: int) -> void:
+	var available := _available_pages()
+	if not visible or available.size() < 2:
+		return
+	var old := _current_page()
+	if old:
+		old.handle_cancel()
+		old.hide()
+	_page_index = posmod(_page_index + direction, available.size())
+	_show_page(available[_page_index], direction)
+	_play_sound(&"page")
+
+
+func _show_page(page: MenuPage, direction: int) -> void:
+	for other: MenuPage in _pages:
+		if other != page:
+			other.hide()
+	page.refresh()
+	page.show()
+	page.focus_default()
+	var titles := PackedStringArray()
+	for available: MenuPage in _available_pages():
+		titles.append(available.page_title)
+	_tabs.show_pages(titles, _page_index)
+	if direction == 0:
+		return
+	# Trang mới trượt vào từ phía đang đổi tới
+	if _page_tween and _page_tween.is_valid():
+		_page_tween.kill()
+	_page_holder.position.x = style.page_slide * float(direction)
+	_page_holder.modulate.a = 0.0
+	_page_tween = create_tween().set_parallel(true)
+	_page_tween.tween_property(_page_holder, "position:x", 0.0, style.page_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_page_tween.tween_property(_page_holder, "modulate:a", 1.0, style.page_time)
+
+
+func _animate_open(showing: bool) -> void:
+	if _tween and _tween.is_valid():
+		_tween.kill()
+	_tween = create_tween()
+	if showing:
+		modulate.a = 0.0
+		_tween.tween_property(self, "modulate:a", 1.0, style.open_time).set_trans(Tween.TRANS_SINE)
+	else:
+		_tween.tween_property(self, "modulate:a", 0.0, style.close_time).set_trans(Tween.TRANS_SINE)
+		_tween.tween_callback(hide)
 
 
 func _refresh_if_open() -> void:
-	if visible:
-		_refresh()
+	if not visible:
+		return
+	_refresh_header()
+	var page := _current_page()
+	if page == null or not page.visible:
+		# Trang đang xem vừa mất (hoặc trang mới vừa mở): dựng lại thanh trang
+		_page_index = 0
+		var available := _available_pages()
+		if not available.is_empty():
+			_show_page(available[0], 0)
+		return
+	page.refresh()
+	var titles := PackedStringArray()
+	for available: MenuPage in _available_pages():
+		titles.append(available.page_title)
+	_tabs.show_pages(titles, _page_index)
 
 
-func _refresh() -> void:
-	var fused_at := {}
-	for slot: int in GameState.progress.fusions:
-		fused_at[GameState.progress.fusions[slot]] = slot
-	var owned := GameState.get_owned_elements()
-	var elements := GameState.FUSIONS.elements
-	_resize(_elements, elements.size(), ElementSlot)
-	for i in elements.size():
-		var element := elements[i]
-		(_elements.get_child(i) as ElementSlot).setup(element, owned.has(element), fused_at.get(element.id, -1))
-	var weapons := GameState.progress.weapons
-	_resize(_weapons, weapons.size(), WeaponFusionSlot)
-	for i in weapons.size():
-		var weapon := weapons[i]
-		var element := GameState.get_fused_element(weapon.slot)
-		var fusion := GameState.FUSIONS.get_fusion(weapon.slot, element.id) if element else null
-		(_weapons.get_child(i) as WeaponFusionSlot).setup(weapon, element, fusion)
+func _refresh_header() -> void:
+	_currency_label.text = "%s  %d" % [currency.display_name, GameState.get_currency(currency.id)] if currency else ""
 
 
-## Giữ đúng số ô cần (tạo mới / bỏ bớt), không dựng lại từ đầu mỗi lần làm mới
-func _resize(container: Container, count: int, kind: GDScript) -> void:
-	while container.get_child_count() < count:
-		var slot: Control = kind.new()
-		slot.hovered.connect(_on_slot_hovered)
-		container.add_child(slot)
-	while container.get_child_count() > count:
-		var extra := container.get_child(container.get_child_count() - 1)
-		container.remove_child(extra)
-		extra.queue_free()
-
-
-func _on_slot_hovered(text: String) -> void:
-	_info.text = text
+func _play_sound(kind: StringName) -> void:
+	var stream: AudioStream = style.get(&"sound_%s" % kind) if style else null
+	if stream:
+		_sound.stream = stream
+		_sound.play()

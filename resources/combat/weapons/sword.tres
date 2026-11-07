@@ -6,10 +6,13 @@
 [ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_1.tres" id="4_slash1"]
 [ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_2.tres" id="5_slash2"]
 [ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_3.tres" id="6_slash3"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/sword.svg" id="ui_icon"]
 
 [resource]
 script = ExtResource("1_weapon")
 display_name = "Kiếm"
+icon = ExtResource("ui_icon")
+description = "Ba nhát chém nối nhau. Ghép nguyên tố để mỗi nhát chém có thêm hiệu ứng."
 model_scene = ExtResource("3_model")
 model_scale = 0.5
 combo = Array[ExtResource("2_attack")]([ExtResource("4_slash1"), ExtResource("5_slash2"), ExtResource("6_slash3")])

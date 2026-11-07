@@ -7,6 +7,14 @@ const RAY_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/
 const RING_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/spatial/acquire_ring.gdshader")
 const BOOK_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/book/acquire_book.gdshader")
 const MAX_RAYS: int = 24
+## Số pha trong shader hạt (acquire_motes.gdshader)
+const PHASE_LIFT := 0
+const PHASE_GATHER := 1
+const PHASE_BURST := 2
+const PHASE_SETTLE := 3
+const PHASE_SCATTER := 4
+## Giới hạn slot hạt của MultiMesh (đốm + tia nhọn)
+const MAX_SLOTS := 192
 @export var data: Tuning = preload("res://resources/feedback/ability_acquire/ability_acquire_default.tres")
 static var _quad: QuadMesh
 static var _ray_meshes: Dictionary[int, ArrayMesh] = {}
@@ -57,7 +65,7 @@ func _ready() -> void:
 	motes.multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	motes.multimesh.use_custom_data = true
 	motes.multimesh.mesh = _quad
-	motes.multimesh.instance_count = clampi(data.pool_capacity, 1, 96)
+	motes.multimesh.instance_count = clampi(data.pool_capacity, 1, MAX_SLOTS)
 	_launch_times.resize(motes.multimesh.instance_count)
 	_flight_times.resize(motes.multimesh.instance_count)
 	_random.seed = data.particle_seed
@@ -68,7 +76,9 @@ func _ready() -> void:
 		motes.multimesh.set_instance_transform(index, Transform3D.IDENTITY)
 		motes.multimesh.set_instance_custom_data(index, Color(random.randf(),random.randf(),random.randf(),1))
 	motes.material_override = _mote_mat
-	motes.custom_aabb = AABB(-Vector3.ONE * data.gather_radius * 4.0, Vector3.ONE * data.gather_radius * 8.0)
+	# Đốm bay xa tới orb_radius, đốm sát camera dời thêm foreground_depth, tia nhọn xuất phát ở spike_start_radius
+	var reach: float = maxf(data.orb_radius+data.foreground_depth, data.spike_start_radius+data.spike_length)
+	motes.custom_aabb = AABB(-Vector3.ONE * reach, Vector3.ONE * reach * 2.0)
 	_add_mesh(motes)
 	rays = MeshInstance3D.new()
 	rays.name = "StreamsAndRays"
@@ -162,15 +172,22 @@ func bind_actor(actor: Node3D, visual: Node3D, ability: AbilityData) -> void:
 ## Chuyển số slot một lần khi vào pha; số không luôn có nghĩa là không vẽ hạt.
 func enter_phase(phase: int) -> void:
 	clear_visuals()
-	var count: int = data.book_mote_count if phase == 0 else data.mote_count
-	if phase == 2: count = data.spark_count
-	elif phase == 3: count = mini(data.linger_count,data.spark_count)+data.dust_count
+	var count: int = data.book_mote_count
+	if phase == PHASE_SCATTER: count = data.mote_count
+	elif phase == PHASE_GATHER: count = data.mote_count+data.spike_count
+	elif phase == PHASE_BURST: count = data.spark_count
+	elif phase == PHASE_SETTLE: count = mini(data.linger_count,data.spark_count)+data.dust_count
 	if phase == 2 and data.burst_intensity <= 0.0: count = 0
 	_active_slots = clampi(count, 0, motes.multimesh.instance_count)
 	motes.multimesh.visible_instance_count = _active_slots
 	motes.visible = _active_slots > 0
 	rays.visible = phase >= 1 and phase <= 2 and (phase != 2 or data.burst_intensity > 0.0)
-	ring.visible = phase == 2 and data.burst_intensity > 0.0
+	# Pha tụ: vòng thu vào chân cáo; pha bùng: một vòng nở ra
+	var converge: bool = phase == 1
+	ring.visible = (phase == 2 and data.burst_intensity > 0.0) or (converge and data.gather_ring_opacity > 0.0)
+	_ring_mat.set_shader_parameter(&"converge", converge)
+	_ring_mat.set_shader_parameter(&"radius", data.gather_ring_radius if converge else data.ring_radius)
+	_ring_mat.set_shader_parameter(&"width", data.gather_ring_width if converge else data.ring_width)
 	_mote_mat.set_shader_parameter(&"phase", phase)
 	_mote_mat.set_shader_parameter(&"total_count",maxi(_active_slots,1))
 	_mote_mat.set_shader_parameter(&"linger_count",mini(data.linger_count,data.spark_count))
@@ -195,7 +212,8 @@ func update_phase(phase: int, progress: float, clock: float) -> void:
 	if is_instance_valid(_source): _mote_mat.set_shader_parameter(&"source_point", _source.global_position-global_position)
 	_ray_mat.set_shader_parameter(&"opacity", alpha * (pow(1.0-progress,maxf(data.ray_decay,data.minimum_time)) if phase == 2 else 1.0))
 	_ring_mat.set_shader_parameter(&"progress", progress)
-	_ring_mat.set_shader_parameter(&"opacity", strength*data.ring_opacity)
+	_ring_mat.set_shader_parameter(&"clock", clock)
+	_ring_mat.set_shader_parameter(&"opacity", data.gather_ring_opacity if phase == 1 else strength*data.ring_opacity)
 ## Sách thật đi lên rồi bị xói, thay vì biến mất ngay khi bấm nhặt.
 func update_book(progress: float) -> void:
 	if not is_instance_valid(_source): return
@@ -251,8 +269,10 @@ func _prepare_flights() -> void:
 	var jitter: float = minf(absf(data.gather_launch_jitter),wave_window*0.35)
 	var span: float = maxf(_gather_window-flight_max-jitter*2.0,0.0)*clampf(data.gather_stagger,0.0,1.0)
 	var spacing: float = span/maxf(float(waves-1),1.0)
-	for index: int in range(motes.multimesh.instance_count):
-		var wave: int = index%waves
+	var count: int = motes.multimesh.instance_count
+	for index: int in range(count):
+		# Đợt sau đông hơn: năng lượng dồn dập dần về cuối thay vì đều đều
+		var wave: int = mini(int(pow(float(index%count)/float(count), clampf(data.wave_density_bias, 0.2, 1.0))*waves), waves-1)
 		var start: float = jitter+spacing*float(wave)+_random.randf_range(-jitter,jitter)
 		if waves == 1: start += span*0.5
 		_launch_times[index] = start
@@ -280,20 +300,35 @@ func _prepare_parameters() -> void:
 	_mote_mat.set_shader_parameter(&"landing_start", data.landing_start)
 	_mote_mat.set_shader_parameter(&"dust_size", data.dust_size)
 	_mote_mat.set_shader_parameter(&"dust_height", data.dust_height)
-	_mote_mat.set_shader_parameter(&"radius", data.gather_radius)
-	_mote_mat.set_shader_parameter(&"height_spread", data.gather_height)
-	_mote_mat.set_shader_parameter(&"spin", data.gather_spin)
-	_mote_mat.set_shader_parameter(&"gather_acceleration",data.gather_acceleration)
-	_mote_mat.set_shader_parameter(&"gather_stagger",data.gather_stagger)
 	_mote_mat.set_shader_parameter(&"mote_stretch",data.mote_stretch)
-	_mote_mat.set_shader_parameter(&"streak_ratio",data.streak_ratio)
 	_mote_mat.set_shader_parameter(&"mote_size", data.mote_size)
-	_mote_mat.set_shader_parameter(&"foreground_size", data.foreground_size)
 	_mote_mat.set_shader_parameter(&"foreground_depth", data.foreground_depth)
-	_mote_mat.set_shader_parameter(&"foreground_spread", data.foreground_spread)
-	_mote_mat.set_shader_parameter(&"foreground_count", clampi(data.foreground_count, 0, data.mote_count))
 	_mote_mat.set_shader_parameter(&"spark_radius", data.spark_radius)
 	_mote_mat.set_shader_parameter(&"dust_radius", data.dust_radius)
+	_mote_mat.set_shader_parameter(&"glow_gain", data.glow_gain)
+	_mote_mat.set_shader_parameter(&"orb_count", data.mote_count)
+	_mote_mat.set_shader_parameter(&"orb_radius", data.orb_radius)
+	_mote_mat.set_shader_parameter(&"orb_screen_size", data.orb_screen_size)
+	_mote_mat.set_shader_parameter(&"explode_rate", data.explode_rate)
+	_mote_mat.set_shader_parameter(&"drift_amp", data.drift_amp)
+	_mote_mat.set_shader_parameter(&"drift_speed", data.drift_speed)
+	_mote_mat.set_shader_parameter(&"twinkle_speed", data.twinkle_speed)
+	_mote_mat.set_shader_parameter(&"foreground_ratio", data.foreground_ratio)
+	_mote_mat.set_shader_parameter(&"foreground_scale", data.foreground_scale)
+	_mote_mat.set_shader_parameter(&"scatter_end", data.scatter_time)
+	_mote_mat.set_shader_parameter(&"swirl_radius", data.swirl_radius)
+	_mote_mat.set_shader_parameter(&"swirl_speed", data.swirl_speed)
+	_mote_mat.set_shader_parameter(&"converge_portion", data.converge_portion)
+	_mote_mat.set_shader_parameter(&"gather_window", maxf(data.gather_time-data.breath_time,data.minimum_time))
+	_mote_mat.set_shader_parameter(&"spike_count", data.spike_count)
+	_mote_mat.set_shader_parameter(&"spike_life", data.spike_life)
+	_mote_mat.set_shader_parameter(&"spike_start_radius", data.spike_start_radius)
+	_mote_mat.set_shader_parameter(&"spike_length", data.spike_length)
+	_mote_mat.set_shader_parameter(&"spike_screen_width", data.spike_screen_width)
+	_mote_mat.set_shader_parameter(&"arrival_time", data.arrival_time)
+	_mote_mat.set_shader_parameter(&"arrival_size", data.arrival_size)
+	_ring_mat.set_shader_parameter(&"converge_rings", data.gather_ring_count)
+	_ring_mat.set_shader_parameter(&"converge_rate", data.gather_ring_rate)
 	_ray_mat.set_shader_parameter(&"hot_color", data.hot_color)
 	_ray_mat.set_shader_parameter(&"ray_length", data.ray_length)
 	_ray_mat.set_shader_parameter(&"ray_width", data.ray_width)

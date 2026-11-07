@@ -13,6 +13,8 @@ uniform float local_radiance = 0.16;
 uniform float shock = -1.0;
 uniform float shock_gain = 0.004;
 uniform float shock_width = 0.04;
+// Vùng quanh tâm giữ lại bao nhiêu phần độ tối: thấp = đèn sân khấu rõ, 1 = tối đều cả màn
+uniform float focus_dim_keep = 0.5;
 void fragment() {
 	vec2 delta = SCREEN_UV-focus;
 	float distance_from_focus = length(delta);
@@ -27,7 +29,7 @@ void fragment() {
 	float outside = smoothstep(focus_radius*0.3,focus_radius,distance(SCREEN_UV,focus));
 	if (!local_focus) outside = 1.0;
 	vec3 grade = mix(source,vec3(luma),desaturate*outside);
-	grade *= 1.0-dim*mix(0.5,1.0,outside);
+	grade *= 1.0-dim*mix(focus_dim_keep,1.0,outside);
 	float glow = 1.0-smoothstep(0.0,focus_radius*1.8,distance(SCREEN_UV,focus));
 	grade += grade*(1.0-grade)*charge*exposure_gain*glow;
 	grade += mix(accent.rgb,vec3(1),0.65)*charge*glow*glow*glow*local_radiance;

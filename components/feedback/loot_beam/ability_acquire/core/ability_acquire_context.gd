@@ -2,6 +2,9 @@ class_name AbilityAcquireContext
 extends RefCounted
 ## Chụp trạng thái trước trình diễn để hủy ở bất kỳ pha nào cũng trả lại chính xác.
 const Tuning = preload("res://resources/feedback/ability_acquire/ability_acquire_data.gd")
+const GLOW_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/spatial/acquire_actor_glow.gdshader")
+## Áp sát tối đa: tránh FOV quá hẹp làm méo hình
+const MAX_CAMERA_PUSH := 0.9
 var data: Tuning
 var actor: Node3D
 var visual: Node3D
@@ -29,7 +32,13 @@ var _pose_target: Array[Quaternion] = []
 var _hidden: Array[Node3D] = []
 var _hidden_states: PackedByteArray = PackedByteArray()
 var _last_pose_weight: float = -1.0
-var _last_camera_lift: float = -1.0
+var _last_camera_push: float = -1.0
+var _lift_amount: float = 0.0
+## Áp sát thêm do pha tụ / bùng / hạ xuống điều khiển, cộng vào phần áp sát theo độ nâng
+var _push_extra: float = 0.0
+var _glow_material: ShaderMaterial
+var _glow_meshes: Array[GeometryInstance3D] = []
+var _glow_previous: Array[Material] = []
 ## Không nâng thân vật lý: giữ nguyên chân đứng và vị trí checkpoint.
 func begin(target: Node3D, ability_data: AbilityData, tree: SceneTree) -> void:
 	actor = target
@@ -38,7 +47,10 @@ func begin(target: Node3D, ability_data: AbilityData, tree: SceneTree) -> void:
 	if visual == null: visual = target.get_node_or_null(data.fallback_visual_path) as Node3D
 	if visual == null: visual = target
 	initial_transform = visual.transform
-	_last_camera_lift = -1.0
+	_last_camera_push = -1.0
+	_lift_amount = 0.0
+	_push_extra = 0.0
+	_prepare_glow()
 	previous_paused = tree.paused
 	previous_controls = bool(actor.get("controls_enabled")) if actor.has_method(&"set_controls_enabled") else false
 	_shake_mode = ScreenShake.process_mode
@@ -80,11 +92,40 @@ func begin(target: Node3D, ability_data: AbilityData, tree: SceneTree) -> void:
 func lift(amount: float) -> void:
 	if is_instance_valid(visual):
 		visual.position = initial_transform.origin + Vector3.UP * data.lift_height * amount
-	if is_instance_valid(_camera) and not is_equal_approx(amount,_last_camera_lift):
-		var push: float = 1.0-clampf(data.camera_push,0.0,0.65)*clampf(amount,0.0,1.0)
-		_camera.fov = _camera_fov*push
-		_camera.size = _camera_size*push
-		_last_camera_lift = amount
+	_lift_amount = amount
+	_apply_camera()
+## Áp sát thêm (0..1) cộng vào phần theo độ nâng; pha tụ tăng dần, pha hạ xuống trả về 0
+func set_focus_push(extra: float) -> void:
+	_push_extra = maxf(extra, 0.0)
+	_apply_camera()
+## Cáo sáng lên theo năng lượng hút vào (lớp phủ cộng sáng, không đổi vật liệu gốc)
+func set_actor_glow(amount: float) -> void:
+	if _glow_material == null: return
+	_glow_material.set_shader_parameter(&"strength", maxf(amount, 0.0))
+## Phóng theo tan(FOV/2) để độ áp sát đúng tỉ lệ phóng (0.8 = to gấp 5), camera trực giao thì đổi size
+func _apply_camera() -> void:
+	if not is_instance_valid(_camera): return
+	var push: float = clampf(clampf(data.camera_push,0.0,0.65)*clampf(_lift_amount,0.0,1.0)+_push_extra,0.0,MAX_CAMERA_PUSH)
+	if is_equal_approx(push,_last_camera_push): return
+	var zoom: float = 1.0-push
+	_camera.fov = rad_to_deg(2.0*atan(tan(deg_to_rad(_camera_fov)*0.5)*zoom))
+	_camera.size = _camera_size*zoom
+	_last_camera_push = push
+## Gắn lớp phủ sáng lên mọi mesh của cáo một lần mỗi lượt; restore trả lại lớp phủ cũ
+func _prepare_glow() -> void:
+	_glow_meshes.clear()
+	_glow_previous.clear()
+	if _glow_material == null:
+		_glow_material = ShaderMaterial.new()
+		_glow_material.shader = GLOW_SHADER
+	_glow_material.set_shader_parameter(&"glow_color", ability.accent_color if ability != null else data.fallback_accent)
+	_glow_material.set_shader_parameter(&"rim_power", data.actor_glow_rim_power)
+	_glow_material.set_shader_parameter(&"strength", 0.0)
+	for node: Node in visual.find_children("*","MeshInstance3D",true,false):
+		var mesh: GeometryInstance3D = node as GeometryInstance3D
+		_glow_meshes.append(mesh)
+		_glow_previous.append(mesh.material_overlay)
+		mesh.material_overlay = _glow_material
 ## Pose được tính trước từ hướng xương thật; vòng nóng chỉ nội suy quaternion, không chạy animation gameplay.
 func ceremony_pose(amount: float, clock: float = 0.0, squash: float = 0.0) -> void:
 	var weight: float = clampf(amount*data.pose_strength,0.0,1.0)
@@ -105,6 +146,11 @@ func face_viewer(progress: float) -> void:
 func restore(tree: SceneTree) -> void:
 	if not active: return
 	if is_instance_valid(visual): visual.transform = initial_transform
+	for index: int in range(_glow_meshes.size()):
+		if is_instance_valid(_glow_meshes[index]): _glow_meshes[index].material_overlay = _glow_previous[index]
+	_glow_meshes.clear()
+	_glow_previous.clear()
+	_push_extra = 0.0
 	if is_instance_valid(_skeleton):
 		for slot: int in range(_pose_indices.size()): _skeleton.set_bone_pose_rotation(_pose_indices[slot],_pose_initial[slot])
 		_skeleton.force_update_all_bone_transforms()

@@ -16,7 +16,7 @@ const BOOK_SCENE: PackedScene = preload("res://objects/core/pickups/ability/wind
 @export var short_time: float = 0.025
 @export var long_multiplier: float = 4.0
 @export var capture_fraction: float = 0.5
-@export var burst_capture_fraction: float = 0.22
+@export var burst_capture_fraction: float = 0.38
 @export var landing_capture_fraction: float = 0.88
 @export var repeats: int = 3
 @export var confirm_read_time: float = 0.7
@@ -25,9 +25,9 @@ const BOOK_SCENE: PackedScene = preload("res://objects/core/pickups/ability/wind
 @export var gather_capture_beats: PackedFloat32Array = PackedFloat32Array([0.1,0.45,0.82,0.96])
 @export var lift_capture_beats: PackedFloat32Array = PackedFloat32Array([0.1,0.35,0.65,0.90])
 @export var schedule_tolerance: float = 0.002
-@export var burst_capture_beats: PackedFloat32Array = PackedFloat32Array([0.03,0.55])
+@export var burst_capture_beats: PackedFloat32Array = PackedFloat32Array([0.03,0.30,0.55])
 @export var orientation_tolerance: float = 0.99
-@export var film_capture_step: float = 0.08
+@export var film_capture_step: float = 0.04
 @export var output: String = "user://ability_acquire"
 var _world: Node3D
 var _actor: Player
