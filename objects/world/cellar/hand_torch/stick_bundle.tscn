@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/world/cellar/hand_torch/stick_bundle.gd" id="1_bundle"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/hand_torch.glb" id="3_stick"]
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 1.2
+
+[node name="StickBundle" type="Node3D"]
+script = ExtResource("1_bundle")
+
+[node name="Stick1" parent="." instance=ExtResource("3_stick")]
+transform = Transform3D(0.94, -0.34, 0, 0.34, 0.94, 0, 0, 0, 1, -0.25, 0, 0)
+
+[node name="Stick2" parent="." instance=ExtResource("3_stick")]
+transform = Transform3D(0.94, 0.34, 0, -0.34, 0.94, 0, 0, 0, 1, 0.25, 0, 0.05)
+
+[node name="Stick3" parent="." instance=ExtResource("3_stick")]
+transform = Transform3D(1, 0, 0, 0, 0.94, -0.34, 0, 0.34, 0.94, 0, 0, -0.25)
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2_interact")
+prompt_text = "LẤY GẬY"
+prompt_offset = Vector3(0, 1.4, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("Range")

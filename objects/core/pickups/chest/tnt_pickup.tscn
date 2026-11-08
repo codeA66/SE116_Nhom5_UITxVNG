@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/key/quick_item_pickup.gd" id="1_pickup"]
+[ext_resource type="Resource" path="res://resources/player/items/tools/tnt.tres" id="3_item"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 1.6
+
+[sub_resource type="StandardMaterial3D" id="Red"]
+albedo_color = Color(0.8, 0.14, 0.08, 1)
+emission_enabled = true
+emission = Color(0.9, 0.2, 0.08, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Band"]
+albedo_color = Color(0.22, 0.12, 0.08, 1)
+
+[sub_resource type="CylinderMesh" id="StickMesh"]
+material = SubResource("Red")
+top_radius = 0.045
+bottom_radius = 0.045
+height = 0.34
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BandMesh"]
+material = SubResource("Band")
+size = Vector3(0.3, 0.05, 0.12)
+
+[node name="TntPickup" type="Node3D"]
+script = ExtResource("1_pickup")
+persistent_id = &"level_3.tnt"
+spin_speed = 1.2
+key_id = &"level_3.tnt"
+item = ExtResource("3_item")
+
+[node name="Visual" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="StickA" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.095, 0, 0)
+cast_shadow = 0
+mesh = SubResource("StickMesh")
+
+[node name="StickB" type="MeshInstance3D" parent="Visual"]
+cast_shadow = 0
+mesh = SubResource("StickMesh")
+
+[node name="StickC" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.095, 0, 0)
+cast_shadow = 0
+mesh = SubResource("StickMesh")
+
+[node name="Band" type="MeshInstance3D" parent="Visual"]
+cast_shadow = 0
+mesh = SubResource("BandMesh")
+
+[node name="Glow" type="OmniLight3D" parent="Visual"]
+light_color = Color(1, 0.4, 0.2, 1)
+light_energy = 1.2
+omni_range = 3.0
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2_interact")
+prompt_text = "NHẶT TNT"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Range")

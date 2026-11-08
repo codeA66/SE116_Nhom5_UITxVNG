@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://objects/hub/hub_key/hub_key.tscn" id="1_hubkey"]
+
+[sub_resource type="StandardMaterial3D" id="FireKeyMat"]
+albedo_color = Color(1, 0.55, 0.2, 1)
+emission_enabled = true
+emission = Color(1, 0.45, 0.15, 1)
+emission_energy_multiplier = 0.8
+
+[node name="FireKey" instance=ExtResource("1_hubkey")]
+key_id = &"hub.fire_key"
+persistent_id = &"hub.fire_key_taken"
+model_material = SubResource("FireKeyMat")
+
+[node name="InteractableComponent" parent="." index="1"]
+prompt_text = "NHẶT CHÌA LỬA"

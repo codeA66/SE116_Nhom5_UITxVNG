@@ -1,0 +1,74 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/ability/ability_pickup.gd" id="1_pickup"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/ability_acquire_vfx.tscn" id="3_acq"]
+[ext_resource type="Resource" path="res://abilities/lava_boots/lava_boots.tres" id="4_data"]
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 1.6
+
+[sub_resource type="StandardMaterial3D" id="Sole"]
+albedo_color = Color(0.12, 0.08, 0.07, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Shaft"]
+albedo_color = Color(0.85, 0.32, 0.1, 1)
+emission_enabled = true
+emission = Color(1, 0.4, 0.1, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="BoxMesh" id="SoleMesh"]
+material = SubResource("Sole")
+size = Vector3(0.16, 0.06, 0.32)
+
+[sub_resource type="BoxMesh" id="ShaftMesh"]
+material = SubResource("Shaft")
+size = Vector3(0.15, 0.26, 0.15)
+
+[node name="LavaBootsPickup" type="Node3D"]
+script = ExtResource("1_pickup")
+persistent_id = &"level_3.lava_boots"
+spin_speed = 1.2
+ability = ExtResource("4_data")
+
+[node name="Visual" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="LeftSole" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 0, 0.05)
+cast_shadow = 0
+mesh = SubResource("SoleMesh")
+
+[node name="LeftShaft" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 0.16, -0.03)
+cast_shadow = 0
+mesh = SubResource("ShaftMesh")
+
+[node name="RightSole" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 0, 0.05)
+cast_shadow = 0
+mesh = SubResource("SoleMesh")
+
+[node name="RightShaft" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11, 0.16, -0.03)
+cast_shadow = 0
+mesh = SubResource("ShaftMesh")
+
+[node name="Glow" type="OmniLight3D" parent="Visual"]
+light_color = Color(1, 0.5, 0.2, 1)
+light_energy = 1.2
+omni_range = 3.0
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2_interact")
+prompt_text = "NHẬN"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Range")
+
+[node name="AbilityAcquireVfx" parent="." node_paths=PackedStringArray("source_visual") instance=ExtResource("3_acq")]
+source_visual = NodePath("../Visual")

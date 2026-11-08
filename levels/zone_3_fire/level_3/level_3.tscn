@@ -1,0 +1,778 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/lighting/fire_lighting.tscn" id="1_l5u1a"]
+[ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="2_t4mk4"]
+[ext_resource type="PackedScene" path="res://objects/core/kill_zone/kill_zone.tscn" id="3_3tcpi"]
+[ext_resource type="Script" path="res://objects/core/kill_zone/kill_zone.gd" id="4_7tmkw"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_01_spawn.tscn" id="5_ys4l6"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_02_combat_c2.tscn" id="6_ffehm"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_03_combat_treasure.tscn" id="7_kywtb"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_04_treasure_north.tscn" id="8_pd4qe"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_05_ambush.tscn" id="9_u2gvv"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_06_choke_point.tscn" id="10_4f1bo"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_07_hub.tscn" id="11_rmt2l"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_08_arena.tscn" id="12_32lgw"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_09_side_room.tscn" id="13_cem0a"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_10_boss.tscn" id="14_g03qk"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_11_treasure_south.tscn" id="15_t5010"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_12_drained_lava.tscn" id="16_a7umj"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_13_secret.tscn" id="17_m7jl0"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_14_crumbling.tscn" id="18_8x864"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_15_ruins_plaza.tscn" id="19_lp14q"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/nether_bridge.tscn" id="20_px2hq"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/cellar_cover.tscn" id="21_kfuu5"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/connectors.tscn" id="22_5n403"]
+
+[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="zone_root_script"]
+
+[ext_resource type="Script" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="zone_camera_view_script"]
+[ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="camera_view_data_script"]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/ability_pickup.tscn" id="ability_pickup_scene"]
+[ext_resource type="Resource" path="res://abilities/flame_breath/flame_breath.tres" id="flame_breath_data"]
+[ext_resource type="PackedScene" path="res://objects/gates/burnable_barrier/burnable_barrier.tscn" id="burnable_barrier_scene"]
+[ext_resource type="PackedScene" path="res://objects/combat/spawner_cage/spawner_cage.tscn" id="spawner_cage_scene"]
+[ext_resource type="Script" path="res://objects/combat/spawner_cage/flag_reveal.gd" id="flag_reveal_script"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="cage_enemy_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/core/checkpoint/fire/fire_checkpoint.tscn" id="fire_checkpoint_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/world/cellar/dark_zone/dark_zone.tscn" id="dark_zone_scene"]
+[ext_resource type="PackedScene" path="res://objects/world/cellar/ignitable_brazier/ignitable_brazier.tscn" id="brazier_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/world/cellar/hand_torch/campfire.tscn" id="campfire_scene"]
+[ext_resource type="PackedScene" path="res://objects/world/cellar/hand_torch/stick_bundle.tscn" id="stick_bundle_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/gates/stone_gate/fire_cellar_gate.tscn" id="cellar_gate_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="encounter_scene"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="room3_enemy_scene"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/flag_source/flag_source.gd" id="flag_source_script"]
+[ext_resource type="Script" path="res://objects/world/cellar/ignitable_brazier/brazier_group.gd" id="brazier_group_script"]
+
+[ext_resource type="Resource" path="res://resources/enemies/enemy_1/enemy_1_fire_miniboss.tres" id="room2_boss_data"]
+
+[ext_resource type="PackedScene" path="res://objects/combat/spawner_cage/cage_shield.tscn" id="cage_shield_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/chest/lava_boots_chest.tscn" id="lava_boots_chest_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/chest/treasure_chest.tscn" id="treasure_chest_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/encounter/hostage_rescue/hostage_rescue.tscn" id="hostage_rescue_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/chest/tnt_chest.tscn" id="tnt_chest_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/core/portal/vortex/warp_portal.tscn" id="warp_portal_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/portal/power/power_socket.tscn" id="power_socket_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/portal/power/energy_stone_pickup.tscn" id="energy_stone_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/core/encounter/boss_fight/boss_fight.tscn" id="boss_fight_scene"]
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/boss_1.tscn" id="boss_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/portal/vortex/vortex_portal_visual.tscn" id="vortex_visual_scene"]
+
+[ext_resource type="PackedScene" path="res://objects/core/encounter/final_trial/final_trial.tscn" id="final_trial_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/encounter/final_trial/trial_seal.tscn" id="trial_seal_scene"]
+
+[ext_resource type="Script" path="res://levels/_base/room_focus.gd" id="room_focus_script"]
+[ext_resource type="Script" path="res://levels/_base/tier_zone.gd" id="tier_zone_script"]
+
+[ext_resource type="Script" path="res://objects/core/spawn_point/starter_kit.gd" id="starter_kit_script"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/sword.tres" id="kit_sword"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/bow.tres" id="kit_bow"]
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="kit_wind"]
+[ext_resource type="Script" path="res://entities/_base/data/weapon_data.gd" id="kit_weapon_data"]
+[ext_resource type="Script" path="res://abilities/ability_data.gd" id="kit_ability_data"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hu4v4"]
+shading_mode = 0
+disable_fog = true
+albedo_color = Color(0.06, 0.035, 0.04, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_g821r"]
+size = Vector2(264, 192)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_qmqvp"]
+size = Vector2(184, 112)
+
+[sub_resource type="Resource" id="Zone3CameraView"]
+script = ExtResource("camera_view_data_script")
+distance = 32.0
+pitch_degrees = 50.0
+fov = 30.0
+yaw_degrees = 45.0
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_01_spawn"]
+size = Vector3(24.0, 12.0, 24.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_02_combat_c2"]
+size = Vector3(20.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_03_combat_treasure"]
+size = Vector3(20.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_04_treasure_north"]
+size = Vector3(16.0, 12.0, 20.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_05_ambush"]
+size = Vector3(12.0, 12.0, 12.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_06_choke_point"]
+size = Vector3(12.0, 12.0, 12.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_07_hub"]
+size = Vector3(24.0, 12.0, 24.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_08_arena"]
+size = Vector3(28.0, 12.0, 20.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_09_side_room"]
+size = Vector3(12.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_10_boss"]
+size = Vector3(28.0, 12.0, 28.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_11_treasure_south"]
+size = Vector3(16.0, 12.0, 20.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_12_drained_lava"]
+size = Vector3(16.0, 12.0, 20.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_13_secret"]
+size = Vector3(16.0, 12.0, 20.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_14_crumbling"]
+size = Vector3(20.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_room_15_ruins_plaza"]
+size = Vector3(20.0, 12.0, 12.0)
+
+[node name="Level3" type="Node3D" unique_id=1386575137]
+script = ExtResource("zone_root_script")
+
+[node name="FireLighting" type="Node3D" parent="." unique_id=2139099334 instance=ExtResource("1_l5u1a")]
+editor_description = "Ánh sáng map Lửa: nền đỏ tím tối, sương độ cao đỏ cam để chân nền đỡ tan vào hơi nóng. Nắng cam nhạt rọi gần thẳng xuống (mặt trên sáng, mặt đứng tối) giống zone 1; đèn hắt từ dưới lên giả ánh dung nham chiếu lên mặt đứng."
+
+[node name="AbyssGround" type="MeshInstance3D" parent="." unique_id=2033067877]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, -8, 52)
+material_override = SubResource("StandardMaterial3D_hu4v4")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_g821r")
+
+[node name="LavaSea" type="MeshInstance3D" parent="." unique_id=679813510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, -7.6, 52)
+material_override = ExtResource("2_t4mk4")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_qmqvp")
+
+[node name="AbyssKillZone" type="Area3D" parent="." unique_id=630899391 instance=ExtResource("3_3tcpi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, -7, 52)
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("4_7tmkw")
+size = Vector3(264, 2, 192)
+lethal = true
+
+[node name="Rooms" type="Node3D" parent="." unique_id=785751967]
+
+[node name="Room01Spawn" type="Node3D" parent="Rooms" unique_id=368636432 instance=ExtResource("5_ys4l6")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 19.5147, 4, 90.4853)
+
+[node name="Room02CombatC2" type="Node3D" parent="Rooms" unique_id=1316771458 instance=ExtResource("6_ffehm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0, 32)
+
+[node name="Room03CombatTreasure" type="Node3D" parent="Rooms" unique_id=1036719643 instance=ExtResource("7_kywtb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 0, 16)
+
+[node name="Room04TreasureNorth" type="Node3D" parent="Rooms" unique_id=1472342937 instance=ExtResource("8_pd4qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 8, 10)
+
+[node name="Room05Ambush" type="Node3D" parent="Rooms" unique_id=344764492 instance=ExtResource("9_u2gvv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 4, 38)
+
+[node name="Room06ChokePoint" type="Node3D" parent="Rooms" unique_id=304555532 instance=ExtResource("10_4f1bo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 102, 4, 54)
+
+[node name="Room07Hub" type="Node3D" parent="Rooms" unique_id=699405124 instance=ExtResource("11_rmt2l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 124, 4, 48)
+
+[node name="Room08Arena" type="Node3D" parent="Rooms" unique_id=1659796535 instance=ExtResource("12_32lgw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 114, 8, 14)
+
+[node name="Room09SideRoom" type="Node3D" parent="Rooms" unique_id=2104781074 instance=ExtResource("13_cem0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 8, 16)
+
+[node name="Room10Boss" type="Node3D" parent="Rooms" unique_id=708895893 instance=ExtResource("14_g03qk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 162, 4, 46)
+
+[node name="Room11TreasureSouth" type="Node3D" parent="Rooms" unique_id=1382977853 instance=ExtResource("15_t5010")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 0, 78)
+
+[node name="Room12DrainedLava" type="Node3D" parent="Rooms" unique_id=645532339 instance=ExtResource("16_a7umj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 74)
+
+[node name="Room13Secret" type="Node3D" parent="Rooms" unique_id=1370913669 instance=ExtResource("17_m7jl0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0, 82)
+
+[node name="Room14Crumbling" type="Node3D" parent="Rooms" unique_id=1193588268 instance=ExtResource("18_8x864")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 142, 4, 72)
+
+[node name="Room15RuinsPlaza" type="Node3D" parent="Rooms" unique_id=1947805507 instance=ExtResource("19_lp14q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 142, 0, 98)
+
+[node name="NetherBridge" type="Node3D" parent="Rooms" unique_id=528367578 instance=ExtResource("20_px2hq")]
+
+[node name="CellarCover" type="Node3D" parent="Rooms" unique_id=72600301 instance=ExtResource("21_kfuu5")]
+
+[node name="Connectors" type="Node3D" parent="." unique_id=836009012 instance=ExtResource("22_5n403")]
+
+[node name="ZoneCameraView" type="Node" parent="."]
+script = ExtResource("zone_camera_view_script")
+view = SubResource("Zone3CameraView")
+
+[node name="Pickups" type="Node3D" parent="."]
+
+[node name="PlazaCheckpoint" parent="." instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61.0, 4.32000017166138, 57.5)
+checkpoint_id = &"level_3.plaza"
+
+[node name="Room6Checkpoint" parent="." instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 102.0, 4.32000017166138, 57.2000007629395)
+checkpoint_id = &"level_3.room6"
+
+[node name="BossCheckpoint" parent="." instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 142.0, 4.32000017166138, 45.5999984741211)
+checkpoint_id = &"level_3.boss"
+
+[node name="Room4SpawnerCage" parent="." instance=ExtResource("spawner_cage_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 74.0, 8.31999969482422, 7.0)
+enemy_scene = ExtResource("cage_enemy_scene")
+persistent_id = &"level_3.room4_cage_cleared"
+active_area_size = Vector3(15.0, 4.0, 19.0)
+active_area_offset = Vector3(-2.0, -0.31999999284744, 3.0)
+
+[node name="Room4BookReveal" type="Node3D" parent="Pickups"]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.room4_cage_cleared"
+
+[node name="FlameBreathBook" parent="Pickups/Room4BookReveal" instance=ExtResource("ability_pickup_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70.0, 8.31999969482422, 13.0)
+ability = ExtResource("flame_breath_data")
+persistent_id = &"level_3.flame_breath_book"
+
+[node name="CellarDarkZone" parent="." node_paths=PackedStringArray("sun", "bounce_light", "world_environment") instance=ExtResource("dark_zone_scene")]
+boxes = Array[AABB]([AABB(16.0, -2.0, 24.0, 20.0, 9.0, 16.0), AABB(32.0, -2.0, 8.0, 20.0, 9.0, 16.0), AABB(20.0, -2.0, 12.0, 12.0, 9.0, 12.0), AABB(36.0, -2.0, 24.0, 20.0, 9.0, 8.0), AABB(52.0, -2.0, 32.0, 4.0, 9.0, 8.0)])
+sun = NodePath("../FireLighting/SunLight")
+bounce_light = NodePath("../FireLighting/LavaBounceLight")
+world_environment = NodePath("../FireLighting/Environment")
+use_carried_light = false
+
+[node name="Room5Campfire" parent="." instance=ExtResource("campfire_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59.5, 4.32000017166138, 37.5)
+persistent_id = &"level_3.room5_campfire_lit"
+
+[node name="Room5StickBundle" parent="." instance=ExtResource("stick_bundle_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61.5, 4.32000017166138, 40.5)
+
+[node name="CellarTorches" type="Node3D" parent="."]
+
+[node name="CellarTorch01" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.0, 0.31999999284744, 27.0)
+persistent_id = &"level_3.cellar_torch_01"
+
+[node name="CellarTorch02" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33.0, 0.31999999284744, 27.0)
+persistent_id = &"level_3.cellar_torch_02"
+
+[node name="CellarTorch03" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.0, 0.31999999284744, 37.0)
+persistent_id = &"level_3.cellar_torch_03"
+
+[node name="CellarTorch04" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33.0, 0.31999999284744, 37.0)
+persistent_id = &"level_3.cellar_torch_04"
+
+[node name="CellarTorch05" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.5, 0.31999999284744, 10.0)
+persistent_id = &"level_3.cellar_torch_05"
+
+[node name="CellarTorch06" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.5, 0.31999999284744, 10.0)
+persistent_id = &"level_3.cellar_torch_06"
+
+[node name="CellarTorch07" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.5, 0.31999999284744, 22.0)
+persistent_id = &"level_3.cellar_torch_07"
+
+[node name="CellarTorch08" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.5, 0.31999999284744, 22.0)
+persistent_id = &"level_3.cellar_torch_08"
+
+[node name="CellarTorch09" parent="CellarTorches" instance=ExtResource("brazier_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52.5, 0.31999999284744, 28.5)
+persistent_id = &"level_3.cellar_torch_09"
+
+[node name="Room3" type="Node3D" parent="."]
+
+[node name="Room3Light1" type="OmniLight3D" parent="Room3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.0, 5.0, 12.0)
+light_color = Color(1, 0.6, 0.3, 1)
+light_energy = 0.0
+omni_range = 12.0
+
+[node name="Room3Light2" type="OmniLight3D" parent="Room3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48.0, 5.0, 12.0)
+light_color = Color(1, 0.6, 0.3, 1)
+light_energy = 0.0
+omni_range = 12.0
+
+[node name="Room3Light3" type="OmniLight3D" parent="Room3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.0, 5.0, 20.0)
+light_color = Color(1, 0.6, 0.3, 1)
+light_energy = 0.0
+omni_range = 12.0
+
+[node name="Room3Light4" type="OmniLight3D" parent="Room3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48.0, 5.0, 20.0)
+light_color = Color(1, 0.6, 0.3, 1)
+light_energy = 0.0
+omni_range = 12.0
+
+[node name="Room3Braziers" type="Node" parent="Room3" node_paths=PackedStringArray("braziers", "lights")]
+script = ExtResource("brazier_group_script")
+braziers = [NodePath("../../CellarTorches/CellarTorch05"), NodePath("../../CellarTorches/CellarTorch06"), NodePath("../../CellarTorches/CellarTorch07"), NodePath("../../CellarTorches/CellarTorch08")]
+lights = [NodePath("../Room3Light1"), NodePath("../Room3Light2"), NodePath("../Room3Light3"), NodePath("../Room3Light4")]
+lit_energy = 3.5
+persistent_id = &"level_3.room3_torches_lit"
+
+[node name="Room3Encounter" parent="Room3" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.0, 0.31999999284744, 16.0)
+persistent_id = &"level_3.room3_encounter"
+required_flag = &"level_3.room3_torches_lit"
+enemies_visible_before_start = false
+trigger_size = Vector3(18, 4, 14)
+
+[node name="Enemy1" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0, 0.0, -3.0)
+
+[node name="Enemy2" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0, 0.0, -3.0)
+
+[node name="Enemy3" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 4.0)
+
+[node name="Room3ClearedSource" type="Node" parent="Room3"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.room3_encounter"
+
+[node name="Room2Gates" type="Node3D" parent="."]
+
+[node name="Room2EastGate" parent="Room2Gates" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 35.6500015258789, 0.31999999284744, 30.0)
+sources = [NodePath("../../Room3/Room3ClearedSource")]
+persistent_id = &"level_3.room_2_east_gate"
+
+[node name="Room2NorthGate" parent="Room2Gates" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 22.0, 0.31999999284744, 24.3500003814697)
+sources = [NodePath("../../Room3/Room3ClearedSource")]
+persistent_id = &"level_3.room_2_north_gate"
+
+[node name="Room3WestGate" parent="Room2Gates" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 32.3499984741211, 0.31999999284744, 14.0)
+sources = [NodePath("../../Room3/Room3ClearedSource")]
+persistent_id = &"level_3.room_3_west_gate"
+
+[node name="Room2" type="Node3D" parent="."]
+
+[node name="Room2BossEncounter" parent="Room2" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.0, 0.31999999284744, 32.0)
+persistent_id = &"level_3.room2_miniboss"
+trigger_size = Vector3(3.5, 4.0, 3.5)
+clear_trauma = 0.5
+
+[node name="MiniBoss" parent="Room2/Room2BossEncounter/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0.0, 0.0, -4.5)
+data = ExtResource("room2_boss_data")
+
+[node name="Room2ClearedSource" type="Node" parent="Room2"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.room2_miniboss"
+
+[node name="WestGates" type="Node3D" parent="."]
+
+[node name="WestGateSouth" parent="WestGates" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 64.3499984741211, 4.32000017166138, 50.0)
+sources = [NodePath("../../Room2/Room2ClearedSource")]
+persistent_id = &"level_3.west_gate_south"
+
+[node name="WestGateNorth" parent="WestGates" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 64.3499984741211, 4.32000017166138, 54.0)
+sources = [NodePath("../../Room2/Room2ClearedSource")]
+persistent_id = &"level_3.west_gate_north"
+
+[node name="Room8" type="Node3D" parent="."]
+
+[node name="Room8Cage1" parent="Room8" node_paths=PackedStringArray("shield") instance=ExtResource("spawner_cage_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.0, 8.31999969482422, 9.0)
+enemy_scene = ExtResource("cage_enemy_scene")
+spawn_interval = 5.0
+max_alive = 2
+spawn_radius = 3.4
+shield = NodePath("Shield")
+persistent_id = &"level_3.room8_cage_1"
+active_area_size = Vector3(27.0, 4.0, 19.0)
+active_area_offset = Vector3(6.0, 0.0, 5.0)
+
+[node name="Shield" parent="Room8/Room8Cage1" instance=ExtResource("cage_shield_scene")]
+
+[node name="Room8Cage2" parent="Room8" node_paths=PackedStringArray("shield") instance=ExtResource("spawner_cage_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120.0, 8.31999969482422, 9.0)
+enemy_scene = ExtResource("cage_enemy_scene")
+spawn_interval = 5.0
+max_alive = 2
+spawn_radius = 3.4
+shield = NodePath("Shield")
+persistent_id = &"level_3.room8_cage_2"
+active_area_size = Vector3(27.0, 4.0, 19.0)
+active_area_offset = Vector3(-6.0, 0.0, 5.0)
+
+[node name="Shield" parent="Room8/Room8Cage2" instance=ExtResource("cage_shield_scene")]
+
+[node name="Room8Cage3" parent="Room8" node_paths=PackedStringArray("shield") instance=ExtResource("spawner_cage_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.0, 8.31999969482422, 19.0)
+enemy_scene = ExtResource("cage_enemy_scene")
+spawn_interval = 5.0
+max_alive = 2
+spawn_radius = 3.4
+shield = NodePath("Shield")
+persistent_id = &"level_3.room8_cage_3"
+active_area_size = Vector3(27.0, 4.0, 19.0)
+active_area_offset = Vector3(6.0, 0.0, -5.0)
+
+[node name="Shield" parent="Room8/Room8Cage3" instance=ExtResource("cage_shield_scene")]
+
+[node name="Room8Cage4" parent="Room8" node_paths=PackedStringArray("shield") instance=ExtResource("spawner_cage_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120.0, 8.31999969482422, 19.0)
+enemy_scene = ExtResource("cage_enemy_scene")
+spawn_interval = 5.0
+max_alive = 2
+spawn_radius = 3.4
+shield = NodePath("Shield")
+persistent_id = &"level_3.room8_cage_4"
+active_area_size = Vector3(27.0, 4.0, 19.0)
+active_area_offset = Vector3(-6.0, 0.0, -5.0)
+
+[node name="Shield" parent="Room8/Room8Cage4" instance=ExtResource("cage_shield_scene")]
+
+[node name="Room8WestGate" parent="Room8" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 99.6500015258789, 8.31999969482422, 14.0)
+sources = [NodePath("../Room8Cage1"), NodePath("../Room8Cage2"), NodePath("../Room8Cage3"), NodePath("../Room8Cage4")]
+persistent_id = &"level_3.room_8_west_gate"
+
+[node name="Room9LavaBootsChest" parent="." instance=ExtResource("lava_boots_chest_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 88.0, 8.31999969482422, 14.0)
+
+[node name="Room11" type="Node3D" parent="."]
+
+[node name="Room11Cage" parent="Room11" instance=ExtResource("spawner_cage_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.0, 0.31999999284744, 78.0)
+enemy_scene = ExtResource("cage_enemy_scene")
+persistent_id = &"level_3.room11_cage_cleared"
+active_area_size = Vector3(15.0, 4.0, 19.0)
+active_area_offset = Vector3(0.0, -0.32, 0.0)
+
+[node name="Room11ChestReveal" type="Node3D" parent="Room11"]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.room11_cage_cleared"
+
+[node name="Room11Chest" parent="Room11/Room11ChestReveal" instance=ExtResource("treasure_chest_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70.0, 0.31999999284744, 84.0)
+persistent_id = &"level_3.room11_chest"
+
+[node name="Room14" type="Node3D" parent="."]
+
+[node name="Room14CageWest" parent="Room14" instance=ExtResource("spawner_cage_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 137.0, 4.32000017166138, 69.0)
+enemy_scene = ExtResource("cage_enemy_scene")
+persistent_id = &"level_3.room14_cage_west"
+active_area_size = Vector3(19.0, 4.0, 15.0)
+active_area_offset = Vector3(5.0, -0.32, 3.0)
+
+[node name="Room14CageEast" parent="Room14" instance=ExtResource("spawner_cage_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 147.0, 4.32000017166138, 68.0)
+enemy_scene = ExtResource("cage_enemy_scene")
+persistent_id = &"level_3.room14_cage_east"
+active_area_size = Vector3(19.0, 4.0, 15.0)
+active_area_offset = Vector3(-5.0, -0.32, 4.0)
+
+[node name="Room14ChestReveal" type="Node3D" parent="Room14"]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.room14_cage_west"
+extra_flags = Array[StringName]([&"level_3.room14_cage_east"])
+
+[node name="TntChest" parent="Room14/Room14ChestReveal" instance=ExtResource("tnt_chest_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 142.0, 4.32000017166138, 65.5999984741211)
+
+[node name="Room12HostageRescue" parent="." node_paths=PackedStringArray("guards") instance=ExtResource("hostage_rescue_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100.0, 0.31999999284744, 72.0)
+persistent_id = &"level_3.room12_hostage_rescued"
+guards = NodePath("Guards")
+lower_time = 45.0
+active_area_size = Vector3(15.0, 4.0, 19.0)
+active_area_offset = Vector3(0.0, -0.31999999284744, 2.0)
+
+[node name="Guards" parent="Room12HostageRescue" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+persistent_id = &"level_3.room12_guards"
+trigger_size = Vector3(15.0, 4.0, 19.0)
+
+[node name="Guard1" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.20000004768372, 0.0, 5.19999980926514)
+
+[node name="Guard2" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.20000004768372, 0.0, 5.19999980926514)
+
+[node name="Guard3" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 6.60000038146973)
+
+[node name="WarpPortals" type="Node3D" parent="."]
+
+[node name="Room9WarpPortal" parent="WarpPortals" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 90.0, 8.31999969482422, 10.6000003814697)
+target = NodePath("../Room15WarpPortal")
+required_flag = &"level_3.portal9_powered"
+
+[node name="Room15WarpPortal" parent="WarpPortals" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.00000004371139, 149.0, 0.31999999284744, 96.0)
+target = NodePath("../Room9WarpPortal")
+required_flag = &"level_3.portal9_powered"
+
+[node name="PowerSocket" parent="WarpPortals/Room9WarpPortal" instance=ExtResource("power_socket_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.80000001192093, 1.54999995231628)
+required_item_flag = &"level_3.energy_stone"
+persistent_id = &"level_3.portal9_powered"
+
+[node name="Room12StoneReveal" type="Node3D" parent="."]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.room12_hostage_rescued"
+
+[node name="EnergyStone" parent="Room12StoneReveal" instance=ExtResource("energy_stone_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99.1999969482422, 2.3199999332428, 65.5999984741211)
+
+[node name="BridgeGuards" parent="." instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.0, 4.32000017166138, 67.0)
+persistent_id = &"level_3.bridge_guards"
+trigger_size = Vector3(30.0, 4.0, 30.0)
+
+[node name="Guard1" parent="BridgeGuards/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0, 0.0, 6.0)
+
+[node name="Guard2" parent="BridgeGuards/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 0.0)
+
+[node name="Guard3" parent="BridgeGuards/Enemies" instance=ExtResource("room3_enemy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0, 0.0, -6.0)
+
+[node name="Room10BossFight" parent="." instance=ExtResource("boss_fight_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 162.0, 4.32000017166138, 46.0)
+boss_scene = ExtResource("boss_scene")
+persistent_id = &"level_3.boss_defeated"
+trigger_size = Vector3(26, 4, 26)
+
+[node name="Spawn" parent="Room10BossFight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0.0, 0.0)
+
+[node name="Room10ExitReveal" type="Node3D" parent="."]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.boss_defeated"
+
+[node name="ExitPortal" parent="Room10ExitReveal" instance=ExtResource("vortex_visual_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.00000004371139, 173.0, 4.32000017166138, 46.0)
+
+[node name="FinalTrial" parent="." instance=ExtResource("final_trial_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 124.0, 4.32000017166138, 48.0)
+unlock_flag = &"level_3.hub_south_gate"
+persistent_id = &"level_3.final_trial"
+duration = 60.0
+
+[node name="SealWest" parent="FinalTrial/Seals" instance=ExtResource("trial_seal_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, -11.6500015258789, 0.0, 6.0)
+
+[node name="SealNorth" parent="FinalTrial/Seals" instance=ExtResource("trial_seal_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -2.0, 0.0, -11.6500015258789)
+
+[node name="SealSouthWest" parent="FinalTrial/Seals" instance=ExtResource("trial_seal_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -2.0, 0.0, 11.6500015258789)
+
+[node name="BossGate" parent="." node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 136.350006103516, 4.32000017166138, 50.0)
+sources = [NodePath("../FinalTrial")]
+persistent_id = &"level_3.boss_gate"
+
+[node name="HubSouthGate" parent="." node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 122.0, 4.32000017166138, 60.3499984741211)
+sources = [NodePath("../Room12HostageRescue")]
+persistent_id = &"level_3.hub_south_gate"
+
+[node name="BurnableBarriers" type="Node3D" parent="."]
+
+[node name="IgniteChainBarrier" parent="BurnableBarriers" instance=ExtResource("burnable_barrier_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 54.0, 4.32000017166138, 40.2999992370605)
+persistent_id = &"level_3.ignite_chain_barrier"
+
+[node name="RoomFocus" type="Node" parent="." node_paths=PackedStringArray("rooms_root")]
+script = ExtResource("room_focus_script")
+rooms_root = NodePath("../Rooms")
+
+[node name="Room01SpawnZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(0.70710676908493, 0.0, 0.70710676908493, 0.0, 1.0, 0.0, -0.70710676908493, 0.0, 0.70710676908493, 19.5146999359131, 7.0, 90.4852981567383)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room01SpawnZone"]
+shape = SubResource("RoomZone_room_01_spawn")
+
+[node name="Room02CombatC2Zone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 26.0, 3.0, 32.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room02CombatC2Zone"]
+shape = SubResource("RoomZone_room_02_combat_c2")
+
+[node name="Room03CombatTreasureZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 42.0, 3.0, 16.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room03CombatTreasureZone"]
+shape = SubResource("RoomZone_room_03_combat_treasure")
+
+[node name="Room04TreasureNorthZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 72.0, 11.0, 10.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room04TreasureNorthZone"]
+shape = SubResource("RoomZone_room_04_treasure_north")
+
+[node name="Room05AmbushZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 62.0, 7.0, 38.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room05AmbushZone"]
+shape = SubResource("RoomZone_room_05_ambush")
+
+[node name="Room06ChokePointZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 102.0, 7.0, 54.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room06ChokePointZone"]
+shape = SubResource("RoomZone_room_06_choke_point")
+
+[node name="Room07HubZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 124.0, 7.0, 48.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room07HubZone"]
+shape = SubResource("RoomZone_room_07_hub")
+
+[node name="Room08ArenaZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 114.0, 11.0, 14.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room08ArenaZone"]
+shape = SubResource("RoomZone_room_08_arena")
+
+[node name="Room09SideRoomZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 90.0, 11.0, 16.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room09SideRoomZone"]
+shape = SubResource("RoomZone_room_09_side_room")
+
+[node name="Room10BossZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 162.0, 7.0, 46.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room10BossZone"]
+shape = SubResource("RoomZone_room_10_boss")
+
+[node name="Room11TreasureSouthZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 72.0, 3.0, 78.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room11TreasureSouthZone"]
+shape = SubResource("RoomZone_room_11_treasure_south")
+
+[node name="Room12DrainedLavaZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 100.0, 3.0, 74.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room12DrainedLavaZone"]
+shape = SubResource("RoomZone_room_12_drained_lava")
+
+[node name="Room13SecretZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 120.0, 3.0, 82.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room13SecretZone"]
+shape = SubResource("RoomZone_room_13_secret")
+
+[node name="Room14CrumblingZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 142.0, 7.0, 72.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room14CrumblingZone"]
+shape = SubResource("RoomZone_room_14_crumbling")
+
+[node name="Room15RuinsPlazaZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 142.0, 3.0, 98.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room15RuinsPlazaZone"]
+shape = SubResource("RoomZone_room_15_ruins_plaza")
+
+[node name="StarterKit" type="Node" parent="."]
+script = ExtResource("starter_kit_script")
+weapons = Array[ExtResource("kit_weapon_data")]([ExtResource("kit_sword"), ExtResource("kit_bow")])
+abilities = Array[ExtResource("kit_ability_data")]([ExtResource("kit_wind")])
+held_weapon = ExtResource("kit_sword")

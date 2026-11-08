@@ -65,6 +65,10 @@ func _hit(hurtbox: HurtboxComponent) -> void:
 			return
 	var direction := hurtbox.global_position - global_position
 	direction.y = 0.0
+	# Mục tiêu đứng đúng tâm vùng (vd. bẫy phun ngay dưới chân) thì không có hướng: hất theo trục Z của hurtbox để vẫn bị đẩy ra
+	if direction.length_squared() < 0.0001:
+		direction = hurtbox.global_basis.z
+		direction.y = 0.0
 	var info := DamageInfo.new(damage, damage_type, direction.normalized() * knockback, self)
 	info.ignores_invincibility = ignore_invincibility
 	if not hurtbox.receive_hit(info) or not return_to_safe_ground or not hurtbox.is_alive():

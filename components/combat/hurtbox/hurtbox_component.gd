@@ -18,6 +18,9 @@ const GROUP := &"hurtbox"
 ## Hệ số nhận sát thương theo loại: 0 = miễn nhiễm, 0.5 = kháng một nửa, 2 = yếu gấp đôi. Không có = 1
 @export var resistances: Dictionary[DamageInfo.Type, float] = {}
 
+## Chặn mọi đòn, kể cả đòn xuyên bất tử (chế độ test của player)
+var invulnerable: bool = false
+
 var _invincible_timer: float = 0.0
 
 
@@ -52,7 +55,7 @@ func is_alive() -> bool:
 
 ## Trả về true nếu đòn thực sự được tính (không bị bất tử chặn, mục tiêu còn sống)
 func receive_hit(info: DamageInfo) -> bool:
-	if not is_alive() or (is_invincible() and not info.ignores_invincibility):
+	if invulnerable or not is_alive() or (is_invincible() and not info.ignores_invincibility):
 		return false
 	# Lấy cái dài hơn: đòn xuyên bất tử (tick cháy, bẫy) trúng lúc đang dash không được cắt ngắn bất tử của dash
 	_invincible_timer = maxf(_invincible_timer, invincibility_time)

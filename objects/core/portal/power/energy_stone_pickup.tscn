@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/key/key_pickup.gd" id="1"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2"]
+
+[sub_resource type="StandardMaterial3D" id="StoneMat"]
+albedo_color = Color(0.3, 0.7, 1, 1)
+emission_enabled = true
+emission = Color(0.35, 0.75, 1, 1)
+emission_energy_multiplier = 2.2
+roughness = 0.3
+
+[sub_resource type="PrismMesh" id="StoneTop"]
+material = SubResource("StoneMat")
+size = Vector3(0.36, 0.34, 0.36)
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 1.5
+
+[node name="EnergyStonePickup" type="Node3D"]
+script = ExtResource("1")
+persistent_id = &"level_3.energy_stone"
+spin_speed = 1.4
+key_id = &"level_3.energy_stone"
+
+[node name="Visual" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="Top" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)
+cast_shadow = 0
+mesh = SubResource("StoneTop")
+
+[node name="Bottom" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, 1, 0, -0.17, 0)
+cast_shadow = 0
+mesh = SubResource("StoneTop")
+
+[node name="Glow" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+light_color = Color(0.35, 0.75, 1, 1)
+light_energy = 1.4
+omni_range = 3.5
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2")
+prompt_text = "NHẶT ĐÁ"
+prompt_offset = Vector3(0, 1.6, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Range")

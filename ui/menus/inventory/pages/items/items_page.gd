@@ -2,6 +2,7 @@ class_name ItemsPage
 extends MenuPage
 ## Trang Vật phẩm: lưới mọi vật phẩm đang có trong danh mục GameState.ITEMS (vật liệu nâng cấp, chìa khóa, đồ sưu tầm).
 ## Chỉ hiện thứ đã có, không lộ trước vật phẩm chưa tìm thấy. Thêm vật phẩm = thêm .tres vào danh mục.
+## Vật phẩm dùng phím (QuickItemData, ví dụ TNT): Enter chọn dùng / bỏ chọn; vật phẩm đang dùng có dấu ở góc ô.
 
 var _tiles: Array[ItemTile] = []
 
@@ -27,6 +28,7 @@ func refresh() -> void:
 		var tile := ItemTile.new()
 		tile.custom_minimum_size = style.item_tile_size
 		bind_tile(tile)
+		tile.activated.connect(_on_tile_activated)
 		_grid.add_child(tile)
 		_tiles.append(tile)
 	while _tiles.size() > owned.size():
@@ -36,3 +38,18 @@ func refresh() -> void:
 	_empty.visible = owned.is_empty()
 	if is_instance_valid(_last_focus) and _last_focus.has_focus():
 		detail_changed.emit(_last_focus.get_detail())
+
+
+## Enter trên vật phẩm dùng phím (QuickItemData, ví dụ TNT): chọn dùng (phím T), Enter lần nữa bỏ chọn
+func toggle_select(item: QuickItemData) -> void:
+	var selected := GameState.get_selected_item()
+	GameState.select_item(&"" if selected == item else item.id)
+	refresh()
+
+
+func _on_tile_activated(tile: MenuTile) -> void:
+	var quick := (tile as ItemTile).item as QuickItemData
+	if quick == null:
+		return
+	toggle_select(quick)
+	sound_requested.emit(&"confirm")

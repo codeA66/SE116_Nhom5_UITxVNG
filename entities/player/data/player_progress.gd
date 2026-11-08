@@ -23,6 +23,8 @@ extends Resource
 @export var equipped_charms: Array[StringName] = []
 ## Số ô khắc để đeo bùa; -1 = chưa đặt (lấy theo NewGameData)
 @export var charm_notches: int = -1
+## Vật phẩm dùng nút đang chọn (ItemData.id, ví dụ TNT): phím use_item (T) dùng vật phẩm này. Rỗng = chưa chọn
+@export var selected_item: StringName
 
 @export_group("Checkpoint")
 ## Scene của khu chứa checkpoint gần nhất; rỗng = chưa có checkpoint
@@ -47,6 +49,7 @@ func snapshot() -> PlayerProgress:
 	copy.charms = charms.duplicate()
 	copy.equipped_charms = equipped_charms.duplicate()
 	copy.charm_notches = charm_notches
+	copy.selected_item = selected_item
 	copy.checkpoint_zone = checkpoint_zone
 	copy.checkpoint_spawn_id = checkpoint_spawn_id
 	return copy
