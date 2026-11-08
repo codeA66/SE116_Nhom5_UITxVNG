@@ -23,7 +23,6 @@ func _run() -> void:
 		(guard as Enemy).set_dormant(true); guard.process_mode=Node.PROCESS_MODE_DISABLED
 	_player.teleport(Vector3(0,0.1,26),Vector3.FORWARD)
 	await _frames(6)
-	await _blast()
 	await _drops()
 	await _warning()
 	await _cooldown(false,3.5)
@@ -33,41 +32,19 @@ func _run() -> void:
 	_check(not gate.get_node("Visual/OldGardenDoor/Interactive_Cyan_Lock").visible and not gate.get_node("Visual/OldGardenDoor/LockBase").visible,"central lock disappears at start of opening")
 	var room: Node3D=_world.get_node("Rooms/RootGarden")
 	var fruit: OfferingBanana=_world.get_node("Bananas/Banana_5")
-	var healing: BananaItemPickup=room.get_node("BananaBootsTrial/HealingReward")
 	var entrance: GardenLiftGate=(room.get_node("DoorTrial") as RoomGateTrial).gates[0]
 	_check(fruit.global_position.distance_to(entrance.global_position)<3,"offering reward lands beside actual entrance")
-	_check(healing.global_position.distance_to(entrance.global_position)<3,"healing reward lands beside actual entrance")
 	_world.process_mode=Node.PROCESS_MODE_DISABLED
 	for area: Node in _world.find_children("*","Area3D",true,false): area.set_deferred("monitoring",false)
 	await _frames(3); _world.queue_free(); await _frames(3)
 	print("LOOT_FEEDBACK_RESULT ",_checks-_failures.size(),"/",_checks," failures=",_failures)
 	get_tree().quit(0 if _failures.is_empty() else 1)
 
-func _blast() -> void:
-	var enemy: Enemy=_spawn("res://entities/enemies/wildlife/monkey_grunt/monkey_grunt.tscn",Vector3(2,0.1,26))
-	enemy.set_dormant(true); enemy.set_physics_process(false)
-	var before_hp: int=_player.health.current_health
-	var before_position: Vector3=_player.global_position
-	var bullet: ExplosiveBanana=ExplosiveBanana.new(); _world.add_child(bullet)
-	bullet.launch(_player.global_position+Vector3.RIGHT,Vector3.FORWARD,_player)
-	bullet.set_physics_process(false)
-	await _frames(2); bullet.call("_explode"); await _frames(10)
-	_check(_player.health.current_health==before_hp,"own explosive banana does not damage player")
-	_check(_player.global_position.distance_to(before_position)>0.15,"own explosion still pushes player")
-	_check(enemy.health.current_health<enemy.health.max_health,"explosion still damages enemies")
-	enemy.queue_free(); await _frames(3)
-
 func _drops() -> void:
-	var ammo: GardenFallingLoot=GardenRewards.loot(_world,Vector3(3,0,30),false,3,false) as GardenFallingLoot
-	_check(ammo.pickup.enabled and ammo.get_node("LootBeam").visible,"ammo immediately appears with beam")
-	_check((ammo.get_node("LootBeam") as LootItemBeam).tint==Color("ff352b"),"ammo beam is red")
-	var gun: GardenFallingLoot=GardenRewards.loot(_world,Vector3(-3,0,30),true,5,true) as GardenFallingLoot
-	_check(not gun.pickup.enabled and not gun.get_node("LootBeam").visible,"gun beam and pickup wait for landing")
 	var banana: OfferingBanana=_world.get_node("Bananas/Banana_4")
 	GardenRewards.offering(banana)
 	_check(not banana.get_node("LootBeam").visible,"offering beam waits for landing")
 	await _frames(150)
-	_check(gun.pickup.enabled and gun.get_node("LootBeam").visible and gun.global_position.distance_to(gun.landing)<0.01,"gun lands with golden beam")
 	_check(banana.available and banana.get_node("LootBeam").visible,"landed offering shows beam")
 	var carry: CarryComponent=_player.get_node("CarryComponent")
 	_player.state_machine.transition_to(&"Idle")

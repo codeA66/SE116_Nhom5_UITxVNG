@@ -9,7 +9,6 @@ const WEAPON: Script = preload("res://objects/world/monkey_garden/ricochet_range
 @export var reward: OfferingBanana
 @export var targets: Array[RicochetStar] = []
 @export var offering_drop_point: Node3D
-@export var gun_drop_point: Node3D
 var ammo: int = 10
 var score: int = 0
 var _pool: ObjectPool
@@ -29,6 +28,7 @@ func _ready() -> void:
 	$RoomBounds.body_entered.connect(_entered)
 	$RoomBounds.body_exited.connect(_exited)
 	for target: RicochetStar in targets: target.struck.connect(_struck)
+	GardenRewards.fit($GunPickup/Model)
 	reset_range()
 	$Score.hide()
 	_reset_label=Label3D.new(); _reset_label.text="RESET"; _reset_label.font_size=42; _reset_label.pixel_size=0.012
@@ -71,7 +71,6 @@ func _struck(_target: RicochetStar) -> void:
 		if reward != null:
 			if offering_drop_point: reward.global_position=offering_drop_point.global_position
 			GardenRewards.offering(reward)
-			GardenRewards.loot(get_parent() as Node3D,gun_drop_point.global_position if gun_drop_point else reward.global_position+Vector3.RIGHT*2,true,5)
 		get_tree().create_timer(2.2).timeout.connect(func() -> void: cleared.emit())
 func _update_display() -> void:
 	_display.text = "%d / %d    •    %d / %d" % [score,targets.size(),ammo,magazine_size]
