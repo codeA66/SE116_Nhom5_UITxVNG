@@ -51,17 +51,19 @@ func _layout() -> void:
 	health_offset.x = maxf(health_offset.x,energy_offset.x+energy_size.x+gap)
 	var skills_offset: Vector2 = style.skills_offset.clamp(Vector2.ZERO,viewport*0.4)
 	skills_offset.x = maxf(skills_offset.x, health_offset.x)
-	skills_offset.y = maxf(skills_offset.y, health_offset.y + _health_bar.get_combined_minimum_size().y + gap)
-	# Neo tiền bên dưới hàng kỹ năng để việc đếm hoặc ẩn không dời các ô.
+	# Giữ thứ tự máu, tiền và kỹ năng ngay cả khi đổi cỡ chữ.
 	var currency_offset: Vector2 = style.currency_offset.clamp(Vector2.ZERO,viewport*0.4)
-	currency_offset.x = maxf(currency_offset.x, skills_offset.x)
-	currency_offset.y = maxf(currency_offset.y, skills_offset.y + _cluster.size.y + gap)
-	var currency_height: float = currency_counter.get_combined_minimum_size().y if is_instance_valid(currency_counter) else 0.0
-	var height: float = maxf(energy_offset.y + energy_size.y, currency_offset.y + currency_height)
+	currency_offset.x = maxf(currency_offset.x, health_offset.x)
+	currency_offset.y = maxf(currency_offset.y, health_offset.y + _health_bar.get_combined_minimum_size().y + gap)
+	var currency_size: Vector2 = currency_counter.get_combined_minimum_size() if is_instance_valid(currency_counter) else Vector2.ZERO
+	skills_offset.y = maxf(skills_offset.y, currency_offset.y + currency_size.y + gap)
+	var height: float = maxf(energy_offset.y + energy_size.y, skills_offset.y + _cluster.size.y)
 	var width: float = maxf(energy_offset.x + energy_size.x, skills_offset.x + _cluster.size.x)
+	width = maxf(width,currency_offset.x + currency_size.x)
 	factor = minf(factor,maxf((viewport.y-position.y-maxf(style.safe_bottom_margin,0))/maxf(height,1),0.1))
 	factor = minf(factor, maxf((viewport.x - position.x * 2.0) / maxf(width, 1), 0.1))
 	scale = Vector2.ONE*factor
+	_cluster.call(&"set_layout_scale",factor)
 	_health_bar.fit_width(maxf((viewport.x-position.x*2.0)/factor-health_offset.x,1))
 	_health_panel.position = health_offset
 	_health_panel.size = _health_panel.get_combined_minimum_size()
@@ -71,6 +73,7 @@ func _layout() -> void:
 		energy_bar.position = position+energy_offset*factor
 	if is_instance_valid(currency_counter):
 		currency_counter.scale = scale
+		currency_counter.size = currency_size
 		currency_counter.position = position+currency_offset*factor
 	_laying_out = false
 ## Signal có payload được đổi thành refresh màu, không can thiệp vũ khí.

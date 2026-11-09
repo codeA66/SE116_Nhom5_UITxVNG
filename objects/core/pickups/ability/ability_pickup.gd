@@ -35,6 +35,10 @@ func _on_interacted(interactor: Node3D) -> void:
 	set_process(false)
 	if not _acquisition.play(interactor,ability):
 		_cancel_acquisition(false)
+		return
+	# Trình diễn vừa dừng thế giới (Interactor không tự cập nhật nữa): chọn lại mục tiêu ngay để chữ "nhặt" tắt luôn
+	var seeker := interactor.get(&"interactor") as InteractorComponent
+	if seeker: seeker.refresh_focus()
 
 ## Commit đúng một lần kể cả có nhiều frame hoặc nhiều listener ở đỉnh.
 func _commit_acquisition() -> void:

@@ -5,6 +5,8 @@ extends MenuPage
 
 var _held: ElementCard
 var _cards: Array[ElementCard] = []
+## Cấp kỹ năng lần cuối người chơi thấy trên màn Tab: lên cấp từ lần trước thì thẻ lóe sáng một lần
+var _seen_levels: Dictionary[StringName, int] = {}
 var _sockets: Array[WeaponSocket] = []
 
 @onready var _card_grid: GridContainer = $Columns/Elements/Grid
@@ -29,6 +31,7 @@ func refresh() -> void:
 	for index in elements.size():
 		var element := elements[index]
 		_cards[index].setup(element, owned.has(element), fused_at.get(element.id, -1))
+		_flash_if_leveled(_cards[index])
 	var slots := WeaponData.Slot.values()
 	_resize_sockets(slots.size())
 	for index in slots.size():
@@ -38,6 +41,16 @@ func refresh() -> void:
 		_sockets[index].setup(slot, GameState.get_weapon_in_slot(slot), element, fusion)
 	if is_instance_valid(_last_focus) and _last_focus.has_focus():
 		detail_changed.emit(_last_focus.get_detail())
+
+
+func _flash_if_leveled(card: ElementCard) -> void:
+	if not card.owned:
+		return
+	var id := card.element.id
+	if _seen_levels.has(id) and card.level > _seen_levels[id]:
+		card.flash()
+		sound_requested.emit(&"confirm")
+	_seen_levels[id] = card.level
 
 
 func handle_cancel() -> bool:

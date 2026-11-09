@@ -65,12 +65,12 @@ func _draw() -> void:
 	var extent: float = maxf(minf(size.x,size.y)*0.43,0.01)
 	var center: Vector2 = size*0.5
 	var t: float = clampf(_age/maxf(style.health_transition_time,0.001),0,1)
-	var pulse: float = 1.0-style.health_pulse_amount*(0.5+0.5*sin(_clock*style.health_pulse_speed)) if _low else 1.0
-	var fill_color: Color = style.empty_ink.lerp(style.ivory,t) if filled else style.ivory.lerp(style.empty_ink,t)
+	var pulse: float = clampf(style.health_pulse_amount,0.0,1.0)*(0.5+0.5*sin(_clock*style.health_pulse_speed)) if _low else 0.0
+	var fill_color: Color = style.health_empty_fill.lerp(style.ivory,t) if filled else style.ivory.lerp(style.health_empty_fill,t)
 	if filled and _animating: fill_color = fill_color.lerp(style.heal_color,(1.0-t)*0.6)
-	fill_color.a *= pulse
+	if filled: fill_color = fill_color.lerp(style.heal_color,pulse)
 	if art != null:
-		draw_texture_rect(art,Rect2(Vector2.ZERO,size),false,Color(1,1,1,pulse))
+		draw_texture_rect(art,Rect2(Vector2.ZERO,size),false,Color.WHITE.lerp(style.heal_color,pulse))
 	else:
 		draw_set_transform(center,0,Vector2.ONE*extent)
 		draw_polyline(_outline,style.ink,(style.stroke_width()+clampf(style.health_shadow_width,0,4))/extent,true)

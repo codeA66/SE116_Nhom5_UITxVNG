@@ -1,79 +1,136 @@
-[gd_resource type="Resource" load_steps=15 format=3]
-[ext_resource type="Script" path="res://resources/ui/hud_style.gd" id="1"]
-[ext_resource type="Script" path="res://ui/hud/skills/glyphs/hud_glyph.gd" id="2"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/hud_fox_vessel.svg" id="3"]
-[sub_resource type="SystemFont" id="SkillFont"]
-font_names = PackedStringArray("Arial", "Liberation Sans", "Sans Serif")
-font_weight = 700
-[sub_resource type="Resource" id="Sword"]
-script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(-0.32,0.14, 0.36,-0.65, 0.75,-0.76, 0.64,-0.37, -0.14,0.32), PackedVector2Array(-0.58,0.09, -0.08,0.58, -0.18,0.67, -0.68,0.20), PackedVector2Array(-0.41,0.31, -0.29,0.43, -0.62,0.76, -0.75,0.63)])
+[gd_resource type="Resource" script_class="HudStyle" format=3 uid="uid://dmvvnpumint6w"]
+
+[ext_resource type="Script" uid="uid://x8xmqp6egevs" path="res://resources/ui/hud_style.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwpavjpm5dibc" path="res://ui/hud/skills/glyphs/hud_glyph.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cnod4i2qxnylv" path="res://assets/ui/icons/hud_fox_vessel.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://bw8dyn5qd815v" path="res://assets/ui/icons/hud_skill_atlas.svg" id="4"]
+[ext_resource type="Theme" uid="uid://b0egty3e0khf3" path="res://ui/theme/menu_theme.tres" id="5_i0hsu"]
+
 [sub_resource type="Resource" id="Bow"]
 script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(-0.62,-0.86, -0.10,-0.77, 0.34,-0.55, 0.61,-0.16, 0.58,0.23, 0.32,0.57, -0.35,0.87, -0.05,0.47, 0.18,0.08, 0.15,-0.25, -0.07,-0.55)])
-strokes = Array[PackedVector2Array]([PackedVector2Array(-0.62,-0.86,-0.35,0.87), PackedVector2Array(-0.83,0.26,0.80,-0.44, 0.40,-0.49), PackedVector2Array(0.80,-0.44,0.66,-0.08)])
-[sub_resource type="Resource" id="Wind"]
-script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(-0.98,-0.27, -0.47,-0.31, -0.03,-0.45, 0.35,-0.80, 0.62,-0.85, 0.83,-0.71, 0.86,-0.46, 0.67,-0.24, 0.25,-0.08, -0.40,-0.04), PackedVector2Array(-0.73,0.21, -0.20,0.18, 0.30,0.02, 0.67,-0.12, 0.88,-0.04, 0.92,0.13, 0.74,0.34, 0.34,0.42, -0.23,0.42), PackedVector2Array(-0.40,0.59, 0.19,0.57, 0.69,0.43, 0.55,0.72, 0.29,0.84, -0.03,0.82)])
-[sub_resource type="Resource" id="Fire"]
-script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(0.00,-0.96, 0.10,-0.64, 0.34,-0.34, 0.34,-0.03, 0.51,-0.17, 0.61,-0.55, 0.82,-0.19, 0.91,0.19, 0.79,0.53, 0.51,0.76, 0.13,0.88, -0.32,0.83, -0.68,0.62, -0.86,0.29, -0.81,-0.08, -0.51,-0.47, -0.48,-0.14, -0.30,0.09, -0.29,-0.33, -0.15,-0.59)])
-[sub_resource type="Resource" id="Fox"]
-script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(-0.85,-0.95, -0.18,-0.54, 0.18,-0.54, 0.85,-0.95, 0.69,-0.04, 0.94,0.21, 0.44,0.65, 0,0.97, -0.44,0.65, -0.94,0.21, -0.69,-0.04)])
-strokes = Array[PackedVector2Array]([PackedVector2Array(-0.85,-0.95, -0.18,-0.54, 0.18,-0.54, 0.85,-0.95, 0.69,-0.04, 0.94,0.21, 0.44,0.65, 0,0.97, -0.44,0.65, -0.94,0.21, -0.69,-0.04, -0.85,-0.95)])
-[sub_resource type="Resource" id="Jade"]
-script = ExtResource("2")
-strokes = Array[PackedVector2Array]([PackedVector2Array(0,-1, 0.70,-0.39, 0.58,0.50, 0,1, -0.58,0.50, -0.70,-0.39, 0,-1), PackedVector2Array(0,-0.79, -0.24,-0.22, 0.23,0.12, -0.10,0.63), PackedVector2Array(-0.53,-0.34, 0.53,-0.34)])
-[sub_resource type="Resource" id="JadeTailShell"]
-script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(-0.98,0.04, -0.88,0.52, -0.59,0.86, -0.13,1.0, 0.37,0.94, 0.76,0.68, 0.98,0.24, 0.98,-0.18, 0.81,-0.58, 0.45,-0.96, 0.54,-0.46, 0.71,-0.14, 0.66,0.25, 0.39,0.58, 0.02,0.72, -0.39,0.62, -0.73,0.35), PackedVector2Array(0.45,-0.96, 0.81,-0.58, 0.98,-0.18, 0.87,-0.19, 0.78,-0.33, 0.70,-0.27, 0.54,-0.46)])
-strokes = Array[PackedVector2Array]([PackedVector2Array(-0.98,0.04, -0.88,0.52, -0.59,0.86, -0.13,1.0, 0.37,0.94, 0.76,0.68, 0.98,0.24, 0.98,-0.18, 0.81,-0.58, 0.45,-0.96, 0.54,-0.46, 0.71,-0.14, 0.66,0.25, 0.39,0.58, 0.02,0.72, -0.39,0.62, -0.73,0.35, -0.98,0.04), PackedVector2Array(0.54,-0.46, 0.70,-0.27, 0.78,-0.33, 0.87,-0.19, 0.98,-0.18), PackedVector2Array(-0.60,0.70, -0.16,0.88, 0.30,0.84, 0.66,0.59)])
-[sub_resource type="Resource" id="EnergyFoxHead"]
-script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(-0.89,-0.99, -0.36,-0.63, 0,-0.69, 0.36,-0.63, 0.89,-0.99, 0.79,-0.18, 1,0, 0.56,0.28, 0.25,0.47, 0,0.59, -0.25,0.47, -0.56,0.28, -1,0, -0.79,-0.18), PackedVector2Array(-0.82,0.37, -0.61,0.51, -0.65,0.79, -0.76,0.90, -0.94,0.85, -1.02,0.64, -0.95,0.48), PackedVector2Array(0.82,0.37, 0.61,0.51, 0.65,0.79, 0.76,0.90, 0.94,0.85, 1.02,0.64, 0.95,0.48)])
+strokes = Array[PackedVector2Array]([PackedVector2Array(-0.62, -0.86, -0.35, 0.87), PackedVector2Array(-0.83, 0.26, 0.8, -0.44, 0.4, -0.49), PackedVector2Array(0.8, -0.44, 0.66, -0.08)])
+fills = Array[PackedVector2Array]([PackedVector2Array(-0.62, -0.86, -0.1, -0.77, 0.34, -0.55, 0.61, -0.16, 0.58, 0.23, 0.32, 0.57, -0.35, 0.87, -0.05, 0.47, 0.18, 0.08, 0.15, -0.25, -0.07, -0.55)])
 
 [sub_resource type="Resource" id="EnergyFoxCream"]
 script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(-0.96,0, -0.49,-0.13, -0.23,0.06, 0,0.30, 0,0.57, -0.25,0.45, -0.56,0.27), PackedVector2Array(0.96,0, 0.49,-0.13, 0.23,0.06, 0,0.30, 0,0.57, 0.25,0.45, 0.56,0.27), PackedVector2Array(-0.76,-0.77, -0.50,-0.58, -0.69,-0.39), PackedVector2Array(0.76,-0.77, 0.50,-0.58, 0.69,-0.39)])
+fills = Array[PackedVector2Array]([PackedVector2Array(-0.96, 0, -0.49, -0.13, -0.23, 0.06, 0, 0.3, 0, 0.57, -0.25, 0.45, -0.56, 0.27), PackedVector2Array(0.96, 0, 0.49, -0.13, 0.23, 0.06, 0, 0.3, 0, 0.57, 0.25, 0.45, 0.56, 0.27), PackedVector2Array(-0.76, -0.77, -0.5, -0.58, -0.69, -0.39), PackedVector2Array(0.76, -0.77, 0.5, -0.58, 0.69, -0.39)])
+
+[sub_resource type="Resource" id="EnergyFoxHead"]
+script = ExtResource("2")
+fills = Array[PackedVector2Array]([PackedVector2Array(-0.89, -0.99, -0.36, -0.63, 0, -0.69, 0.36, -0.63, 0.89, -0.99, 0.79, -0.18, 1, 0, 0.56, 0.28, 0.25, 0.47, 0, 0.59, -0.25, 0.47, -0.56, 0.28, -1, 0, -0.79, -0.18), PackedVector2Array(-0.82, 0.37, -0.61, 0.51, -0.65, 0.79, -0.76, 0.9, -0.94, 0.85, -1.02, 0.64, -0.95, 0.48), PackedVector2Array(0.82, 0.37, 0.61, 0.51, 0.65, 0.79, 0.76, 0.9, 0.94, 0.85, 1.02, 0.64, 0.95, 0.48)])
 
 [sub_resource type="Resource" id="EnergyFoxInk"]
 script = ExtResource("2")
-fills = Array[PackedVector2Array]([PackedVector2Array(-0.12,0.29, 0,0.25, 0.12,0.29, 0,0.39)])
-strokes = Array[PackedVector2Array]([PackedVector2Array(-0.89,-0.99, -0.36,-0.63, 0,-0.69, 0.36,-0.63, 0.89,-0.99, 0.79,-0.18, 1,0, 0.56,0.28, 0.25,0.47, 0,0.59, -0.25,0.47, -0.56,0.28, -1,0, -0.79,-0.18, -0.89,-0.99), PackedVector2Array(-0.57,-0.16, -0.40,-0.11, -0.28,-0.04), PackedVector2Array(0.57,-0.16, 0.40,-0.11, 0.28,-0.04), PackedVector2Array(-0.82,0.37, -0.61,0.51, -0.65,0.79, -0.76,0.90, -0.94,0.85, -1.02,0.64, -0.95,0.48, -0.82,0.37), PackedVector2Array(0.82,0.37, 0.61,0.51, 0.65,0.79, 0.76,0.90, 0.94,0.85, 1.02,0.64, 0.95,0.48, 0.82,0.37)])
+strokes = Array[PackedVector2Array]([PackedVector2Array(-0.89, -0.99, -0.36, -0.63, 0, -0.69, 0.36, -0.63, 0.89, -0.99, 0.79, -0.18, 1, 0, 0.56, 0.28, 0.25, 0.47, 0, 0.59, -0.25, 0.47, -0.56, 0.28, -1, 0, -0.79, -0.18, -0.89, -0.99), PackedVector2Array(-0.57, -0.16, -0.4, -0.11, -0.28, -0.04), PackedVector2Array(0.57, -0.16, 0.4, -0.11, 0.28, -0.04), PackedVector2Array(-0.82, 0.37, -0.61, 0.51, -0.65, 0.79, -0.76, 0.9, -0.94, 0.85, -1.02, 0.64, -0.95, 0.48, -0.82, 0.37), PackedVector2Array(0.82, 0.37, 0.61, 0.51, 0.65, 0.79, 0.76, 0.9, 0.94, 0.85, 1.02, 0.64, 0.95, 0.48, 0.82, 0.37)])
+fills = Array[PackedVector2Array]([PackedVector2Array(-0.12, 0.29, 0, 0.25, 0.12, 0.29, 0, 0.39)])
+
+[sub_resource type="Resource" id="JadeTailShell"]
+script = ExtResource("2")
+strokes = Array[PackedVector2Array]([PackedVector2Array(-0.98, 0.04, -0.88, 0.52, -0.59, 0.86, -0.13, 1, 0.37, 0.94, 0.76, 0.68, 0.98, 0.24, 0.98, -0.18, 0.81, -0.58, 0.45, -0.96, 0.54, -0.46, 0.71, -0.14, 0.66, 0.25, 0.39, 0.58, 0.02, 0.72, -0.39, 0.62, -0.73, 0.35, -0.98, 0.04), PackedVector2Array(0.54, -0.46, 0.7, -0.27, 0.78, -0.33, 0.87, -0.19, 0.98, -0.18), PackedVector2Array(-0.6, 0.7, -0.16, 0.88, 0.3, 0.84, 0.66, 0.59)])
+fills = Array[PackedVector2Array]([PackedVector2Array(-0.98, 0.04, -0.88, 0.52, -0.59, 0.86, -0.13, 1, 0.37, 0.94, 0.76, 0.68, 0.98, 0.24, 0.98, -0.18, 0.81, -0.58, 0.45, -0.96, 0.54, -0.46, 0.71, -0.14, 0.66, 0.25, 0.39, 0.58, 0.02, 0.72, -0.39, 0.62, -0.73, 0.35), PackedVector2Array(0.45, -0.96, 0.81, -0.58, 0.98, -0.18, 0.87, -0.19, 0.78, -0.33, 0.7, -0.27, 0.54, -0.46)])
+
+[sub_resource type="Resource" id="Fire"]
+script = ExtResource("2")
+fills = Array[PackedVector2Array]([PackedVector2Array(0, -0.96, 0.1, -0.64, 0.34, -0.34, 0.34, -0.03, 0.51, -0.17, 0.61, -0.55, 0.82, -0.19, 0.91, 0.19, 0.79, 0.53, 0.51, 0.76, 0.13, 0.88, -0.32, 0.83, -0.68, 0.62, -0.86, 0.29, -0.81, -0.08, -0.51, -0.47, -0.48, -0.14, -0.3, 0.09, -0.29, -0.33, -0.15, -0.59)])
+
+[sub_resource type="Resource" id="Fox"]
+script = ExtResource("2")
+strokes = Array[PackedVector2Array]([PackedVector2Array(-0.85, -0.95, -0.18, -0.54, 0.18, -0.54, 0.85, -0.95, 0.69, -0.04, 0.94, 0.21, 0.44, 0.65, 0, 0.97, -0.44, 0.65, -0.94, 0.21, -0.69, -0.04, -0.85, -0.95)])
+fills = Array[PackedVector2Array]([PackedVector2Array(-0.85, -0.95, -0.18, -0.54, 0.18, -0.54, 0.85, -0.95, 0.69, -0.04, 0.94, 0.21, 0.44, 0.65, 0, 0.97, -0.44, 0.65, -0.94, 0.21, -0.69, -0.04)])
+
+[sub_resource type="Resource" id="Jade"]
+script = ExtResource("2")
+strokes = Array[PackedVector2Array]([PackedVector2Array(0, -1, 0.7, -0.39, 0.58, 0.5, 0, 1, -0.58, 0.5, -0.7, -0.39, 0, -1), PackedVector2Array(0, -0.79, -0.24, -0.22, 0.23, 0.12, -0.1, 0.63), PackedVector2Array(-0.53, -0.34, 0.53, -0.34)])
+
+[sub_resource type="Resource" id="Sword"]
+script = ExtResource("2")
+fills = Array[PackedVector2Array]([PackedVector2Array(-0.32, 0.14, 0.36, -0.65, 0.75, -0.76, 0.64, -0.37, -0.14, 0.32), PackedVector2Array(-0.58, 0.09, -0.08, 0.58, -0.18, 0.67, -0.68, 0.2), PackedVector2Array(-0.41, 0.31, -0.29, 0.43, -0.62, 0.76, -0.75, 0.63)])
+
+[sub_resource type="Resource" id="Wind"]
+script = ExtResource("2")
+fills = Array[PackedVector2Array]([PackedVector2Array(-0.98, -0.27, -0.47, -0.31, -0.03, -0.45, 0.35, -0.8, 0.62, -0.85, 0.83, -0.71, 0.86, -0.46, 0.67, -0.24, 0.25, -0.08, -0.4, -0.04), PackedVector2Array(-0.73, 0.21, -0.2, 0.18, 0.3, 0.02, 0.67, -0.12, 0.88, -0.04, 0.92, 0.13, 0.74, 0.34, 0.34, 0.42, -0.23, 0.42), PackedVector2Array(-0.4, 0.59, 0.19, 0.57, 0.69, 0.43, 0.55, 0.72, 0.29, 0.84, -0.03, 0.82)])
+
+[sub_resource type="AtlasTexture" id="BowArt"]
+atlas = ExtResource("4")
+region = Rect2(88, 0, 88, 88)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="FireArt"]
+atlas = ExtResource("4")
+region = Rect2(264, 0, 88, 88)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="SwordArt"]
+atlas = ExtResource("4")
+region = Rect2(0, 0, 88, 88)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="WindArt"]
+atlas = ExtResource("4")
+region = Rect2(176, 0, 88, 88)
+filter_clip = true
 
 [resource]
 script = ExtResource("1")
+glyphs = Dictionary[StringName, ExtResource("2")]({
+&"bow": SubResource("Bow"),
+&"energy_fox_cream": SubResource("EnergyFoxCream"),
+&"energy_fox_head": SubResource("EnergyFoxHead"),
+&"energy_fox_ink": SubResource("EnergyFoxInk"),
+&"energy_shell": SubResource("JadeTailShell"),
+&"flame_breath": SubResource("Fire"),
+&"health": SubResource("Fox"),
+&"jade": SubResource("Jade"),
+&"sword": SubResource("Sword"),
+&"wind_blast": SubResource("Wind")
+})
+texture_overrides = Dictionary[StringName, Texture2D]({
+&"bow": SubResource("BowArt"),
+&"flame_breath": SubResource("FireArt"),
+&"sword": SubResource("SwordArt"),
+&"wind_blast": SubResource("WindArt")
+})
 margin = Vector2(21, 17)
 health_offset = Vector2(111, 0)
-currency_offset = Vector2(111, 99)
-skills_offset = Vector2(111, 33)
+currency_offset = Vector2(111, 27)
+skills_offset = Vector2(111, 57)
 layout_gap = 5.0
 health_icon_size = Vector2(22, 22)
 health_spacing = 5
 energy_size = Vector2(104, 114)
 energy_diameter = 68.0
 energy_rim = 5.0
-energy_font_size = 12
-energy_fallback = Color(0.50, 0.71, 0.62, 1)
-energy_frame_texture = ExtResource("3")
-energy_frame_vessel_uv = Rect2(0.32692308, 0.33663366, 0.48076923, 0.4950495)
-energy_facet_strength = 0.12
 energy_shell_color = Color(0.53, 0.28, 0.17, 1)
 energy_shell_accent = Color(0.84, 0.57, 0.34, 1)
-skill_radius = 20.0
+energy_label = ""
+energy_pip_band = 0.0
+energy_frame_texture = ExtResource("3")
+energy_frame_vessel_uv = Rect2(0.32692307, 0.33663365, 0.48076922, 0.4950495)
+energy_facet_strength = 0.12
+energy_fallback = Color(0.5, 0.71, 0.62, 1)
+skill_radius = 21.0
 skill_step = 49.0
-skill_anchors = {&"sword": Vector2(0, 0), &"bow": Vector2(1, 0), &"wind_blast": Vector2(2, 0), &"flame_breath": Vector2(3, 0)}
-skill_icon_scale = 0.74
-skill_shared_panel = true
-skill_font = SubResource("SkillFont")
-skill_icon_colors = {&"sword": Color(0.96, 0.86, 0.68, 1), &"bow": Color(0.94, 0.91, 0.80, 1), &"wind_blast": Color(0.67, 0.88, 0.84, 1), &"flame_breath": Color(1, 0.70, 0.47, 1)}
+skill_anchors = Dictionary[StringName, Vector2]({
+&"bow": Vector2(1, 0),
+&"flame_breath": Vector2(3, 0),
+&"sword": Vector2(0, 0),
+&"wind_blast": Vector2(2, 0)
+})
+skill_icon_scale = 1.04
+skill_icon_colors = Dictionary[StringName, Color]({
+&"bow": Color(0.94, 0.91, 0.8, 1),
+&"flame_breath": Color(1, 0.7, 0.47, 1),
+&"sword": Color(0.96, 0.86, 0.68, 1),
+&"wind_blast": Color(0.67, 0.88, 0.84, 1)
+})
+skill_input_tiles = true
+skill_fill = Color(0.145, 0.192, 0.22, 1)
+skill_selected_fill = Color(0.12, 0.16, 0.15, 0.92)
 skill_badge_anchor = Vector2(0, 1.36)
 skill_badge_height = 18.0
 skill_key_font = 12
 skill_badge_padding = 10.0
-skill_fill = Color(0.114, 0.165, 0.188, 1)
-skill_selected_fill = Color(0.12, 0.16, 0.15, 0.92)
-currency_font_size = 16
-currency_icon_size = Vector2(12, 16)
-glyphs = {&"sword":SubResource("Sword"), &"bow":SubResource("Bow"), &"wind_blast":SubResource("Wind"), &"flame_breath":SubResource("Fire"), &"health":SubResource("Fox"), &"jade":SubResource("Jade"), &"energy_shell":SubResource("JadeTailShell"), &"energy_fox_head":SubResource("EnergyFoxHead"), &"energy_fox_cream":SubResource("EnergyFoxCream"), &"energy_fox_ink":SubResource("EnergyFoxInk")}
+element_badge_anchor = Vector2(0.82, -0.76)
+element_badge_radius = 2.5
+currency_icon_size = Vector2(17, 22)
+currency_font_size = 20

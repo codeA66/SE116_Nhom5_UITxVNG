@@ -1,0 +1,205 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/_base/skill_shrine/skill_shrine.gd" id="1_shrine"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/ability_pickup.tscn" id="2_book"]
+[ext_resource type="Script" path="res://levels/_base/skill_shrine/shrine_aura.gd" id="3_aura"]
+[ext_resource type="Shader" path="res://levels/_base/skill_shrine/shrine_mood.gdshader" id="4_mood"]
+[ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="5_fsm"]
+[ext_resource type="Script" path="res://levels/_base/skill_shrine/states/shrine_idle.gd" id="6_idle"]
+[ext_resource type="Script" path="res://levels/_base/skill_shrine/states/shrine_approach.gd" id="7_approach"]
+[ext_resource type="Script" path="res://levels/_base/skill_shrine/states/shrine_ceremony.gd" id="8_ceremony"]
+[ext_resource type="Script" path="res://levels/_base/skill_shrine/states/shrine_spent.gd" id="9_spent"]
+[ext_resource type="Script" path="res://levels/_base/skill_shrine/states/shrine_dormant.gd" id="10_dormant"]
+
+[sub_resource type="StandardMaterial3D" id="Stone"]
+albedo_color = Color(0.42, 0.47, 0.52, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="StoneDark"]
+albedo_color = Color(0.3, 0.34, 0.39, 1)
+roughness = 0.95
+
+[sub_resource type="CylinderMesh" id="BaseMesh"]
+material = SubResource("StoneDark")
+top_radius = 1.05
+bottom_radius = 1.15
+height = 0.25
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="StepMesh"]
+material = SubResource("Stone")
+top_radius = 0.8
+bottom_radius = 0.85
+height = 0.15
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="ColumnMesh"]
+material = SubResource("Stone")
+top_radius = 0.42
+bottom_radius = 0.52
+height = 0.62
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="TopMesh"]
+material = SubResource("StoneDark")
+top_radius = 0.72
+bottom_radius = 0.6
+height = 0.14
+radial_segments = 8
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="RuneGlow"]
+shading_mode = 0
+albedo_color = Color(0.75, 0.95, 1, 1)
+
+[sub_resource type="TorusMesh" id="RuneRing"]
+material = SubResource("RuneGlow")
+inner_radius = 0.7
+outer_radius = 0.76
+rings = 32
+ring_segments = 6
+
+[sub_resource type="CylinderShape3D" id="PedestalShape"]
+height = 1.2
+radius = 0.95
+
+[sub_resource type="StandardMaterial3D" id="MoteMat"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="MoteMesh"]
+material = SubResource("MoteMat")
+size = Vector2(0.09, 0.05)
+
+[sub_resource type="Curve" id="MoteScale"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.2, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="MoteFade"]
+offsets = PackedFloat32Array(0, 0.2, 0.8, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.9, 1, 1, 1, 0.9, 1, 1, 1, 0)
+
+[sub_resource type="CylinderShape3D" id="ApproachShape"]
+height = 4.0
+radius = 5.0
+
+[sub_resource type="ShaderMaterial" id="MoodMat"]
+shader = ExtResource("4_mood")
+
+[node name="SkillShrine" type="Node3D"]
+script = ExtResource("1_shrine")
+
+[node name="Pedestal" type="StaticBody3D" parent="."]
+
+[node name="Base" type="MeshInstance3D" parent="Pedestal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, 0)
+mesh = SubResource("BaseMesh")
+
+[node name="Step" type="MeshInstance3D" parent="Pedestal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.325, 0)
+mesh = SubResource("StepMesh")
+
+[node name="Column" type="MeshInstance3D" parent="Pedestal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.71, 0)
+mesh = SubResource("ColumnMesh")
+
+[node name="Top" type="MeshInstance3D" parent="Pedestal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.09, 0)
+mesh = SubResource("TopMesh")
+
+[node name="RuneRing" type="MeshInstance3D" parent="Pedestal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+cast_shadow = 0
+mesh = SubResource("RuneRing")
+
+[node name="Collision" type="CollisionShape3D" parent="Pedestal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("PedestalShape")
+
+[node name="Book" parent="." instance=ExtResource("2_book")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+
+[node name="Aura" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+cast_shadow = 0
+script = ExtResource("3_aura")
+
+[node name="Drift" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+emitting = false
+amount = 36
+lifetime = 1.8
+mesh = SubResource("MoteMesh")
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 1.2
+emission_ring_radius = 4.6
+emission_ring_inner_radius = 3.4
+gravity = Vector3(0, 0.6, 0)
+radial_accel_min = -3.2
+radial_accel_max = -2.2
+tangential_accel_min = 1.0
+tangential_accel_max = 1.8
+scale_amount_curve = SubResource("MoteScale")
+color_ramp = SubResource("MoteFade")
+
+[node name="Beam" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 6, 0)
+light_energy = 2.0
+spot_range = 9.0
+spot_angle = 18.0
+spot_angle_attenuation = 0.6
+
+[node name="Glow" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+light_energy = 0.8
+omni_range = 4.0
+
+[node name="ApproachArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="ApproachArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("ApproachShape")
+
+[node name="Mood" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Screen" type="ColorRect" parent="Mood"]
+visible = false
+material = SubResource("MoodMat")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("5_fsm")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("6_idle")
+
+[node name="Approach" type="Node" parent="StateMachine"]
+script = ExtResource("7_approach")
+
+[node name="Ceremony" type="Node" parent="StateMachine"]
+script = ExtResource("8_ceremony")
+
+[node name="Spent" type="Node" parent="StateMachine"]
+script = ExtResource("9_spent")
+
+[node name="Dormant" type="Node" parent="StateMachine"]
+script = ExtResource("10_dormant")

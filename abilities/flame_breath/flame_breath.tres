@@ -3,10 +3,10 @@
 [ext_resource type="Script" uid="uid://cupw6oyebi8t3" path="res://abilities/flame_breath/flame_breath_data.gd" id="1_data"]
 [ext_resource type="Script" uid="uid://bco0nr7ogmwo" path="res://entities/_base/data/attack_data.gd" id="2_attack"]
 [ext_resource type="Texture2D" uid="uid://bx25k2bdi8jfk" path="res://ui/hud/icons/fire.svg" id="3_icon"]
+[ext_resource type="Script" uid="uid://bejn71tj23dei" path="res://resources/player/items/_base/item_cost.gd" id="cost_script"]
 [ext_resource type="Material" path="res://resources/feedback/ability_acquire/effects/fire_breath.tres" id="fx_fire"]
-[ext_resource type="Script" path="res://resources/player/items/_base/skill_upgrade_data.gd" id="up_script"]
-[ext_resource type="Script" path="res://resources/player/items/_base/item_cost.gd" id="cost_script"]
 [ext_resource type="Resource" path="res://resources/player/items/upgrades/fire_seal.tres" id="seal_fire"]
+[ext_resource type="Script" uid="uid://cqf3owa675hcj" path="res://resources/player/items/_base/skill_upgrade_data.gd" id="up_script"]
 
 [sub_resource type="Resource" id="FlameAttack"]
 script = ExtResource("2_attack")
@@ -45,13 +45,13 @@ state = &"FlameBreath"
 id = &"flame_breath"
 display_name = "Phun lửa"
 icon = ExtResource("3_icon")
-illustration = SubResource("AcquireIllustration")
 accent_color = Color(1, 0.47843, 0.03529, 1)
 description = "Phun lửa để đốt cháy mục tiêu trước mặt."
+illustration = SubResource("AcquireIllustration")
 acquire_verb = "Đã thức tỉnh"
 acquire_prompt = "Nhấn {key} để phun lửa."
 illustration_animation = &"Attack_Melee"
 illustration_time = 0.58
 illustration_effect = ExtResource("fx_fire")
-energy_cost = 1
 upgrades = Array[ExtResource("up_script")]([SubResource("Upgrade1"), SubResource("Upgrade2")])
+energy_cost = 1

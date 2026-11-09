@@ -22,8 +22,12 @@ var held: bool = false:
 		queue_redraw()
 
 var _focus_tween: Tween
+var _fx_tween: Tween
 ## Độ phóng hiện tại khi vẽ. Phóng trong _draw thay vì đổi scale: Container đặt lại scale của ô con mỗi lần xếp
 var _zoom: float = 1.0
+## Độ lệch ngang khi rung (bị từ chối) và độ sáng lóe (vừa lên cấp / vừa đeo); vẽ trong _draw, không đổi position
+var _shake: float = 0.0
+var _flash: float = 0.0
 
 
 func _ready() -> void:
@@ -45,6 +49,22 @@ func get_detail() -> DetailEntry:
 	return null
 
 
+## Rung ngang tắt dần: báo thao tác bị từ chối (không đủ ô khắc, sai khu...)
+func shake() -> void:
+	if style == null:
+		return
+	_restart_fx()
+	_fx_tween.tween_method(_set_shake, 1.0, 0.0, style.shake_time)
+
+
+## Lóe sáng rồi tắt dần: báo vừa lên cấp / vừa đeo
+func flash() -> void:
+	if style == null:
+		return
+	_restart_fx()
+	_fx_tween.tween_method(_set_flash, 1.0, 0.0, style.level_flash_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+
 func _gui_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"ui_accept"):
 		activated.emit(self)
@@ -61,8 +81,13 @@ func _draw() -> void:
 		return
 	var rect := Rect2(Vector2.ZERO, size)
 	var center := size * 0.5
-	draw_set_transform(center - center * _zoom, 0.0, Vector2.ONE * _zoom)
+	# Rung = sóng sin tắt dần theo _shake (1 -> 0)
+	var offset := Vector2(sin(_shake * TAU * 3.0) * style.shake_strength * _shake, 0.0)
+	draw_set_transform(center - center * _zoom + offset, 0.0, Vector2.ONE * _zoom)
 	_draw_content(rect)
+	if _flash > 0.0:
+		draw_rect(rect.grow(2.0 + 6.0 * (1.0 - _flash)), Color(style.ink, 0.55 * _flash), false, 2.0, true)
+		draw_rect(rect, Color(style.ink, 0.12 * _flash))
 	if has_focus() or held:
 		_draw_brackets(rect, style.ink if held else style.ornament)
 
@@ -117,4 +142,22 @@ func _on_focus_changed(is_focused: bool) -> void:
 
 func _set_zoom(value: float) -> void:
 	_zoom = value
+	queue_redraw()
+
+
+func _restart_fx() -> void:
+	if _fx_tween and _fx_tween.is_valid():
+		_fx_tween.kill()
+	_shake = 0.0
+	_flash = 0.0
+	_fx_tween = create_tween()
+
+
+func _set_shake(value: float) -> void:
+	_shake = value
+	queue_redraw()
+
+
+func _set_flash(value: float) -> void:
+	_flash = value
 	queue_redraw()

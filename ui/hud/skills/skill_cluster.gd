@@ -10,6 +10,7 @@ var _slots: Array[Slot] = []
 var _panel_outline: PackedVector2Array = PackedVector2Array()
 var _panel_height: float = 0.0
 var _divider_x: float = NAN
+var _layout_scale: float = 1.0
 @onready var _binding_refresh: Timer = $BindingRefresh
 ## Cache con trực tiếp một lần; đợi Player.ready trước khi lấy state_machine.
 func _ready() -> void:
@@ -56,8 +57,16 @@ func apply_style() -> void:
 	for slot_node: Slot in _slots:
 		slot_node.style = style
 		slot_node.apply_style()
+		slot_node.set_binding_space(step/style.get_active_scale(),_layout_scale)
 		var anchor: Vector2 = style.skill_anchors.get(slot_node.glyph_id,Vector2.ZERO)
 		slot_node.position = first_center + anchor * step - slot_node.size * 0.5
+## Chỉ kiểm tra lại ngưỡng đọc khi bố cục đổi, không dò mỗi frame.
+func set_layout_scale(value: float) -> void:
+	if is_equal_approx(_layout_scale,value): return
+	_layout_scale = value
+	var width: float = style.get_skill_step()/style.get_active_scale()
+	for slot_node: Slot in _slots:
+		slot_node.set_binding_space(width,_layout_scale)
 ## Một nền chung để các dấu hồi chiêu và trang bị nổi hơn viền từng ô.
 func _draw() -> void:
 	if not style.skill_shared_panel or _panel_outline.size() < 3: return

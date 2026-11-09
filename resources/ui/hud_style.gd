@@ -16,6 +16,8 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var line_width: float = 1.25
 @export var line_limits: Vector2 = Vector2(0.5,4.0)
 @export var minimum_duration: float = 0.001
+@export var text_outline_color: Color = Color("#141d24")
+@export_range(0,8) var text_outline_size: int = 3
 @export var glyphs: Dictionary[StringName,Glyph] = {}
 @export var texture_overrides: Dictionary[StringName,Texture2D] = {}
 @export_group("Layout")
@@ -43,6 +45,7 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var health_low_threshold: int = 1
 @export var health_pulse_speed: float = 4.2
 @export var health_pulse_amount: float = 0.25
+@export var health_empty_fill: Color = Color("#263039")
 @export var health_full_texture: Texture2D
 @export var health_empty_texture: Texture2D
 @export var low_health_strength: float = 0.30
@@ -84,6 +87,11 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var energy_shake_speed: float = 45.0
 @export var energy_label: String = "LINH LỰC"
 @export var energy_font_size: int = 12
+@export var energy_pip_diameter: float = 6.0
+@export var energy_pip_min_diameter: float = 3.0
+@export var energy_pip_gap: float = 2.0
+@export var energy_pip_band: float = 13.0
+@export_range(1,12) var energy_pip_limit: int = 12
 @export var energy_frame_texture: Texture2D
 @export var energy_frame_vessel_uv: Rect2
 @export_range(0,0.3) var energy_facet_strength: float = 0.0
@@ -101,6 +109,10 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var skill_icon_scale: float = 0.65
 @export var skill_icon_colors: Dictionary[StringName,Color] = {}
 @export var skill_shared_panel: bool = false
+@export var skill_input_tiles: bool = false
+@export_range(0.05,0.8) var skill_tile_chamfer: float = 0.28
+@export var skill_tile_border: Color = Color("#75818a")
+@export var skill_press_fill: Color = Color("#d8e3d1")
 @export var skill_divider_column: float = 1.5
 @export var skill_icon_rotations: Dictionary[StringName,float] = {}
 @export var skill_font: Font
@@ -119,6 +131,9 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var skill_badge_anchor: Vector2 = Vector2(0,0.79)
 @export var skill_badge_height: float = 15.0
 @export var skill_key_font: int = 10
+@export var skill_label_min_size: float = 9.0
+@export var skill_mouse_size: Vector2 = Vector2(11,16)
+@export var skill_mouse_split: float = 0.46
 @export var skill_cooldown_font: int = 12
 @export var skill_badge_padding: float = 7.0
 @export var element_badge_anchor: Vector2 = Vector2(0.70,-0.15)
@@ -130,6 +145,7 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var currency_count_time: float = 0.45
 @export var currency_pop_time: float = 0.25
 @export var currency_pop_scale: float = 1.22
+@export var currency_pop_tint: Color = Color("#ffdf9f")
 @export var currency_show_time: float = 2.2
 @export var currency_appear_time: float = 0.12
 @export var currency_fade_time: float = 0.30
@@ -147,6 +163,37 @@ const Glyph = preload("res://ui/hud/skills/glyphs/hud_glyph.gd")
 @export var prompt_fade_time: float = 0.12
 @export var prompt_slide: float = 7.0
 @export var prompt_text_width: float = 180.0
+@export_group("Banana weapon card")
+@export var banana_card_rect: Rect2 = Rect2(24,-132,368,108)
+@export var banana_card_margin: Vector4 = Vector4(14,10,20,12)
+@export var banana_picture_size: Vector2 = Vector2(120,78)
+@export var banana_row_gap: int = 14
+@export var banana_column_gap: int = 3
+@export var banana_ammo_gap: int = 12
+@export var banana_panel_fill: Color = Color("#101c28ed")
+@export var banana_panel_border: Color = Color("#66869a")
+@export var banana_panel_equipped_border: Color = Color("#f3ca60")
+@export var banana_panel_radius: int = 16
+@export var banana_border_width: int = 2
+@export var banana_badge_rect: Rect2 = Rect2(-25,-13,38,38)
+@export var banana_badge_fill: Color = Color("#183746")
+@export var banana_badge_border: Color = Color("#7dddff")
+@export var banana_badge_radius: int = 20
+@export var banana_title: String = "bAKa-47"
+@export var banana_ammo_caption: String = "ĐẠN"
+@export var banana_key_label: String = "V"
+@export var banana_ammo_format: String = "%02d"
+@export var banana_equipped_text: String = "ĐANG TRANG BỊ"
+@export var banana_unequipped_text: String = "CHƯA TRANG BỊ"
+@export var banana_title_font: int = 23
+@export var banana_caption_font: int = 12
+@export var banana_amount_font: int = 26
+@export var banana_status_font: int = 11
+@export var banana_key_font: int = 20
+@export var banana_title_tint: Color = Color("#ffe487")
+@export var banana_caption_tint: Color = Color("#9eafbb")
+@export var banana_equipped_tint: Color = Color("#93efbc")
+@export var banana_empty_tint: Color = Color("#ff8170")
 ## Nét vẫn hữu hạn khi nhập nhầm giá trị lớn; giới hạn cũng thuộc style.
 func stroke_width() -> float:
 	var lower: float = maxf(minf(line_limits.x,line_limits.y),0.1)

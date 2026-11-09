@@ -134,7 +134,8 @@ func _physics_process(delta: float) -> void:
 		impacted.emit(hit_position - _velocity.normalized() * 0.3, _velocity.normalized())
 		_traveled += global_position.distance_to(hit_position)
 		global_position = hit_position
-		if impact_scale > 0.0:
+		# Nguyên tố có VFX riêng (Cung Lửa...) tắt lớp mặc định thì tự lo cả hình trúng
+		if impact_scale > 0.0 and _default_visual_enabled:
 			if impact_scene:
 				CombatFx.spawn_arrow_impact_scene(impact_scene, hit_position, _velocity, impact_scale)
 			else:
@@ -206,7 +207,7 @@ func _set_trail_length(length: float) -> void:
 	_trail.transform = Transform3D(Basis(Vector3.RIGHT, Vector3.BACK * l, Vector3.DOWN), Vector3(0.0, 0.0, -trail_head_offset - l * 0.5))
 
 
-## Nguyên tố có VFX riêng chỉ thay lớp vệt/hạt mặc định; không đổi model hoặc đạn đạo.
+## Nguyên tố có VFX riêng thay lớp vệt/hạt/hình trúng mặc định; không đổi model hoặc đạn đạo.
 func set_default_visual_enabled(enabled: bool) -> void:
 	_default_visual_enabled = enabled
 	_set_trail_length(_visual_trail_length)

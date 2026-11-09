@@ -9,6 +9,9 @@ const ACQUIRE_DATA: Resource = preload("res://resources/feedback/ability_acquire
 var _style: InventoryStyle
 ## Nhãn đoạn mô tả dựng sẵn, dùng lại khi đổi ô (không tạo node mới mỗi lần chọn)
 var _section_labels: Array[Label] = []
+## Khối riêng của ô đang hiện (xóa khi đổi ô)
+var _spawned_blocks: Array[Control] = []
+
 
 @onready var _art_box: Control = $ArtBox
 @onready var _illustration: AbilityIllustration = $ArtBox/Illustration
@@ -18,6 +21,7 @@ var _section_labels: Array[Label] = []
 @onready var _rule: OrnamentDivider = $Rule
 @onready var _scroll: ScrollContainer = $Scroll
 @onready var _sections: VBoxContainer = $Scroll/Content/Sections
+
 @onready var _lore: Label = $Scroll/Content/Lore
 @onready var _hint: Label = $Hint
 
@@ -49,16 +53,7 @@ func show_entry(entry: DetailEntry) -> void:
 	_subtitle.visible = not _subtitle.text.is_empty()
 	_rule.visible = not empty
 	_show_art(entry)
-	var count := 0 if empty else entry.sections.size()
-	_ensure_section_labels(count)
-	for index in _section_labels.size():
-		var label := _section_labels[index]
-		label.visible = index < count
-		if index < count:
-			var section: Dictionary = entry.sections[index]
-			var heading := String(section["heading"])
-			label.text = String(section["text"]) if heading.is_empty() else "%s\n%s" % [heading.to_upper(), section["text"]]
-			label.add_theme_color_override(&"font_color", _style.warning if section["warning"] else _style.ink)
+	_show_sections(entry)
 	_lore.text = "" if empty else entry.lore
 	_lore.visible = not _lore.text.is_empty()
 	_hint.text = "" if empty else entry.hint
@@ -88,6 +83,41 @@ func _show_art(entry: DetailEntry) -> void:
 	_art_box.visible = use_figure or texture != null
 	if entry:
 		_art_icon.modulate = entry.accent
+
+
+## Đoạn chữ dùng lại nhãn dựng sẵn; khối riêng (lộ trình nâng cấp...) được chèn đúng thứ tự giữa các đoạn.
+## Khối của ô cũ bị xóa khi đổi ô (chỉ chạy khi đổi ô, không chạy mỗi frame)
+func _show_sections(entry: DetailEntry) -> void:
+	for old: Control in _spawned_blocks:
+		if is_instance_valid(old):
+			old.queue_free()
+	_spawned_blocks.clear()
+	var sections: Array[Dictionary] = []
+	if entry:
+		sections = entry.sections
+	var text_count := 0
+	for section: Dictionary in sections:
+		if not section.has("block"):
+			text_count += 1
+	_ensure_section_labels(text_count)
+	var label_index := 0
+	for order in sections.size():
+		var section: Dictionary = sections[order]
+		if section.has("block"):
+			var block: Control = section["block"]
+			_sections.add_child(block)
+			_sections.move_child(block, order)
+			_spawned_blocks.append(block)
+			continue
+		var label := _section_labels[label_index]
+		label_index += 1
+		label.visible = true
+		_sections.move_child(label, order)
+		var heading := String(section["heading"])
+		label.text = String(section["text"]) if heading.is_empty() else "%s\n%s" % [heading.to_upper(), section["text"]]
+		label.add_theme_color_override(&"font_color", _style.warning if section["warning"] else _style.ink)
+	for index in range(label_index, _section_labels.size()):
+		_section_labels[index].visible = false
 
 
 func _ensure_section_labels(count: int) -> void:

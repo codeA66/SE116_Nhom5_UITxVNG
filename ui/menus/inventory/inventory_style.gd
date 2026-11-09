@@ -13,6 +13,8 @@ extends Resource
 @export var tile_border: Color = Color(0.5, 0.52, 0.52, 0.55)
 ## Màu báo lỗi / không đủ điều kiện
 @export var warning: Color = Color(0.92, 0.45, 0.38)
+## Màu "đủ điều kiện" (đủ vật phẩm nâng cấp)
+@export var success: Color = Color(0.62, 0.86, 0.66)
 ## Lớp tối phủ lên cảnh game
 @export var backdrop_dim: float = 0.55
 
@@ -37,7 +39,16 @@ extends Resource
 @export var charm_tile_size: Vector2 = Vector2(84, 84)
 ## Hình minh họa nguyên tố trong bảng chi tiết (cao, px)
 @export var detail_art_height: float = 200.0
-## Ô đang chọn phóng to bấy nhiêu lần
+## Nửa chiều cao viên ngọc cấp trên thẻ nguyên tố / trong lộ trình nâng cấp (px)
+@export var level_gem_size: float = 7.5
+@export var path_gem_size: float = 9.0
+## Biểu tượng vật phẩm cần trong lộ trình nâng cấp (px)
+@export var path_icon_size: float = 28.0
+## Ô bùa trong hàng "đang đeo"
+@export var equipped_tile_size: Vector2 = Vector2(92, 92)
+## Số cột lưới bùa
+@export var charm_columns: int = 6
+## Ô phóng to bấy nhiêu lần khi đang chọn
 @export_range(1.0, 1.3, 0.01) var focus_scale: float = 1.08
 
 @export_group("Nhịp (giây)")
@@ -47,6 +58,15 @@ extends Resource
 @export var page_slide: float = 40.0
 @export var page_time: float = 0.22
 @export var focus_time: float = 0.12
+## Bùa bay giữa lưới và hàng đang đeo
+@export var charm_fly_time: float = 0.32
+## Ô khắc lần lượt sáng lên: khoảng cách giữa hai ô
+@export var notch_step_time: float = 0.07
+## Ô rung khi không đổi được (giây, biên độ px)
+@export var shake_time: float = 0.3
+@export var shake_strength: float = 6.0
+## Thẻ nguyên tố lóe sáng khi vừa lên cấp
+@export var level_flash_time: float = 0.9
 
 @export_group("Âm thanh")
 ## Để trống = chưa có file

@@ -27,7 +27,7 @@
 [ext_resource type="PackedScene" path="res://components/feedback/slash_trail/slash_trail.tscn" id="32_trail"]
 [ext_resource type="PackedScene" path="res://ui/hud/health/feedback/hurt_vignette.tscn" id="33_vignette"]
 [ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_3.tres" id="34_slash3"]
-[ext_resource type="PackedScene" path="res://assets/vfx/wind/blast/wind_blast_cone.tscn" id="35_windcone"]
+[ext_resource type="PackedScene" path="res://assets/vfx/wind/blast/gust/wind_blast_gust.tscn" id="35_windcone"]
 [ext_resource type="PackedScene" path="res://components/feedback/movement_dust/movement_dust.tscn" id="36_dust"]
 [ext_resource type="Script" path="res://components/core/combo_tracker/combo_tracker.gd" id="37_combo"]
 [ext_resource type="Script" path="res://components/core/energy/energy_component.gd" id="38_energy"]
@@ -164,6 +164,10 @@ shape = SubResource("SphereShape3D_interact")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
+[node name="HurtVignette" parent="HUD" node_paths=PackedStringArray("hurtbox", "health") instance=ExtResource("33_vignette")]
+health = NodePath("../../HealthComponent")
+hurtbox = NodePath("../../HurtboxComponent")
+
 [node name="GameHud" parent="HUD" node_paths=PackedStringArray("energy_bar", "currency_counter") instance=ExtResource("28_gamehud")]
 energy_bar = NodePath("../EnergyBar")
 currency_counter = NodePath("../CurrencyCounter")
@@ -250,10 +254,6 @@ data = ExtResource("31_feedbackdata")
 hitbox = NodePath("../Model/Hitbox")
 follow = NodePath("../Model")
 finisher_attack = ExtResource("34_slash3")
-
-[node name="HurtVignette" parent="HUD" node_paths=PackedStringArray("hurtbox", "health") instance=ExtResource("33_vignette")]
-health = NodePath("../../HealthComponent")
-hurtbox = NodePath("../../HurtboxComponent")
 
 [node name="MovementDust" parent="." node_paths=PackedStringArray("body", "state_machine") instance=ExtResource("36_dust")]
 body = NodePath("..")

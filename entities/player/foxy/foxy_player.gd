@@ -96,7 +96,9 @@ var _face_blink_timer: float = 0.0
 
 func _ready() -> void:
 	var imported := _find_imported_player()
-	_apply_toon_materials(model)
+	# Chỉ đổi toon cho thân cáo (Model/Visual): dưới Model còn pool hiệu ứng (gió, lửa...) có material riêng,
+	# đè toon lên đó làm sai màu và để lại material đã giải phóng (lỗi "material is null")
+	_apply_toon_materials(model.get_node_or_null(^"Visual") if model.has_node(^"Visual") else model)
 	_face = _find_face(model)
 	if _face:
 		_blink_shape = _face.find_blend_shape_by_name(BLINK_SHAPE)

@@ -1,0 +1,78 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/npcs/_base/npc.tscn" id="1_npc"]
+[ext_resource type="PackedScene" path="res://assets/characters/npcs/ferry_attendant/ferry_attendant.glb" id="2_model"]
+[ext_resource type="Script" path="res://entities/npcs/ferry_attendant/ferry_fare_service.gd" id="3_service"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="4_dialogue"]
+[ext_resource type="Material" path="res://assets/models/map_wind/wind_palace_v1/palace_vertex_color.tres" id="5_palette"]
+
+[sub_resource type="Resource" id="Greeting"]
+script = ExtResource("4_dialogue")
+opens_service = true
+
+[sub_resource type="CapsuleShape3D" id="Body"]
+radius = 0.38
+height = 1.85
+
+[sub_resource type="StandardMaterial3D" id="LanternSignal"]
+resource_local_to_scene = true
+vertex_color_use_as_albedo = true
+roughness = 0.82
+emission_enabled = true
+emission = Color(0.95, 0.57, 0.19, 1)
+emission_energy_multiplier = 0.7
+
+[sub_resource type="Animation" id="LanternFlash"]
+resource_name = "LanternFlash"
+length = 0.36
+tracks/0/type = "value"
+tracks/0/path = NodePath("Visual/Model/FerrymanRig/Skeleton3D/LanternGlass:material_override:emission_energy_multiplier")
+tracks/0/interp = 1
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.045, 0.17, 0.36),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [0.7, 2.5, 1.35, 0.7]
+}
+
+[sub_resource type="AnimationLibrary" id="SignalAnimations"]
+_data = {&"LanternFlash": SubResource("LanternFlash")}
+
+[node name="FerryAttendant" node_paths=PackedStringArray("animation_player") instance=ExtResource("1_npc")]
+display_name = "Người Giữ Bến"
+dialogues = Array[ExtResource("4_dialogue")]([SubResource("Greeting")])
+animation_player = NodePath("Visual/Model/AnimationPlayer")
+idle_animation = &"Idle"
+talk_animation = &"Talk"
+talk_bounce = 0.0
+
+[node name="Model" parent="Visual" index="0" instance=ExtResource("2_model")]
+
+[node name="KeeperBody" parent="Visual/Model/FerrymanRig/Skeleton3D" index="0"]
+material_override = ExtResource("5_palette")
+
+[node name="LanternFrame" parent="Visual/Model/FerrymanRig/Skeleton3D" index="1"]
+material_override = ExtResource("5_palette")
+
+[node name="LanternGlass" parent="Visual/Model/FerrymanRig/Skeleton3D" index="2"]
+material_override = SubResource("LanternSignal")
+
+[node name="AnimationPlayer" parent="Visual/Model" index="1"]
+playback_default_blend_time = 0.16
+
+[node name="CollisionShape3D" parent="." index="2"]
+position = Vector3(0, 0.925, 0)
+shape = SubResource("Body")
+
+[node name="FerryFareService" type="Node" parent="."]
+script = ExtResource("3_service")
+keep_dialogue_open = true
+call_delay = 0.93
+
+[node name="LanternVfx" type="AnimationPlayer" parent="."]
+libraries = {&"": SubResource("SignalAnimations")}
+
+[connection signal="activated" from="FerryFareService" to="LanternVfx" method="play" binds=[&"LanternFlash"]]
+
+[editable path="Visual/Model"]
+

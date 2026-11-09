@@ -40,6 +40,9 @@ func apply_style() -> void:
 	_action_label.custom_minimum_size.x = clampf(style.prompt_text_width,20,get_viewport_rect().size.x*0.5)
 	_key_label.add_theme_color_override(&"font_color",style.gold)
 	_action_label.add_theme_color_override(&"font_color",style.ivory)
+	for label: Label in [_key_label,_action_label]:
+		label.add_theme_color_override(&"font_outline_color",style.text_outline_color)
+		label.add_theme_constant_override(&"outline_size",clampi(style.text_outline_size,0,8))
 	_key_label.text = _get_key_text()
 	queue_redraw()
 ## Vị trí cần cập nhật theo camera; không tìm group/overlap hoặc dựng lại UI trong vòng này.
@@ -70,6 +73,10 @@ func _on_focus_changed(target: InteractableComponent) -> void:
 		_action_label.text = target.prompt_text.to_upper()
 		_key_label.text = _get_key_text()
 		reset_size()
+	elif get_tree().paused:
+		# Game đang dừng (trình diễn nhận kỹ năng...) thì _process không chạy để mờ dần: ẩn ngay
+		_alpha = 0.0
+		hide()
 	set_process(is_instance_valid(target) or _alpha>0.0)
 ## Không gán cứng phím để người chơi đổi binding vẫn có prompt đúng.
 func _get_key_text() -> String:

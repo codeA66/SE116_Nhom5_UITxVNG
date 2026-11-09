@@ -28,6 +28,7 @@ active_states = Array[StringName]([&"WindBlast"])
 [node name="SwordSlot" type="Control" parent="."]
 mouse_filter = 2
 script = ExtResource("2")
+show_element_badge = false
 input_action = &"attack"
 glyph_id = &"sword"
 active_states = Array[StringName]([&"Attack"])

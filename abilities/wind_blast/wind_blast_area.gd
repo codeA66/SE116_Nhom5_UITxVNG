@@ -1,6 +1,7 @@
 class_name WindBlastArea
 extends Area3D
-## Vùng gió của kỹ năng thổi: đẩy mọi WindReceiverComponent trong vùng theo hướng nhân vật đang nhìn.
+## Vùng gió của kỹ năng thổi: đẩy mọi WindReceiverComponent trong vùng theo hướng nhân vật đang nhìn,
+## và gây sát thương (WindBlastData.damage) cho chủ của bộ nhận gió nếu có HurtboxComponent.
 ## Mặc định tắt, state bật trong lúc thổi. Mỗi lần thổi, một vật chỉ bị đẩy một lần.
 ## Thứ gì muốn phản ứng với gió (quái, thuyền, lửa...) chỉ cần có WindReceiverComponent.
 
@@ -58,4 +59,18 @@ func _on_area_entered(area: Area3D) -> void:
 	var direction := global_basis.z
 	direction.y = 0.0
 	receiver.push(direction.normalized() * _data.push_speed)
+	_hit_owner(receiver, direction.normalized())
 	pushed.emit(receiver)
+
+
+## Thứ có máu (quái, hình nộm) mất máu; vật chỉ nhận gió (thuyền, lửa, đồ giải đố) bỏ qua.
+## Không truyền knockback: lực đẩy đã do bộ nhận gió lo, tránh đẩy hai lần
+func _hit_owner(receiver: WindReceiverComponent, direction: Vector3) -> void:
+	if _data.damage <= 0 or receiver.owner == null:
+		return
+	var hurtbox := receiver.owner.get_node_or_null(^"HurtboxComponent") as HurtboxComponent
+	if hurtbox == null:
+		return
+	var info := DamageInfo.new(_data.damage, DamageInfo.Type.PHYSICAL, Vector3.ZERO, owner)
+	info.direction = direction
+	hurtbox.receive_hit(info)
