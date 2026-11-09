@@ -1,20 +1,12 @@
 class_name ItemDiscoveryPopup
 extends CanvasLayer
+## Dùng cùng theme, màu và hoa văn màn Tab; hướng dẫn vẫn dừng thế giới.
 signal dismissed
 @export var allow_cancel: bool = false
 const BLUR: Shader = preload("res://assets/shaders/screen/item_discovery/discovery_blur.gdshader")
-const ILLUSTRATIONS: Dictionary[StringName,Texture2D] = {
-	&"gun":preload("res://ui/hud/icons/banana_weapon/banana_weapon.svg"),
-	&"healing":preload("res://ui/hud/icons/banana_weapon/healing_banana.svg"),
-	&"ammo":preload("res://ui/hud/icons/banana_items/explosive_ammo.svg"),
-	&"boots":preload("res://ui/hud/icons/banana_items/banana_boots.svg")
-}
-const MESSAGES: Dictionary[StringName,String] = {
-	&"gun":"Khẩu súng chuối huyền thoại bắn ra đạn nổ một phạm vi nhỏ xung quanh, hữu ích cho việc tiêu diệt đám khỉ. Hãy cẩn thận khi sử dụng!!!\n\nĐạn nổ có thể được rớt ra từ những con khỉ cầm bom đặc biệt mà bạn sẽ gặp trên đường đi!",
-	&"ammo":"Đạn cho súng bAKa-47, bọn khỉ cầm bom có vẻ mang theo rất nhiều!",
-	&"boots":"Giày mang đặc tính đặc biệt giúp bạn không bị trượt khi dẫm lên vỏ chuối nữa!",
-	&"healing":"Quả chuối thần kì mang đặc tính chữa trị cực cao, chỉ sử dụng được 3 lần, hãy suy nghĩ kĩ trước khi dùng!"
-}
+const MENU_THEME: Theme = preload("res://ui/theme/menu_theme.tres")
+const STYLE: InventoryStyle = preload("res://resources/ui/inventory_style.tres")
+const BOOTS_ICON: Texture2D = preload("res://ui/hud/icons/banana_items/banana_boots.svg")
 var _panel: PanelContainer
 var _title: Label
 var _illustration: TextureRect
@@ -26,36 +18,48 @@ var _was_enabled: bool
 
 func _ready() -> void:
 	layer = 60; process_mode = Node.PROCESS_MODE_ALWAYS
-	var backdrop: ColorRect = ColorRect.new(); add_child(backdrop); backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var material: ShaderMaterial = ShaderMaterial.new(); material.shader = BLUR; backdrop.material = material
-	_panel = PanelContainer.new(); add_child(_panel)
-	var style: StyleBoxFlat = StyleBoxFlat.new(); style.bg_color = Color("050b15f5"); style.border_color = Color("318fff")
-	style.set_border_width_all(2); style.set_corner_radius_all(18)
-	style.content_margin_left = 22; style.content_margin_right = 22; style.content_margin_top = 18; style.content_margin_bottom = 18
+	var root: Control = Control.new(); root.theme = MENU_THEME; add_child(root); root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var backdrop: ColorRect = ColorRect.new(); root.add_child(backdrop); backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var blur: ShaderMaterial = ShaderMaterial.new(); blur.shader = BLUR; backdrop.material = blur
+	var frame: CornerFrame = CornerFrame.new(); root.add_child(frame); frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame.color = STYLE.ornament; frame.margin = STYLE.frame_margin; frame.corner_size = STYLE.corner_size
+	_panel = PanelContainer.new(); root.add_child(_panel)
+	var style: StyleBoxFlat = StyleBoxFlat.new(); style.bg_color = STYLE.tile_fill
+	style.content_margin_left = 36; style.content_margin_right = 36; style.content_margin_top = 28; style.content_margin_bottom = 30
 	_panel.add_theme_stylebox_override("panel",style)
-	var column: VBoxContainer = VBoxContainer.new(); column.add_theme_constant_override("separation",12); _panel.add_child(column)
-	var header: HBoxContainer = HBoxContainer.new(); header.add_theme_constant_override("separation",14); column.add_child(header)
-	_illustration = TextureRect.new(); _illustration.custom_minimum_size = Vector2(88,64)
-	_illustration.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; _illustration.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	header.add_child(_illustration)
-	_title = Label.new(); _title.modulate = Color("7fcaff"); _title.add_theme_font_size_override("font_size",18); header.add_child(_title)
-	_body = Label.new(); _body.custom_minimum_size.x = 410; _body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_body.add_theme_font_size_override("font_size",18); column.add_child(_body)
-	var hint: Label = Label.new(); hint.text = "F  ·  Tiếp tục"; hint.modulate = Color("7fcaff"); hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT; column.add_child(hint)
+	var border: CornerFrame = CornerFrame.new(); _panel.add_child(border); border.margin = 8; border.corner_size = 22; border.color = STYLE.ornament
+	var column: VBoxContainer = VBoxContainer.new(); _panel.add_child(column); column.add_theme_constant_override("separation",18)
+	_title = Label.new(); _title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER; _title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_title.add_theme_font_size_override("font_size",STYLE.detail_title_font); column.add_child(_title)
+	var divider: OrnamentDivider = OrnamentDivider.new(); divider.custom_minimum_size.y = 24; divider.flourish = true; divider.color = STYLE.ornament; column.add_child(divider)
+	_illustration = TextureRect.new(); _illustration.custom_minimum_size = Vector2(0,64); _illustration.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_illustration.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; column.add_child(_illustration)
+	_body = Label.new(); _body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; _body.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_body.add_theme_font_size_override("font_size",STYLE.body_font+2); _body.add_theme_constant_override("line_spacing",6); column.add_child(_body)
+	var hint: Label = Label.new(); hint.text = "F  ·  Tiếp tục"; hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size",STYLE.key_font); hint.add_theme_color_override("font_color",STYLE.dim); column.add_child(hint)
+	_panel.resized.connect(_center_panel); get_viewport().size_changed.connect(_layout)
 	hide(); set_process_input(false)
 
 func present(player: Player, kind: StringName) -> void:
-	present_text(player, {&"gun":"bAKa-47",&"ammo":"ĐẠN CHUỐI NỔ",&"boots":"GIÀY CHUỐI",&"healing":"CHUỐI DINH DƯỠNG"}.get(kind,""), MESSAGES[kind],ILLUSTRATIONS.get(kind))
+	if kind == &"boots": present_text(player,"GIÀY CHUỐI","Không bị trượt khi giẫm vỏ chuối. Giẫm vỏ chuối còn giúp tăng tốc chạy trong 3 giây!",BOOTS_ICON)
 
 func present_text(player: Player, heading: String, message: String, illustration: Texture2D = null) -> void:
+	if visible: return
 	_player = player; _was_paused = get_tree().paused; _was_enabled = player.controls_enabled
-	_title.text = heading
-	_illustration.texture = illustration; _illustration.visible = illustration != null
-	_body.text = message; _panel.size = Vector2(454,0); _panel.reset_size()
-	var at: Vector2 = player.get_viewport().get_camera_3d().unproject_position(player.global_position+Vector3.UP)
-	var viewport_size: Vector2 = player.get_viewport().get_visible_rect().size
-	_panel.position = Vector2(clampf(at.x+55,20,viewport_size.x-_panel.size.x-20),clampf(at.y-_panel.size.y*0.6,20,viewport_size.y-_panel.size.y-20))
+	_title.text = heading; _body.text = message; _illustration.texture = illustration; _illustration.visible = illustration != null
 	_opened_at = Time.get_ticks_msec(); player.set_controls_enabled(false); show(); get_tree().paused = true; set_process_input(true)
+	_layout(); _layout.call_deferred()
+	_panel.modulate.a = 0; create_tween().tween_property(_panel,"modulate:a",1.0,STYLE.open_time)
+
+func _layout() -> void:
+	if not is_instance_valid(_panel): return
+	var width: float = minf(660,get_viewport().get_visible_rect().size.x-64)
+	_body.custom_minimum_size.x = maxf(width-72,160); _title.custom_minimum_size.x = maxf(width-72,160)
+	_panel.size = Vector2(width,0); _panel.reset_size(); _center_panel()
+
+func _center_panel() -> void:
+	_panel.position = (get_viewport().get_visible_rect().size-_panel.size)*0.5
 
 func _input(event: InputEvent) -> void:
 	if Time.get_ticks_msec()-_opened_at < 220 or event.is_echo(): return

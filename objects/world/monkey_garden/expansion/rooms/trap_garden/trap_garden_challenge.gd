@@ -2,7 +2,6 @@ class_name TrapGardenChallenge
 extends Node3D
 signal cleared
 @export var reward: OfferingBanana
-@export var item: BananaItemPickup
 @export var seals: Array[GardenSwitch] = []
 @export var hazards: Array[GardenTimedSpikes] = []
 @export var guards: Array[RoofBananaGrunt] = []
@@ -63,7 +62,7 @@ func _check() -> void:
 		if is_instance_valid(hazard): hazard.set_enabled(false)
 	for guard: RoofBananaGrunt in guards:
 		if is_instance_valid(guard) and not guard.is_dead(): guard.disable()
-	GardenRewards.offering(reward); item.reveal()
+	GardenRewards.offering(reward)
 	get_tree().create_timer(2.2,false).timeout.connect(func() -> void: cleared.emit())
 
 func _resolve_moving_seals() -> void:

@@ -59,7 +59,6 @@ func _run() -> void:
 	await _skill_tests()
 	await _prompt_tests()
 	await _extreme_tests()
-	await _banana_tests()
 	await wait_seconds(cleanup_wait)
 	_check(not _energy_bar.is_processing() and not _counter.is_processing() and not _prompt.is_processing(),"3s: bình/tiền/prompt hết xử lý")
 	_check(_counter.is_showing() and not _prompt.visible,"3s: tiền vẫn hiện, prompt ẩn")
@@ -346,20 +345,6 @@ func _mouse_pixel(image: Image,slot: Slot,right: bool) -> float:
 	var center: Vector2 = slot.get_center()+hud_style.skill_badge_anchor*slot.radius
 	var button: Vector2 = hud_style.skill_mouse_size*Vector2(0.22 if right else -0.22,-0.26)
 	return sample_canvas(image,slot,center+button).get_luminance()
-## Thẻ súng chuối dùng style thật cho chữ, kích thước và trạng thái.
-func _banana_tests() -> void:
-	var card: BananaWeaponCard = BananaWeaponCard.new()
-	card.style = hud_style.duplicate(true) as Style
-	card.style.banana_key_label = "V"
-	card.style.banana_amount_font = hud_style.banana_amount_font+3
-	actor.get_node(^"HUD").add_child(card)
-	card.refresh(7,true)
-	await wait_seconds(0.1)
-	var panel: PanelContainer = card.get_child(0) as PanelContainer
-	var amount: Label = panel.get_child(0).get_child(1).get_child(1).get_child(1) as Label
-	_check(amount.text=="07" and amount.get_theme_font_size(&"font_size")==card.style.banana_amount_font,"thẻ súng đọc cỡ số đạn từ style")
-	await _shot("banana_card")
-	card.queue_free()
 ## Focus bằng Area3D thật và camera thật; sau khi vật bị gỡ, prompt phải tự hết.
 func _prompt_tests() -> void:
 	var target: InteractableComponent = InteractableComponent.new()

@@ -1,11 +1,5 @@
 class_name GardenCombatEffects
 extends RefCounted
-const BANANA_BLAST: PackedScene = preload("res://assets/vfx/enemies/monkey/banana_blast/banana_blast.tscn")
-static func explosion(parent: Node3D, at: Vector3, radius: float) -> void:
-	var pool: ObjectPool = parent.get_node_or_null("BananaProjectileBlastPool") as ObjectPool
-	if pool == null:
-		pool = ObjectPool.new(); pool.name = "BananaProjectileBlastPool"; pool.scene = BANANA_BLAST; pool.initial_size = 2; parent.add_child(pool)
-	var effect: Node3D = pool.acquire() as Node3D; effect.call("play",at,radius,true)
 static func pulse(parent: Node, at: Vector3, radius: float, color: Color=Color(1,0.18,0.03)) -> void:
 	var ring: MeshInstance3D=MeshInstance3D.new(); var mesh: TorusMesh=TorusMesh.new()
 	mesh.inner_radius=0.85; mesh.outer_radius=1; mesh.rings=24; mesh.ring_segments=4
