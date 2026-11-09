@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/world/cellar/ignitable_brazier/ignitable_brazier.gd" id="1_brazier"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/torch_standing.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="3_burn"]
+
+[sub_resource type="BoxShape3D" id="IgniteZone"]
+size = Vector3(1.6, 2.6, 1.6)
+
+[node name="IgnitableBrazier" type="Node3D"]
+script = ExtResource("1_brazier")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+light_energy = 0.0
+shadow_enabled = false
+omni_range = 9.0
+
+[node name="BurnableComponent" parent="." instance=ExtResource("3_burn")]
+
+[node name="Zone" type="CollisionShape3D" parent="BurnableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+shape = SubResource("IgniteZone")

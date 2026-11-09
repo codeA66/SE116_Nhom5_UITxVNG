@@ -3,7 +3,7 @@ extends Resource
 ## Một vật phẩm hiện trong trang Vật phẩm của màn Tab: vật liệu nâng cấp kỹ năng, chìa khóa, đồ sưu tầm.
 ## Thêm vật phẩm mới = thêm file .tres và đưa vào ItemCatalog, không sửa code.
 
-enum Category { UPGRADE, KEY, COLLECTIBLE }
+enum Category { UPGRADE, KEY, COLLECTIBLE, TOOL }
 
 @export var id: StringName
 @export var display_name: String = ""

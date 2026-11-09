@@ -66,9 +66,12 @@ func play(target: HurtboxComponent) -> void:
 	_sparks.show()
 	_restore()
 	global_position = target.global_position + Vector3.UP * hit_height
-	for mesh: GeometryInstance3D in _get_meshes(target.get_parent()):
-		if not is_instance_valid(mesh):
+	# Biến lặp không gán kiểu: phần tử có thể đã bị giải phóng (mesh con của mục tiêu bị xoá giữa hai lần trúng),
+	# gán vào biến có kiểu sẽ lỗi ngay trước khi kịp kiểm tra
+	for item: Variant in _get_meshes(target.get_parent()):
+		if not is_instance_valid(item):
 			continue
+		var mesh: GeometryInstance3D = item as GeometryInstance3D
 		_meshes.append(mesh)
 		_previous.append(mesh.material_overlay)
 		mesh.material_overlay = flash_material
@@ -110,7 +113,8 @@ func prepare_render() -> void:
 func _get_meshes(owner_node: Node) -> Array:
 	var id := owner_node.get_instance_id()
 	var cached: Array = _mesh_cache.get(id, [])
-	if not cached.is_empty() and is_instance_valid(cached[0]):
+	# Chỉ quét lại khi có mesh trong cache đã bị giải phóng (vòng lặp ngắn, chỉ chạy lúc trúng đòn)
+	if not cached.is_empty() and cached.all(func(m: Variant) -> bool: return is_instance_valid(m)):
 		return cached
 	# Chỉ MeshInstance3D: không phủ cam lên particle / sprite của quái
 	cached = owner_node.find_children("*", "MeshInstance3D", true, false)

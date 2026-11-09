@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/hazards/lava_geyser/linger_lava_trap.gd" id="1_trap"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
+size = Vector3(8, 3, 40)
+
+[node name="LingerLavaTrap" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_trap")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_zone")

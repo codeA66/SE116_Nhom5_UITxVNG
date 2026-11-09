@@ -1,0 +1,274 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/encounter/hostage_rescue/hostage_rescue.gd" id="1_rescue"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/hanging_cage.glb" id="2_cage"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/hostage_prisoner.glb" id="3_hostage"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/pulley_gantry.glb" id="4_gantry"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/winch_crank.glb" id="5_winch"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="6_interact"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/stair_4m.glb" id="7_stair"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="8_floor"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/bridge_4m.glb" id="9_bridge"]
+
+[sub_resource type="BoxShape3D" id="Area"]
+resource_local_to_scene = true
+size = Vector3(14, 4, 18)
+
+[sub_resource type="StandardMaterial3D" id="RopeMat"]
+albedo_color = Color(0.72, 0.55, 0.32, 1)
+roughness = 0.9
+
+[sub_resource type="CylinderMesh" id="RopeMesh"]
+material = SubResource("RopeMat")
+top_radius = 0.035
+bottom_radius = 0.035
+height = 1.0
+radial_segments = 6
+rings = 1
+
+[sub_resource type="BoxShape3D" id="PostShape"]
+size = Vector3(0.8, 6.4, 0.8)
+
+[sub_resource type="BoxShape3D" id="WinchShape"]
+size = Vector3(1.5, 1.1, 0.9)
+
+[sub_resource type="BoxShape3D" id="CageShape"]
+size = Vector3(1.55, 2.3, 1.55)
+
+[sub_resource type="SphereShape3D" id="OpenRange"]
+radius = 1.8
+
+[sub_resource type="BoxShape3D" id="StairShape"]
+size = Vector3(3, 0.3, 4.472)
+
+[sub_resource type="BoxShape3D" id="LandingShape"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="WalkShape"]
+size = Vector3(1.8, 0.32, 3.2)
+
+[sub_resource type="BoxShape3D" id="RailLong"]
+size = Vector3(0.2, 1.2, 3.2)
+
+[sub_resource type="BoxShape3D" id="RailShort"]
+size = Vector3(1.1, 1.2, 0.2)
+
+[sub_resource type="BoxShape3D" id="RailSide"]
+size = Vector3(0.2, 1.2, 4)
+
+[sub_resource type="StandardMaterial3D" id="RailMat"]
+albedo_color = Color(0.3, 0.16, 0.08, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="RailLongMesh"]
+material = SubResource("RailMat")
+size = Vector3(0.12, 0.12, 3.2)
+
+[sub_resource type="BoxMesh" id="RailShortMesh"]
+material = SubResource("RailMat")
+size = Vector3(1.1, 0.12, 0.12)
+
+[sub_resource type="BoxMesh" id="RailSideMesh"]
+material = SubResource("RailMat")
+size = Vector3(0.12, 0.12, 4)
+
+[sub_resource type="BoxMesh" id="PostMesh"]
+material = SubResource("RailMat")
+size = Vector3(0.18, 2.0, 0.18)
+
+[sub_resource type="SphereShape3D" id="CrankRange"]
+radius = 1.7
+
+[node name="HostageRescue" type="Node3D"]
+script = ExtResource("1_rescue")
+
+[node name="ActiveArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ActiveArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("Area")
+
+[node name="Gantry" parent="." instance=ExtResource("4_gantry")]
+
+[node name="GantryBody" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="PostWest" type="CollisionShape3D" parent="GantryBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 3.2, 0)
+shape = SubResource("PostShape")
+
+[node name="PostEast" type="CollisionShape3D" parent="GantryBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 3.2, 0)
+shape = SubResource("PostShape")
+
+[node name="Cage" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
+
+[node name="Model" parent="Cage" instance=ExtResource("2_cage")]
+
+[node name="Hostage" parent="Cage" instance=ExtResource("3_hostage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.23, 0)
+
+[node name="Body" type="StaticBody3D" parent="Cage"]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cage/Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.15, 0)
+shape = SubResource("CageShape")
+
+[node name="InteractableComponent" type="Area3D" parent="Cage"]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("6_interact")
+prompt_text = "MỞ LỒNG"
+prompt_offset = Vector3(0, 0.4, -0.9)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cage/InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6, -1.2)
+shape = SubResource("OpenRange")
+
+[node name="TimeLabel" type="Label3D" parent="Cage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+pixel_size = 0.02
+billboard = 1
+no_depth_test = true
+modulate = Color(1, 0.92, 0.7, 1)
+outline_size = 14
+text = "45"
+font_size = 56
+
+[node name="RopeDown" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("RopeMesh")
+
+[node name="RopeWinch" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("RopeMesh")
+
+[node name="Winch" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.5)
+collision_mask = 0
+
+[node name="Model" parent="Winch" instance=ExtResource("5_winch")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Winch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+shape = SubResource("WinchShape")
+
+[node name="CrankArea" type="Area3D" parent="Winch"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Winch/CrankArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CrankRange")
+
+[node name="InteractableComponent" type="Area3D" parent="Winch"]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("6_interact")
+prompt_text = "GIỮ ĐỂ KÉO LÊN"
+prompt_offset = Vector3(0, 1.6, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Winch/InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("CrankRange")
+
+[node name="Shore" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 2, -6.4)
+
+[node name="Scaffold" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Stair" parent="Scaffold" instance=ExtResource("7_stair")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 0, -6)
+
+[node name="StairShape" type="CollisionShape3D" parent="Scaffold"]
+transform = Transform3D(0, -0.44721, -0.89443, 0, 0.89443, -0.44721, 1, 0, 0, -4, 0.866, -6)
+shape = SubResource("StairShape")
+
+[node name="Landing" parent="Scaffold" instance=ExtResource("8_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68, -6)
+
+[node name="LandingShape" type="CollisionShape3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.84, -6)
+shape = SubResource("LandingShape")
+
+[node name="Walkway" parent="Scaffold" instance=ExtResource("9_bridge")]
+transform = Transform3D(0.6, 0, 0, 0, 1, 0, 0, 0, 0.8, 0, 1.68, -2.4)
+
+[node name="WalkShape" type="CollisionShape3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.84, -2.4)
+shape = SubResource("WalkShape")
+
+[node name="RailWalkWest" type="CollisionShape3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 2.6, -2.4)
+shape = SubResource("RailLong")
+
+[node name="RailWalkWestBar" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 3.05, -2.4)
+mesh = SubResource("RailLongMesh")
+
+[node name="RailWalkEast" type="CollisionShape3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 2.6, -2.4)
+shape = SubResource("RailLong")
+
+[node name="RailWalkEastBar" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 3.05, -2.4)
+mesh = SubResource("RailLongMesh")
+
+[node name="RailLandingSW" type="CollisionShape3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45, 2.6, -4.1)
+shape = SubResource("RailShort")
+
+[node name="RailLandingSWBar" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45, 3.05, -4.1)
+mesh = SubResource("RailShortMesh")
+
+[node name="RailLandingSE" type="CollisionShape3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 2.6, -4.1)
+shape = SubResource("RailShort")
+
+[node name="RailLandingSEBar" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 3.05, -4.1)
+mesh = SubResource("RailShortMesh")
+
+[node name="RailLandingEast" type="CollisionShape3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 2.6, -6)
+shape = SubResource("RailSide")
+
+[node name="RailLandingEastBar" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 3.05, -6)
+mesh = SubResource("RailSideMesh")
+
+[node name="Post0" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 1.0, -4.1)
+mesh = SubResource("PostMesh")
+
+[node name="Post1" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 1.0, -4.1)
+mesh = SubResource("PostMesh")
+
+[node name="Post2" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 1.0, -7.9)
+mesh = SubResource("PostMesh")
+
+[node name="Post3" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 2.6, -0.9)
+mesh = SubResource("PostMesh")
+
+[node name="Post4" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 2.6, -0.9)
+mesh = SubResource("PostMesh")
+
+[node name="Post5" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 1.0, -4.0)
+mesh = SubResource("PostMesh")
+
+[node name="Post6" type="MeshInstance3D" parent="Scaffold"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 1.0, -4.0)
+mesh = SubResource("PostMesh")

@@ -1,6 +1,6 @@
 @tool
 class_name WindShrineVisual
-extends Node3D
+extends ShrineVisual
 ## Chỉ đổi hình ảnh; không truy cập tiến trình hoặc ghi save.
 
 const DEFAULT_STYLE: WindShrineStyle = preload("res://resources/world/wind/wind/wind_shrine_default.tres")

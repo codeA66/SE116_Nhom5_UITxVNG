@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/checkpoint/fire/fire_shrine_visual.gd" id="1_vis"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/checkpoint_shrine_fire.glb" id="2_model"]
+
+[node name="FireShrineVisual" type="Node3D"]
+script = ExtResource("1_vis")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+light_color = Color(1, 0.55, 0.22, 1)
+light_energy = 0.0
+shadow_enabled = false
+omni_range = 8.0

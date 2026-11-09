@@ -49,6 +49,9 @@
 [ext_resource type="Script" path="res://entities/player/data/currency_data.gd" id="56_souljade_type"]
 [ext_resource type="Script" path="res://components/utility/restore/restore_component.gd" id="57_restore"]
 
+[ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="92_burn"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="93_burnvfx"]
+[ext_resource type="Resource" path="res://resources/combat/fire/burn_lava.tres" id="94_burnlava"]
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
 
@@ -267,3 +270,12 @@ weapon = NodePath("../Model/Visual/Foxy/Foxy_Rig/Skeleton3D/hand_R/Sword")
 holster_transform = Transform3D(0, 1.4826, 0.1489, 1.2421, 0.0822, -0.8189, -0.8231, 0.1241, -1.2358, 0.24, 0.06, -0.12)
 
 [editable path="HUD/GameHud"]
+
+[node name="BurnableComponent" parent="." node_paths=PackedStringArray("hurtbox", "match_shape_of") instance=ExtResource("92_burn")]
+collision_layer = 0
+data = ExtResource("94_burnlava")
+hurtbox = NodePath("../HurtboxComponent")
+match_shape_of = NodePath("../HurtboxComponent/CollisionShape3D")
+
+[node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("93_burnvfx")]
+burnable = NodePath("../BurnableComponent")

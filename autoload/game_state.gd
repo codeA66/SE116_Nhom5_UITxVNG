@@ -26,6 +26,8 @@ signal ability_level_changed(ability: AbilityData, level: int)
 signal charms_changed
 ## Vừa vào / ra khu đổi bùa (màn Tab bật / tắt việc đeo bùa)
 signal charm_station_changed(inside: bool)
+## Đổi vật phẩm đang chọn dùng bằng phím use_item (TNT...)
+signal selected_item_changed
 
 const NEW_GAME: NewGameData = preload("res://resources/player/new_game.tres")
 const FUSIONS: FusionTable = preload("res://resources/combat/fusion/fusion_table.tres")
@@ -44,6 +46,8 @@ var _charm_stations: int = 0
 func _ready() -> void:
 	_grant_starting_abilities()
 	_committed = progress.snapshot()
+	# Player nào vào cây cũng được gắn QuickItemUser (dùng vật phẩm bằng phím use_item) mà không sửa player
+	get_tree().node_added.connect(_on_node_added)
 
 
 func get_weapon() -> WeaponData:
@@ -107,6 +111,28 @@ func unlock_ability(ability: AbilityData) -> void:
 	progress.abilities.append(ability)
 	ability_unlocked.emit(ability)
 	progress_changed.emit()
+
+
+## Chọn vật phẩm dùng nút (QuickItemData, đã có trong túi) để phím use_item (T) dùng. id rỗng = bỏ chọn
+func select_item(item_id: StringName) -> bool:
+	if not item_id.is_empty():
+		var item := ITEMS.get_item(item_id) as QuickItemData
+		if item == null or get_item_count(item) <= 0:
+			return false
+	if progress.selected_item == item_id:
+		return true
+	progress.selected_item = item_id
+	selected_item_changed.emit()
+	progress_changed.emit()
+	return true
+
+
+## Vật phẩm đang chọn dùng; null nếu chưa chọn (hoặc không còn trong túi)
+func get_selected_item() -> QuickItemData:
+	if progress.selected_item.is_empty():
+		return null
+	var item := ITEMS.get_item(progress.selected_item) as QuickItemData
+	return item if item and get_item_count(item) > 0 else null
 
 
 ## Nguyên tố người chơi đang có (kỹ năng gốc đã mở khóa)
@@ -415,3 +441,8 @@ func _is_valid_currency_call(id: StringName, amount: int) -> bool:
 		push_warning("GameState: số tiền âm (%d) cho '%s', dùng spend_currency để trừ" % [amount, id])
 		return false
 	return true
+
+
+func _on_node_added(node: Node) -> void:
+	if node is Player:
+		QuickItemUser.ensure.call_deferred(node as Player)

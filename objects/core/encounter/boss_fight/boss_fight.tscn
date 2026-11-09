@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/encounter/boss_fight/boss_fight.gd" id="1_fight"]
+
+[sub_resource type="BoxShape3D" id="Trigger"]
+size = Vector3(24, 4, 24)
+
+[node name="BossFight" type="Node3D"]
+script = ExtResource("1_fight")
+
+[node name="Trigger" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Trigger"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("Trigger")
+
+[node name="Spawn" type="Marker3D" parent="."]

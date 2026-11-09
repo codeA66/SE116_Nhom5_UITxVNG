@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="TntItemData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/tools/tnt_item_data.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://resources/player/items/tools/tnt_icon.svg" id="2_icon"]
+[ext_resource type="PackedScene" path="res://objects/combat/hazards/tnt_block/tnt_block.tscn" id="3_block"]
+[ext_resource type="PackedScene" path="res://components/core/interaction/quick_item/aim_indicator.tscn" id="4_aim"]
+
+[resource]
+script = ExtResource("1_data")
+block_scene = ExtResource("3_block")
+cooldown = 0.5
+aim_range = 3.0
+min_range = 0.8
+default_distance = 1.3
+aim_indicator = ExtResource("4_aim")
+id = &"tnt"
+display_name = "TNT"
+category = 3
+icon = ExtResource("2_icon")
+description = "Chọn sử dụng trong túi đồ, rồi giữ T để nhắm (trong tầm 3 m), thả T để đặt khối thuốc nổ ở chỗ con trỏ. Khối chỉ nổ khi chạm lửa: phun lửa vào để kích nổ, gây sát thương cả vùng (đứng gần cũng bị nổ trúng)."
+lore = "Bó thuốc nổ của thợ mỏ cũ, dây ngòi vẫn còn khô."
+owned_flag = &"level_3.tnt"

@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/world/cellar/cutaway_zone/cutaway_zone.gd" id="1_cut"]
+
+[node name="CutawayZone" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_cut")

@@ -1,0 +1,57 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/encounter/final_trial/grid_flame.gd" id="1_flame"]
+[ext_resource type="Shader" path="res://assets/shaders/fire/grid_flame.gdshader" id="2_shader"]
+[ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="3_damage"]
+
+[sub_resource type="StandardMaterial3D" id="WarnMat"]
+transparency = 1
+shading_mode = 0
+disable_fog = true
+albedo_color = Color(1, 0.55, 0.12, 1)
+
+[sub_resource type="PlaneMesh" id="WarnMesh"]
+material = SubResource("WarnMat")
+size = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="FlameMat"]
+render_priority = 0
+shader = ExtResource("2_shader")
+
+[sub_resource type="BoxMesh" id="FlameMesh"]
+material = SubResource("FlameMat")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxShape3D" id="DamageShape"]
+size = Vector3(3.5, 3.2, 3.5)
+
+[node name="GridFlame" type="Node3D"]
+script = ExtResource("1_flame")
+
+[node name="Warning" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+cast_shadow = 0
+mesh = SubResource("WarnMesh")
+
+[node name="Flame" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Flame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+cast_shadow = 0
+mesh = SubResource("FlameMesh")
+
+[node name="DamageArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("3_damage")
+damage_type = 1
+knockback = 7.0
+hit_interval = 0.8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("DamageShape")
+disabled = true
+
+[node name="PhaseTimer" type="Timer" parent="."]
+one_shot = true
