@@ -32,9 +32,9 @@ curve = SubResource("TrailSize")
 emission_shape = 1
 emission_sphere_radius = 0.08
 direction = Vector3(0, 1, 0)
-spread = 30.0
-initial_velocity_min = 0.3
-initial_velocity_max = 0.8
+spread = 60.0
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
 gravity = Vector3(0, 1.2, 0)
 angle_min = -180.0
 angle_max = 180.0
@@ -55,7 +55,7 @@ particles_anim_loop = false
 
 [sub_resource type="QuadMesh" id="TrailMesh"]
 material = SubResource("TrailMat")
-size = Vector2(0.35, 0.35)
+size = Vector2(0.14, 0.14)
 
 [node name="FireArrowTrail" type="Node3D"]
 script = ExtResource("1_trail")
@@ -63,9 +63,12 @@ script = ExtResource("1_trail")
 [node name="Flames" type="GPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 40
-lifetime = 0.3
+amount = 14
+lifetime = 0.35
 local_coords = false
 visibility_aabb = AABB(-30, -3, -30, 60, 8, 60)
 process_material = SubResource("TrailProcess")
 draw_pass_1 = SubResource("TrailMesh")
+
+[node name="Ribbon" type="MeshInstance3D" parent="."]
+cast_shadow = 0

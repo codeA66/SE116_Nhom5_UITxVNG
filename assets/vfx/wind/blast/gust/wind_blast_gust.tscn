@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/wind/blast/gust/wind_blast_gust.gd" id="1"]
+[ext_resource type="Script" path="res://assets/vfx/wind/blast/gust/layers/charge/charge.gd" id="2"]
+[ext_resource type="Script" path="res://assets/vfx/wind/blast/gust/layers/gust/tornado.gd" id="3"]
+[ext_resource type="Script" path="res://assets/vfx/wind/blast/gust/layers/gust/pressure_pulse.gd" id="4"]
+
+[node name="WindBlastGust" type="Node3D"]
+visible = false
+script = ExtResource("1")
+linger_time = 0.62
+
+[node name="Charge" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+script = ExtResource("2")
+
+[node name="Audio" type="AudioStreamPlayer3D" parent="Charge"]
+
+[node name="PressurePulse" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+script = ExtResource("4")
+white_core = Color(0.49, 0.85, 0.94, 1)
+cyan_edge = Color(0.11, 0.5, 0.69, 1)
+opacity = 0.80
+erode_start = 0.17
+
+[node name="TornadoBase" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+script = ExtResource("3")
+white_core = Color(1, 0.68, 0.37, 1)
+cyan_edge = Color(0.82, 0.34, 0.10, 1)
+opacity = 0.89
+ring_count = 1
+bottom_radius = 0.29
+top_radius = 0.29
+bottom_height = 0.14
+top_height = 0.14
+arc_fraction = 0.78
+band_height = 0.23
+band_flare = 0.02
+strand_rise = 0.25
+strand_warp = 0.08
+spin_speed = 2.2
+
+[node name="TornadoCore" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+script = ExtResource("3")
+white_core = Color(0.41, 0.96, 1, 1)
+cyan_edge = Color(0.06, 0.35, 0.60, 1)
+opacity = 0.96
+volume_mode = true
+erode_start = 0.77
+bottom_radius = 0.21
+top_radius = 0.41
+bottom_height = 0.01
+top_height = 0.83
+band_flare = 0.055
+spin_speed = 1.7
+
+[node name="Tornado" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+script = ExtResource("3")
+white_core = Color(0.76, 0.93, 1, 1)
+cyan_edge = Color(0.29, 0.58, 0.73, 1)
+opacity = 0.46
+erode_start = 0.67
+ring_count = 7
+bottom_radius = 0.28
+top_radius = 0.49
+arc_fraction = 0.88
+band_height = 0.14
+strand_rise = 0.36
+strand_warp = 0.08
+
+[node name="Audio" type="AudioStreamPlayer3D" parent="Tornado"]

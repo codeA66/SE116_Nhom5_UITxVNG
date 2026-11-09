@@ -4,8 +4,8 @@ extends MenuTile
 ## Kéo thẻ thả vào ô vũ khí để ghép; thả nguyên tố đang ghép về thẻ của nó để tháo.
 
 const EMBLEM_RADIUS := 34.0
-const PIP_SIZE := 5.0
-const PIP_GAP := 18.0
+## Khoảng cách giữa hai ngọc cấp, tính theo cỡ ngọc
+const PIP_GAP_SCALE := 2.6
 
 var element: ElementData
 var owned: bool = false
@@ -42,31 +42,19 @@ func get_detail() -> DetailEntry:
 	if fused_slot >= 0:
 		var holder := GameState.get_weapon_in_slot(fused_slot as WeaponData.Slot)
 		entry.add_section("", "Đang ghép vào %s: kỹ năng này tạm khóa." % (holder.display_name if holder else "vũ khí"), true)
+	# Lộ trình nâng cấp ngay sau kỹ năng: thấy ngay không cần cuộn
+	if max_level > 1:
+		var path := UpgradePath.new()
+		path.setup(ability, level, element.color, style)
+		entry.add_block(path)
 	for value: int in WeaponData.Slot.values():
 		var slot := value as WeaponData.Slot
 		var fusion := GameState.FUSIONS.get_fusion(slot, element.id)
 		var weapon := GameState.get_weapon_in_slot(slot)
 		if fusion and weapon:
 			entry.add_section("Ghép vào %s" % weapon.display_name, fusion.description)
-	_add_upgrade_section(entry, ability)
 	entry.hint = "Enter: cầm nguyên tố rồi chọn vũ khí để ghép  ·  hoặc kéo thả bằng chuột"
 	return entry
-
-
-func _add_upgrade_section(entry: DetailEntry, ability: AbilityData) -> void:
-	var step := ability.get_upgrade(level)
-	if step == null:
-		if max_level > 1:
-			entry.add_section("Cấp tiếp theo", "Đã đạt cấp cao nhất.")
-		return
-	var needs := PackedStringArray()
-	for cost: ItemCost in step.requirements:
-		if cost.item:
-			needs.append("%d %s (đang có %d)" % [cost.count, cost.item.display_name, GameState.get_item_count(cost.item)])
-	var text := step.description
-	if not needs.is_empty():
-		text += "\nCần: %s. Mang tới người thợ ấn để nâng cấp." % ", ".join(needs)
-	entry.add_section("Cấp tiếp theo · %s" % ability.get_level_name(level + 1), text, not step.is_affordable(GameState.progress))
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
@@ -115,18 +103,24 @@ func _draw_content(rect: Rect2) -> void:
 	draw_circle(emblem_center, EMBLEM_RADIUS, Color(0.02, 0.025, 0.03, 0.9))
 	draw_arc(emblem_center, EMBLEM_RADIUS, 0.0, TAU, 48, Color(element.color, strength), 1.6, true)
 	_draw_emblem(element.icon, emblem_center, EMBLEM_RADIUS * 1.1, Color(element.color, strength), element.display_name)
+	_draw_level_burst(emblem_center)
 	_draw_centered_text(element.display_name, name_at, style.body_font, style.ink if fused_slot < 0 else style.dim)
 	_draw_level_pips(Vector2(rect.get_center().x, rect.end.y - 20.0))
 
 
-## Chấm cấp hình thoi: đã đạt = đặc, chưa đạt = viền
+## Ngọc cấp: đã mở = màu nguyên tố, cấp đang dùng có quầng sáng, chưa mở = viên tối
 func _draw_level_pips(center: Vector2) -> void:
-	var start := center.x - PIP_GAP * float(max_level - 1) * 0.5
+	var gap := style.level_gem_size * PIP_GAP_SCALE
+	var start := center.x - gap * float(max_level - 1) * 0.5
 	for index in max_level:
-		var c := Vector2(start + PIP_GAP * index, center.y)
-		var diamond := PackedVector2Array([c + Vector2(0, -PIP_SIZE), c + Vector2(PIP_SIZE, 0), c + Vector2(0, PIP_SIZE), c + Vector2(-PIP_SIZE, 0)])
-		if index < level:
-			draw_colored_polygon(diamond, element.color)
-		else:
-			diamond.append(diamond[0])
-			draw_polyline(diamond, style.faint, 1.2, true)
+		var state := LevelGem.GemState.CURRENT if index == level - 1 else (LevelGem.GemState.OWNED if index < level else LevelGem.GemState.LOCKED)
+		LevelGem.draw_gem(self, Vector2(start + gap * index, center.y), style.level_gem_size, state, element.color, style.faint)
+
+
+## Vừa lên cấp: vòng sáng nở ra từ huy hiệu (đi kèm lớp sáng chung của MenuTile)
+func _draw_level_burst(center: Vector2) -> void:
+	if _flash <= 0.0:
+		return
+	var grow := (1.0 - _flash) * EMBLEM_RADIUS
+	draw_arc(center, EMBLEM_RADIUS + 4.0 + grow, 0.0, TAU, 48, Color(element.color, _flash), 2.5, true)
+	draw_circle(center, EMBLEM_RADIUS, Color(element.color, 0.25 * _flash))

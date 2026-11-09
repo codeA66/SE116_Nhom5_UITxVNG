@@ -23,6 +23,11 @@ func try_interact() -> bool:
 	return true
 
 
+## Chọn lại mục tiêu ngay (vật vừa tắt tương tác lúc thế giới đang dừng: _physics_process không chạy để tự cập nhật)
+func refresh_focus() -> void:
+	_update_focus()
+
+
 func _update_focus() -> void:
 	var nearest: InteractableComponent = null
 	var best_distance := INF

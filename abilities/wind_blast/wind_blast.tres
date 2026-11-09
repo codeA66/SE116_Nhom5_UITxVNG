@@ -1,11 +1,11 @@
 [gd_resource type="Resource" script_class="WindBlastData" format=3 uid="uid://bpnwmld1wx3qe"]
 
 [ext_resource type="Script" uid="uid://cefi8gdxmntd1" path="res://abilities/wind_blast/wind_blast_data.gd" id="1_blast"]
-[ext_resource type="Texture2D" path="res://ui/hud/icons/wind.svg" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://cio41x1yog8s7" path="res://ui/hud/icons/wind.svg" id="2_icon"]
+[ext_resource type="Script" uid="uid://bejn71tj23dei" path="res://resources/player/items/_base/item_cost.gd" id="cost_script"]
 [ext_resource type="Material" path="res://resources/feedback/ability_acquire/effects/wind_gust.tres" id="fx_wind"]
-[ext_resource type="Script" path="res://resources/player/items/_base/skill_upgrade_data.gd" id="up_script"]
-[ext_resource type="Script" path="res://resources/player/items/_base/item_cost.gd" id="cost_script"]
 [ext_resource type="Resource" path="res://resources/player/items/upgrades/wind_seal.tres" id="seal_wind"]
+[ext_resource type="Script" uid="uid://cqf3owa675hcj" path="res://resources/player/items/_base/skill_upgrade_data.gd" id="up_script"]
 
 [sub_resource type="DPITexture" id="AcquireIllustration"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"192\" viewBox=\"0 0 512 384\"><g fill=\"none\" stroke=\"#f3fcff\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M100 266C29 187 73 77 172 54M412 266C482 187 439 77 340 54\" stroke-width=\"2\" opacity=\".48\"/><path d=\"M127 232C57 171 99 101 168 99C123 123 137 166 217 181C161 156 156 116 199 91C189 123 212 141 244 159\" stroke-width=\"5\"/><path d=\"M385 232C455 171 413 101 344 99C389 123 375 166 295 181C351 156 356 116 313 91C323 123 300 141 268 159\" stroke-width=\"5\"/><path d=\"M241 197C176 194 116 184 92 140C113 209 165 231 221 225C161 253 118 238 104 223C132 277 205 263 243 238M271 197C336 194 396 184 420 140C399 209 347 231 291 225C351 253 394 238 408 223C380 277 307 263 269 238\" stroke-width=\"4\"/><path d=\"M213 280C177 310 210 342 230 319M299 280C335 310 302 342 282 319M256 272V338\" stroke-width=\"3\"/><path d=\"M256 48V90M238 65L256 36L274 65L256 82Z\" stroke-width=\"2\"/><path d=\"M151 63L157 48L163 63L157 78ZM349 63L355 48L361 63L355 78ZM68 201L74 190L80 201L74 212ZM432 201L438 190L444 201L438 212Z\" stroke-width=\"2\"/></g><path d=\"M256 117C241 148 215 163 215 202C215 234 237 257 256 276C275 257 297 234 297 202C297 163 271 148 256 117Z\" fill=\"#f3fcff\"/><g fill=\"none\" stroke=\"#142b35\" stroke-linecap=\"round\"><path d=\"M232 184H258C283 184 282 158 265 158M226 201H272C291 201 290 223 275 225M237 219H254\" stroke-width=\"5\"/></g><path d=\"M188 103C156 77 161 45 196 27C176 58 190 78 217 96M324 103C356 77 351 45 316 27C336 58 322 78 295 96\" fill=\"none\" stroke=\"#c5e9f0\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>"
@@ -33,18 +33,19 @@ requirements = Array[ExtResource("cost_script")]([SubResource("Cost2")])
 
 [resource]
 script = ExtResource("1_blast")
+reach = 7.0
 input_action = &"skill"
 state = &"WindBlast"
 id = &"wind_blast"
 display_name = "Thổi gió"
-energy_cost = 1
 icon = ExtResource("2_icon")
-illustration = SubResource("AcquireIllustration")
 accent_color = Color(0.65098, 0.87843, 0.93725, 1)
 description = "Thổi một luồng gió về phía trước để tác động lên vật thể và kẻ địch."
+illustration = SubResource("AcquireIllustration")
 acquire_verb = "Đã lĩnh hội"
 acquire_prompt = "Nhấn {key} để thổi gió."
 illustration_animation = &"Attack_1"
 illustration_time = 0.22
 illustration_effect = ExtResource("fx_wind")
 upgrades = Array[ExtResource("up_script")]([SubResource("Upgrade1"), SubResource("Upgrade2")])
+energy_cost = 1

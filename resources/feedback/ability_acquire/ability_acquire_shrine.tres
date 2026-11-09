@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AbilityAcquireData" format=3]
+
+[ext_resource type="Script" path="res://resources/feedback/ability_acquire/ability_acquire_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+phase_order = PackedStringArray("Lift", "Scatter", "Absorb", "Burst", "Settle", "Blackout", "Reveal")
+continuous_energy = true
+breath_time = 0.14
+scatter_flash = 0.7
+scatter_flash_time = 0.3
+gather_pulse = 0.3
+fullscreen_pulse = 0.85
+burst_flash_time = 0.2
+shake = 0.60
+hitstop = 0.075

@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/reveal/acquire_reveal.tscn" id="9"]
 [ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/charge/scatter/acquire_scatter.tscn" id="10"]
 [ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/release/blackout/acquire_blackout.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/phases/charge/absorb/acquire_absorb.tscn" id="12"]
 [node name="AbilityAcquireVfx" type="Node3D"]
 process_mode = 3
 script = ExtResource("1")
@@ -22,6 +23,7 @@ initial_state = NodePath("Lift")
 [node name="Lift" parent="StateMachine" instance=ExtResource("5")]
 [node name="Scatter" parent="StateMachine" instance=ExtResource("10")]
 [node name="Gather" parent="StateMachine" instance=ExtResource("6")]
+[node name="Absorb" parent="StateMachine" instance=ExtResource("12")]
 [node name="Burst" parent="StateMachine" instance=ExtResource("7")]
 [node name="Settle" parent="StateMachine" instance=ExtResource("8")]
 [node name="Blackout" parent="StateMachine" instance=ExtResource("11")]

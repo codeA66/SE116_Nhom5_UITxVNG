@@ -23,6 +23,28 @@ extends Resource
 @export var freeze_world: bool = true
 @export var confirm_action: StringName = &"ui_accept"
 @export var phase_order: PackedStringArray = PackedStringArray(["Lift","Scatter","Gather","Burst","Settle","Blackout","Reveal"])
+## Cho bệ nhận phép tự vẽ năng lượng theo nhịp FSM; sách mặc định vẫn dùng renderer cũ.
+@export var continuous_energy: bool = false
+@export_group("Absorb")
+## Pha Hấp thu (thay Scatter + Gather ở phòng học kỹ năng): dải năng lượng xoắn từ sách cuốn vào ngực,
+## vòng co quanh người, cuối pha quả cầu sáng nuốt nhân vật rồi chuyển sang Burst
+@export var absorb_time: float = 1.7
+@export_range(1, 16) var absorb_stream_count: int = 7
+## Số vòng xoắn của mỗi dải trên đường từ sách tới ngực
+@export var absorb_stream_turns: float = 1.25
+## Bán kính xoắn lớn nhất (m), co về 0 khi tới ngực
+@export var absorb_stream_radius: float = 0.9
+@export var absorb_stream_width: float = 0.17
+## Số đoạn sáng chạy trên mỗi dải và tốc độ chạy (lượt / giây): đọc ra dòng chảy về phía nhân vật
+@export var absorb_dashes: float = 3.0
+@export var absorb_flow_speed: float = 2.2
+## Vòng co quanh người: bán kính đầu / cuối (m)
+@export var absorb_ring_radius: Vector2 = Vector2(2.4, 0.35)
+@export_range(0, 6) var absorb_ring_count: int = 3
+## Quả cầu nuốt nhân vật: bắt đầu ở phần cuối pha (tỉ lệ), bán kính tối đa (m)
+@export_range(0.0, 1.0) var absorb_orb_start: float = 0.72
+@export var absorb_orb_radius: float = 1.25
+
 @export_group("Actor and book")
 @export var visual_path: NodePath = ^"Model/Visual"
 @export var fallback_visual_path: NodePath = ^"Model"

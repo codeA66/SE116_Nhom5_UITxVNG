@@ -51,6 +51,10 @@ func configure_storage() -> void:
 	saved_progress = GameState.progress.snapshot()
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--output="): output = argument.trim_prefix("--output=")
+		if argument.begins_with("--capture-size=") and DisplayServer.get_name()!="headless":
+			var axes: PackedStringArray = argument.trim_prefix("--capture-size=").split("x")
+			if axes.size()==2 and axes[0].is_valid_int() and axes[1].is_valid_int():
+				DisplayServer.window_set_size(Vector2i(axes[0].to_int(),axes[1].to_int()))
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(output))
 ## Dùng cùng Player và camera của game; màn phẳng chỉ phục vụ unit/integration nhanh.
 func build_world(map_scene: bool) -> void:
@@ -137,6 +141,10 @@ func capture(label: String) -> void:
 	var image: Image = get_viewport().get_texture().get_image()
 	image.save_png(output.path_join(label+".png"))
 	print("HUD_CAPTURE ",label," ",image.get_size())
+## Pixel framebuffer dùng transform của viewport, khác tọa độ logic khi stretch 1080p.
+func sample_canvas(image: Image,widget: Control,local_point: Vector2) -> Color:
+	var pixel: Vector2 = get_viewport().get_stretch_transform()*widget.get_global_transform_with_canvas()*local_point
+	return image.get_pixelv(Vector2i(pixel))
 ## Đồng hồ tường và bộ đệm cấp phát trước; benchmark không ghi ảnh trong cửa sổ đo.
 func measure(label: String) -> void:
 	Engine.max_fps = 0
