@@ -39,7 +39,7 @@ func _check_blast() -> void:
 	GameState.progress.abilities.append(BLAST_DATA)
 	var area := player.wind_blast
 	var vfx := area.get_node("WindBlastVfx") as WindBlastVfx
-	var cone := player.get_node("WindBlastCone") as WindBlastCone
+	var cone := player.get_node("WindBlastCone") as WindBlastVisual
 	var pool := vfx.get_node("ImpactPool") as WindImpactPool
 	var pool_children := pool.get_child_count()
 	_check(not cone.is_processing() and not cone.visible, "lốc ngủ và ẩn khi chưa thổi")

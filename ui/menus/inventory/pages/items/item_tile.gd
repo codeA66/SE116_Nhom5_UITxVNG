@@ -37,7 +37,8 @@ func is_selected_item() -> bool:
 func _draw_content(rect: Rect2) -> void:
 	draw_rect(rect, style.tile_fill)
 	draw_rect(rect, style.tile_border, false, 1.0)
-	_draw_emblem(item.icon, rect.get_center(), rect.size.x * 0.52, style.ink, item.display_name)
+	# Có hình vẽ thì giữ màu gốc của hình; chưa có thì hình thoi màu chữ
+	_draw_emblem(item.icon, rect.get_center(), rect.size.x * 0.6, Color.WHITE if item.icon else style.ink, item.display_name)
 	if item.owned_flag.is_empty() and count > 1:
 		var font := get_theme_default_font()
 		var text := "x%d" % count

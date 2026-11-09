@@ -26,6 +26,14 @@ var _initialized: bool = false
 var _tint: Color
 var _font: Font
 var _shell: Resource
+var _fox_head: HudGlyph
+var _fox_cream: HudGlyph
+var _fox_ink: HudGlyph
+var _frame_rect: Rect2
+var _unit_count: int = 0
+var _unit_text: String = ""
+var _unit_text_width: float = 0.0
+var _caption_width: float = 0.0
 var _duration: float = 0.0
 ## Khởi tạo hình trước, chờ component sẵn sàng trước khi đọc giá trị ban đầu.
 func _ready() -> void:
@@ -43,6 +51,8 @@ func _ready() -> void:
 	set_process(false)
 	if Engine.is_editor_hint():
 		_maximum = style.energy_preview_units
+		_unit_count = _maximum
+		_update_unit_text()
 		_fill_ratio = 1.0 if _maximum>0 else 0.0
 		_write_fill()
 		return
@@ -61,6 +71,7 @@ func _exit_tree() -> void:
 func apply_style() -> void:
 	theme = style.theme
 	_font = get_theme_default_font()
+	_caption_width = _measure_caption(style.energy_label)
 	custom_minimum_size = Vector2(clampf(style.energy_size.x,1.0,maxf(style.energy_size_limit.x,1)),clampf(style.energy_size.y,1.0,maxf(style.energy_size_limit.y,1)))
 	size = custom_minimum_size
 	if _warn_active:
@@ -73,13 +84,28 @@ func apply_style() -> void:
 	var inset: float = clampf(style.energy_rim,0.0,diameter*0.4)
 	_surface.position = Vector2((size.x-diameter)*0.5+inset,inset)
 	_surface.size = Vector2.ONE*maxf(diameter-inset*2.0,1.0)
+	_frame_rect = Rect2(Vector2((size.x-diameter)*0.5,0),Vector2.ONE*diameter)
+	var vessel_uv: Rect2 = style.energy_frame_vessel_uv.intersection(Rect2(Vector2.ZERO,Vector2.ONE))
+	if style.energy_frame_texture != null and vessel_uv.has_area():
+		var art_size: Vector2 = style.energy_frame_texture.get_size()
+		var available: Vector2 = Vector2(size.x,maxf(size.y-style.energy_font_size-_pip_band(),1.0))
+		var fit: float = minf(available.x/art_size.x,available.y/art_size.y)
+		_frame_rect.size = art_size*fit
+		_frame_rect.position = Vector2((size.x-_frame_rect.size.x)*0.5,0)
+		_surface.position = _frame_rect.position+vessel_uv.position*_frame_rect.size
+		_surface.size = vessel_uv.size*_frame_rect.size
 	_material.set_shader_parameter(&"ink",style.empty_ink)
 	_material.set_shader_parameter(&"hot",style.ivory)
 	_material.set_shader_parameter(&"wave_height",clampf(style.energy_wave_height,0.0,0.12))
 	_material.set_shader_parameter(&"wave_speed",style.energy_wave_speed)
 	_material.set_shader_parameter(&"wave_frequency",style.energy_wave_frequency)
 	_material.set_shader_parameter(&"idle_wave",clampf(style.energy_idle_wave,0,1))
+	_material.set_shader_parameter(&"facet_strength",clampf(style.energy_facet_strength,0.0,0.3))
 	_shell = style.glyphs.get(&"energy_shell")
+	_fox_head = style.glyphs.get(&"energy_fox_head")
+	_fox_cream = style.glyphs.get(&"energy_fox_cream")
+	_fox_ink = style.glyphs.get(&"energy_fox_ink")
+	_update_unit_text()
 	_material.set_shader_parameter(&"masked",style.energy_mask_texture != null)
 	if style.energy_mask_texture != null: _material.set_shader_parameter(&"mask_texture",style.energy_mask_texture)
 	_write_fill()
@@ -104,6 +130,8 @@ func get_element_color() -> Color:
 ## Nội suy tỷ lệ để tăng sức chứa giữa lượt không làm mặt chất lỏng nhảy đột ngột.
 func _refresh(current: int, max_value: int) -> void:
 	_maximum = maxi(max_value,0)
+	_unit_count = clampi(current,0,_maximum)
+	_update_unit_text()
 	_from = _fill_ratio
 	_target = float(clampi(current,0,_maximum))/float(_maximum) if _maximum>0 else 0.0
 	if not _initialized or _maximum<=0:
@@ -113,6 +141,7 @@ func _refresh(current: int, max_value: int) -> void:
 		_ready_age = INF
 		_initialized = true
 		_write_fill()
+		queue_redraw()
 		return
 	_age = 0.0
 	_duration = style.energy_drop_time if _target<_from else style.energy_fill_time
@@ -160,7 +189,12 @@ func _draw() -> void:
 	var radius: float = maxf(diameter*0.5-style.stroke_width()*2.0,1.0)
 	var rim: Color = style.gold.lerp(style.damage_color,_warning)
 	if style.energy_frame_texture != null:
-		draw_texture_rect(style.energy_frame_texture,Rect2(center-Vector2.ONE*diameter*0.5,Vector2.ONE*diameter),false)
+		draw_texture_rect(style.energy_frame_texture,_frame_rect,false)
+		if _warning > 0.0 or _pulse > 0.0:
+			var vessel: Rect2 = Rect2(_surface.position,_surface.size)
+			var feedback: Color = style.damage_color if _warning > 0.0 else style.ivory
+			draw_arc(vessel.get_center(),vessel.size.y*0.5,0,TAU,style.energy_curve_steps,
+				Color(feedback,maxf(_warning,_pulse)),style.stroke_width(),true)
 	else:
 		draw_arc(center,radius,0,TAU,style.energy_curve_steps,style.ink,style.stroke_width()*4.0,true)
 		draw_arc(center,radius,PI,TAU,style.energy_curve_steps,Color(rim,clampf(style.energy_inner_rim_opacity+_pulse,0,1)),style.stroke_width(),true)
@@ -176,6 +210,45 @@ func _draw() -> void:
 				var tint: Color = rim if index<style.energy_shell_tip_start else style.energy_shell_accent.lerp(style.ivory,_pulse)
 				if stroke.size()>=2: draw_polyline(stroke,tint,style.stroke_width()/extent,true)
 			draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
-	if _font != null:
-		draw_string(_font,Vector2(0,size.y-1),style.energy_label,HORIZONTAL_ALIGNMENT_CENTER,size.x,maxi(style.energy_font_size,1),style.ink)
-		draw_string(_font,Vector2(0,size.y-2),style.energy_label,HORIZONTAL_ALIGNMENT_CENTER,size.x,maxi(style.energy_font_size,1),Color(style.ivory,0.85))
+		var crest: Vector2 = Vector2(center.x, diameter * clampf(style.energy_fox_height, 0, 0.35))
+		var crest_size: float = diameter * clampf(style.energy_fox_scale, 0, 0.35)
+		if _fox_head != null: _fox_head.draw_on(self, crest, crest_size, style.energy_fox_color, style.stroke_width())
+		if _fox_cream != null: _fox_cream.draw_on(self, crest, crest_size, style.ivory, style.stroke_width())
+		if _fox_ink != null: _fox_ink.draw_on(self, crest, crest_size, style.ink, style.stroke_width())
+	if _font != null and size.x >= _caption_width:
+		_draw_caption(style.energy_label,size.y-_pip_band())
+	_draw_units()
+## Đặt dải hạt dưới nhãn để mực trong bình vẫn liền mạch.
+func _pip_band() -> float:
+	return clampf(style.energy_pip_band,0.0,size.y)
+## Sức chứa ngoài hàng hạt dùng số gọn, không cấp phát theo sức chứa.
+func _update_unit_text() -> void:
+	_unit_text = "%d / %d" % [_unit_count,_maximum]
+	_unit_text_width = _measure_caption(_unit_text)
+## Đo chữ lúc thay dữ liệu hoặc style để không shape lại mỗi khung.
+func _measure_caption(label: String) -> float:
+	if _font == null: return 0.0
+	return _font.get_string_size(label,HORIZONTAL_ALIGNMENT_LEFT,-1,maxi(style.energy_font_size,1)).x
+## Cùng viền tối với những chữ khác để đọc trên sàn sáng.
+func _draw_caption(label: String,bottom: float) -> void:
+	var font_size: int = maxi(style.energy_font_size,1)
+	var baseline: Vector2 = Vector2(0,bottom-_font.get_descent(font_size))
+	draw_string_outline(_font,baseline,label,HORIZONTAL_ALIGNMENT_CENTER,size.x,font_size,clampi(style.text_outline_size,0,8),style.text_outline_color)
+	draw_string(_font,baseline,label,HORIZONTAL_ALIGNMENT_CENTER,size.x,font_size,style.ivory)
+## Hạt phản hồi theo đơn vị thật ngay khi tiêu, độc lập mặt mực đang chuyển động.
+func _draw_units() -> void:
+	if _maximum <= 0 or _pip_band() <= 0.0: return
+	var gap: float = maxf(style.energy_pip_gap,0.0)
+	var diameter: float = minf(style.energy_pip_diameter,minf(_pip_band(),(size.x-gap*(_maximum-1))/_maximum))
+	if _maximum > clampi(style.energy_pip_limit,1,12) or diameter < maxf(style.energy_pip_min_diameter,1.0):
+		if _font != null and size.x >= _unit_text_width:
+			_draw_caption(_unit_text,size.y)
+		return
+	var step: float = diameter+gap
+	var first: Vector2 = Vector2((size.x-step*(_maximum-1))*0.5,size.y-_pip_band()*0.5)
+	var rim: float = minf(style.stroke_width(),diameter*0.25)
+	for index: int in range(_maximum):
+		var point: Vector2 = first+Vector2.RIGHT*index*step
+		draw_circle(point,diameter*0.5,style.text_outline_color,true,-1.0,true)
+		var tint: Color = _tint.lerp(style.ivory,0.35) if index < _unit_count else style.health_empty_fill
+		draw_circle(point,diameter*0.5-rim,tint,true,-1.0,true)

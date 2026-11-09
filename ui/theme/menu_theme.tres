@@ -1,22 +1,19 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://b0egty3e0khf3"]
+
+[sub_resource type="StyleBoxEmpty" id="Empty"]
 
 [sub_resource type="SystemFont" id="Serif"]
 font_names = PackedStringArray("Cambria", "Times New Roman", "Georgia", "Serif")
-antialiasing = 1
-hinting = 1
-subpixel_positioning = 1
-
-[sub_resource type="StyleBoxEmpty" id="Empty"]
 
 [resource]
 default_font = SubResource("Serif")
 default_font_size = 26
 Button/colors/font_color = Color(0.58, 0.6, 0.63, 1)
+Button/colors/font_disabled_color = Color(0.35, 0.36, 0.38, 1)
 Button/colors/font_focus_color = Color(0.94, 0.93, 0.89, 1)
 Button/colors/font_hover_color = Color(0.94, 0.93, 0.89, 1)
-Button/colors/font_pressed_color = Color(1, 1, 1, 1)
 Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
-Button/colors/font_disabled_color = Color(0.35, 0.36, 0.38, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
 Button/styles/disabled = SubResource("Empty")
 Button/styles/focus = SubResource("Empty")
 Button/styles/hover = SubResource("Empty")

@@ -27,6 +27,5 @@ func _died(_enemy: Enemy) -> void:
 	if alive>0: return
 	if wave<3: get_tree().create_timer(1.3).timeout.connect(_spawn)
 	else:
-		var landing: Vector3=reward.global_position
-		completed=true; GardenRewards.offering(reward); GardenRewards.loot(get_parent() as Node3D,landing+Vector3.RIGHT*2,false,5,false)
+		completed=true; GardenRewards.offering(reward)
 		get_tree().create_timer(2.2).timeout.connect(func() -> void: cleared.emit())

@@ -33,6 +33,11 @@
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/spear_rack.tscn" id="decor_spear_rack"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/monkey_props/woodland/supply_cart.tscn" id="decor_supply_cart"]
 
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/plants/new_trees/jungle_umbrella.tscn" id="tree_jungle_umbrella"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/plants/new_trees/crimson_fork.tscn" id="tree_crimson_fork"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/plants/new_trees/golden_crown.tscn" id="tree_golden_crown"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/plants/new_trees/banana_fruiting.tscn" id="tree_banana_fruiting"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/modules/plants/new_trees/banana_young.tscn" id="tree_banana_young"]
 [sub_resource type="ArrayMesh" id="ArrayMesh_fjgrp"]
 resource_name = "floor_dirt_4m_Painted_Packed_Earth_001"
 _surfaces = [{
@@ -2151,6 +2156,10 @@ size = Vector3(24,0.4,10)
 albedo_color = Color(0.28,0.29,0.24,1)
 roughness = 1.0
 
+[sub_resource type="BoxMesh" id="TreeGalleryMesh"]
+size = Vector3(44,0.4,10)
+[sub_resource type="BoxShape3D" id="TreeGalleryShape"]
+size = Vector3(44,0.4,10)
 [node name="RoomTests" type="Node3D" unique_id=228413994 node_paths=PackedStringArray("overview_camera")]
 editor_description = "F6: đi thử. F2: toàn cảnh / camera Player. GardenRoom là phòng mẫu; CopyLibrary đủ 39 StaticBody3D; SpecialExamples chứa các cụm gameplay để copy. Không thuộc Level1."
 script = ExtResource("1_pn27t")
@@ -5880,3 +5889,62 @@ billboard = 1
 position = Vector3(0,5,3)
 light_energy = 1.5
 omni_range = 18.0
+
+[node name="NewTreeGallery" type="Node3D" parent="."]
+position = Vector3(0,0,39)
+[node name="Ground" type="StaticBody3D" parent="NewTreeGallery"]
+position = Vector3(0,-0.2,0)
+[node name="Surface" type="MeshInstance3D" parent="NewTreeGallery/Ground"]
+mesh = SubResource("TreeGalleryMesh")
+material_override = SubResource("WoodlandDisplayMaterial")
+[node name="Collision" type="CollisionShape3D" parent="NewTreeGallery/Ground"]
+shape = SubResource("TreeGalleryShape")
+[node name="jungle_umbrella" parent="NewTreeGallery" instance=ExtResource("tree_jungle_umbrella")]
+position = Vector3(-16,0,0)
+[node name="Label0" type="Label3D" parent="NewTreeGallery"]
+position = Vector3(-16,0.1,3.8)
+text = "CÂY TÁN XÒE"
+font_size = 32
+pixel_size = 0.01
+billboard = 1
+[node name="crimson_fork" parent="NewTreeGallery" instance=ExtResource("tree_crimson_fork")]
+position = Vector3(-8,0,0)
+[node name="Label1" type="Label3D" parent="NewTreeGallery"]
+position = Vector3(-8,0.1,3.8)
+text = "CÂY LÁ ĐỎ"
+font_size = 32
+pixel_size = 0.01
+billboard = 1
+[node name="golden_crown" parent="NewTreeGallery" instance=ExtResource("tree_golden_crown")]
+position = Vector3(0,0,0)
+[node name="Label2" type="Label3D" parent="NewTreeGallery"]
+position = Vector3(0,0.1,3.8)
+text = "CÂY LÁ VÀNG"
+font_size = 32
+pixel_size = 0.01
+billboard = 1
+[node name="banana_fruiting" parent="NewTreeGallery" instance=ExtResource("tree_banana_fruiting")]
+position = Vector3(8,0,0)
+[node name="Label3" type="Label3D" parent="NewTreeGallery"]
+position = Vector3(8,0.1,3.8)
+text = "CÂY CHUỐI CÓ TRÁI"
+font_size = 32
+pixel_size = 0.01
+billboard = 1
+[node name="banana_young" parent="NewTreeGallery" instance=ExtResource("tree_banana_young")]
+position = Vector3(16,0,0)
+[node name="Label4" type="Label3D" parent="NewTreeGallery"]
+position = Vector3(16,0.1,3.8)
+text = "CÂY CHUỐI KHÔNG TRÁI"
+font_size = 32
+pixel_size = 0.01
+billboard = 1
+[node name="Walkway" type="StaticBody3D" parent="NewTreeGallery"]
+position = Vector3(0,-0.2,-6)
+[node name="Surface" type="MeshInstance3D" parent="NewTreeGallery/Walkway"]
+mesh = SubResource("TreeGalleryMesh")
+scale = Vector3(0.25,1,0.5)
+material_override = SubResource("WoodlandDisplayMaterial")
+[node name="Collision" type="CollisionShape3D" parent="NewTreeGallery/Walkway"]
+shape = SubResource("TreeGalleryShape")
+scale = Vector3(0.25,1,0.5)

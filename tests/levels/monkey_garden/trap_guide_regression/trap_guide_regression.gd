@@ -70,7 +70,7 @@ func _case(path: String, missing_links: bool) -> void:
 		if seal == trap.seals[2]:
 			_check(not trap.completed and not trap.reward.available,context+" first three seals do not clear the five-seal trial")
 	await _frames(145)
-	_check(trap.completed and trap.reward.available and trap.item.available,context+" rewards land after all five seals")
+	_check(trap.completed and trap.reward.available,context+" rewards land after all five seals")
 	_check(not trap.wind_ambush.hazard.running,context+" clear stops wind")
 	var stopped: Vector3 = trap.seals[0].global_position
 	await _frames(185)
@@ -127,7 +127,7 @@ func _right_room_and_boss(path: String) -> void:
 	_check(not challenge.completed and trial.gates[0].is_locked(),"four roof kills do not unlock room with grunts alive")
 	for guard: Enemy in grunts: guard.health.take_damage(999)
 	await _frames(150)
-	_check(challenge.completed and challenge.reward.available and challenge.item.available,"all seven kills award offering and healing fruit")
+	_check(challenge.completed and challenge.reward.available,"all seven kills award offering")
 	_check(not trial.gates[0].is_locked(),"clearing all seven opens room gate")
 	player.teleport(tier.global_position+Vector3(55,0.1,-8),Vector3.FORWARD)
 	await _frames(4)

@@ -7,6 +7,10 @@ const Style = preload("res://resources/ui/hud_style.gd")
 @export var player_path: NodePath
 @export var style: Style = preload("res://resources/ui/hud_style.tres")
 var _slots: Array[Slot] = []
+var _panel_outline: PackedVector2Array = PackedVector2Array()
+var _panel_height: float = 0.0
+var _divider_x: float = NAN
+var _layout_scale: float = 1.0
 @onready var _binding_refresh: Timer = $BindingRefresh
 ## Cache con trực tiếp một lần; đợi Player.ready trước khi lấy state_machine.
 func _ready() -> void:
@@ -26,16 +30,53 @@ func _ready() -> void:
 ## Giữ các node name/path đang được VFX nhận kỹ năng và test sử dụng.
 func apply_style() -> void:
 	var radius: float = style.get_skill_radius()
-	var padding: float = clampf(style.skill_padding,0,16)
 	var step: float = style.get_skill_step()
-	var extent: float = step+radius+padding
-	custom_minimum_size = Vector2.ONE*extent*2
+	var min_anchor: Vector2 = Vector2.ZERO
+	var max_anchor: Vector2 = Vector2.ZERO
+	for slot_node: Slot in _slots:
+		var anchor: Vector2 = style.skill_anchors.get(slot_node.glyph_id, Vector2.ZERO)
+		min_anchor = min_anchor.min(anchor)
+		max_anchor = max_anchor.max(anchor)
+	var edge: float = radius + style.stroke_width()
+	var bottom: float = edge
+	if style.skill_show_key_badges:
+		var badge_bottom: float = style.skill_badge_anchor.y * radius + clampf(style.skill_badge_height, 1, 64) * 0.5
+		bottom = maxf(bottom, badge_bottom * style.get_active_scale() + style.stroke_width())
+	var first_center: Vector2 = Vector2.ONE * edge - min_anchor * step
+	custom_minimum_size = (max_anchor - min_anchor) * step + Vector2(edge * 2, edge + bottom)
 	size = custom_minimum_size
+	var width: float = custom_minimum_size.x
+	_panel_height = (max_anchor.y - min_anchor.y) * step + edge * 2.0
+	var bevel: float = radius * 0.35
+	_panel_outline = PackedVector2Array([Vector2.ZERO, Vector2(width-bevel,0), Vector2(width,bevel),
+		Vector2(width,_panel_height), Vector2(bevel,_panel_height), Vector2(0,_panel_height-bevel), Vector2.ZERO])
+	_divider_x = NAN
+	if style.skill_divider_column > min_anchor.x and style.skill_divider_column < max_anchor.x:
+		_divider_x = first_center.x + style.skill_divider_column * step
+	queue_redraw()
 	for slot_node: Slot in _slots:
 		slot_node.style = style
 		slot_node.apply_style()
+		slot_node.set_binding_space(step/style.get_active_scale(),_layout_scale)
 		var anchor: Vector2 = style.skill_anchors.get(slot_node.glyph_id,Vector2.ZERO)
-		slot_node.position = Vector2.ONE*extent+anchor*step-slot_node.size*0.5
+		slot_node.position = first_center + anchor * step - slot_node.size * 0.5
+## Chỉ kiểm tra lại ngưỡng đọc khi bố cục đổi, không dò mỗi frame.
+func set_layout_scale(value: float) -> void:
+	if is_equal_approx(_layout_scale,value): return
+	_layout_scale = value
+	var width: float = style.get_skill_step()/style.get_active_scale()
+	for slot_node: Slot in _slots:
+		slot_node.set_binding_space(width,_layout_scale)
+## Một nền chung để các dấu hồi chiêu và trang bị nổi hơn viền từng ô.
+func _draw() -> void:
+	if not style.skill_shared_panel or _panel_outline.size() < 3: return
+	var line: float = style.stroke_width()
+	draw_colored_polygon(_panel_outline,style.skill_fill)
+	draw_polyline(_panel_outline,style.ink,line,true)
+	draw_line(_panel_outline[0]+Vector2.ONE*line,_panel_outline[1]+Vector2.DOWN*line,Color(style.gold,0.35),line,true)
+	if is_finite(_divider_x):
+		var inset: float = style.get_skill_radius() * 0.45
+		draw_line(Vector2(_divider_x,inset),Vector2(_divider_x,_panel_height-inset),Color(style.gold,0.40),line,true)
 ## Không đọc onready của chủ sở hữu khi chính HUD vẫn đang ready trước chủ.
 func _connect_player() -> void:
 	if player_path.is_empty(): return

@@ -1,6 +1,6 @@
 class_name WindBlastData
 extends SkillData
-## Thông số kỹ năng thổi gió. Gió không gây sát thương, chỉ đẩy; sát thương đến từ môi trường.
+## Thông số kỹ năng thổi gió: đẩy mọi vật nhận gió, và gây `damage` cho thứ có máu trúng gió (mỗi lần thổi một lần).
 ## Chỉnh trong file .tres, không cần sửa code.
 
 const ID := &"wind_blast"
@@ -12,6 +12,10 @@ const ID := &"wind_blast"
 @export var reach: float = 5.0
 @export var width: float = 2.5
 @export var height: float = 2.0
+
+@export_group("Damage")
+## Sát thương cho mỗi mục tiêu có máu trúng gió (luật game: 1); 0 = chỉ đẩy
+@export var damage: int = 1
 
 @export_group("Timing")
 ## Mốc (giây) bắt đầu thổi, khớp với lúc vung tay trong animation

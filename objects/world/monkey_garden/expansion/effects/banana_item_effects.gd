@@ -10,8 +10,3 @@ static func particles(loop: bool) -> CPUParticles3D:
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; mat.emission_enabled = true; mat.emission = Color("25b950"); mesh.material = mat
 	effect.mesh = mesh; effect.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF; effect.emitting = false
 	return effect
-
-static func heal(player: Player) -> void:
-	GardenCombatEffects.pulse(player.get_parent(),player.global_position+Vector3.UP*0.05,0.9,Color("6cff9d"))
-	var effect: CPUParticles3D = particles(false); player.add_child(effect); effect.position.y = 0.4; effect.restart(); effect.emitting = true
-	player.get_tree().create_timer(1.3,false).timeout.connect(effect.queue_free)

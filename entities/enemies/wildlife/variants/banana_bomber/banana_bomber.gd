@@ -4,10 +4,11 @@ extends MonkeyGrunt
 signal armed
 signal exploded
 const BLAST: PackedScene = preload("res://assets/vfx/enemies/monkey/banana_blast/banana_blast.tscn")
-@export var fuse_time: float = 5.0
+@export_range(0.1, 15.0, 0.1) var fuse_time: float = 2.0
+@export_range(0.1, 3.0, 0.05) var speed_multiplier: float = 1.3
+@export_range(0.02, 0.25, 0.01) var wind_detonation_delay: float = 0.08
 @export var blast_radius: float = 3.2
 @export var blast_push: float = 9.0
-@export var ammo_drop_amount: int = 3
 var is_armed: bool = false
 var fuse_elapsed: float = 0.0
 var _exploding: bool = false
@@ -20,6 +21,9 @@ var _hands: Vector2i
 var _pool: ObjectPool
 
 func _ready() -> void:
+	data = data.duplicate() as WildEnemyData
+	data.movement = data.movement.duplicate() as MovementStats
+	data.movement.max_speed = preload("res://entities/enemies/wildlife/monkey_grunt/movement.tres").max_speed*speed_multiplier
 	super()
 	_skeleton = get_node("Model/Visual/Rig").find_children("*", "Skeleton3D", true, false)[0] as Skeleton3D
 	_hands = Vector2i(_skeleton.find_bone("CATRigLArmPalm"),_skeleton.find_bone("CATRigRArmPalm001"))
@@ -84,9 +88,6 @@ func _process(delta: float) -> void:
 	_bomb_material.emission_energy_multiplier = 0.35 + progress*0.65
 
 func _on_died() -> void:
-	if ammo_drop_amount > 0:
-		# Tạo Area tương tác sau bước physics; đạn chết thường không dùng hiệu ứng rơi thưởng phòng.
-		GardenRewards.loot.call_deferred(get_parent(),global_position,false,ammo_drop_amount,false)
 	is_armed = false
 	if _banana: _banana.hide()
 	set_process(false)
@@ -114,3 +115,14 @@ func _detonate() -> void:
 		ForcedImpulse.push(actor,direction*blast_push)
 	exploded.emit()
 	health.take_damage(health.current_health)
+
+func apply_battle_buff(duration: float = 10.0) -> void:
+	super(duration)
+	if wind_receiver: wind_receiver.set_push_immunity(false)
+
+func _on_wind_pushed(impulse: Vector3) -> void:
+	if is_dead() or _exploding: return
+	arm(); _exploding = true
+	super(impulse)
+	# Để lực gió dịch chuyển body trước khi nổ, không nổ ngay tại điểm va chạm ban đầu.
+	get_tree().create_timer(wind_detonation_delay,false).timeout.connect(_detonate)

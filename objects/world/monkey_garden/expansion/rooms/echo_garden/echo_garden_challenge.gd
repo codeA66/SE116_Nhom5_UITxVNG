@@ -2,7 +2,6 @@ class_name EchoGardenChallenge
 extends Node3D
 signal cleared
 @export var reward: OfferingBanana
-@export var item: BananaItemPickup
 @export var pads: Array[EchoPad] = []
 @export var guide: GardenTotemGuide
 @export var display: Label3D
@@ -72,7 +71,7 @@ func _step(index: int) -> void:
 		completed = true; display.text = "KÝ ỨC ĐÃ THỨC TỈNH"
 		if is_instance_valid(_saved_camera) and _camera.is_current(): _saved_camera.make_current()
 		GardenCombatEffects.confetti(get_parent(),global_position+Vector3.UP)
-		GardenRewards.offering(reward); item.reveal()
+		GardenRewards.offering(reward)
 		get_tree().create_timer(2.2,false).timeout.connect(func() -> void: cleared.emit())
 
 func _focus_camera() -> void:

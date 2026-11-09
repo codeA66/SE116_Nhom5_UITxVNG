@@ -1,6 +1,8 @@
 class_name AbilityAcquireRenderer
 extends Node3D
 ## Hạt dùng slot cố định trong MultiMesh; shader chạy chuyển động, CPU chỉ gửi thời gian.
+signal spatial_frame(phase: int, progress: float, focus: Vector3)
+
 const Tuning = preload("res://resources/feedback/ability_acquire/ability_acquire_data.gd")
 const MOTE_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/spatial/acquire_motes.gdshader")
 const RAY_SHADER: Shader = preload("res://assets/shaders/screen/ability_acquire/spatial/acquire_rays.gdshader")
@@ -56,6 +58,9 @@ func _ready() -> void:
 	if _quad == null:
 		_quad = QuadMesh.new()
 		_quad.size = Vector2.ONE
+	# Bệ đã có mesh riêng nên không dựng pool và probe hạt cũ cho cùng một cảnh.
+	if data.continuous_energy:
+		return
 	_mote_mat = _make_material(MOTE_SHADER)
 	_ray_mat = _make_material(RAY_SHADER)
 	_ring_mat = _make_material(RING_SHADER)
@@ -149,14 +154,15 @@ func prepare_source(source: Node3D) -> void:
 func bind_actor(actor: Node3D, visual: Node3D, ability: AbilityData) -> void:
 	global_transform = Transform3D(Basis.IDENTITY, actor.global_position)
 	_actor_visual = visual
-	_prepare_flights()
 	_accent = ability.accent_color if ability != null else data.fallback_accent
-	for material: ShaderMaterial in [_mote_mat, _ray_mat, _ring_mat]:
-		material.set_shader_parameter(&"accent", _accent)
-	_mote_mat.set_shader_parameter(&"textured", ability.particle_texture != null)
-	if ability.particle_texture != null: _mote_mat.set_shader_parameter(&"mote_texture", ability.particle_texture)
-	var camera: Camera3D = get_viewport().get_camera_3d()
-	if camera != null: _mote_mat.set_shader_parameter(&"toward_camera", camera.global_basis.z.normalized())
+	if not data.continuous_energy:
+		_prepare_flights()
+		for material: ShaderMaterial in [_mote_mat, _ray_mat, _ring_mat]:
+			material.set_shader_parameter(&"accent", _accent)
+		_mote_mat.set_shader_parameter(&"textured", ability.particle_texture != null)
+		if ability.particle_texture != null: _mote_mat.set_shader_parameter(&"mote_texture", ability.particle_texture)
+		var camera: Camera3D = get_viewport().get_camera_3d()
+		if camera != null: _mote_mat.set_shader_parameter(&"toward_camera", camera.global_basis.z.normalized())
 	if is_instance_valid(_source):
 		_source_transform = _source.global_transform
 		_source_visible = _source.visible
@@ -171,6 +177,9 @@ func bind_actor(actor: Node3D, visual: Node3D, ability: AbilityData) -> void:
 			emitter.hide()
 ## Chuyển số slot một lần khi vào pha; số không luôn có nghĩa là không vẽ hạt.
 func enter_phase(phase: int) -> void:
+	if data.continuous_energy:
+		update_phase(phase, 0.0, 0.0)
+		return
 	clear_visuals()
 	var count: int = data.book_mote_count
 	if phase == PHASE_SCATTER: count = data.mote_count
@@ -198,6 +207,9 @@ func enter_phase(phase: int) -> void:
 func update_phase(phase: int, progress: float, clock: float) -> void:
 	var focus: float = data.focus_height
 	if is_instance_valid(_actor_visual): focus += _actor_visual.global_position.y - global_position.y
+	if data.continuous_energy:
+		spatial_frame.emit(phase, progress, global_position + Vector3.UP * focus)
+		return
 	var strength: float = clampf(data.burst_intensity, 0.0, data.maximum_intensity) if phase == 2 else 1.0
 	var alpha: float = strength
 	_mote_mat.set_shader_parameter(&"clock", clock)
@@ -221,6 +233,10 @@ func update_book(progress: float) -> void:
 	for material: ShaderMaterial in _dissolves:
 		material.set_shader_parameter(&"dissolve", progress)
 	if progress >= 1.0: _source.hide()
+## Chỗ sách tan (đỉnh lúc nâng): pha Hấp thu cho dòng năng lượng xuất phát từ đây. Không có sách thì trả fallback
+func get_source_point(fallback: Vector3) -> Vector3:
+	if not is_instance_valid(_source): return fallback
+	return _source_transform.origin + Vector3.UP * data.book_rise
 ## Không để mesh alpha bằng không vẫn tốn draw ở trạng thái nghỉ.
 func clear_visuals() -> void:
 	_active_slots = 0
