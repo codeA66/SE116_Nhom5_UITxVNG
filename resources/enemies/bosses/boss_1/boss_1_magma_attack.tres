@@ -1,10 +1,9 @@
-[gd_resource type="Resource" script_class="AttackData" format=3]
+[gd_resource type="Resource" script_class="AttackData" format=3 uid="uid://cy16knn02tkqb"]
 
-[ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="1_attack"]
+[ext_resource type="Script" uid="uid://bco0nr7ogmwo" path="res://entities/_base/data/attack_data.gd" id="1_attack"]
 
 [resource]
 script = ExtResource("1_attack")
 damage = 2
 knockback = 7.0
-hitstop = 0.05
 duration = 3.0

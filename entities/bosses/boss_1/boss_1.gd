@@ -362,7 +362,17 @@ func hide_jump_indicator() -> void:
 
 func trigger_ground_slam() -> void:
 	if shockwave and shockwave_data:
-		shockwave.launch(global_position, shockwave_data, self)
+		var slam_pos: Vector3 = global_position
+		var space_state := get_world_3d().direct_space_state
+		var query := PhysicsRayQueryParameters3D.create(
+			global_position + Vector3.UP * 1.5,
+			global_position + Vector3.DOWN * 10.0,
+			1
+		)
+		var hit := space_state.intersect_ray(query)
+		if not hit.is_empty():
+			slam_pos.y = (hit["position"] as Vector3).y
+		shockwave.launch(slam_pos, shockwave_data, self)
 	var shake: Node = get_node_or_null(^"/root/ScreenShake")
 	if shake and shake.has_method(&"add_trauma"):
 		shake.add_trauma(0.5)
@@ -381,7 +391,18 @@ func start_magma_stomp_cooldown() -> void:
 		_magma_stomp_timer = data.magma_stomp_cooldown_phase3
 
 
+func show_magma_indicators(duration: float) -> void:
+	if radial_magma_hazard and radial_magma_hazard.has_method(&"show_telegraph"):
+		radial_magma_hazard.show_telegraph(global_position, duration)
+
+
+func hide_magma_indicators() -> void:
+	if radial_magma_hazard and radial_magma_hazard.has_method(&"hide_telegraph"):
+		radial_magma_hazard.hide_telegraph()
+
+
 func trigger_magma_stomp() -> void:
+	hide_magma_indicators()
 	if radial_magma_hazard and magma_attack_data and radial_magma_hazard.has_method(&"launch"):
 		radial_magma_hazard.launch(global_position, magma_attack_data)
 	var shake: Node = get_node_or_null(^"/root/ScreenShake")

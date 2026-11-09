@@ -22,6 +22,11 @@ func enter(_previous: StringName) -> void:
 	
 	boss.play_action(&"Taunt", anim_speed)
 	boss.start_magma_stomp_cooldown()
+	boss.show_magma_indicators(_effective_impact)
+
+
+func exit() -> void:
+	boss.hide_magma_indicators()
 
 
 func physics_update(delta: float) -> void:

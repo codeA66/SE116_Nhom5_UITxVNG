@@ -89,6 +89,8 @@ func _ready() -> void:
 	area.charge_started.connect(_on_charge_started)
 	area.blast_started.connect(_on_blast_started)
 	area.blast_stopped.connect(_on_blast_stopped)
+	if area.has_signal(&"dissipated"):
+		area.connect(&"dissipated", _on_dissipated)
 
 
 func _process(delta: float) -> void:
@@ -145,6 +147,11 @@ func _on_blast_started(data: WindBlastData) -> void:
 func _on_blast_stopped() -> void:
 	if _phase == Phase.CHARGE:
 		_finish()
+
+
+func _on_dissipated() -> void:
+	if _phase == Phase.TRAVEL:
+		_enter(Phase.DISSOLVE)
 
 
 # ---------- Pha ----------

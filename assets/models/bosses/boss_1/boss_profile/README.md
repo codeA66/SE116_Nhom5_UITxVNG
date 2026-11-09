@@ -9,24 +9,26 @@ Gói tài nguyên hoàn chỉnh của Boss (3D Model, Texture, Animation Library
 ```
 boss_profile/
 ├── README.md                          # Tài liệu hướng dẫn này
-├── Boss2.glb                          # 3D Model nhân vật (15k polygon, đã tối ưu)
-├── Boss2_texture_pbr_20250901.png      # Texture bề mặt PBR
 ├── boss.tscn                          # Scene visual chuẩn của Boss (có sẵn Skeleton + AnimationPlayer)
+├── model/
+│   ├── boss_1.glb                     # 3D Model nhân vật (15k polygon, đã tối ưu)
+│   └── boss_1_texture_pbr_20250901.png # Texture bề mặt PBR
 ├── animation/
-│   └── boss_animation_library.tres    # Thư viện toàn bộ 10 Animation đã chuẩn hóa
+│   └── boss_animation_library.tres    # Thư viện toàn bộ Animation đã chuẩn hóa
 ├── vfx/
 │   └── fireball_vfx/                  # 3D Model hiệu ứng quả cầu lửa (scene.gltf, scene.bin)
-└── source_fbx/                        # Các file animation FBX gốc tải từ Mixamo
-    ├── Mutant Swiping.fbx
-    ├── Mutant Swiping(flip).fbx
-    ├── Fireball.fbx
-    ├── Mutant Jump Attack.fbx
-    ├── Orc Idle.fbx
-    ├── Mutant Dying.fbx
-    ├── Mutant Roaring.fbx
-    ├── Standing Taunt Battlecry.fbx
-    ├── Mutant Breathing Idle.fbx
-    └── Mutant Walking.fbx
+└── source_fbx/                        # Các file animation FBX gốc (đã chuẩn hóa snake_case)
+    ├── normal_attack_1.fbx
+    ├── normal_attack_2.fbx
+    ├── cast_fireball.fbx
+    ├── jump_attack.fbx
+    ├── orc_idle.fbx
+    ├── dying.fbx
+    ├── roaring.fbx
+    ├── taunt.fbx
+    ├── idle.fbx
+    ├── walk.fbx
+    └── walk_0.png
 ```
 
 ---

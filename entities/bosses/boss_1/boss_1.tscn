@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" path="res://objects/combat/projectiles/boss_fireball/boss_fireball.tscn" id="7_fireball_scene"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="7_udfoe"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/shield_bearer/shield_bearer.tscn" id="8_e8xyt"]
-[ext_resource type="PackedScene" uid="uid://obc4uovdwcms" path="res://assets/models/bosses/boss_1/boss_profile/model/Boss2.glb" id="8_model"]
+[ext_resource type="PackedScene" uid="uid://obc4uovdwcms" path="res://assets/models/bosses/boss_1/boss_profile/model/boss_1.glb" id="8_model"]
 [ext_resource type="AnimationLibrary" uid="uid://d0152rh1bnn6d" path="res://assets/models/bosses/boss_1/boss_profile/animation/boss_animation_library.tres" id="9_anim_lib"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="9_oev2t"]
 [ext_resource type="Script" uid="uid://sx06x8j6a2f6" path="res://components/combat/hitbox/hitbox_component.gd" id="10_hitbox"]
@@ -24,7 +24,7 @@
 [ext_resource type="Script" uid="uid://dcw3vx1e8jus3" path="res://entities/bosses/boss_1/states/status/boss_dead.gd" id="19_dead"]
 [ext_resource type="Script" uid="uid://s7jerl65hpte" path="res://components/core/object_pool/object_pool.gd" id="20_pool"]
 [ext_resource type="PackedScene" path="res://objects/combat/indicators/aoe_circle_indicator.tscn" id="21_indicator"]
-[ext_resource type="Resource" path="res://resources/enemies/bosses/boss_1/boss_1_magma_attack.tres" id="22_magma_attack"]
+[ext_resource type="Resource" uid="uid://cy16knn02tkqb" path="res://resources/enemies/bosses/boss_1/boss_1_magma_attack.tres" id="22_magma_attack"]
 [ext_resource type="PackedScene" path="res://entities/bosses/boss_1/hazards/magma_spike/radial_magma_hazard.tscn" id="23_radial_magma"]
 [ext_resource type="Script" uid="uid://doo7idk7m0xsa" path="res://entities/bosses/boss_1/states/attack/boss_magma_stomp.gd" id="24_magma_stomp"]
 
@@ -77,6 +77,8 @@ phase3_caster_count = 1
 minion_spawn_radius = 4.5
 roar_push_radius = 6.5
 roar_push_force = 14.0
+hit_flash_color = Color(1, 0.15, 0.15, 0.75)
+hit_flash_time = 0.12
 movement = ExtResource("4_movement")
 
 [node name="CollisionShape3D" parent="." index="0"]
@@ -153,6 +155,7 @@ script = ExtResource("15_jump_slam")
 
 [node name="MagmaStomp" type="Node" parent="StateMachine" index="4" unique_id=987654321]
 script = ExtResource("24_magma_stomp")
+anim_speed_mult = 0.6
 
 [node name="Buff" type="Node" parent="StateMachine" index="5" unique_id=1494301180]
 script = ExtResource("16_buff")

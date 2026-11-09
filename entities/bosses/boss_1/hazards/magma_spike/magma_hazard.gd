@@ -6,11 +6,19 @@ signal finished
 
 const SECTION_COUNT: int = 11
 
+## Bật tùy chọn này để tự do chỉnh tay các CollisionShape3D trong scene (Hitbox/CollisionShape3D...)
+## Code sẽ tôn trọng vị trí/kích thước do bạn chỉnh trong editor, không tự động tính toán đè lên.
+@export var manual_hitbox: bool = true
+
 @export var collision_padding: float = 0.15
 @export var active_start: float = 0.05
 @export var active_end: float = 3.0
 @export var lifetime: float = 3.2
 @export var knock_up: float = 4.0
+## Tỉ lệ thu nhỏ hitbox so với model trực quan (0.82 = nhỏ hơn 18% để né đòn công bằng)
+@export_range(0.5, 1.0) var hitbox_shrink_ratio: float = 0.82
+## Hệ số thu hẹp đỉnh chóp gai (tạo hình nêm lăng trụ tam giác nhọn dần lên đỉnh)
+@export_range(0.1, 0.8) var tip_taper_ratio: float = 0.4
 
 var age: float = 0.0
 var running: bool = false
@@ -27,6 +35,7 @@ var _growth_time: float = 0.5
 @onready var hitbox: HitboxComponent = $Hitbox
 @onready var visual: Node3D = $Visual
 @onready var _shape: CollisionShape3D = $Hitbox/CollisionShape3D
+@onready var wind_receiver: WindReceiverComponent = get_node_or_null(^"WindReceiver")
 
 
 func _ready() -> void:
@@ -34,6 +43,8 @@ func _ready() -> void:
 	visual.set(&"manual_clock", true)
 	visual.set_process(false)
 	hitbox.hit.connect(_on_hit)
+	if wind_receiver:
+		wind_receiver.pushed.connect(_on_wind_pushed)
 	_build_sections()
 	pool_released()
 
@@ -46,6 +57,12 @@ func start(attack_data: AttackData, at: Vector3, facing: Vector3) -> void:
 	_activated = false
 	running = true
 	visible = true
+	_settled.fill(false)
+	for section: CollisionShape3D in _sections:
+		section.disabled = true
+	if wind_receiver:
+		wind_receiver.enabled = true
+		wind_receiver.monitorable = true
 	visual.call(&"seek", 0.0)
 	_update_hitbox()
 	set_physics_process(true)
@@ -61,6 +78,9 @@ func pool_released() -> void:
 	set_physics_process(false)
 	if hitbox:
 		hitbox.deactivate()
+	if wind_receiver:
+		wind_receiver.enabled = false
+		wind_receiver.monitorable = false
 	visual.call(&"seek", -1.0)
 	_settled.fill(false)
 	for section: CollisionShape3D in _sections:
@@ -74,7 +94,14 @@ func cancel() -> void:
 	running = false
 	if hitbox:
 		hitbox.deactivate()
+	if wind_receiver:
+		wind_receiver.enabled = false
+		wind_receiver.monitorable = false
 	visible = false
+	visual.call(&"seek", -1.0)
+	_settled.fill(false)
+	for section: CollisionShape3D in _sections:
+		section.set_deferred(&"disabled", true)
 	set_physics_process(false)
 	finished.emit()
 
@@ -98,6 +125,14 @@ func _physics_process(delta: float) -> void:
 
 
 func _build_sections() -> void:
+	if manual_hitbox:
+		_sections.clear()
+		for child in hitbox.get_children():
+			if child is CollisionShape3D:
+				child.disabled = true
+				_sections.append(child)
+		return
+	
 	var config: Resource = visual.get(&"style") as Resource
 	if config == null:
 		return
@@ -142,7 +177,8 @@ func _build_sections() -> void:
 		box = AABB(Vector3(box.position.x, 0.0, near_z), Vector3(box.size.x, maxf(box.end.y, 0.2), far_z - near_z))
 		_bounds[index] = box
 		var section: CollisionShape3D = _shape if index == 0 else CollisionShape3D.new()
-		section.shape = BoxShape3D.new()
+		var poly := ConvexPolygonShape3D.new()
+		section.shape = poly
 		section.disabled = true
 		if index > 0:
 			hitbox.add_child(section)
@@ -152,6 +188,13 @@ func _build_sections() -> void:
 
 
 func _update_hitbox() -> void:
+	if manual_hitbox:
+		var should_enable: bool = (age >= active_start and age < active_end)
+		for section: CollisionShape3D in _sections:
+			if section.disabled == should_enable:
+				section.disabled = not should_enable
+		return
+	
 	for index: int in _sections.size():
 		var section: CollisionShape3D = _sections[index]
 		if age >= _deaths[index] or age <= _births[index]:
@@ -165,15 +208,53 @@ func _update_hitbox() -> void:
 		if section.disabled:
 			continue
 		var box: AABB = _bounds[index]
-		var size_value: Vector3 = box.size * Vector3(pow(growth, 0.6), growth, pow(growth, 0.6))
-		(section.shape as BoxShape3D).size = size_value
-		section.position = Vector3(box.get_center().x, size_value.y * 0.5, box.get_center().z)
+		var current_growth := growth
+		
+		# Kích thước co gọn theo hitbox_shrink_ratio (nhỏ hơn model ~18%) và lớn dần theo growth
+		var half_w: float = maxf((box.size.x * hitbox_shrink_ratio * 0.5) * pow(current_growth, 0.6), 0.05)
+		var half_d: float = maxf((box.size.z * hitbox_shrink_ratio * 0.5) * pow(current_growth, 0.6), 0.05)
+		var height: float = maxf((box.size.y * hitbox_shrink_ratio) * current_growth, 0.05)
+		var center_x: float = box.get_center().x
+		var center_z: float = box.get_center().z
+		
+		var taper: float = tip_taper_ratio
+		
+		# 6 đỉnh lăng trụ đứng đáy tam giác (nêm chóp gai):
+		# Đáy sàn (y = 0): tam giác hướng mũi nhọn về phía trước +Z
+		# Đáy trên (y = height): tam giác thu nhỏ nhọn hơn nữa về phía đỉnh
+		var points := PackedVector3Array([
+			# Đáy sàn (y = 0)
+			Vector3(-half_w, 0.0, -half_d),
+			Vector3( half_w, 0.0, -half_d),
+			Vector3(    0.0, 0.0,  half_d),
+			# Đáy trên (y = height)
+			Vector3(-half_w * taper, height, -half_d * taper),
+			Vector3( half_w * taper, height, -half_d * taper),
+			Vector3(            0.0, height,  half_d * taper),
+		])
+		
+		var poly := section.shape as ConvexPolygonShape3D
+		if poly:
+			poly.points = points
+		section.position = Vector3(center_x, 0.0, center_z)
 		_settled[index] = is_equal_approx(growth, 1.0)
 
 
 func _on_hit(hurtbox: HurtboxComponent) -> void:
 	if knock_up <= 0.0:
 		return
+	if hurtbox.is_invincible():
+		return
 	var body: CharacterBody3D = hurtbox.owner as CharacterBody3D
 	if body != null:
 		body.velocity.y = maxf(body.velocity.y, knock_up)
+
+
+func _on_wind_pushed(_impulse: Vector3) -> void:
+	if not running:
+		return
+	var spark_pos := wind_receiver.global_position if wind_receiver else (global_position + Vector3(0.0, 1.0, 2.0))
+	var combat_fx: Node = get_node_or_null(^"/root/CombatFx")
+	if combat_fx and combat_fx.has_method(&"play_hit_spark"):
+		combat_fx.play_hit_spark(spark_pos, -global_basis.z)
+	cancel()
