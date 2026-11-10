@@ -1,0 +1,65 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/charm/charm_pickup.gd" id="1_pickup"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 1.6
+
+[sub_resource type="StandardMaterial3D" id="Gem"]
+albedo_color = Color(1, 0.93, 0.74, 1)
+metallic = 0.3
+roughness = 0.25
+emission_enabled = true
+emission = Color(1, 0.86, 0.55, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="SphereMesh" id="GemMesh"]
+material = SubResource("Gem")
+radius = 0.22
+height = 0.5
+radial_segments = 6
+rings = 2
+
+[sub_resource type="StandardMaterial3D" id="Band"]
+albedo_color = Color(0.32, 0.22, 0.12, 1)
+metallic = 0.6
+roughness = 0.4
+
+[sub_resource type="TorusMesh" id="BandMesh"]
+material = SubResource("Band")
+inner_radius = 0.2
+outer_radius = 0.26
+rings = 16
+ring_segments = 6
+
+[node name="CharmPickup" type="Node3D"]
+script = ExtResource("1_pickup")
+spin_speed = 1.2
+
+[node name="Visual" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+
+[node name="Gem" type="MeshInstance3D" parent="Visual"]
+cast_shadow = 0
+mesh = SubResource("GemMesh")
+
+[node name="Band" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("BandMesh")
+
+[node name="Glow" type="OmniLight3D" parent="Visual"]
+light_color = Color(1, 0.88, 0.6, 1)
+light_energy = 1.2
+omni_range = 3.0
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2_interact")
+prompt_text = "NHẶT BÙA"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Range")
