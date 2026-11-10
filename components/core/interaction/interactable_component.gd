@@ -9,8 +9,12 @@ signal interacted(interactor: Node3D)
 @export var prompt_text: String = "INTERACT"
 ## Điểm neo gợi ý so với vật, UI chiếu điểm này lên màn hình
 @export var prompt_offset: Vector3 = Vector3.ZERO
+## Thao tác có ngữ cảnh (đặt đồ lên bục) được ưu tiên hơn thao tác dự phòng (thả đồ).
+@export var interaction_priority: int = 0
 
 var enabled: bool = true
+## Chủ vật thể gán điều kiện riêng, không cần sửa Interactor khi thêm loại tương tác.
+var availability_check: Callable
 
 
 func _ready() -> void:
@@ -23,6 +27,10 @@ func get_prompt_position() -> Vector3:
 
 
 func interact(interactor: Node3D) -> void:
-	if not enabled:
+	if not can_interact(interactor):
 		return
 	interacted.emit(interactor)
+
+
+func can_interact(interactor: Node3D) -> bool:
+	return enabled and (not availability_check.is_valid() or bool(availability_check.call(interactor)))

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3]
+
+[ext_resource type="Script" path="res://abilities/ability_data.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/fire.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"lava_boots"
+display_name = "Giày Dung Nham"
+icon = ExtResource("2_icon")
+accent_color = Color(1, 0.48, 0.18, 1)
+description = "Đế giày rèn từ đá núi lửa: đi trên dung nham không còn bị bỏng."
+acquire_verb = "Đã nhận"
+acquire_prompt = "Giờ có thể đi trên dung nham mà không mất máu."

@@ -27,6 +27,8 @@
 [ext_resource type="Resource" uid="uid://cy16knn02tkqb" path="res://resources/enemies/bosses/boss_1/boss_1_magma_attack.tres" id="22_magma_attack"]
 [ext_resource type="PackedScene" path="res://entities/bosses/boss_1/hazards/magma_spike/radial_magma_hazard.tscn" id="23_radial_magma"]
 [ext_resource type="Script" uid="uid://doo7idk7m0xsa" path="res://entities/bosses/boss_1/states/attack/boss_magma_stomp.gd" id="24_magma_stomp"]
+[ext_resource type="Resource" path="res://resources/enemies/loot/drop_boss.tres" id="jade_loot_boss"]
+[ext_resource type="Script" path="res://objects/core/pickups/currency/drop/loot_drop_component.gd" id="jade_drop"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss_body"]
 radius = 0.85
@@ -168,3 +170,9 @@ script = ExtResource("18_stunned")
 
 [node name="Dead" type="Node" parent="StateMachine" index="8" unique_id=1509415676]
 script = ExtResource("19_dead")
+
+[node name="LootDropComponent" type="Node" parent="." node_paths=PackedStringArray("health", "body")]
+script = ExtResource("jade_drop")
+health = NodePath("../HealthComponent")
+body = NodePath("..")
+drop_table = ExtResource("jade_loot_boss")

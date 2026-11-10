@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/hub/temple_door/temple_door.gd" id="1_door"]
+[ext_resource type="Script" path="res://objects/hub/progress_watcher/progress_watcher.gd" id="2_watch"]
+
+[sub_resource type="StandardMaterial3D" id="DoorMat"]
+albedo_color = Color(0.3, 0.3, 0.33, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="DoorMesh"]
+material = SubResource("DoorMat")
+size = Vector3(4, 5, 0.5)
+
+[sub_resource type="BoxShape3D" id="DoorShape"]
+size = Vector3(4, 5, 0.5)
+
+[node name="TempleDoor" type="StaticBody3D"]
+collision_mask = 0
+script = ExtResource("1_door")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("DoorMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+shape = SubResource("DoorShape")
+
+[node name="ProgressWatcher" type="Node" parent="."]
+script = ExtResource("2_watch")

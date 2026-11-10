@@ -273,6 +273,16 @@ func activate_invulnerable_shield() -> void:
 
 
 func on_fireball_hit(_fireball: BossFireball) -> void:
+	_crack_shield()
+
+
+## Vụ nổ (TNT...) trúng boss: tính như một lần phản cầu lửa, để người chơi có cách khác phá khiên
+func on_explosion_hit(_source: Node3D) -> void:
+	_crack_shield()
+
+
+## Khiên mất một lớp; hết lớp thì vỡ
+func _crack_shield() -> void:
 	if not is_shielded:
 		return
 	

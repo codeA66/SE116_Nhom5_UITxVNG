@@ -1,0 +1,178 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/currency/currency_pickup.gd" id="1_pickup"]
+
+[sub_resource type="Gradient" id="OrbShade"]
+offsets = PackedFloat32Array(0, 0.3, 0.62, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.72, 0.88, 1, 1, 0.3, 0.64, 0.85, 1, 0.22, 0.58, 0)
+
+[sub_resource type="GradientTexture2D" id="OrbTex"]
+gradient = SubResource("OrbShade")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="OrbMat"]
+transparency = 1
+shading_mode = 0
+albedo_texture = SubResource("OrbTex")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="OrbQuad"]
+material = SubResource("OrbMat")
+size = Vector2(0.32, 0.32)
+
+[sub_resource type="Gradient" id="SoftShape"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.4, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="SoftTex"]
+gradient = SubResource("SoftShape")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StandardMaterial3D" id="HaloMat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 0.3, 0.65, 0.75)
+albedo_texture = SubResource("SoftTex")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="HaloQuad"]
+material = SubResource("HaloMat")
+size = Vector2(0.95, 0.95)
+
+[sub_resource type="StandardMaterial3D" id="StreakMat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("SoftTex")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="StreakQuad"]
+material = SubResource("StreakMat")
+size = Vector2(0.26, 0.26)
+
+[sub_resource type="Curve" id="StreakTaper"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.15), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="StreakFade"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 0.85, 0.95, 0.95, 1, 0.35, 0.68, 0.7, 0.9, 0.2, 0.55, 0)
+
+[sub_resource type="StandardMaterial3D" id="EchoMat1"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 0.4, 0.72, 0.55)
+albedo_texture = SubResource("SoftTex")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="EchoQuad1"]
+material = SubResource("EchoMat1")
+size = Vector2(0.4, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="EchoMat2"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 0.4, 0.72, 0.38)
+albedo_texture = SubResource("SoftTex")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="EchoQuad2"]
+material = SubResource("EchoMat2")
+size = Vector2(0.4, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="EchoMat3"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 0.4, 0.72, 0.24)
+albedo_texture = SubResource("SoftTex")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="EchoQuad3"]
+material = SubResource("EchoMat3")
+size = Vector2(0.4, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="EchoMat4"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 0.4, 0.72, 0.12)
+albedo_texture = SubResource("SoftTex")
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="EchoQuad4"]
+material = SubResource("EchoMat4")
+size = Vector2(0.4, 0.4)
+
+[node name="SoulJadePickup" type="Node3D"]
+script = ExtResource("1_pickup")
+spin_speed = 0.0
+home_max_speed = 12.0
+home_accel = 24.0
+echo_spacing = 0.32
+
+[node name="Halo" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("HaloQuad")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+sorting_offset = 1.0
+mesh = SubResource("OrbQuad")
+
+[node name="Trail" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 18
+lifetime = 0.2
+local_coords = false
+mesh = SubResource("StreakQuad")
+gravity = Vector3(0, 0, 0)
+scale_amount_curve = SubResource("StreakTaper")
+color_ramp = SubResource("StreakFade")
+
+[node name="Echoes" type="Node3D" parent="."]
+
+[node name="Echo1" type="MeshInstance3D" parent="Echoes"]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, 0)
+visible = false
+cast_shadow = 0
+mesh = SubResource("EchoQuad1")
+
+[node name="Echo2" type="MeshInstance3D" parent="Echoes"]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+visible = false
+cast_shadow = 0
+mesh = SubResource("EchoQuad2")
+
+[node name="Echo3" type="MeshInstance3D" parent="Echoes"]
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, 0, 0, 0)
+visible = false
+cast_shadow = 0
+mesh = SubResource("EchoQuad3")
+
+[node name="Echo4" type="MeshInstance3D" parent="Echoes"]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)
+visible = false
+cast_shadow = 0
+mesh = SubResource("EchoQuad4")
+

@@ -1,0 +1,52 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://components/core/interaction/quick_item/aim_indicator.gd" id="1_aim"]
+
+[sub_resource type="StandardMaterial3D" id="RingMat"]
+transparency = 1
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(1, 0.6, 0.2, 0.55)
+
+[sub_resource type="TorusMesh" id="RingMesh"]
+material = SubResource("RingMat")
+inner_radius = 0.96
+outer_radius = 1.0
+rings = 48
+ring_segments = 4
+
+[sub_resource type="StandardMaterial3D" id="MarkerMat"]
+transparency = 1
+no_depth_test = true
+shading_mode = 0
+albedo_color = Color(1, 0.35, 0.15, 0.75)
+
+[sub_resource type="TorusMesh" id="MarkerMesh"]
+material = SubResource("MarkerMat")
+inner_radius = 0.32
+outer_radius = 0.45
+rings = 24
+ring_segments = 4
+
+[sub_resource type="CylinderMesh" id="DotMesh"]
+material = SubResource("MarkerMat")
+top_radius = 0.1
+bottom_radius = 0.1
+height = 0.02
+radial_segments = 12
+rings = 1
+
+[node name="AimIndicator" type="Node3D"]
+script = ExtResource("1_aim")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("RingMesh")
+
+[node name="Marker" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("MarkerMesh")
+
+[node name="Dot" type="MeshInstance3D" parent="Marker"]
+cast_shadow = 0
+mesh = SubResource("DotMesh")

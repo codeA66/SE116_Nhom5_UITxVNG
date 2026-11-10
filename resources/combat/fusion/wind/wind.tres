@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ElementData" format=3 uid="uid://dykm65hmvukob"]
+
+[ext_resource type="Script" uid="uid://1m3x4mmv7sl3" path="res://abilities/fusion/_base/element_data.gd" id="1_element"]
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="2_ability"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/wind.svg" id="3_icon"]
+
+[resource]
+script = ExtResource("1_element")
+id = &"wind"
+display_name = "Gió"
+ability = ExtResource("2_ability")
+color = Color(0.78, 0.95, 1, 1)
+icon = ExtResource("3_icon")

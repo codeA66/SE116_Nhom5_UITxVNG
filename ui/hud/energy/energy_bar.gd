@@ -1,82 +1,254 @@
+@tool
 class_name EnergyBar
-extends HBoxContainer
-## Thanh năng lượng dạng ô, nằm dưới thanh máu. Chỉ nghe signal của EnergyComponent.
-## Thiếu năng lượng thì nháy đỏ và rung nhẹ. Không chạy mỗi frame; tạo ô một lần, chỉ đổi style.
-
+extends Control
+## DONE: ấn Linh Ngọc ôm đuôi cáo, lõi chất lỏng tròn hạ/dâng qua signal; nghỉ thì CPU không process.
+## NOTES: không biết Player/GameState; lớp ghép HUD truyền màu nguyên tố vào.
+const Style = preload("res://resources/ui/hud_style.gd")
+const VESSEL_SHADER: Shader = preload("res://ui/hud/energy/shaders/energy_vessel.gdshader")
+@export_group("Binding")
 @export var energy: EnergyComponent
-@export var filled_style: StyleBox
-@export var empty_style: StyleBox
-@export var segment_size: Vector2 = Vector2(18.0, 18.0)
-@export_group("Feedback")
-## Ô vừa nạp phồng to bấy nhiêu lần rồi co về
-@export var pop_scale: float = 1.5
-@export var pop_time: float = 0.25
-@export_group("Insufficient")
-@export var warn_color: Color = Color(1.0, 0.35, 0.3)
-@export var warn_time: float = 0.35
-## Biên độ rung ngang (px)
-@export var shake_amount: float = 5.0
-
-var _segments: Array[Panel] = []
-var _tween: Tween
-var _rest_x: float
-## Số ô đang hiện, để biết ô nào vừa nạp / vừa tiêu; -1 = chưa dựng
-var _shown: int = -1
-
-
+@export var style: Style = preload("res://resources/ui/hud_style.tres")
+var _surface: ColorRect
+var _material: ShaderMaterial
+var _maximum: int = 0
+var _fill_ratio: float = 0.0
+var _from: float = 0.0
+var _target: float = 0.0
+var _age: float = INF
+var _warn_age: float = INF
+var _ready_age: float = INF
+var _clock: float = 0.0
+var _pulse: float = 0.0
+var _warning: float = 0.0
+var _rest: Vector2
+var _warn_active: bool = false
+var _initialized: bool = false
+var _tint: Color
+var _font: Font
+var _shell: Resource
+var _fox_head: HudGlyph
+var _fox_cream: HudGlyph
+var _fox_ink: HudGlyph
+var _frame_rect: Rect2
+var _unit_count: int = 0
+var _unit_text: String = ""
+var _unit_text_width: float = 0.0
+var _caption_width: float = 0.0
+var _duration: float = 0.0
+## Khởi tạo hình trước, chờ component sẵn sàng trước khi đọc giá trị ban đầu.
 func _ready() -> void:
-	_rest_x = position.x
-	if energy == null:
-		push_warning("%s chưa gán EnergyComponent" % get_path())
+	mouse_filter = MOUSE_FILTER_IGNORE
+	_material = ShaderMaterial.new()
+	_material.shader = VESSEL_SHADER
+	_surface = ColorRect.new()
+	_surface.name = "VesselSurface"
+	_surface.mouse_filter = MOUSE_FILTER_IGNORE
+	_surface.material = _material
+	_surface.show_behind_parent = true
+	add_child(_surface)
+	_tint = style.energy_fallback
+	apply_style()
+	set_process(false)
+	if Engine.is_editor_hint():
+		_maximum = style.energy_preview_units
+		_unit_count = _maximum
+		_update_unit_text()
+		_fill_ratio = 1.0 if _maximum>0 else 0.0
+		_write_fill()
 		return
+	if energy == null:
+		_write_fill()
+		return
+	if not energy.is_node_ready(): await energy.ready
+	if not is_inside_tree(): return
 	energy.energy_changed.connect(_refresh)
 	energy.insufficient.connect(_on_insufficient)
-	_refresh(energy.current, energy.get_max())
-
-
+	_refresh(energy.current,energy.get_max())
+## Không giữ chuyển động/rung khi widget rời scene.
+func _exit_tree() -> void:
+	if _warn_active: position = _rest
+## Style có thể được đổi ở preview, không phải tạo lại material.
+func apply_style() -> void:
+	theme = style.theme
+	_font = get_theme_default_font()
+	_caption_width = _measure_caption(style.energy_label)
+	custom_minimum_size = Vector2(clampf(style.energy_size.x,1.0,maxf(style.energy_size_limit.x,1)),clampf(style.energy_size.y,1.0,maxf(style.energy_size_limit.y,1)))
+	size = custom_minimum_size
+	if _warn_active:
+		position = _rest
+		_warn_active = false
+		_warning = 0.0
+		_warn_age = INF
+	if not is_instance_valid(_surface): return
+	var diameter: float = clampf(style.energy_diameter,1.0,minf(size.x,size.y))
+	var inset: float = clampf(style.energy_rim,0.0,diameter*0.4)
+	_surface.position = Vector2((size.x-diameter)*0.5+inset,inset)
+	_surface.size = Vector2.ONE*maxf(diameter-inset*2.0,1.0)
+	_frame_rect = Rect2(Vector2((size.x-diameter)*0.5,0),Vector2.ONE*diameter)
+	var vessel_uv: Rect2 = style.energy_frame_vessel_uv.intersection(Rect2(Vector2.ZERO,Vector2.ONE))
+	if style.energy_frame_texture != null and vessel_uv.has_area():
+		var art_size: Vector2 = style.energy_frame_texture.get_size()
+		var available: Vector2 = Vector2(size.x,maxf(size.y-style.energy_font_size-_pip_band(),1.0))
+		var fit: float = minf(available.x/art_size.x,available.y/art_size.y)
+		_frame_rect.size = art_size*fit
+		_frame_rect.position = Vector2((size.x-_frame_rect.size.x)*0.5,0)
+		_surface.position = _frame_rect.position+vessel_uv.position*_frame_rect.size
+		_surface.size = vessel_uv.size*_frame_rect.size
+	_material.set_shader_parameter(&"ink",style.empty_ink)
+	_material.set_shader_parameter(&"hot",style.ivory)
+	_material.set_shader_parameter(&"wave_height",clampf(style.energy_wave_height,0.0,0.12))
+	_material.set_shader_parameter(&"wave_speed",style.energy_wave_speed)
+	_material.set_shader_parameter(&"wave_frequency",style.energy_wave_frequency)
+	_material.set_shader_parameter(&"idle_wave",clampf(style.energy_idle_wave,0,1))
+	_material.set_shader_parameter(&"facet_strength",clampf(style.energy_facet_strength,0.0,0.3))
+	_shell = style.glyphs.get(&"energy_shell")
+	_fox_head = style.glyphs.get(&"energy_fox_head")
+	_fox_cream = style.glyphs.get(&"energy_fox_cream")
+	_fox_ink = style.glyphs.get(&"energy_fox_ink")
+	_update_unit_text()
+	_material.set_shader_parameter(&"masked",style.energy_mask_texture != null)
+	if style.energy_mask_texture != null: _material.set_shader_parameter(&"mask_texture",style.energy_mask_texture)
+	_write_fill()
+	queue_redraw()
+## Bộ ghép HUD quyết định nguyên tố; bình vẫn dùng lại được cho chủ sở hữu khác.
+func set_element_color(value: Color) -> void:
+	_tint = value
+	if _material != null: _material.set_shader_parameter(&"tint",value)
+	queue_redraw()
+## Giá trị hiển thị phục vụ test mà không mở biến riêng.
+func get_displayed_units() -> float:
+	return _fill_ratio*float(_maximum)
+## Tỷ lệ mặt chất lỏng đã hiển thị, độc lập số đơn vị năng lượng tối đa.
+func get_fill_ratio() -> float:
+	return _fill_ratio
+## Sức chứa logic không dùng giá trị preview trong bản chạy thật.
+func get_displayed_max() -> int:
+	return _maximum
+## Màu đã áp lên bình, không suy ra từ resource của lớp ghép.
+func get_element_color() -> Color:
+	return _tint
+## Nội suy tỷ lệ để tăng sức chứa giữa lượt không làm mặt chất lỏng nhảy đột ngột.
 func _refresh(current: int, max_value: int) -> void:
-	while _segments.size() < max_value:
-		var segment := Panel.new()
-		segment.custom_minimum_size = segment_size
-		segment.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		# Ô hình thoi: xoay 45° quanh tâm
-		segment.pivot_offset = segment_size * 0.5
-		segment.rotation = PI / 4.0
-		add_child(segment)
-		_segments.append(segment)
-	while _segments.size() > max_value:
-		_segments.pop_back().queue_free()
-	for i in _segments.size():
-		_segments[i].add_theme_stylebox_override(&"panel", filled_style if i < current else empty_style)
-	# Ô vừa nạp phồng sáng lên, ô vừa tiêu nháy trắng rồi tắt (bỏ qua lần dựng đầu tiên)
-	if _shown >= 0:
-		for i in range(mini(_shown, current), maxi(_shown, current)):
-			if i < _segments.size():
-				_pop(_segments[i], i < current)
-	_shown = current
-
-
-func _pop(segment: Panel, gained: bool) -> void:
-	var tween := segment.create_tween().set_parallel()
-	if gained:
-		segment.scale = Vector2.ONE * pop_scale
-		segment.modulate = Color(1.6, 1.6, 1.6)
-		tween.tween_property(segment, ^"scale", Vector2.ONE, pop_time).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween.tween_property(segment, ^"modulate", Color.WHITE, pop_time)
-	else:
-		segment.modulate = Color(2.0, 2.0, 2.0)
-		segment.scale = Vector2.ONE * 1.15
-		tween.tween_property(segment, ^"scale", Vector2.ONE, pop_time * 0.7)
-		tween.tween_property(segment, ^"modulate", Color.WHITE, pop_time * 0.7)
-
-
+	_maximum = maxi(max_value,0)
+	_unit_count = clampi(current,0,_maximum)
+	_update_unit_text()
+	_from = _fill_ratio
+	_target = float(clampi(current,0,_maximum))/float(_maximum) if _maximum>0 else 0.0
+	if not _initialized or _maximum<=0:
+		_fill_ratio = _target
+		_from = _target
+		_age = INF
+		_ready_age = INF
+		_initialized = true
+		_write_fill()
+		queue_redraw()
+		return
+	_age = 0.0
+	_duration = style.energy_drop_time if _target<_from else style.energy_fill_time
+	if _target>=1.0 and _from<_target: _ready_age = 0.0
+	elif _target<1.0: _ready_age = INF
+	set_process(true)
+	_write_fill()
+## Rung lấy lại vị trí gốc mỗi lượt, không tích lũy sai lệch sau nhiều lần thiếu.
 func _on_insufficient(_cost: int) -> void:
-	if _tween:
-		_tween.kill()
-	position.x = _rest_x
-	modulate = warn_color
-	_tween = create_tween()
-	_tween.tween_property(self, ^"position:x", _rest_x + shake_amount, warn_time * 0.15)
-	_tween.tween_property(self, ^"position:x", _rest_x - shake_amount, warn_time * 0.2)
-	_tween.tween_property(self, ^"position:x", _rest_x, warn_time * 0.15)
-	_tween.parallel().tween_property(self, ^"modulate", Color.WHITE, warn_time)
+	if not _warn_active: _rest = position
+	_warn_active = true
+	_warn_age = 0.0
+	set_process(true)
+## CPU chỉ chạy lúc hạ/dâng/flash/cảnh báo; gợn nền rất nhẹ do shader xử lý.
+func _process(delta: float) -> void:
+	_clock += delta
+	_age += delta
+	_warn_age += delta
+	_ready_age += delta
+	var fill_t: float = clampf(_age/maxf(_duration,0.001),0.0,1.0)
+	_fill_ratio = lerpf(_from,_target,fill_t*fill_t*(3.0-2.0*fill_t))
+	_pulse = pow(1.0-clampf(_ready_age/maxf(style.energy_full_time,style.minimum_duration),0.0,1.0),2.0)
+	_warning = 1.0-clampf(_warn_age/maxf(style.energy_warn_time,style.minimum_duration),0.0,1.0)
+	if _warn_active:
+		position = _rest+Vector2(sin(_warn_age*style.energy_shake_speed)*style.energy_shake*_warning,0)
+		if _warning <= 0.0:
+			position = _rest
+			_warn_active = false
+	_material.set_shader_parameter(&"clock",_clock)
+	_material.set_shader_parameter(&"activity",maxf(1.0-fill_t,_pulse))
+	_material.set_shader_parameter(&"flash",_pulse)
+	_write_fill()
+	queue_redraw()
+	if fill_t >= 1.0 and _pulse <= 0.0 and not _warn_active: set_process(false)
+## Uniform thay đổi là scalar; không viết lại mesh hoặc tạo texture trong animation.
+func _write_fill() -> void:
+	if _material == null: return
+	_material.set_shader_parameter(&"fill_ratio",_fill_ratio)
+	_material.set_shader_parameter(&"tint",_tint)
+## Khung đuôi cáo dùng dữ liệu nét có sẵn, không tạo mesh/hạt khi mức Linh lực thay đổi.
+func _draw() -> void:
+	if style == null: return
+	var diameter: float = clampf(style.energy_diameter,1.0,minf(size.x,size.y))
+	var center: Vector2 = Vector2(size.x*0.5,diameter*0.5)
+	var radius: float = maxf(diameter*0.5-style.stroke_width()*2.0,1.0)
+	var rim: Color = style.gold.lerp(style.damage_color,_warning)
+	if style.energy_frame_texture != null:
+		draw_texture_rect(style.energy_frame_texture,_frame_rect,false)
+		if _warning > 0.0 or _pulse > 0.0:
+			var vessel: Rect2 = Rect2(_surface.position,_surface.size)
+			var feedback: Color = style.damage_color if _warning > 0.0 else style.ivory
+			draw_arc(vessel.get_center(),vessel.size.y*0.5,0,TAU,style.energy_curve_steps,
+				Color(feedback,maxf(_warning,_pulse)),style.stroke_width(),true)
+	else:
+		draw_arc(center,radius,0,TAU,style.energy_curve_steps,style.ink,style.stroke_width()*4.0,true)
+		draw_arc(center,radius,PI,TAU,style.energy_curve_steps,Color(rim,clampf(style.energy_inner_rim_opacity+_pulse,0,1)),style.stroke_width(),true)
+		if _shell != null:
+			var extent: float = maxf(diameter*clampf(style.energy_shell_extent,0,0.5),0.001)
+			draw_set_transform(center,0,Vector2.ONE*extent)
+			for index: int in range(_shell.fills.size()):
+				var polygon: PackedVector2Array = _shell.fills[index]
+				var fill: Color = style.energy_shell_color if index<style.energy_shell_tip_start else style.energy_shell_tip_color
+				if polygon.size()>=3: draw_colored_polygon(polygon,fill)
+			for index: int in range(_shell.strokes.size()):
+				var stroke: PackedVector2Array = _shell.strokes[index]
+				var tint: Color = rim if index<style.energy_shell_tip_start else style.energy_shell_accent.lerp(style.ivory,_pulse)
+				if stroke.size()>=2: draw_polyline(stroke,tint,style.stroke_width()/extent,true)
+			draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
+		var crest: Vector2 = Vector2(center.x, diameter * clampf(style.energy_fox_height, 0, 0.35))
+		var crest_size: float = diameter * clampf(style.energy_fox_scale, 0, 0.35)
+		if _fox_head != null: _fox_head.draw_on(self, crest, crest_size, style.energy_fox_color, style.stroke_width())
+		if _fox_cream != null: _fox_cream.draw_on(self, crest, crest_size, style.ivory, style.stroke_width())
+		if _fox_ink != null: _fox_ink.draw_on(self, crest, crest_size, style.ink, style.stroke_width())
+	if _font != null and size.x >= _caption_width:
+		_draw_caption(style.energy_label,size.y-_pip_band())
+	_draw_units()
+## Đặt dải hạt dưới nhãn để mực trong bình vẫn liền mạch.
+func _pip_band() -> float:
+	return clampf(style.energy_pip_band,0.0,size.y)
+## Sức chứa ngoài hàng hạt dùng số gọn, không cấp phát theo sức chứa.
+func _update_unit_text() -> void:
+	_unit_text = "%d / %d" % [_unit_count,_maximum]
+	_unit_text_width = _measure_caption(_unit_text)
+## Đo chữ lúc thay dữ liệu hoặc style để không shape lại mỗi khung.
+func _measure_caption(label: String) -> float:
+	if _font == null: return 0.0
+	return _font.get_string_size(label,HORIZONTAL_ALIGNMENT_LEFT,-1,maxi(style.energy_font_size,1)).x
+## Cùng viền tối với những chữ khác để đọc trên sàn sáng.
+func _draw_caption(label: String,bottom: float) -> void:
+	var font_size: int = maxi(style.energy_font_size,1)
+	var baseline: Vector2 = Vector2(0,bottom-_font.get_descent(font_size))
+	draw_string_outline(_font,baseline,label,HORIZONTAL_ALIGNMENT_CENTER,size.x,font_size,clampi(style.text_outline_size,0,8),style.text_outline_color)
+	draw_string(_font,baseline,label,HORIZONTAL_ALIGNMENT_CENTER,size.x,font_size,style.ivory)
+## Hạt phản hồi theo đơn vị thật ngay khi tiêu, độc lập mặt mực đang chuyển động.
+func _draw_units() -> void:
+	if _maximum <= 0 or _pip_band() <= 0.0: return
+	var gap: float = maxf(style.energy_pip_gap,0.0)
+	var diameter: float = minf(style.energy_pip_diameter,minf(_pip_band(),(size.x-gap*(_maximum-1))/_maximum))
+	if _maximum > clampi(style.energy_pip_limit,1,12) or diameter < maxf(style.energy_pip_min_diameter,1.0):
+		if _font != null and size.x >= _unit_text_width:
+			_draw_caption(_unit_text,size.y)
+		return
+	var step: float = diameter+gap
+	var first: Vector2 = Vector2((size.x-step*(_maximum-1))*0.5,size.y-_pip_band()*0.5)
+	var rim: float = minf(style.stroke_width(),diameter*0.25)
+	for index: int in range(_maximum):
+		var point: Vector2 = first+Vector2.RIGHT*index*step
+		draw_circle(point,diameter*0.5,style.text_outline_color,true,-1.0,true)
+		var tint: Color = _tint.lerp(style.ivory,0.35) if index < _unit_count else style.health_empty_fill
+		draw_circle(point,diameter*0.5-rim,tint,true,-1.0,true)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ZoneRegistry" format=3]
+
+[ext_resource type="Script" path="res://resources/world/zones/_base/zone_registry.gd" id="1_reg"]
+[ext_resource type="Script" path="res://resources/world/zones/_base/zone_data.gd" id="2_zone"]
+[ext_resource type="Resource" path="res://resources/world/zones/hub.tres" id="3_hub"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/wind.tres" id="4_wind"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/fire.tres" id="5_fire"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/ice.tres" id="6_ice"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/thunder.tres" id="7_thunder"]
+
+[resource]
+script = ExtResource("1_reg")
+hub = ExtResource("3_hub")
+element_zones = Array[ExtResource("2_zone")]([ExtResource("4_wind"), ExtResource("5_fire"), ExtResource("6_ice"), ExtResource("7_thunder")])

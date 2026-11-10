@@ -12,6 +12,9 @@ signal player_exited
 @export var hide_when_inside: Array[Node3D] = []
 ## Ngược lại: chỉ hiện khi player ở trong vùng (đèn phụ riêng của phòng...)
 @export var show_when_inside: Array[Node3D] = []
+## Vùng ở xa vẫn giữ model trong bộ nhớ nhưng ngủ toàn bộ logic; bật sớm trước mép camera.
+@export var suspend_when_outside: Array[Node] = []
+@export var initialize_outside: bool = false
 
 @export_group("Ánh nắng")
 ## Đèn nắng của khu; để trống nếu tầng không đổi ánh sáng
@@ -32,6 +35,7 @@ var _outside_energy: float
 var _outside_color: Color
 var _outside_environment: Environment
 var _tween: Tween
+var _process_modes: Dictionary[Node,int] = {}
 
 
 func _ready() -> void:
@@ -45,6 +49,9 @@ func _ready() -> void:
 		_outside_environment = world_environment.environment
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
+	for node: Node in suspend_when_outside:
+		if is_instance_valid(node): _process_modes[node] = node.process_mode
+	if initialize_outside: _apply(false)
 
 
 func _on_body_entered(body: Node3D) -> void:
@@ -66,6 +73,11 @@ func _apply(inside: bool) -> void:
 	for node in show_when_inside:
 		if is_instance_valid(node):
 			node.visible = inside
+	for node: Node in _process_modes:
+		if is_instance_valid(node):
+			# Đổi process_mode có thể xóa overlap của Area3D con khi Godot còn phát tree_exiting.
+			var mode: ProcessMode = _process_modes[node] as ProcessMode if inside else Node.PROCESS_MODE_DISABLED
+			node.set_deferred(&"process_mode", mode)
 	if world_environment and inside_environment:
 		world_environment.environment = inside_environment if inside else _outside_environment
 	if sun == null:

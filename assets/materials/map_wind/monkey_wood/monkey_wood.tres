@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://craropgsslt50"]
+
+[ext_resource type="Shader" uid="uid://chu6frvm2yas4" path="res://assets/materials/map_wind/monkey_wood/monkey_wood.gdshader" id="shader"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("shader")
+shader_parameter/dark_wood = Color(0.17, 0.105, 0.046, 1)
+shader_parameter/light_wood = Color(0.43, 0.31, 0.165, 1)
+shader_parameter/edge_roughness = 0.09
+shader_parameter/upright = false

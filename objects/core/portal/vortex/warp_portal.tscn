@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/portal/vortex/warp_portal.gd" id="1_warp"]
+[ext_resource type="PackedScene" path="res://objects/core/portal/vortex/vortex_portal_visual.tscn" id="2_visual"]
+
+[sub_resource type="BoxShape3D" id="TriggerShape"]
+size = Vector3(4.2, 3.2, 2.4)
+
+[node name="WarpPortal" type="Node3D"]
+script = ExtResource("1_warp")
+
+[node name="VortexPortalVisual" parent="." instance=ExtResource("2_visual")]
+
+[node name="Trigger" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Trigger"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("TriggerShape")
+
+[node name="Arrival" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0.1, 3.0)

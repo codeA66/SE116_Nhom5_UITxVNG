@@ -1,0 +1,10 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://resources/world/monkey_garden/boss_aggro/garden_boss_aggro_data.gd" id="data"]
+
+[resource]
+script = ExtResource("data")
+ground_detect_range = 110.0
+ground_lose_range = 130.0
+ground_leash_range = 130.0
+roof_range_multiplier = 1.5

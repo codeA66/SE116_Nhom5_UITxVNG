@@ -1,62 +1,188 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/menus/inventory/inventory_menu.gd" id="1_menu"]
+[ext_resource type="Theme" path="res://ui/theme/menu_theme.tres" id="2_theme"]
+[ext_resource type="Shader" path="res://assets/shaders/screen/menu_vignette.gdshader" id="3_vignette"]
+[ext_resource type="Script" path="res://ui/menus/inventory/widgets/corner_frame.gd" id="4_frame"]
+[ext_resource type="Script" path="res://ui/menus/inventory/widgets/page_tabs.gd" id="5_tabs"]
+[ext_resource type="Script" path="res://components/feedback/loot_beam/ability_acquire/ui/panel/key_glyph.gd" id="6_key"]
+[ext_resource type="Script" path="res://ui/menus/main/widgets/ornament_divider.gd" id="7_rule"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/widgets/detail_panel.tscn" id="8_detail"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/elements/elements_page.tscn" id="9_elements"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/items/items_page.tscn" id="10_items"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/charms/charms_page.tscn" id="11_charms"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/tutorials/tutorials_page.tscn" id="12_tutorials"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.03, 0.05, 0.08, 0.88)
-border_width_left = 2
-border_color = Color(0.3, 0.39, 0.46, 1)
-content_margin_left = 20.0
-content_margin_top = 20.0
-content_margin_right = 20.0
-content_margin_bottom = 20.0
+[sub_resource type="ShaderMaterial" id="Backdrop"]
+shader = ExtResource("3_vignette")
+shader_parameter/edge_strength = 0.7
+shader_parameter/base_dim = 0.55
 
-[node name="InventoryMenu" type="PanelContainer"]
-anchors_preset = 11
-anchor_left = 1.0
+[node name="InventoryMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -360.0
-grow_horizontal = 0
+grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+theme = ExtResource("2_theme")
 script = ExtResource("1_menu")
 
-[node name="Layout" type="VBoxContainer" parent="."]
+[node name="Backdrop" type="ColorRect" parent="."]
+material = SubResource("Backdrop")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Frame" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_frame")
+
+[node name="Header" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 110.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="Tabs" type="HBoxContainer" parent="Header"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -360.0
+offset_top = 34.0
+offset_right = 360.0
+offset_bottom = 104.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 36
+alignment = 1
+script = ExtResource("5_tabs")
+
+[node name="Previous" type="HBoxContainer" parent="Header/Tabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="Key" type="Control" parent="Header/Tabs/Previous"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("6_key")
+text = "Z"
+
+[node name="Name" type="Label" parent="Header/Tabs/Previous"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Center" type="VBoxContainer" parent="Header/Tabs"]
+custom_minimum_size = Vector2(260, 0)
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 2
 
-[node name="Title" type="Label" parent="Layout"]
+[node name="Title" type="Label" parent="Header/Tabs/Center"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Tủ đồ"
+horizontal_alignment = 1
 
-[node name="ElementsTitle" type="Label" parent="Layout"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.74, 0.78, 1)
-text = "Nguyên tố"
-
-[node name="Elements" type="HBoxContainer" parent="Layout"]
-unique_name_in_owner = true
+[node name="Rule" type="Control" parent="Header/Tabs/Center"]
+custom_minimum_size = Vector2(260, 26)
 layout_mode = 2
 mouse_filter = 2
+script = ExtResource("7_rule")
+flourish = true
+flourish_size = 9.0
+
+[node name="Next" type="HBoxContainer" parent="Header/Tabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
 theme_override_constants/separation = 10
 
-[node name="WeaponsTitle" type="Label" parent="Layout"]
+[node name="Name" type="Label" parent="Header/Tabs/Next"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.74, 0.78, 1)
-text = "Vũ khí"
+size_flags_vertical = 4
 
-[node name="Weapons" type="VBoxContainer" parent="Layout"]
-unique_name_in_owner = true
+[node name="Key" type="Control" parent="Header/Tabs/Next"]
 layout_mode = 2
+size_flags_vertical = 4
 mouse_filter = 2
-theme_override_constants/separation = 8
+script = ExtResource("6_key")
+text = "C"
 
-[node name="Info" type="Label" parent="Layout"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 0)
+[node name="Currency" type="Label" parent="Header"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 44.0
+offset_right = -70.0
+offset_bottom = 72.0
+grow_horizontal = 0
+horizontal_alignment = 2
+
+[node name="Body" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 70.0
+offset_top = 128.0
+offset_right = -70.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 1
+mouse_filter = 2
+theme_override_constants/separation = 40
+
+[node name="Pages" type="Control" parent="Body"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.86, 0.88, 1)
-autowrap_mode = 3
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="ElementsPage" parent="Body/Pages" instance=ExtResource("9_elements")]
+layout_mode = 1
+
+[node name="ItemsPage" parent="Body/Pages" instance=ExtResource("10_items")]
+layout_mode = 1
+
+[node name="CharmsPage" parent="Body/Pages" instance=ExtResource("11_charms")]
+layout_mode = 1
+
+[node name="TutorialsPage" parent="Body/Pages" instance=ExtResource("12_tutorials")]
+layout_mode = 1
+
+[node name="Detail" parent="Body" instance=ExtResource("8_detail")]
+layout_mode = 2
+
+[node name="Footer" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_top = -52.0
+offset_right = 420.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+
+[node name="Sound" type="AudioStreamPlayer" parent="."]

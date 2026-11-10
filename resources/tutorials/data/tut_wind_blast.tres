@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3 uid="uid://dlm6ghnor56df"]
+
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"wind_blast"
+title = "Thổi Gió (Wind Blast)"
+category = "Kỹ Năng"
+input_action = &"skill"
+prompt_template = "Nhấn {key} để phóng luồng gió mạnh."
+summary = "Phóng luồng gió đẩy lùi kẻ địch, phản lại đạn đá và kích hoạt các cơ chế cối xay gió."
+sections = Array[Dictionary]([{
+"heading": "Đẩy lùi & Phản đạn",
+"text": "Luồng gió có thể thổi bay kẻ địch nhỏ và phản lại các loại đạn bay (như hạt đá của quái Bọ) về phía kẻ thù.",
+"warning": false
+}, {
+"heading": "Kích hoạt cơ chế gió",
+"text": "Thổi gió vào cối xay gió để hạ cầu, đẩy các tảng đá phong ấn hoặc dọn sạch đống đổ nát ngáng đường.",
+"warning": false
+}])
+hint = "[F] Thổi Gió  •  [H] Sổ Hướng Dẫn"
+lore = "Cơn gió hoang dã của Đảo Foxy nay đã quy thuận và hòa làm một với hơi thở của Cáo."
+order = 6

@@ -1,0 +1,37 @@
+[gd_scene format=4]
+
+[ext_resource type="Material" path="res://assets/models/map_wind/tier_3_monkey_garden/garden_vertex_color.tres" id="1_f356q"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_px2j3"]
+resource_name = "ramp_dirt_4m_Packed_Earth_Slope"
+_surfaces = [{
+"aabb": AABB(-1, 0, -2, 2, 1, 4),
+"attribute_data": PackedByteArray("NyYY/zcmGP83Jhj/NyYY/zkqHP85Khz/OSoc/zkqHP9BMCD/QTAg/0EwIP9BMCD/NCQX/zQkF/80JBf/MyQW/zMkFv8zJBb/NCUX/zQlF/80JRf/NCUX/w=="),
+"format": 34896613391,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAACAAMABAAFAAYABAAGAAcACAAJAAoACAAKAAsADAANAA4ADwAQABEAEgATABQAEgAUABUA"),
+"material": ExtResource("1_f356q"),
+"name": "Garden_VertexColor",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 22,
+"vertex_data": PackedByteArray("//8AAP//5/cAAAAA///n9wAAzEwys+f3///MTDKz5/f//8xMMrPn9wAAzEwys+f3AABlpplZ5/f//2WmmVnn9///ZaaZWef3AABlpplZ5/cAAP//AADn9/////8AAOf3AAAAAP///78AAAAAAAD/vwAA//8AAP+///8AAP//////////AAD/////AAAAAP//AAD//wAA//8AAAAAAAD/////AAAAAP///////wAA//+8hiq1vIYqtbyGKrW8hiq1vIYqtbyGKrW8hiq1vIYqtbyGKrW8hiq1vIYqtbyGKrX/f////3////9/////v/9//7//f/+//3//P/+//z//v/8//7//P/+/")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_0sgph"]
+points = PackedVector3Array(-1, -0.15, -2, -1, 1, -2, -1, -0.15, 2, -1, 0, 2, 1, -0.15, -2, 1, 1, -2, 1, -0.15, 2, 1, 0, 2)
+
+[node name="RampDirt4m" type="StaticBody3D" unique_id=1123739718]
+editor_description = "Dốc đất | Model + collider đi cùng root. Kéo/copy cả node này. Nguồn: res://assets/models/map_wind/tier_3_monkey_garden/ground/transitions/ramp_dirt_4m.glb | Collider tối giản: khối nguyên thủy, không dùng trimesh."
+collision_mask = 0
+metadata/garden_asset = "ramp_dirt_4m"
+metadata/simple_collision = true
+
+[node name="Model" type="Node3D" parent="." unique_id=971308727]
+
+[node name="Body_ramp_dirt_4m_001" type="MeshInstance3D" parent="Model" unique_id=548451280]
+mesh = SubResource("ArrayMesh_px2j3")
+
+[node name="Collision_Ramp" type="CollisionShape3D" parent="." unique_id=218668842]
+shape = SubResource("ConvexPolygonShape3D_0sgph")

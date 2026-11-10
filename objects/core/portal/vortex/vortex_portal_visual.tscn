@@ -1,0 +1,96 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/portal/vortex/vortex_portal_visual.gd" id="1_vis"]
+[ext_resource type="Shader" path="res://assets/shaders/environment/portal/vortex_portal.gdshader" id="2_shader"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/portal_pedestal.glb" id="3_pedestal"]
+
+[sub_resource type="ShaderMaterial" id="VortexMat"]
+render_priority = 0
+shader = ExtResource("2_shader")
+
+[sub_resource type="BoxShape3D" id="PillarShape"]
+size = Vector3(0.85, 5.2, 0.95)
+
+[sub_resource type="BoxShape3D" id="PlinthShape"]
+size = Vector3(0.9, 0.8, 0.9)
+
+[sub_resource type="QuadMesh" id="DiscMesh"]
+size = Vector2(4, 4)
+
+[sub_resource type="StandardMaterial3D" id="ShardMat"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="ShardMesh"]
+material = SubResource("ShardMat")
+size = Vector2(0.12, 0.12)
+
+[sub_resource type="Gradient" id="ShardFade"]
+colors = PackedColorArray(0.75, 0.95, 1, 0, 0.75, 0.95, 1, 1, 0.4, 0.7, 1, 0)
+offsets = PackedFloat32Array(0, 0.2, 1)
+
+[sub_resource type="GradientTexture1D" id="ShardFadeTex"]
+gradient = SubResource("ShardFade")
+
+[sub_resource type="ParticleProcessMaterial" id="ShardProcess"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 0.2
+emission_ring_radius = 1.6
+emission_ring_inner_radius = 0.4
+direction = Vector3(0, 0, 1)
+spread = 60.0
+initial_velocity_min = 0.6
+initial_velocity_max = 1.6
+gravity = Vector3(0, 0, 0)
+radial_accel_min = 0.4
+radial_accel_max = 1.0
+scale_min = 0.5
+scale_max = 1.4
+color_ramp = SubResource("ShardFadeTex")
+
+[node name="VortexPortalVisual" type="Node3D"]
+script = ExtResource("1_vis")
+
+[node name="Pedestal" parent="." instance=ExtResource("3_pedestal")]
+
+[node name="PedestalBody" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="PillarWest" type="CollisionShape3D" parent="PedestalBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 2.6, 0)
+shape = SubResource("PillarShape")
+
+[node name="PillarEast" type="CollisionShape3D" parent="PedestalBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.55, 2.6, 0)
+shape = SubResource("PillarShape")
+
+[node name="Plinth" type="CollisionShape3D" parent="PedestalBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 1.55)
+shape = SubResource("PlinthShape")
+
+[node name="Disc" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 0)
+cast_shadow = 0
+mesh = SubResource("DiscMesh")
+surface_material_override/0 = SubResource("VortexMat")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 1.0)
+light_color = Color(0.35, 0.7, 1, 1)
+light_energy = 3.0
+shadow_enabled = false
+omni_range = 9.0
+
+[node name="Shards" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 0)
+amount = 24
+lifetime = 1.6
+visibility_aabb = AABB(-3, -3, -3, 6, 6, 6)
+process_material = SubResource("ShardProcess")
+draw_pass_1 = SubResource("ShardMesh")

@@ -1,0 +1,98 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/npcs/_base/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://entities/npcs/gatekeeper/gatekeeper.gd" id="2_script"]
+[ext_resource type="PackedScene" path="res://assets/characters/npcs/gatekeeper/gatekeeper.glb" id="3_model"]
+[ext_resource type="Script" path="res://entities/npcs/gatekeeper/toll_service.gd" id="4_toll"]
+[ext_resource type="Script" path="res://entities/npcs/gatekeeper/toll_data.gd" id="5_data"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="6_dialogue"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="7_line"]
+
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/npc_story.gd" id="story"]
+[ext_resource type="Script" path="res://components/feedback/conversation/conversation_cinematic.gd" id="cinema"]
+[ext_resource type="Script" path="res://components/feedback/conversation/gate_wind.gd" id="ambience"]
+[ext_resource type="PackedScene" path="res://ui/dialogue/wind/gate_dialogue.tscn" id="story_box"]
+[ext_resource type="Resource" path="res://resources/world/npcs/gate/first.tres" id="story_first"]
+[ext_resource type="Resource" path="res://resources/world/npcs/gate/unpaid.tres" id="story_unpaid"]
+[ext_resource type="Resource" path="res://resources/world/npcs/gate/knocking.tres" id="story_knocking"]
+[ext_resource type="Resource" path="res://resources/world/npcs/gate/paid.tres" id="story_paid"]
+
+[sub_resource type="CapsuleShape3D" id="Body"]
+radius = 0.6
+height = 2.0
+
+[sub_resource type="SphereShape3D" id="Talk"]
+radius = 1.9
+
+[sub_resource type="Resource" id="Thanks"]
+script = ExtResource("7_line")
+text = "Đủ rồi. Ta sẽ nhường lối.
+
+Lần này… ta sẽ đợi ngươi qua hẳn."
+
+[sub_resource type="Resource" id="Refuse"]
+script = ExtResource("7_line")
+text = "Ngươi có {have}. Lệ cũ là {price} {currency}. Ta chưa thể cho ngươi qua.
+
+Đừng nhìn ta như thế."
+
+[sub_resource type="Resource" id="Decline"]
+script = ExtResource("7_line")
+text = "Vậy cứ ở bên này thêm một lúc. Trời còn sáng."
+
+[sub_resource type="Resource" id="TollTexts"]
+script = ExtResource("5_data")
+question = "Phí qua cửa là {price} {currency}. Đó là lệ cũ. Ta vẫn giữ."
+pay_option = "Trả {price} {currency}."
+decline_option = "Tôi sẽ quay lại."
+thanks_lines = Array[ExtResource("7_line")]([SubResource("Thanks")])
+after_payment_story = ExtResource("story_knocking")
+refuse_lines = Array[ExtResource("7_line")]([SubResource("Refuse")])
+decline_lines = Array[ExtResource("7_line")]([SubResource("Decline")])
+
+[node name="Gatekeeper" node_paths=PackedStringArray("animation_player") instance=ExtResource("1_npc")]
+script = ExtResource("2_script")
+display_name = "Kẻ giữ cửa"
+dialogues = Array[ExtResource("6_dialogue")]([ExtResource("story_first"), ExtResource("story_unpaid"), ExtResource("story_knocking"), ExtResource("story_paid")])
+animation_player = NodePath("Visual/Model/AnimationPlayer")
+idle_animation = &"Idle"
+talk_animation = &"Talk"
+talk_bounce = 0.0
+
+[node name="Model" parent="Visual" index="0" instance=ExtResource("3_model")]
+
+[node name="Shadow" parent="." index="1"]
+transform = Transform3D(1.7, 0, 0, 0, 1, 0, 0, 0, 1.7, 0, 0.03, 0)
+
+[node name="CollisionShape3D" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("Body")
+
+[node name="InteractableComponent" parent="." index="3"]
+prompt_offset = Vector3(0, 2.6, 0)
+
+[node name="CollisionShape3D" parent="InteractableComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("Talk")
+
+[node name="TollService" type="Node" parent="."]
+script = ExtResource("4_toll")
+keep_dialogue_open = true
+data = SubResource("TollTexts")
+
+[node name="Story" type="Node" parent="."]
+script = ExtResource("story")
+dialogues = Array[ExtResource("6_dialogue")]([ExtResource("story_first"), ExtResource("story_unpaid"), ExtResource("story_knocking"), ExtResource("story_paid")])
+dialogue_box_scene = ExtResource("story_box")
+
+[node name="ConversationCinematic" type="Node" parent="."]
+script = ExtResource("cinema")
+enter_time = 0.8
+zoom_ratio = 0.9
+bar_ratio = 0.085
+tint = Color(0.025, 0.055, 0.09, 0.16)
+
+[node name="ConversationAmbience" type="Node3D" parent="."]
+script = ExtResource("ambience")
+particle_count = 12
+particle_color = Color(0.55, 0.72, 0.8, 0.55)

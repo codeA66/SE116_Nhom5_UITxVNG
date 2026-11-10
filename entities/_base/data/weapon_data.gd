@@ -7,6 +7,10 @@ enum Slot { SWORD, BOW }
 @export var slot: Slot = Slot.SWORD
 
 @export var display_name: String = ""
+## Biểu tượng trên màn Tab (ô vũ khí); trống = vẽ chữ cái đầu
+@export var icon: Texture2D
+## Mô tả ngắn trên màn Tab
+@export_multiline var description: String = ""
 ## Model gắn vào tay khi cầm và hiển thị khi nằm trên đất
 @export var model_scene: PackedScene
 ## Tỉ lệ model khi nằm trên đất (vật phẩm nhặt): model gốc mỗi vũ khí to nhỏ khác nhau, chỉnh để cân đối với nhân vật

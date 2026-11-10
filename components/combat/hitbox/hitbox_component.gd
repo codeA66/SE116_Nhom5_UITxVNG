@@ -7,6 +7,10 @@ extends Area3D
 signal hit(hurtbox: HurtboxComponent)
 ## Phát khi hitbox bật: vệt chém, âm thanh... bắt đầu theo đòn mà không cần state biết
 signal activated(attack: AttackData)
+## Phát khi hitbox tắt (hết active frames hoặc bị ngắt giữa chừng): thứ đi kèm đòn (vùng gây cháy...) tắt theo
+signal deactivated
+## Phát khi đòn bị hủy giữa chừng (dash, kỹ năng): VFX của nhát đó tắt nhanh thay vì chờ mờ hết
+signal cancelled
 
 ## Độ sâu tối thiểu của hộp (m)
 const MIN_DEPTH := 0.1
@@ -79,6 +83,13 @@ func activate(data: AttackData, duration: float = -1.0) -> void:
 func deactivate() -> void:
 	_active = false
 	set_deferred(&"monitoring", false)
+	deactivated.emit()
+
+
+## Hủy đòn đang diễn: tắt hitbox rồi báo cancelled (khác deactivate thường lúc hết active frames)
+func cancel() -> void:
+	deactivate()
+	cancelled.emit()
 
 
 func _on_area_entered(area: Area3D) -> void:

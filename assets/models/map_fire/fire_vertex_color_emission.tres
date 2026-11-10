@@ -1,0 +1,22 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bqiv6e33x6nvm"]
+
+[sub_resource type="Shader" id="Shader_fire_emit"]
+code = "shader_type spatial;
+// Bề mặt tự phát sáng (dung nham, rãnh lửa, cổng): không nhận ánh sáng cảnh để giữ đúng màu,
+// nếu không nắng chiếu vào sẽ làm màu cam bạc thành vàng nhạt.
+// StandardMaterial3D không lấy được màu phát sáng từ vertex color nên dùng shader riêng.
+// Vertex color glTF đã ở linear, dùng thẳng không đổi hệ màu.
+render_mode unshaded;
+
+uniform float emission_energy : hint_range(0.0, 8.0) = 1.0;
+
+void fragment() {
+	ALBEDO = COLOR.rgb * emission_energy;
+}
+"
+
+[resource]
+resource_name = "Fire_VertexColor_Emission"
+render_priority = 0
+shader = SubResource("Shader_fire_emit")
+shader_parameter/emission_energy = 1.0

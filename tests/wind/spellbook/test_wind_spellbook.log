@@ -1,0 +1,27 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS chưa có kỹ năng trước khi nhặt
+PASS sách xoay tại chỗ
+PASS VFX không có vòng lặp script mỗi frame
+PASS số hạt được giới hạn
+PASS player nhận đúng mục tiêu nhặt qua Area3D
+FAIL input interact mở khóa kỹ năng gió
+FAIL lưu cờ đã nhặt
+FAIL sách và toàn bộ gió được xóa khi nhặt
+FAIL tiến trình được ghi xuống save
+FAIL sử dụng được kỹ năng vừa nhặt
+FAIL đọc save khôi phục kỹ năng
+FAIL tải lại không sinh sách đã nhặt
+WIND_SPELLBOOK FAILED
+ERROR: 17 RID allocations of type 'N13RendererDummy15MaterialStorage13DummyMaterialE' were leaked at exit.
+ERROR: 22 RID allocations of type 'N13RendererDummy15MaterialStorage11DummyShaderE' were leaked at exit.
+ERROR: 43 RID allocations of type 'N13RendererDummy9DummyMeshE' were leaked at exit.
+ERROR: 3 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+WARNING: 199 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 141 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools11BucketSmallE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)

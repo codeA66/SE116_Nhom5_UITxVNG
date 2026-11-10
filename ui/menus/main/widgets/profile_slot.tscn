@@ -1,0 +1,77 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/menus/main/widgets/profile_slot.gd" id="1_slot"]
+[ext_resource type="Script" path="res://ui/menus/main/widgets/menu_item.gd" id="2_item"]
+[ext_resource type="Script" path="res://ui/menus/main/widgets/element_pips.gd" id="3_pips"]
+
+[node name="ProfileSlot" type="HBoxContainer"]
+custom_minimum_size = Vector2(760, 78)
+theme_override_constants/separation = 24
+script = ExtResource("1_slot")
+
+[node name="Main" type="Button" parent="."]
+custom_minimum_size = Vector2(620, 78)
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_item")
+ornament_size = 4.0
+ornament_travel = 10.0
+show_underline = false
+span_full_width = true
+
+[node name="Row" type="HBoxContainer" parent="Main"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_right = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 28
+
+[node name="Number" type="Label" parent="Main/Row"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_font_sizes/font_size = 40
+text = "1"
+horizontal_alignment = 1
+
+[node name="Info" type="VBoxContainer" parent="Main/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Name" type="Label" parent="Main/Row/Info"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 26
+text = "Hành trình mới"
+
+[node name="Detail" type="Label" parent="Main/Row/Info"]
+modulate = Color(0.75, 0.77, 0.8, 1)
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 17
+
+[node name="Pips" type="Control" parent="Main/Row"]
+custom_minimum_size = Vector2(80, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("3_pips")
+
+[node name="Delete" type="Button" parent="."]
+custom_minimum_size = Vector2(110, 78)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Xóa"
+script = ExtResource("2_item")
+ornament_size = 3.5
+ornament_gap = 12.0
+ornament_travel = 8.0

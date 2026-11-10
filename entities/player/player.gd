@@ -9,6 +9,15 @@ signal bow_cooldown_started(duration: float)
 signal wind_blast_cooldown_started(duration: float)
 ## Vừa dùng một kỹ năng chủ động bất kỳ (SkillData), bắt đầu thời gian khoá của nó
 signal skill_cooldown_started(skill_id: StringName, duration: float)
+## Một nhát cận chiến vừa bật khi vũ khí đang ghép nguyên tố element_id (VFX kiếm Lửa / Băng... tự lọc theo id).
+## Nhát cuối combo: combo_index == combo_size - 1. Chung cho mọi nguyên tố để thêm nguyên tố mới không sửa Player
+signal fusion_melee_swing(element_id: StringName, attack: AttackData, combo_index: int, combo_size: int, direction: Vector3, active_time: float)
+## Độ kéo cung (0..1) khi cung đang ghép nguyên tố element_id (VFX tụ lửa / băng... tự lọc theo id)
+signal fusion_bow_draw(element_id: StringName, amount: float)
+## Vừa buông dây bắn khi cung đang ghép element_id
+signal fusion_bow_released(element_id: StringName)
+## Cất cung (sau khi bắn hoặc huỷ kéo) khi cung đang ghép element_id: VFX tắt hẳn
+signal fusion_bow_aim_ended(element_id: StringName)
 
 const ANIM_IDLE := &"Rig_Medium_General/Idle_A"
 const ANIM_RUN := &"Rig_Medium_MovementBasic/Running_A"
@@ -86,6 +95,8 @@ var _model_meshes: Array[MeshInstance3D] = []
 var _flash_tween: Tween
 ## Bảng UI đang mở và dùng chuột (tủ đồ): chuột trái cũng là nút đánh nên phải bỏ qua, nếu không kéo thả sẽ chém
 var _attack_blocked_by_ui: bool = false
+## Mỗi cơ chế giữ khóa riêng; thả vật không vô tình gỡ khóa của UI hay cơ chế khác.
+var _combat_locks: Dictionary[Node, bool] = {}
 ## Model cung đang gắn ở BowHold (tạo một lần, ẩn khi không nhắm) và scene đã dùng để tạo nó
 var _bow_model: Node3D
 var _bow_model_scene: PackedScene
@@ -235,6 +246,20 @@ func get_move_direction() -> Vector3:
 	return right * input.x - forward * input.y
 
 
+func get_slip_steering() -> Vector3:
+	return get_move_direction()
+
+
+func get_slip_recovery_state() -> StringName:
+	if health.is_dead(): return &"Dead"
+	if not is_on_floor(): return &"Fall"
+	return &"Idle" if get_move_direction().is_zero_approx() else &"Run"
+
+
+func play_slip_animation() -> void:
+	play_action(ANIM_HURT)
+
+
 ## Hướng ngang từ player tới điểm con trỏ chuột chỉ trên mặt phẳng ngang ở độ cao chân player.
 ## Trả về Vector3.ZERO nếu không xác định được (chuột ngoài cửa sổ, tia song song mặt phẳng, chuột trùng chân player)
 func get_mouse_aim_direction() -> Vector3:
@@ -273,7 +298,7 @@ func has_weapon() -> bool:
 
 ## Đúng khi đang cầm vũ khí, có lệnh đánh trong buffer và đủ năng lượng (cung tiêu năng lượng mỗi phát)
 func can_attack() -> bool:
-	return has_weapon() and not get_weapon().combo.is_empty() and _attack_buffer_timer > 0.0 \
+	return not combat_locked() and has_weapon() and not get_weapon().combo.is_empty() and _attack_buffer_timer > 0.0 \
 		and energy.can_spend(get_weapon().energy_cost)
 
 
@@ -289,6 +314,8 @@ func notify_melee_active(attack: AttackData, combo_index: int, combo_size: int, 
 		return
 	for effect in fusion.effects:
 		effect.on_melee_active(self, attack, combo_index, combo_size, direction, active_time)
+	if fusion.element:
+		fusion_melee_swing.emit(fusion.element.id, attack, combo_index, combo_size, direction, active_time)
 
 
 ## Bảng UI dùng chuột đang mở thì không nhận nút đánh (chuột trái)
@@ -300,6 +327,30 @@ func set_attack_blocked_by_ui(blocked: bool) -> void:
 
 func consume_attack_input() -> void:
 	_attack_buffer_timer = 0.0
+
+
+## Khóa tấn công/cung/kỹ năng chủ động; vẫn đi, nhảy, dash và tương tác khi mang vật.
+func set_combat_locked(source: Node, locked: bool) -> void:
+	if locked:
+		_combat_locks[source] = true
+		var release := _release_combat_lock.bind(source)
+		if not source.tree_exiting.is_connected(release):
+			source.tree_exiting.connect(release, CONNECT_ONE_SHOT)
+		_attack_buffer_timer = 0.0
+		_skill_buffers.clear()
+	else:
+		_release_combat_lock(source)
+
+
+func combat_locked() -> bool:
+	return not _combat_locks.is_empty()
+
+
+func _release_combat_lock(source: Node) -> void:
+	_combat_locks.erase(source)
+	var release := _release_combat_lock.bind(source)
+	if is_instance_valid(source) and source.tree_exiting.is_connected(release):
+		source.tree_exiting.disconnect(release)
 
 
 ## Gọi từ vật phẩm khi được tương tác: chuyển sang state nhặt, vũ khí gắn vào tay trong lúc nhặt
@@ -331,7 +382,7 @@ func is_holding_aim() -> bool:
 ## Đúng khi đang giữ phím aim, có cung bắn được và đã hết thời gian hồi
 func can_aim_bow() -> bool:
 	var bow := get_bow()
-	return bow != null and bow.is_ranged() and not bow.combo.is_empty() and is_holding_aim() \
+	return not combat_locked() and bow != null and bow.is_ranged() and not bow.combo.is_empty() and is_holding_aim() \
 			and _bow_cooldown_timer <= 0.0
 
 
@@ -347,6 +398,8 @@ func begin_bow_aim() -> void:
 	_bow_hold.basis = Basis(limbs.cross(forward), limbs, forward)
 	_bow_model.visible = true
 	if _bow_model is BowVisual:
+		# Cung đang ghép nguyên tố: VFX tụ lực của nguyên tố thay cho cụm tụ lực mặc định
+		(_bow_model as BowVisual).default_charge_enabled = _bow_element_id() == &""
 		(_bow_model as BowVisual).set_aiming(true)
 	play_action(bow.draw_animation, 0.0)
 	set_bow_draw(0.0)
@@ -394,6 +447,9 @@ func set_bow_draw(amount: float) -> void:
 	if visual:
 		visual.draw_amount = amount
 	_on_bow_draw_changed(amount)
+	var element_id := _bow_element_id()
+	if element_id != &"":
+		fusion_bow_draw.emit(element_id, amount)
 
 
 ## Buông dây sau khi bắn: dây bật về, chạy animation buông
@@ -403,6 +459,9 @@ func release_bow() -> void:
 		play_action(bow.release_animation)
 	if _bow_model is BowVisual:
 		(_bow_model as BowVisual).play_release_flash()
+	var element_id := _bow_element_id()
+	if element_id != &"":
+		fusion_bow_released.emit(element_id)
 	# Sau play_action: clip buông chạy từ tư thế đang kéo, không bị tua về đầu clip kéo trước
 	set_bow_draw(0.0)
 
@@ -414,6 +473,23 @@ func end_bow_aim() -> void:
 		if _bow_model is BowVisual:
 			(_bow_model as BowVisual).set_aiming(false)
 		_bow_model.visible = false
+	var element_id := _bow_element_id()
+	if element_id != &"":
+		fusion_bow_aim_ended.emit(element_id)
+
+
+## Vị trí + hướng tay cầm cung (thế giới; +Z = hướng bắn): VFX tụ lực đặt ở mũi tên lúc kéo
+func get_bow_grip_transform() -> Transform3D:
+	return _bow_hold.global_transform
+
+
+## Id nguyên tố đang ghép vào cung; &"" nếu chưa ghép
+func _bow_element_id() -> StringName:
+	var bow := get_bow()
+	if bow == null:
+		return &""
+	var element := GameState.get_fused_element(bow.slot)
+	return element.id if element else &""
 
 
 func _on_progress_replaced() -> void:
@@ -495,6 +571,8 @@ func start_dash() -> DashData:
 ## Kỹ năng chủ động vừa được bấm và dùng được ngay (đã mở khóa, không đang ghép vào vũ khí, có lệnh trong buffer,
 ## hết thời gian khoá, đủ năng lượng); null nếu không có. State nền / trên không chuyển sang skill.state
 func get_ready_skill() -> SkillData:
+	if combat_locked():
+		return null
 	for ability in GameState.get_abilities():
 		var skill := ability as SkillData
 		if skill == null or not is_skill_available(skill.id):
@@ -656,6 +734,9 @@ func _pre_state_update(delta: float) -> void:
 	for id: StringName in _skill_cooldowns:
 		_skill_cooldowns[id] = maxf(_skill_cooldowns[id] - delta, 0.0)
 	_bow_cooldown_timer = maxf(_bow_cooldown_timer - delta, 0.0)
+	if combat_locked():
+		_attack_buffer_timer = 0.0
+		_skill_buffers.clear()
 
 
 func _attach_weapon_model(data: WeaponData) -> void:
@@ -752,6 +833,9 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 		return
 	last_hit = info
 	_start_blink(_hurtbox.invincibility_time)
+	# Đòn không làm khựng (tick cháy) giống quái: chỉ nháy + mất máu, không chuyển Hurt, không huỷ dash / đòn đang đánh
+	if not info.staggers:
+		return
 	state_machine.transition_to(PlayerState.HURT)
 
 
@@ -770,7 +854,7 @@ func _on_energy_changed(current: int, _max_value: int) -> void:
 
 ## Bấm cung / kỹ năng mà thiếu năng lượng: báo một lần lúc bấm (HUD nháy, âm báo), không báo mỗi frame
 func _report_unaffordable_input() -> void:
-	if not controls_enabled:
+	if not controls_enabled or combat_locked():
 		return
 	if not _attack_blocked_by_ui and Input.is_action_just_pressed(&"attack") and has_weapon() \
 			and not energy.can_spend(get_weapon().energy_cost):

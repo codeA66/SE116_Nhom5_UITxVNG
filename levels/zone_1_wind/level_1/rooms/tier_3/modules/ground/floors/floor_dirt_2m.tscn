@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/environment/monkey_garden/stable_floor.gdshader" id="1_2lm1u"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o806a"]
+render_priority = 0
+shader = ExtResource("1_2lm1u")
+shader_parameter/stone = false
+shader_parameter/earth_color = Color(0.22, 0.17, 0.12, 1)
+shader_parameter/stone_color = Color(0.31, 0.3, 0.23, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_o3685"]
+size = Vector3(2, 0.18, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2lm1u"]
+size = Vector3(2, 0.3, 2)
+
+[node name="FloorDirt2m" type="StaticBody3D" unique_id=1978960086]
+editor_description = "Nền đất nện 2m | Model + collider đi cùng root. Kéo/copy cả node này. Nguồn: res://assets/models/map_wind/tier_3_monkey_garden/ground/floors/floor_dirt_2m.glb | Collider tối giản: khối nguyên thủy, không dùng trimesh."
+collision_mask = 0
+metadata/garden_asset = "floor_dirt_2m"
+metadata/simple_collision = true
+
+[node name="Model" type="Node3D" parent="." unique_id=1245986663]
+
+[node name="SealedSurface" type="MeshInstance3D" parent="Model" unique_id=1266763312]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.09, 0)
+material_override = SubResource("ShaderMaterial_o806a")
+mesh = SubResource("BoxMesh_o3685")
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=1416715911]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+shape = SubResource("BoxShape3D_2lm1u")

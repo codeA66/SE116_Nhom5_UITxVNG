@@ -120,6 +120,18 @@ func resists_knockback() -> bool:
 	return false
 
 
+func get_slip_steering() -> Vector3:
+	return direction_to_target()
+
+
+func get_slip_recovery_state() -> StringName:
+	return &"Dead" if is_dead() else (chase_state if has_target() else &"Patrol")
+
+
+func play_slip_animation() -> void:
+	play_anim(&"Idle")
+
+
 func set_telegraph(on: bool) -> void:
 	_set_overlay(telegraph_material if on else null)
 
@@ -175,7 +187,8 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 	if info.source is Node3D and target == null:
 		target = info.source as Node3D
 	_flash_hit()
-	if is_dead() or resists_knockback():
+	# Đòn không làm khựng (tick cháy) thì cũng không đẩy nhẹ: lửa không bao giờ đẩy
+	if is_dead() or resists_knockback() or not info.staggers:
 		return
 	if data.stagger_on_hit:
 		state_machine.transition_to(EnemyState.HURT)

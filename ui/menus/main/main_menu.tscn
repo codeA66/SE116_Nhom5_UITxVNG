@@ -1,0 +1,445 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/menus/main/main_menu.gd" id="1_menu"]
+[ext_resource type="Resource" path="res://resources/ui/main_menu.tres" id="2_data"]
+[ext_resource type="Resource" path="res://resources/world/zones/zone_registry.tres" id="3_registry"]
+[ext_resource type="PackedScene" path="res://ui/menus/main/backdrop/menu_backdrop.tscn" id="4_backdrop"]
+[ext_resource type="Theme" path="res://ui/theme/menu_theme.tres" id="5_theme"]
+[ext_resource type="Shader" path="res://assets/shaders/screen/menu_vignette.gdshader" id="6_vignette"]
+[ext_resource type="Script" path="res://ui/menus/main/widgets/menu_logo.gd" id="7_logo"]
+[ext_resource type="Script" path="res://ui/menus/main/widgets/ornament_divider.gd" id="8_divider"]
+[ext_resource type="Script" path="res://ui/menus/main/widgets/menu_item.gd" id="9_item"]
+[ext_resource type="Script" path="res://ui/menus/main/screens/title_screen.gd" id="10_title"]
+[ext_resource type="Script" path="res://ui/menus/main/screens/home_screen.gd" id="11_home"]
+[ext_resource type="Script" path="res://ui/menus/main/screens/profiles_screen.gd" id="12_profiles"]
+[ext_resource type="Script" path="res://ui/menus/main/screens/settings_screen.gd" id="13_settings"]
+[ext_resource type="Script" path="res://ui/menus/main/screens/confirm_screen.gd" id="14_confirm"]
+[ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="15_fsm"]
+[ext_resource type="Script" path="res://ui/menus/main/states/title_state.gd" id="16_s_title"]
+[ext_resource type="Script" path="res://ui/menus/main/states/home_state.gd" id="17_s_home"]
+[ext_resource type="Script" path="res://ui/menus/main/states/profiles_state.gd" id="18_s_profiles"]
+[ext_resource type="Script" path="res://ui/menus/main/states/confirm_delete_state.gd" id="19_s_confirm"]
+[ext_resource type="Script" path="res://ui/menus/main/states/settings_state.gd" id="20_s_settings"]
+
+[sub_resource type="ShaderMaterial" id="Vignette"]
+shader = ExtResource("6_vignette")
+
+[node name="MainMenu" type="Node"]
+script = ExtResource("1_menu")
+data = ExtResource("2_data")
+registry = ExtResource("3_registry")
+
+[node name="Backdrop" parent="." instance=ExtResource("4_backdrop")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Root" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("5_theme")
+
+[node name="Shade" type="ColorRect" parent="UI/Root"]
+material = SubResource("Vignette")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Logo" type="Control" parent="UI/Root"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -420.0
+offset_top = 180.0
+offset_right = 420.0
+offset_bottom = 380.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("7_logo")
+
+[node name="Title" type="Label" parent="UI/Root/Logo"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 150.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 128
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/shadow_outline_size = 10
+text = "FOXY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Divider" type="Control" parent="UI/Root/Logo"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_top = 158.0
+offset_right = 260.0
+offset_bottom = 174.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("8_divider")
+
+[node name="TitleScreen" type="Control" parent="UI/Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_title")
+
+[node name="Prompt" type="Label" parent="UI/Root/TitleScreen"]
+modulate = Color(0.94, 0.93, 0.89, 1)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -170.0
+offset_right = 300.0
+offset_bottom = -130.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 22
+text = "Nhấn phím bất kỳ"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HomeScreen" type="Control" parent="UI/Root" node_paths=PackedStringArray("default_focus")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("11_home")
+default_focus = NodePath("Items/Start")
+
+[node name="Items" type="VBoxContainer" parent="UI/Root/HomeScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -170.0
+offset_top = 10.0
+offset_right = 170.0
+offset_bottom = 200.0
+grow_horizontal = 2
+theme_override_constants/separation = 10
+
+[node name="Start" type="Button" parent="UI/Root/HomeScreen/Items"]
+custom_minimum_size = Vector2(340, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Bắt đầu"
+script = ExtResource("9_item")
+
+[node name="Settings" type="Button" parent="UI/Root/HomeScreen/Items"]
+custom_minimum_size = Vector2(340, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Cài đặt"
+script = ExtResource("9_item")
+
+[node name="Quit" type="Button" parent="UI/Root/HomeScreen/Items"]
+custom_minimum_size = Vector2(340, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Thoát"
+script = ExtResource("9_item")
+
+[node name="ProfilesScreen" type="Control" parent="UI/Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("12_profiles")
+
+[node name="Dim" type="ColorRect" parent="UI/Root/ProfilesScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.025, 0.035, 0.5)
+
+[node name="Header" type="Label" parent="UI/Root/ProfilesScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 64.0
+offset_right = 300.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 40
+text = "Chọn hồ sơ"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Divider" type="Control" parent="UI/Root/ProfilesScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 124.0
+offset_right = 220.0
+offset_bottom = 138.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("8_divider")
+
+[node name="List" type="VBoxContainer" parent="UI/Root/ProfilesScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -380.0
+offset_top = 168.0
+offset_right = 380.0
+offset_bottom = 540.0
+grow_horizontal = 2
+theme_override_constants/separation = 12
+
+[node name="Back" type="Button" parent="UI/Root/ProfilesScreen"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -110.0
+offset_right = 120.0
+offset_bottom = -62.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "Quay lại"
+script = ExtResource("9_item")
+
+[node name="SettingsScreen" type="Control" parent="UI/Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("13_settings")
+
+[node name="Dim" type="ColorRect" parent="UI/Root/SettingsScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.025, 0.035, 0.5)
+
+[node name="Header" type="Label" parent="UI/Root/SettingsScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 64.0
+offset_right = 300.0
+offset_bottom = 120.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 40
+text = "Cài đặt"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Divider" type="Control" parent="UI/Root/SettingsScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 124.0
+offset_right = 220.0
+offset_bottom = 138.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("8_divider")
+
+[node name="Note" type="Label" parent="UI/Root/SettingsScreen"]
+modulate = Color(0.58, 0.6, 0.63, 1)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -20.0
+offset_right = 300.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 22
+text = "Đang hoàn thiện"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Back" type="Button" parent="UI/Root/SettingsScreen"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -110.0
+offset_right = 120.0
+offset_bottom = -62.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "Quay lại"
+script = ExtResource("9_item")
+
+[node name="ConfirmScreen" type="Control" parent="UI/Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("14_confirm")
+
+[node name="Dim" type="ColorRect" parent="UI/Root/ConfirmScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.025, 0.035, 0.72)
+
+[node name="Box" type="VBoxContainer" parent="UI/Root/ConfirmScreen"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -110.0
+offset_right = 300.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="Question" type="Label" parent="UI/Root/ConfirmScreen/Box"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "Xóa hồ sơ 1?"
+horizontal_alignment = 1
+
+[node name="Divider" type="Control" parent="UI/Root/ConfirmScreen/Box"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("8_divider")
+
+[node name="Warning" type="Label" parent="UI/Root/ConfirmScreen/Box"]
+modulate = Color(0.75, 0.77, 0.8, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Hành trình này sẽ mất vĩnh viễn."
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="UI/Root/ConfirmScreen/Box"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 40
+
+[node name="No" type="Button" parent="UI/Root/ConfirmScreen/Box/Buttons"]
+custom_minimum_size = Vector2(180, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Không"
+script = ExtResource("9_item")
+
+[node name="Yes" type="Button" parent="UI/Root/ConfirmScreen/Box/Buttons"]
+custom_minimum_size = Vector2(180, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Xóa"
+script = ExtResource("9_item")
+
+[node name="Fade" type="ColorRect" parent="UI/Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("15_fsm")
+initial_state = NodePath("Title")
+
+[node name="Title" type="Node" parent="StateMachine"]
+script = ExtResource("16_s_title")
+
+[node name="Home" type="Node" parent="StateMachine"]
+script = ExtResource("17_s_home")
+
+[node name="Profiles" type="Node" parent="StateMachine"]
+script = ExtResource("18_s_profiles")
+
+[node name="ConfirmDelete" type="Node" parent="StateMachine"]
+script = ExtResource("19_s_confirm")
+
+[node name="Settings" type="Node" parent="StateMachine"]
+script = ExtResource("20_s_settings")
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="Music" type="AudioStreamPlayer" parent="Audio"]
+bus = &"Master"
+
+[node name="Move" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Confirm" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Back" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Delete" type="AudioStreamPlayer" parent="Audio"]

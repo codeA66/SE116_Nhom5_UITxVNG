@@ -1,0 +1,93 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/area_title/area_title.gd" id="1_script"]
+[ext_resource type="Theme" path="res://ui/theme/menu_theme.tres" id="2_theme"]
+[ext_resource type="Shader" path="res://assets/shaders/screen/area_title_reveal.gdshader" id="3_reveal"]
+[ext_resource type="Script" path="res://ui/menus/main/widgets/ornament_divider.gd" id="4_rule"]
+
+[sub_resource type="Gradient" id="BandGradient"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.6, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="BandTexture"]
+gradient = SubResource("BandGradient")
+width = 256
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="SystemFont" id="Serif"]
+font_names = PackedStringArray("Cambria", "Times New Roman", "Georgia", "Serif")
+antialiasing = 1
+hinting = 1
+subpixel_positioning = 1
+
+[sub_resource type="FontVariation" id="TitleFont"]
+base_font = SubResource("Serif")
+spacing_glyph = 2
+
+[sub_resource type="ShaderMaterial" id="TitleReveal"]
+shader = ExtResource("3_reveal")
+shader_parameter/reveal = 0.0
+
+[node name="AreaTitle" type="CanvasLayer"]
+layer = 30
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="Band" type="TextureRect" parent="Root"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_top = 0.3
+anchor_bottom = 0.3
+offset_top = -120.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("BandTexture")
+expand_mode = 1
+
+[node name="Block" type="VBoxContainer" parent="Root"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_top = 0.3
+anchor_bottom = 0.3
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Title" type="Label" parent="Root/Block"]
+material = SubResource("TitleReveal")
+layout_mode = 2
+theme_override_fonts/font = SubResource("TitleFont")
+theme_override_font_sizes/font_size = 68
+horizontal_alignment = 1
+uppercase = true
+
+[node name="Rule" type="Control" parent="Root/Block"]
+custom_minimum_size = Vector2(560, 18)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+script = ExtResource("4_rule")
+
+[node name="Subtitle" type="Label" parent="Root/Block"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+
+[node name="Sound" type="AudioStreamPlayer" parent="."]
+bus = &"Master"

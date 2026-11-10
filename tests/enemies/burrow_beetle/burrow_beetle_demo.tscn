@@ -1,0 +1,62 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/enemies/burrow_beetle/burrow_beetle_demo.gd" id="demo"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="beetle"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
+
+[sub_resource type="BoxShape3D" id="floor"]
+size = Vector3(24, 0.4, 24)
+
+[sub_resource type="StandardMaterial3D" id="stone"]
+albedo_color = Color(0.38, 0.45, 0.47, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="floor_mesh"]
+size = Vector3(24, 0.4, 24)
+material = SubResource("stone")
+
+[sub_resource type="Environment" id="sky"]
+background_mode = 1
+background_color = Color(0.16, 0.25, 0.30, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.68, 0.78, 0.88, 1)
+ambient_light_energy = 0.75
+
+[node name="BurrowBeetleDemo" type="Node3D"]
+script = ExtResource("demo")
+shader_warmup = null
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("sky")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -25, 0)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.2, 4)
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("floor_mesh")
+
+[node name="Shape" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("floor")
+
+[node name="Start" type="Marker3D" parent="."]
+position = Vector3(0, 0.04, 11.5)
+script = ExtResource("spawn")
+spawn_id = &"start"
+
+[node name="BurrowBeetle" parent="." instance=ExtResource("beetle")]
+
+[node name="Instructions" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="Instructions"]
+offset_left = 24.0
+offset_top = 124.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 18
+text = "BỌ ĐẤT\nÁp sát để nó chui xuống. Lùi ra để nó trồi lên.\nHướng chuột về viên đá và nhấn E để phản đạn."

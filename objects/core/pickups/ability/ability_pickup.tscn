@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
 
 [ext_resource type="PackedScene" path="res://objects/core/pickups/ability/wind_spellbook_visual.tscn" id="3_book_visual"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/ability_acquire_vfx.tscn" id="4_acquisition"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_range"]
 radius = 1.5
@@ -25,3 +26,6 @@ prompt_text = "PICK UP"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 shape = SubResource("SphereShape3D_range")
+
+[node name="AbilityAcquireVfx" parent="." node_paths=PackedStringArray("source_visual") instance=ExtResource("4_acquisition")]
+source_visual = NodePath("../Visual")

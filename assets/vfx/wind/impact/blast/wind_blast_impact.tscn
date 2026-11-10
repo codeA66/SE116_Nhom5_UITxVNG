@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/vfx/wind/impact/wind_impact_vfx.tscn" id="1"]
+[ext_resource type="Script" path="res://assets/vfx/wind/burst/wind_burst_style.gd" id="2"]
+[ext_resource type="Script" path="res://assets/vfx/wind/impact/blast/wind_blast_impact.gd" id="3"]
+
+[sub_resource type="Resource" id="Impact"]
+script = ExtResource("2")
+duration = 0.24
+core_color = Color(0.847, 0.980, 1, 1)
+edge_color = Color(0.137, 0.337, 0.384, 1)
+width = 0.16
+reach = 1.1
+shot_height = 0.74
+
+[node name="WindBlastImpact" instance=ExtResource("1")]
+script = ExtResource("3")
+style = SubResource("Impact")
+
+[node name="Ink" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0

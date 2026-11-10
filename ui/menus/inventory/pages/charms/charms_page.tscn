@@ -1,0 +1,92 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/menus/inventory/pages/charms/charms_page.gd" id="1_page"]
+[ext_resource type="Script" path="res://ui/menus/inventory/pages/charms/notch_row.gd" id="2_notches"]
+[ext_resource type="Script" path="res://ui/menus/main/widgets/ornament_divider.gd" id="3_rule"]
+
+[node name="CharmsPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_page")
+page_title = "Bùa"
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="EquippedHeading" type="Label" parent="Layout"]
+layout_mode = 2
+text = "ĐANG ĐEO"
+horizontal_alignment = 1
+
+[node name="Equipped" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Notches" type="Control" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+script = ExtResource("2_notches")
+
+[node name="NotchLabel" type="Label" parent="Layout"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Rule" type="Control" parent="Layout"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("3_rule")
+
+[node name="CollectionHeading" type="Label" parent="Layout"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="Margin" type="MarginContainer" parent="Layout/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Grid" type="GridContainer" parent="Layout/Scroll/Margin"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 6
+
+[node name="Empty" type="Label" parent="Layout"]
+visible = false
+layout_mode = 2
+text = "Chưa có bùa nào. Bùa nằm rải rác khắp đảo Foxy."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Status" type="Label" parent="Layout"]
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemCatalog" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/item_catalog.gd" id="1"]
+[ext_resource type="Script" path="res://resources/player/items/_base/item_data.gd" id="2"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="3"]
+[ext_resource type="Resource" path="res://resources/player/items/upgrades/wind_seal.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/player/items/upgrades/fire_seal.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/player/items/keys/hub_wind_key.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/player/items/keys/energy_stone.tres" id="7"]
+[ext_resource type="Resource" path="res://resources/player/items/tools/tnt.tres" id="tnt"]
+
+[resource]
+script = ExtResource("1")
+items = Array[ExtResource("2")]([ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("tnt")])
+charms = Array[ExtResource("3")]([])

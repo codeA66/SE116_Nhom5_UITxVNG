@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/world/cellar/dark_zone/dark_zone.gd" id="1_dark"]
+
+[node name="DarkZone" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_dark")
+
+[node name="CarriedLight" type="OmniLight3D" parent="."]
+light_energy = 0.0
+shadow_enabled = false
+omni_range = 4.5

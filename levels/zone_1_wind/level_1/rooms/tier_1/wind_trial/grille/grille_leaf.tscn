@@ -1,0 +1,115 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Iron"]
+albedo_color = Color(0.095, 0.145, 0.17, 1)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="Edge"]
+albedo_color = Color(0.15, 0.23, 0.25, 1)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="Brass"]
+albedo_color = Color(0.41, 0.28, 0.13, 1)
+roughness = 0.82
+
+[sub_resource type="BoxMesh" id="Bar"]
+material = SubResource("Iron")
+size = Vector3(0.12, 1, 0.145)
+
+[sub_resource type="BoxMesh" id="Stile"]
+material = SubResource("Iron")
+size = Vector3(0.18, 1, 0.26)
+
+[sub_resource type="BoxMesh" id="Rail"]
+material = SubResource("Iron")
+size = Vector3(2.06, 0.125, 0.22)
+
+[sub_resource type="BoxMesh" id="Band"]
+material = SubResource("Edge")
+size = Vector3(2.02, 0.05, 0.235)
+
+[sub_resource type="BoxMesh" id="Diagonal"]
+material = SubResource("Brass")
+size = Vector3(0.045, 0.53, 0.033)
+
+[sub_resource type="BoxMesh" id="Cap"]
+material = SubResource("Edge")
+size = Vector3(0.21, 0.1, 0.28)
+
+[node name="GrilleLeaf" type="Node3D"]
+
+[node name="Sill" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.19, 0)
+mesh = SubResource("Rail")
+
+[node name="MidRail" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.31, 0)
+mesh = SubResource("Rail")
+
+[node name="EdgeBand" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.274, 0)
+mesh = SubResource("Band")
+
+[node name="Bar1" type="MeshInstance3D" parent="."]
+position = Vector3(-0.66, 1.04, 0)
+scale = Vector3(1, 1.7, 1)
+mesh = SubResource("Bar")
+
+[node name="Bar2" type="MeshInstance3D" parent="."]
+position = Vector3(-0.34, 1.115, 0)
+scale = Vector3(1, 1.85, 1)
+mesh = SubResource("Bar")
+
+[node name="Bar3" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.18, 0)
+scale = Vector3(1, 1.98, 1)
+mesh = SubResource("Bar")
+
+[node name="Bar4" type="MeshInstance3D" parent="."]
+position = Vector3(0.34, 1.235, 0)
+scale = Vector3(1, 2.09, 1)
+mesh = SubResource("Bar")
+
+[node name="Bar5" type="MeshInstance3D" parent="."]
+position = Vector3(0.66, 1.275, 0)
+scale = Vector3(1, 2.17, 1)
+mesh = SubResource("Bar")
+
+[node name="OuterStile" type="MeshInstance3D" parent="."]
+position = Vector3(-0.945, 1.135, 0)
+scale = Vector3(1, 1.89, 1)
+mesh = SubResource("Stile")
+
+[node name="OuterCap" type="MeshInstance3D" parent="."]
+position = Vector3(-0.945, 2.08, 0)
+mesh = SubResource("Cap")
+
+[node name="InnerStile" type="MeshInstance3D" parent="."]
+position = Vector3(0.945, 1.35, 0)
+scale = Vector3(1, 2.32, 1)
+mesh = SubResource("Stile")
+
+[node name="InnerCap" type="MeshInstance3D" parent="."]
+position = Vector3(0.945, 2.51, 0)
+mesh = SubResource("Cap")
+
+[node name="FrontInlayA" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.31, 0.125)
+rotation_degrees = Vector3(0, 0, 45)
+mesh = SubResource("Diagonal")
+
+[node name="FrontInlayB" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.31, 0.125)
+rotation_degrees = Vector3(0, 0, -45)
+mesh = SubResource("Diagonal")
+
+[node name="BackInlayA" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.31, -0.125)
+rotation_degrees = Vector3(0, 0, 45)
+mesh = SubResource("Diagonal")
+
+[node name="BackInlayB" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.31, -0.125)
+rotation_degrees = Vector3(0, 0, -45)
+mesh = SubResource("Diagonal")
+

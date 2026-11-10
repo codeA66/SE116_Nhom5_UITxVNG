@@ -1,0 +1,17 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://objects/core/pickups/currency/hud/currency_counter.gd" id="1"]
+[ext_resource type="Script" path="res://objects/core/pickups/currency/hud/jade_glyph.gd" id="2"]
+[node name="CurrencyCounter" type="HBoxContainer"]
+mouse_filter = 2
+script = ExtResource("1")
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2")
+[node name="Count" type="Label" parent="."]
+layout_mode = 2
+mouse_filter = 2
+text = "0"

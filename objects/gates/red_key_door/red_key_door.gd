@@ -6,6 +6,10 @@ signal opened
 signal unlock_started
 signal denied
 
+## Model chìa đứng dọc theo trục Y: lật 90° quanh X cho thân chìa chĩa thẳng vào cửa,
+## rồi xoay 90° quanh thân để răng chìa dựng đứng, khớp khe ổ khóa dọc lúc cắm vào
+const KEY_LAY_BASIS := Basis(Vector3.RIGHT, PI * 0.5) * Basis(Vector3.UP, PI * 0.5)
+
 @export var key_id: StringName
 @export var persistent_id: StringName
 @export_range(0.1, 3.0, 0.05) var insert_time: float = 0.7
@@ -15,6 +19,16 @@ signal denied
 @export var key_material: Material
 ## Rung màn hình lúc cửa bắt đầu tan (0 = không rung)
 @export_range(0.0, 1.0, 0.05) var open_trauma: float = 0.0
+
+@export_group("Cắm chìa")
+## Vị trí chìa lúc bắt đầu đưa vào và lúc đã cắm hết (đầu răng chìa nằm ở gốc model chìa)
+@export var key_start_position: Vector3 = Vector3(0, 1.58, 1.28)
+@export var key_end_position: Vector3 = Vector3(0, 1.58, 0.34)
+## Góc vặn quanh thân chìa sau khi cắm
+@export_range(-180.0, 180.0, 1.0) var key_twist_degrees: float = 90.0
+## Mốc (phần thời gian cắm) bắt đầu vặn
+@export_range(0.0, 1.0, 0.05) var key_twist_start: float = 0.6
+
 
 var is_open: bool = false
 var _dissolve: ShaderMaterial
@@ -57,14 +71,16 @@ func deny() -> void:
 func begin_insert() -> void:
 	interaction.enabled = false
 	key_visual.visible = true
-	key_visual.position = Vector3(0, 1.58, 1.28)
-	key_visual.rotation = Vector3(PI * 0.5, 0, 0)
+	key_visual.position = key_start_position
+	key_visual.basis = KEY_LAY_BASIS
 	unlock_started.emit()
 
 func update_insert(progress: float) -> void:
 	var eased: float = smoothstep(0.0, 1.0, progress)
-	key_visual.position.z = lerpf(1.28, 0.46, eased)
-	key_visual.rotation.z = lerpf(0.0, PI * 0.5, smoothstep(0.6, 1.0, progress))
+	key_visual.position = key_start_position.lerp(key_end_position, eased)
+	# Vặn quanh chính thân chìa (trục Y của model): xoay tại chỗ trong ổ, không quét ngang ra ngoài
+	var twist: float = deg_to_rad(key_twist_degrees) * smoothstep(key_twist_start, 1.0, progress)
+	key_visual.basis = KEY_LAY_BASIS * Basis(Vector3.UP, twist)
 	lock_light.light_energy = lerpf(0.6, 2.2, progress)
 
 func begin_dissolve() -> void:

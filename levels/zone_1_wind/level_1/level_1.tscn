@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b5sueurtacysl"]
 
-[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_5r1qf"]
+[ext_resource type="Script" uid="uid://bw2mjpgi3op5x" path="res://levels/_base/zone_root.gd" id="1_5r1qf"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/map_wind_island/wind_palace_lighting.tscn" id="2_ycmv8"]
-[ext_resource type="Shader" path="res://assets/shaders/environment/sky/cloud_sea.gdshader" id="3_xudqy"]
-[ext_resource type="PackedScene" path="res://assets/models/shared/generated/wind_ruins/gridmap/geo01/geo01_large_cloud_sea_island_v2.glb" id="4_t4n2c"]
-[ext_resource type="PackedScene" path="res://assets/models/shared/generated/wind_ruins/gridmap/geo02/geo02_medium_cloud_sea_island_v2.glb" id="5_u0yyv"]
+[ext_resource type="Shader" uid="uid://ofbqgo7ee0pc" path="res://assets/shaders/environment/sky/cloud_sea.gdshader" id="3_xudqy"]
+[ext_resource type="PackedScene" uid="uid://45x73tf1y43h" path="res://assets/models/shared/generated/wind_ruins/gridmap/geo01/geo01_large_cloud_sea_island_v2.glb" id="4_t4n2c"]
+[ext_resource type="PackedScene" uid="uid://b0np53t3l3dud" path="res://assets/models/shared/generated/wind_ruins/gridmap/geo02/geo02_medium_cloud_sea_island_v2.glb" id="5_u0yyv"]
 [ext_resource type="PackedScene" path="res://objects/core/kill_zone/kill_zone.tscn" id="6_272vo"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/room_01_dock.scn" id="7_p8727"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/room_02_foyer.scn" id="8_kxfex"]
@@ -26,8 +26,27 @@
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2b_puzzle_court.scn" id="24_y68c7"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2c_key_shrine.scn" id="25_w3hun"]
 [ext_resource type="PackedScene" path="res://levels/_base/tier_zone.tscn" id="26_t5yoq"]
-[ext_resource type="Environment" path="res://levels/zone_1_wind/level_1/lighting/wind_palace_dd_environment.tres" id="27_go2tw"]
+[ext_resource type="Environment" uid="uid://djoxdkrdij57e" path="res://levels/zone_1_wind/level_1/lighting/wind_palace_dd_environment.tres" id="27_go2tw"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient/ambient_wind.tscn" id="28_riknd"]
+[ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_1.tres" id="area_tier_1"]
+[ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_2.tres" id="area_tier_2"]
+[ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_3.tres" id="area_tier_3"]
+[ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="area_title_trigger"]
+[ext_resource type="Resource" path="res://resources/world/zones/elements/wind.tres" id="area_wind"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/tier3_connection.tscn" id="tier3_bridge"]
+[ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint.tscn" id="tier3_checkpoint"]
+[ext_resource type="PackedScene" uid="uid://6b38aottgqnl" path="res://levels/zone_1_wind/level_1/rooms/tier_3/tier3_test.tscn" id="tier3_map"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_1_wind_walk.tscn" id="trial_walk"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.tscn" id="trial_arena"]
+[ext_resource type="PackedScene" path="res://objects/gates/stone_gate/stone_gate.tscn" id="trial_stone_gate"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="trial_legacy_spawn"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_10.res" id="Room09GrandStairTerrainBatch10"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_11.res" id="Room09GrandStairTerrainBatch11"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_12.res" id="Room09GrandStairTerrainBatch12"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_13.res" id="Room09GrandStairTerrainBatch13"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_14.res" id="Room09GrandStairTerrainBatch14"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/tower/rock_backing.res" id="Room06TowerBaseRockBacking"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/tower/terrain_batch_3.res" id="Room06TowerBaseTerrainBatch3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_11p2m"]
 render_priority = -1
@@ -55,6 +74,15 @@ size = Vector3(110, 28, 124)
 [sub_resource type="BoxShape3D" id="BoxShape3D_tier1"]
 size = Vector3(120, 18, 158)
 
+[sub_resource type="BoxShape3D" id="Tier3ZoneShape"]
+size = Vector3(200, 50, 160)
+
+[sub_resource type="BoxShape3D" id="Tier3VisibilityShape"]
+size = Vector3(260, 90, 250)
+
+[sub_resource type="BoxShape3D" id="OldStairLock"]
+size = Vector3(28, 8, 0.7)
+
 [node name="Level1" type="Node3D" unique_id=497319913]
 script = ExtResource("1_5r1qf")
 
@@ -68,42 +96,42 @@ mesh = SubResource("PlaneMesh_pta3x")
 [node name="BackgroundIsland" parent="." unique_id=1683345417 instance=ExtResource("4_t4n2c")]
 transform = Transform3D(1.2380035, 0, 0.84696376, 0, 1.5, 0, -0.84696376, 0, 1.2380035, -95, -10, -30)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland" index="0" unique_id=1599168746]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland" index="0" unique_id=2030169461]
 cast_shadow = 0
 
 [node name="BackgroundIsland2" parent="." unique_id=780542823 instance=ExtResource("5_u0yyv")]
 transform = Transform3D(-0.8239016, 0, 1.1318948, 0, 1.4, 0, -1.1318948, 0, -0.8239016, 120, -8, -40)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland2" index="0" unique_id=596526991]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland2" index="0" unique_id=660822754]
 cast_shadow = 0
 
 [node name="BackgroundIsland3" parent="." unique_id=2068030902 instance=ExtResource("4_t4n2c")]
 transform = Transform3D(-0.84973663, 0, -0.9838432, 0, 1.3, 0, 0.9838432, 0, -0.84973663, -70, -12, 75)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland3" index="0" unique_id=1599168746]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland3" index="0" unique_id=2030169461]
 cast_shadow = 0
 
 [node name="BackgroundIsland4" parent="." unique_id=2025986836 instance=ExtResource("5_u0yyv")]
 transform = Transform3D(0.32099867, 0, 1.1562699, 0, 1.2, 0, -1.1562699, 0, 0.32099867, 100, -10, 70)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland4" index="0" unique_id=596526991]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland4" index="0" unique_id=660822754]
 cast_shadow = 0
 
 [node name="BackgroundIsland5" parent="." unique_id=71536971 instance=ExtResource("4_t4n2c")]
 transform = Transform3D(-1.5986162, 0, 0.066529214, 0, 1.6, 0, -0.066529214, 0, -1.5986162, 10, -14, -150)
 
-[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland5" index="0" unique_id=1599168746]
+[node name="GEO01_Terrain_Large_CloudSea_Island_v2" parent="BackgroundIsland5" index="0" unique_id=2030169461]
 cast_shadow = 0
 
 [node name="BackgroundIsland6" parent="." unique_id=286441211 instance=ExtResource("5_u0yyv")]
 transform = Transform3D(0.31202844, 0, -1.0548167, 0, 1.1, 0, 1.0548167, 0, 0.31202844, -100, -6, -110)
 
-[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland6" index="0" unique_id=596526991]
+[node name="GEO02_Terrain_Medium_Court_Island_v2" parent="BackgroundIsland6" index="0" unique_id=660822754]
 cast_shadow = 0
 
 [node name="SafetyNet" parent="." unique_id=904097796 instance=ExtResource("6_272vo")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -14, -40)
-size = Vector3(400, 2, 400)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -14, -150)
+size = Vector3(400, 2, 620)
 
 [node name="Rooms" type="Node3D" parent="." unique_id=921644482]
 
@@ -124,8 +152,40 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -56)
 [node name="Room05InnerGarden" parent="Rooms/Tier1" unique_id=508652553 instance=ExtResource("11_4do2m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -44)
 
+[node name="WindShrine" parent="Rooms/Tier1/Room05InnerGarden" index="4"]
+arrival_spawn_id = &"level_1.wind_book_arrival"
+
+[node name="Room051WindWalk" parent="Rooms/Tier1" instance=ExtResource("trial_walk")]
+position = Vector3(24, 3.6, -58)
+
+[node name="Room052WindTrial" parent="Rooms/Tier1" instance=ExtResource("trial_arena")]
+position = Vector3(28, 3.6, -60)
+
+[node name="OldStairTrialGate" parent="Rooms/Tier1" node_paths=PackedStringArray("sources") instance=ExtResource("trial_stone_gate")]
+position = Vector3(6, 5.4, -64)
+sources = [NodePath("../Room052WindTrial")]
+open_trauma = 0.0
+
+[node name="CollisionShape3D" parent="Rooms/Tier1/OldStairTrialGate" index="0"]
+position = Vector3(8, 3, 0)
+shape = SubResource("OldStairLock")
+
 [node name="Room06TowerBase" parent="Rooms/Tier1" unique_id=1853632798 instance=ExtResource("12_p4kwa")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -74)
+
+[node name="LegacyWindTrialExit" type="Marker3D" parent="Rooms/Tier1/Room06TowerBase"]
+position = Vector3(9.8, 5.4, -0.9)
+script = ExtResource("trial_legacy_spawn")
+spawn_id = &"level_1.wind_trial_exit"
+
+[node name="WallT03" parent="Rooms/Tier1/Room06TowerBase/World" index="20"]
+collision_layer = 0
+
+[node name="RockBacking" parent="Rooms/Tier1/Room06TowerBase/World" index="29"]
+multimesh = ExtResource("Room06TowerBaseRockBacking")
+
+[node name="TerrainBatch3" parent="Rooms/Tier1/Room06TowerBase/World" index="32"]
+multimesh = ExtResource("Room06TowerBaseTerrainBatch3")
 
 [node name="Room07SailStorage" parent="Rooms/Tier1" unique_id=1035599555 instance=ExtResource("13_hja6v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -76)
@@ -135,6 +195,24 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44, 0, -28)
 
 [node name="Room09GrandStair" parent="Rooms/Tier1" unique_id=351214024 instance=ExtResource("15_hgbn6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -60)
+
+[node name="WallP03" parent="Rooms/Tier1/Room09GrandStair/World" index="7"]
+collision_layer = 0
+
+[node name="TerrainBatch10" parent="Rooms/Tier1/Room09GrandStair/World" index="25"]
+multimesh = ExtResource("Room09GrandStairTerrainBatch10")
+
+[node name="TerrainBatch11" parent="Rooms/Tier1/Room09GrandStair/World" index="26"]
+multimesh = ExtResource("Room09GrandStairTerrainBatch11")
+
+[node name="TerrainBatch12" parent="Rooms/Tier1/Room09GrandStair/World" index="27"]
+multimesh = ExtResource("Room09GrandStairTerrainBatch12")
+
+[node name="TerrainBatch13" parent="Rooms/Tier1/Room09GrandStair/World" index="28"]
+multimesh = ExtResource("Room09GrandStairTerrainBatch13")
+
+[node name="TerrainBatch14" parent="Rooms/Tier1/Room09GrandStair/World" index="29"]
+multimesh = ExtResource("Room09GrandStairTerrainBatch14")
 
 [node name="Room10Tier2Gate" parent="Rooms/Tier1" unique_id=1701140262 instance=ExtResource("16_k8hea")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -92)
@@ -168,6 +246,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -176)
 [node name="T2Room2cKeyShrine" parent="Rooms/Tier2" unique_id=1187230685 instance=ExtResource("25_w3hun")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -176)
 
+[node name="Tier3" parent="Rooms" unique_id=1842536933 instance=ExtResource("tier3_map")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -300)
+standalone_test = false
+
 [node name="SecretZone" parent="." unique_id=429125787 node_paths=PackedStringArray("hide_when_inside", "show_when_inside", "sun", "world_environment") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44, 6.6, -28)
 hide_when_inside = [NodePath("../Rooms/Tier1/Room08RelicRoom/SecretCover")]
@@ -190,13 +272,13 @@ light_energy = 0.4
 
 [node name="Tier2Zone" parent="." unique_id=1802627525 node_paths=PackedStringArray("hide_when_inside", "sun") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 26, -180)
-hide_when_inside = [NodePath("../Rooms/Tier1/Room01Dock"), NodePath("../Rooms/Tier1/Room02Foyer"), NodePath("../Rooms/Tier1/Room03BannerCorridor"), NodePath("../Rooms/Tier1/Room04GuardHall"), NodePath("../Rooms/Tier1/Room05InnerGarden"), NodePath("../Rooms/Tier1/Room06TowerBase"), NodePath("../Rooms/Tier1/Room07SailStorage"), NodePath("../Rooms/Tier1/Room08RelicRoom"), NodePath("../Rooms/Tier1/Room09GrandStair")]
+hide_when_inside = [NodePath("../Rooms/Tier1/Room01Dock"), NodePath("../Rooms/Tier1/Room02Foyer"), NodePath("../Rooms/Tier1/Room03BannerCorridor"), NodePath("../Rooms/Tier1/Room04GuardHall"), NodePath("../Rooms/Tier1/Room05InnerGarden"), NodePath("../Rooms/Tier1/Room051WindWalk"), NodePath("../Rooms/Tier1/Room052WindTrial"), NodePath("../Rooms/Tier1/OldStairTrialGate"), NodePath("../Rooms/Tier1/Room06TowerBase"), NodePath("../Rooms/Tier1/Room07SailStorage"), NodePath("../Rooms/Tier1/Room08RelicRoom"), NodePath("../Rooms/Tier1/Room09GrandStair")]
 sun = NodePath("../Lighting/MoonLight")
 
 [node name="Shape" parent="Tier2Zone" index="0"]
 shape = SubResource("BoxShape3D_nhm3y")
 
-[node name="Tier1Zone" parent="." node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
+[node name="Tier1Zone" parent="." unique_id=1958989838 node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, -39)
 hide_when_inside = [NodePath("../Rooms/Tier2")]
 
@@ -206,7 +288,48 @@ shape = SubResource("BoxShape3D_tier1")
 [node name="AmbientWind" parent="." unique_id=259223168 instance=ExtResource("28_riknd")]
 wind_direction = Vector3(0.6, 0, -1)
 
+[node name="Tier3Bridge" parent="." unique_id=1995548834 instance=ExtResource("tier3_bridge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -231.645)
+
+[node name="Tier3Zone" parent="." unique_id=1038946771 node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -310)
+hide_when_inside = [NodePath("../Rooms/Tier1"), NodePath("../Rooms/Tier2")]
+
+[node name="Shape" parent="Tier3Zone" index="0"]
+shape = SubResource("Tier3ZoneShape")
+
+[node name="Tier3EntryCheckpoint" parent="." unique_id=2090428911 instance=ExtResource("tier3_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -263)
+checkpoint_id = &"level_1.tier3_entry"
+
+[node name="Tier3VisibilityZone" parent="." unique_id=697991845 node_paths=PackedStringArray("show_when_inside", "suspend_when_outside") instance=ExtResource("26_t5yoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -295)
+show_when_inside = [NodePath("../Rooms/Tier3"), NodePath("../Tier3Bridge")]
+suspend_when_outside = [NodePath("../Rooms/Tier3"), NodePath("../Tier3Bridge")]
+initialize_outside = true
+
+[node name="Shape" parent="Tier3VisibilityZone" index="0"]
+shape = SubResource("Tier3VisibilityShape")
+
+[node name="AreaTitles" type="Node" parent="." unique_id=1631060923]
+
+[node name="Zone" parent="AreaTitles" unique_id=458122764 instance=ExtResource("area_title_trigger")]
+area = ExtResource("area_wind")
+
+[node name="Tier1" parent="AreaTitles" unique_id=1770377642 instance=ExtResource("area_title_trigger")]
+area = ExtResource("area_tier_1")
+
+[node name="Tier2" parent="AreaTitles" unique_id=1666416022 instance=ExtResource("area_title_trigger")]
+area = ExtResource("area_tier_2")
+
+[node name="Tier3" parent="AreaTitles" unique_id=889736203 instance=ExtResource("area_title_trigger")]
+area = ExtResource("area_tier_3")
+
+[connection signal="combat_ready" from="." to="AreaTitles/Zone" method="announce"]
 [connection signal="player_spawned" from="." to="AmbientWind" method="set_follow_target"]
+[connection signal="player_entered" from="Tier2Zone" to="AreaTitles/Tier2" method="announce"]
+[connection signal="player_entered" from="Tier1Zone" to="AreaTitles/Tier1" method="announce"]
+[connection signal="player_entered" from="Tier3Zone" to="AreaTitles/Tier3" method="announce"]
 
 [editable path="BackgroundIsland"]
 [editable path="BackgroundIsland2"]
@@ -216,3 +339,10 @@ wind_direction = Vector3(0.6, 0, -1)
 [editable path="BackgroundIsland6"]
 [editable path="SecretZone"]
 [editable path="Tier2Zone"]
+[editable path="Tier1Zone"]
+[editable path="Tier3Zone"]
+[editable path="Tier3VisibilityZone"]
+[editable path="Rooms/Tier1/Room05InnerGarden"]
+[editable path="Rooms/Tier1/Room06TowerBase"]
+[editable path="Rooms/Tier1/Room09GrandStair"]
+[editable path="Rooms/Tier1/OldStairTrialGate"]

@@ -2,7 +2,7 @@
 class_name Checkpoint
 extends Node3D
 ## Checkpoint: player đi qua là lưu. Chết sẽ hồi sinh tại điểm xuất hiện của checkpoint này.
-## Chỉ một checkpoint sáng tại một thời điểm; hình ảnh do WindShrineVisual quản lý.
+## Chỉ một checkpoint sáng tại một thời điểm; hình ảnh do một ShrineVisual (miếu Gió, Lửa...) quản lý.
 ## @tool chỉ để hiện cảnh báo cấu hình trong editor.
 
 ## Tên checkpoint, duy nhất trong khu; cũng là tên điểm xuất hiện khi hồi sinh
@@ -14,10 +14,12 @@ extends Node3D
 @export var active_material: Material
 ## Tốc độ xoay của pha lê (độ/giây)
 @export var crystal_spin_speed: float = 12.0
+## Hình ảnh miếu. Để trống = node con WindShrineVisual (scene checkpoint cũ)
+@export var visual: ShrineVisual
 
 @onready var _trigger: Area3D = $Trigger
 @onready var _spawn: SpawnPoint = $Spawn
-@onready var _visual: WindShrineVisual = $WindShrineVisual
+@onready var _visual: ShrineVisual = visual if visual else get_node_or_null(^"WindShrineVisual") as ShrineVisual
 
 
 ## Nghe GameState chỉ khi đang ở trong cây (vào lại cây thì nối lại)
@@ -64,6 +66,16 @@ func is_active() -> bool:
 func _on_body_entered(body: Node3D) -> void:
 	if body is Player:
 		GameState.set_checkpoint(_zone_path(), checkpoint_id)
+		_restore(body)
+
+
+## Chạm checkpoint (mỗi lần bước vào) là hồi phục toàn bộ. Checkpoint không biết bên trong người chơi:
+## chỉ gọi RestoreComponent; không có component thì không hồi
+func _restore(body: Node3D) -> void:
+	var restore := RestoreComponent.find_on(body)
+	if restore == null:
+		return
+	restore.restore_all()
 
 
 func _on_checkpoint_changed(_zone: String, _spawn_id: StringName) -> void:
@@ -77,6 +89,8 @@ func _on_progress_replaced() -> void:
 func _update_visual(immediate: bool = false) -> void:
 	# Signal nối từ _enter_tree nên có thể tới trước _ready (nạp save lúc vào khu); _ready tự cập nhật sau
 	if not is_node_ready():
+		return
+	if _visual == null:
 		return
 	_visual.set_active(is_active(), active_material, crystal_spin_speed, immediate)
 

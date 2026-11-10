@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/gates/stone_gate/stone_gate.gd" id="1_gate"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/gate_frame_4m.glb" id="2_frame"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/gate_door_4m.glb" id="3_door"]
+
+[sub_resource type="BoxShape3D" id="GateShape"]
+size = Vector3(4, 3.6, 0.8)
+
+[node name="FireCellarGate" type="StaticBody3D"]
+collision_mask = 0
+script = ExtResource("1_gate")
+sink_depth = 5.2
+open_trauma = 0.15
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+shape = SubResource("GateShape")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Frame" parent="Visual" instance=ExtResource("2_frame")]
+
+[node name="Door" parent="Visual" instance=ExtResource("3_door")]

@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3 uid="uid://bpkne6njvvrck"]
+
+[ext_resource type="Script" uid="uid://dxmughdmcrllh" path="res://entities/npcs/_base/dialogue/dialogue_condition.gd" id="condition"]
+[ext_resource type="Script" uid="uid://bwy2dqnugxoun" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="dialogue"]
+[ext_resource type="Script" uid="uid://m12exjm455qn" path="res://entities/npcs/_base/dialogue/conditions/flag_condition.gd" id="flag"]
+[ext_resource type="Script" uid="uid://crfm2u46umajv" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="line"]
+[ext_resource type="Script" uid="uid://rrf762xwikqx" path="res://entities/npcs/gatekeeper/toll_paid_condition.gd" id="paid"]
+
+[sub_resource type="Resource" id="C0"]
+script = ExtResource("flag")
+flag = &"level_1.story.gate_met"
+must_be_set = false
+
+[sub_resource type="Resource" id="C1"]
+script = ExtResource("paid")
+must_be_paid = false
+
+[sub_resource type="Resource" id="L0"]
+script = ExtResource("line")
+text = "Dừng lại. Từng người một."
+
+[sub_resource type="Resource" id="L1"]
+script = ExtResource("line")
+text = "Đừng đứng sau lưng ta. Muốn qua thì để ta nhìn thấy mặt."
+
+[resource]
+script = ExtResource("dialogue")
+priority = 30
+conditions = Array[ExtResource("condition")]([SubResource("C0"), SubResource("C1")])
+lines = Array[ExtResource("line")]([SubResource("L0"), SubResource("L1")])
+flag_on_finish = &"level_1.story.gate_met"
+opens_service = true

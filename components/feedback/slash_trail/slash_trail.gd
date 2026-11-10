@@ -148,6 +148,7 @@ func _ready() -> void:
 	_current_sweep = sweep_time
 	if hitbox:
 		hitbox.activated.connect(_on_activated)
+		hitbox.cancelled.connect(_on_cancelled)
 	else:
 		push_error("%s cần hitbox" % get_path())
 
@@ -208,6 +209,9 @@ func _build_mesh_and_points() -> void:
 
 
 func _on_activated(attack: AttackData) -> void:
+	var fusion := GameState.get_active_fusion()
+	if fusion and fusion.replaces_default_trail:
+		return
 	_fit_to_reach()
 	var window := hitbox.get_active_duration()
 	_current_sweep = window if match_hitbox_window and window > 0.0 else sweep_time
@@ -231,6 +235,8 @@ func _on_activated(attack: AttackData) -> void:
 	_arc_glow.visible = true
 	_arc_echo.visible = _echo_on
 	_sparkles.emission_normals = _fleck_normals[_direction]
+	_sparkles.visible = true
+	_dust.visible = true
 	_sparkles.restart()
 	set_process(true)
 	_process(0.0)
@@ -301,6 +307,14 @@ func _apply_height(value: float) -> void:
 	_arc_back.position.y = shadow_height
 	_sparkles.position.y = value
 	_dust.position.y = shadow_height
+
+
+## Đòn bị hủy (dash, kỹ năng): xoá vệt ngay, kể cả hạt đã phóng ra (ẩn node vì hạt không xoá lẻ được)
+func _on_cancelled() -> void:
+	_sweeping = false
+	for node: Node3D in [_arc, _arc_back, _arc_glow, _arc_echo, _star, _sparkles, _dust]:
+		node.visible = false
+	set_process(false)
 
 
 func _sync_facing() -> void:

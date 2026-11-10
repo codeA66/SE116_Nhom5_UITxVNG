@@ -35,6 +35,14 @@ func _ready() -> void:
 	_trigger.body_entered.connect(_on_body_entered)
 
 
+## Bật / tắt cổng (cổng khóa ở khu trung tâm). Tắt monitoring thay vì ngắt signal: bật lại không cần nối lại
+func set_active(active: bool) -> void:
+	_trigger.set_deferred(&"monitoring", active)
+	for child in get_children():
+		if child is MeshInstance3D:
+			(child as MeshInstance3D).visible = active
+
+
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings: PackedStringArray = []
 	if portal_id.is_empty():

@@ -11,7 +11,7 @@ static func mask(kind: StringName, resolution: int) -> Texture2D:
 	if _cache.has(key):
 		return _cache[key] as Texture2D
 	var width: int = resolution
-	var height: int = resolution / 4 if kind == &"stroke" else resolution
+	var height: int = floori(resolution / 4.0) if kind == &"stroke" else resolution
 	var image: Image = Image.create(width, height, false, Image.FORMAT_RGBA8)
 	var noise: FastNoiseLite = FastNoiseLite.new()
 	noise.seed = 71

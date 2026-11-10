@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://cd4rkmoltsw4r"]
+
+[ext_resource type="Shader" uid="uid://bosas3511o77r" path="res://assets/materials/map_wind/garden_doors/banner/sliding_panel.gdshader" id="shader"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("shader")
+shader_parameter/panel_size = Vector2(8, 5.8)
+shader_parameter/crest_height_ratio = 0.65
