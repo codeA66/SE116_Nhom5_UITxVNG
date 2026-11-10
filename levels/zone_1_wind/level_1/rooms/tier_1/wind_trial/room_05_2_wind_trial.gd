@@ -1,5 +1,5 @@
 extends Node3D
-## Đấu trường bắt buộc sau khi học Gió: người chơi rơi qua hố của 5.1 xuống giữa phòng là bắt đầu.
+## Đấu trường bắt buộc sau khi học Gió: đi từ lối 5.1 qua cửa song sắt là cửa đóng sau lưng và bắt đầu.
 ## Hai đợt dùng Encounter riêng. Chỉ đợt cuối mới chốt tiến trình và mở dốc lên Phòng 6 (đi tiếp).
 ## Thắng xong thì tường giả (SecretWall, nguồn là phòng này) mới phá được bằng Thổi Gió để vào phòng bí mật 5.3.
 
@@ -14,6 +14,7 @@ const TrialGrille := preload("grille/trial_grille.gd")
 var current_wave: int = 0
 
 @onready var _trigger: Area3D = $EntryTrigger
+@onready var _entry_gate: TrialGrille = $EntryGate
 @onready var _exit_gate: TrialGrille = $ExitGate
 @onready var _intro: Encounter = $FirstWave
 @onready var _final: Encounter = $SecondWave
@@ -22,6 +23,7 @@ var current_wave: int = 0
 func _ready() -> void:
 	if is_active():
 		_trigger.monitoring = false
+		_entry_gate.set_open(true, false)
 		_exit_gate.set_open(true, false)
 		_intro.queue_free()
 		_final.queue_free()
@@ -36,12 +38,13 @@ func is_active() -> bool:
 	return GameState.has_flag(cleared_flag)
 
 
-## Vùng kích hoạt nằm ngay dưới hố: chỉ người vừa rơi xuống mới chạm. Các cửa vẫn đóng sẵn nên không cần khoá thêm.
+## Qua ngưỡng cửa thì khoá cửa sau lưng: trận bắt buộc, chỉ mở lại khi thắng.
 func _on_entry(body: Node3D) -> void:
 	if not body is Player or current_wave != 0 or not GameState.has_ability(WIND_ID):
 		return
 	current_wave = 1
 	_trigger.set_deferred(&"monitoring", false)
+	_entry_gate.set_open(false)
 	# Vào phòng xảy ra trong lúc vật lý phát overlap. Chờ ra khỏi callback rồi mới đưa quái vào cây.
 	_intro.start.call_deferred()
 
@@ -59,5 +62,6 @@ func _start_final_wave() -> void:
 
 func _finish() -> void:
 	GameState.set_flag(cleared_flag)
+	_entry_gate.set_open(true)
 	_exit_gate.set_open(true)
 	activated.emit()

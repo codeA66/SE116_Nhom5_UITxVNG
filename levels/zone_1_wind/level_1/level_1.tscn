@@ -40,6 +40,7 @@
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.tscn" id="trial_arena"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.tscn" id="trial_challenge"]
 [ext_resource type="PackedScene" path="res://objects/gates/stone_gate/stone_gate.tscn" id="trial_stone_gate"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/balustrade_4m.glb" id="old_stair_rail"]
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="trial_legacy_spawn"]
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_10.res" id="Room09GrandStairTerrainBatch10"]
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_11.res" id="Room09GrandStairTerrainBatch11"]
@@ -81,14 +82,8 @@ size = Vector3(200, 50, 160)
 [sub_resource type="BoxShape3D" id="Tier3VisibilityShape"]
 size = Vector3(260, 90, 250)
 
-[sub_resource type="BoxShape3D" id="OldStairLock"]
-size = Vector3(28, 8, 0.7)
-
-[sub_resource type="BoxShape3D" id="TrialDeckArenaShape"]
-size = Vector3(20, 3.6, 20)
-
-[sub_resource type="BoxShape3D" id="TrialDeckCorridorShape"]
-size = Vector3(4, 3.6, 4)
+[sub_resource type="BoxShape3D" id="OldStairRailShape"]
+size = Vector3(4, 1.12, 0.4)
 
 [node name="Level1" type="Node3D" unique_id=497319913]
 script = ExtResource("1_5r1qf")
@@ -169,21 +164,22 @@ position = Vector3(24, 3.6, -58)
 position = Vector3(28, 3.6, -60)
 
 [node name="Room053WindChallenge" parent="Rooms/Tier1" instance=ExtResource("trial_challenge")]
-position = Vector3(28, 3.6, -36)
+position = Vector3(34, 3.6, -28)
 
 [node name="TrialWalkGate" parent="Rooms/Tier1" node_paths=PackedStringArray("sources") instance=ExtResource("trial_stone_gate")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 24.4, 3.6, -58)
 sources = [NodePath("../Room05InnerGarden/WindShrine")]
 open_trauma = 0.0
 
-[node name="OldStairTrialGate" parent="Rooms/Tier1" node_paths=PackedStringArray("sources") instance=ExtResource("trial_stone_gate")]
-position = Vector3(6, 5.4, -64)
-sources = [NodePath("../Room052WindTrial")]
-open_trauma = 0.0
+[node name="OldStairRail" type="StaticBody3D" parent="Rooms/Tier1"]
+position = Vector3(6, 5.4, -64.2)
+collision_mask = 0
 
-[node name="CollisionShape3D" parent="Rooms/Tier1/OldStairTrialGate" index="0"]
-position = Vector3(8, 3, 0)
-shape = SubResource("OldStairLock")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Rooms/Tier1/OldStairRail"]
+position = Vector3(0, 0.56, 0)
+shape = SubResource("OldStairRailShape")
+
+[node name="Balustrade" parent="Rooms/Tier1/OldStairRail" instance=ExtResource("old_stair_rail")]
 
 [node name="Room06TowerBase" parent="Rooms/Tier1" unique_id=1853632798 instance=ExtResource("12_p4kwa")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -74)
@@ -287,22 +283,11 @@ light_energy = 0.4
 
 [node name="Tier2Zone" parent="." unique_id=1802627525 node_paths=PackedStringArray("hide_when_inside", "sun") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 26, -180)
-hide_when_inside = [NodePath("../Rooms/Tier1/Room01Dock"), NodePath("../Rooms/Tier1/Room02Foyer"), NodePath("../Rooms/Tier1/Room03BannerCorridor"), NodePath("../Rooms/Tier1/Room04GuardHall"), NodePath("../Rooms/Tier1/Room05InnerGarden"), NodePath("../Rooms/Tier1/Room051WindWalk"), NodePath("../Rooms/Tier1/Room052WindTrial"), NodePath("../Rooms/Tier1/Room053WindChallenge"), NodePath("../Rooms/Tier1/TrialWalkGate"), NodePath("../Rooms/Tier1/OldStairTrialGate"), NodePath("../Rooms/Tier1/Room06TowerBase"), NodePath("../Rooms/Tier1/Room07SailStorage"), NodePath("../Rooms/Tier1/Room08RelicRoom"), NodePath("../Rooms/Tier1/Room09GrandStair")]
+hide_when_inside = [NodePath("../Rooms/Tier1/Room01Dock"), NodePath("../Rooms/Tier1/Room02Foyer"), NodePath("../Rooms/Tier1/Room03BannerCorridor"), NodePath("../Rooms/Tier1/Room04GuardHall"), NodePath("../Rooms/Tier1/Room05InnerGarden"), NodePath("../Rooms/Tier1/Room051WindWalk"), NodePath("../Rooms/Tier1/Room052WindTrial"), NodePath("../Rooms/Tier1/Room053WindChallenge"), NodePath("../Rooms/Tier1/TrialWalkGate"), NodePath("../Rooms/Tier1/OldStairRail"), NodePath("../Rooms/Tier1/Room06TowerBase"), NodePath("../Rooms/Tier1/Room07SailStorage"), NodePath("../Rooms/Tier1/Room08RelicRoom"), NodePath("../Rooms/Tier1/Room09GrandStair")]
 sun = NodePath("../Lighting/MoonLight")
 
 [node name="Shape" parent="Tier2Zone" index="0"]
 shape = SubResource("BoxShape3D_nhm3y")
-
-[node name="TrialDeckZone" parent="." node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 5.4, -70)
-hide_when_inside = [NodePath("../Rooms/Tier1/Room051WindWalk/Deck")]
-
-[node name="Shape" parent="TrialDeckZone" index="0"]
-shape = SubResource("TrialDeckArenaShape")
-
-[node name="CorridorShape" type="CollisionShape3D" parent="TrialDeckZone"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 12)
-shape = SubResource("TrialDeckCorridorShape")
 
 [node name="Tier1Zone" parent="." unique_id=1958989838 node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, -39)
@@ -374,10 +359,8 @@ area = ExtResource("area_tier_3")
 [editable path="SecretZone"]
 [editable path="Tier2Zone"]
 [editable path="Tier1Zone"]
-[editable path="TrialDeckZone"]
 [editable path="Tier3Zone"]
 [editable path="Tier3VisibilityZone"]
 [editable path="Rooms/Tier1/Room05InnerGarden"]
 [editable path="Rooms/Tier1/Room06TowerBase"]
 [editable path="Rooms/Tier1/Room09GrandStair"]
-[editable path="Rooms/Tier1/OldStairTrialGate"]

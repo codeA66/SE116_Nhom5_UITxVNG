@@ -1,8 +1,10 @@
 [gd_scene format=3]
 
-[ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
-[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/paving_stone.tres" id="paving_stone"]
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/arena_paving.res" id="floor"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_floor.res" id="room_floor"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_base.res" id="room_base"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_walls.res" id="room_walls"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/bridge_deck.res" id="bridge_deck"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/bridge_rails.res" id="bridge_rails"]
 [ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.gd" id="challenge"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.tscn" id="gate"]
 [ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="encounter"]
@@ -13,22 +15,25 @@
 [ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="charm_pickup"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/challenge_charm.tres" id="charm"]
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/charm_altar.glb" id="altar"]
-[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/secret_shroud.gd" id="shroud"]
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
 
 [sub_resource type="BoxShape3D" id="FloorShape"]
 size = Vector3(20, 0.48, 20)
 
-[sub_resource type="BoxMesh" id="FloorMesh"]
-material = ExtResource("stone")
-size = Vector3(20, 2.4, 20)
+[sub_resource type="BoxShape3D" id="BridgeShape"]
+size = Vector3(3, 0.48, 12)
 
-[sub_resource type="BoxShape3D" id="CorridorFloorShape"]
-size = Vector3(4, 0.48, 4)
+[sub_resource type="BoxShape3D" id="SideWallShape"]
+size = Vector3(0.69, 1.33, 20)
 
-[sub_resource type="BoxMesh" id="CorridorFloorMesh"]
-material = ExtResource("stone")
-size = Vector3(4, 2.4, 4)
+[sub_resource type="BoxShape3D" id="SouthWallShape"]
+size = Vector3(20, 1.33, 0.69)
+
+[sub_resource type="BoxShape3D" id="NorthWallShape"]
+size = Vector3(8, 1.33, 0.69)
+
+[sub_resource type="BoxShape3D" id="BridgeRailShape"]
+size = Vector3(0.4, 1.12, 12)
 
 [sub_resource type="BoxShape3D" id="EntryTriggerShape"]
 size = Vector3(4, 3.2, 2)
@@ -37,160 +42,94 @@ size = Vector3(4, 3.2, 2)
 height = 1.0
 radius = 0.62
 
-[sub_resource type="StandardMaterial3D" id="RoofMaterial"]
-transparency = 1
-albedo_color = Color(0.22, 0.24, 0.28, 1)
-roughness = 0.9
-
-[sub_resource type="BoxMesh" id="RoofMesh"]
-size = Vector3(20.8, 0.5, 20.8)
-
-[sub_resource type="BoxShape3D" id="RevealRoomShape"]
-size = Vector3(20, 3, 20)
-
-[sub_resource type="BoxShape3D" id="RevealCorridorShape"]
-size = Vector3(4, 3, 4)
-
-[sub_resource type="BoxShape3D" id="SideWallShape"]
-size = Vector3(0.4, 1.6, 20)
-
-[sub_resource type="BoxMesh" id="SideWallMesh"]
-material = ExtResource("stone")
-size = Vector3(0.4, 1.6, 20)
-
-[sub_resource type="BoxShape3D" id="SouthWallShape"]
-size = Vector3(20, 1.6, 0.4)
-
-[sub_resource type="BoxMesh" id="SouthWallMesh"]
-material = ExtResource("stone")
-size = Vector3(20, 1.6, 0.4)
-
-[sub_resource type="BoxShape3D" id="NorthLeftWallShape"]
-size = Vector3(4, 1.6, 0.4)
-
-[sub_resource type="BoxMesh" id="NorthLeftWallMesh"]
-material = ExtResource("stone")
-size = Vector3(4, 1.6, 0.4)
-
-[sub_resource type="BoxShape3D" id="NorthRightWallShape"]
-size = Vector3(12, 1.6, 0.4)
-
-[sub_resource type="BoxMesh" id="NorthRightWallMesh"]
-material = ExtResource("stone")
-size = Vector3(12, 1.6, 0.4)
-
-[sub_resource type="BoxShape3D" id="CorridorRailShape"]
-size = Vector3(0.4, 1.6, 4)
-
-[sub_resource type="BoxMesh" id="CorridorRailMesh"]
-material = ExtResource("stone")
-size = Vector3(0.4, 1.6, 4)
-
 [node name="Room053WindChallenge" type="Node3D"]
 script = ExtResource("challenge")
 
-[node name="Floor" type="StaticBody3D" parent="."]
+[node name="Floor" type="MultiMeshInstance3D" parent="."]
+multimesh = ExtResource("room_floor")
+
+[node name="Base" type="MultiMeshInstance3D" parent="."]
+cast_shadow = 0
+multimesh = ExtResource("room_base")
+
+[node name="Walls" type="MultiMeshInstance3D" parent="."]
+multimesh = ExtResource("room_walls")
+
+[node name="BridgeDeck" type="MultiMeshInstance3D" parent="."]
+multimesh = ExtResource("bridge_deck")
+
+[node name="BridgeRails" type="MultiMeshInstance3D" parent="."]
+multimesh = ExtResource("bridge_rails")
+
+[node name="FloorBody" type="StaticBody3D" parent="."]
 position = Vector3(10, -0.24, -10)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FloorBody"]
 shape = SubResource("FloorShape")
 
-[node name="Stone" type="MeshInstance3D" parent="Floor"]
-position = Vector3(0, -1.02, 0)
-mesh = SubResource("FloorMesh")
-
-[node name="Paving" type="MultiMeshInstance3D" parent="."]
-material_override = ExtResource("paving_stone")
-multimesh = ExtResource("floor")
-
-[node name="CorridorFloor" type="StaticBody3D" parent="."]
-position = Vector3(6, -0.24, -22)
+[node name="BridgeBody" type="StaticBody3D" parent="."]
+position = Vector3(10, -0.24, -26)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CorridorFloor"]
-shape = SubResource("CorridorFloorShape")
-
-[node name="Stone" type="MeshInstance3D" parent="CorridorFloor"]
-position = Vector3(0, -0.96, 0)
-mesh = SubResource("CorridorFloorMesh")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BridgeBody"]
+shape = SubResource("BridgeShape")
 
 [node name="WestWall" type="StaticBody3D" parent="."]
-position = Vector3(0.2, 0.8, -10)
+position = Vector3(0.35, 0.665, -10)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WestWall"]
 shape = SubResource("SideWallShape")
 
-[node name="Stone" type="MeshInstance3D" parent="WestWall"]
-mesh = SubResource("SideWallMesh")
-
 [node name="EastWall" type="StaticBody3D" parent="."]
-position = Vector3(19.8, 0.8, -10)
+position = Vector3(19.65, 0.665, -10)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
 shape = SubResource("SideWallShape")
 
-[node name="Stone" type="MeshInstance3D" parent="EastWall"]
-mesh = SubResource("SideWallMesh")
-
 [node name="SouthWall" type="StaticBody3D" parent="."]
-position = Vector3(10, 0.8, -0.2)
+position = Vector3(10, 0.665, -0.35)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SouthWall"]
 shape = SubResource("SouthWallShape")
 
-[node name="Stone" type="MeshInstance3D" parent="SouthWall"]
-mesh = SubResource("SouthWallMesh")
-
-[node name="NorthLeftWall" type="StaticBody3D" parent="."]
-position = Vector3(2, 0.8, -19.8)
+[node name="NorthWallWest" type="StaticBody3D" parent="."]
+position = Vector3(4, 0.665, -19.65)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthLeftWall"]
-shape = SubResource("NorthLeftWallShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallWest"]
+shape = SubResource("NorthWallShape")
 
-[node name="Stone" type="MeshInstance3D" parent="NorthLeftWall"]
-mesh = SubResource("NorthLeftWallMesh")
-
-[node name="NorthRightWall" type="StaticBody3D" parent="."]
-position = Vector3(14, 0.8, -19.8)
+[node name="NorthWallEast" type="StaticBody3D" parent="."]
+position = Vector3(16, 0.665, -19.65)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthRightWall"]
-shape = SubResource("NorthRightWallShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallEast"]
+shape = SubResource("NorthWallShape")
 
-[node name="Stone" type="MeshInstance3D" parent="NorthRightWall"]
-mesh = SubResource("NorthRightWallMesh")
-
-[node name="CorridorWestRail" type="StaticBody3D" parent="."]
-position = Vector3(3.8, 0.8, -22)
+[node name="BridgeRailWest" type="StaticBody3D" parent="."]
+position = Vector3(8.35, 0.56, -26)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CorridorWestRail"]
-shape = SubResource("CorridorRailShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BridgeRailWest"]
+shape = SubResource("BridgeRailShape")
 
-[node name="Stone" type="MeshInstance3D" parent="CorridorWestRail"]
-mesh = SubResource("CorridorRailMesh")
-
-[node name="CorridorEastRail" type="StaticBody3D" parent="."]
-position = Vector3(8.2, 0.8, -22)
+[node name="BridgeRailEast" type="StaticBody3D" parent="."]
+position = Vector3(11.65, 0.56, -26)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CorridorEastRail"]
-shape = SubResource("CorridorRailShape")
-
-[node name="Stone" type="MeshInstance3D" parent="CorridorEastRail"]
-mesh = SubResource("CorridorRailMesh")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BridgeRailEast"]
+shape = SubResource("BridgeRailShape")
 
 [node name="EntryGate" parent="." instance=ExtResource("gate")]
-position = Vector3(6, 0, -19.9)
+position = Vector3(10, 0, -19.9)
 starts_open = true
 
 [node name="EntryTrigger" type="Area3D" parent="."]
-position = Vector3(6, 1.6, -16.6)
+position = Vector3(10, 1.6, -16.6)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
@@ -199,11 +138,11 @@ monitorable = false
 shape = SubResource("EntryTriggerShape")
 
 [node name="LanternWest" parent="." instance=ExtResource("lantern")]
-position = Vector3(1.4, 0, -1.4)
+position = Vector3(1.6, 0, -1.6)
 scale = Vector3(0.66, 0.66, 0.66)
 
 [node name="LanternEast" parent="." instance=ExtResource("lantern")]
-position = Vector3(18.6, 0, -1.4)
+position = Vector3(18.4, 0, -1.6)
 scale = Vector3(0.66, 0.66, 0.66)
 
 [node name="Altar" type="StaticBody3D" parent="."]
@@ -227,26 +166,6 @@ position = Vector3(10, 0.45, -10)
 persistent_id = &"level_1.wind_challenge_charm"
 charm = ExtResource("charm")
 starts_hidden = true
-
-[node name="RevealArea" type="Area3D" parent="."]
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-
-[node name="RoomShape" type="CollisionShape3D" parent="RevealArea"]
-position = Vector3(10, 1.5, -10)
-shape = SubResource("RevealRoomShape")
-
-[node name="CorridorShape" type="CollisionShape3D" parent="RevealArea"]
-position = Vector3(6, 1.5, -22)
-shape = SubResource("RevealCorridorShape")
-
-[node name="Roof" type="MeshInstance3D" parent="." node_paths=PackedStringArray("reveal_area")]
-position = Vector3(10, 1.85, -10)
-material_override = SubResource("RoofMaterial")
-mesh = SubResource("RoofMesh")
-script = ExtResource("shroud")
-reveal_area = NodePath("../RevealArea")
 
 [node name="Waves" type="Node3D" parent="."]
 

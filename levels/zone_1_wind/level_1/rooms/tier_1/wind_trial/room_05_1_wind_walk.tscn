@@ -1,435 +1,75 @@
 [gd_scene format=3]
 
-[ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_floor.res" id="floor"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_base.res" id="base"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_rails.res" id="rails"]
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
 
-[sub_resource type="ConvexPolygonShape3D" id="StairShape"]
-points = PackedVector3Array(0, 0, -2, 0, 0, 2, 8, 4.5, -2, 8, 4.5, 2, 0, -0.2, -2, 0, -0.2, 2, 8, -0.2, -2, 8, -0.2, 2)
+[sub_resource type="BoxShape3D" id="WalkFloorShape"]
+size = Vector3(12, 0.48, 4)
 
-[sub_resource type="BoxMesh" id="Step0"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 0.30, 4)
+[sub_resource type="BoxShape3D" id="LongRailShape"]
+size = Vector3(12, 1.12, 0.4)
 
-[sub_resource type="BoxMesh" id="Step1"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 0.60, 4)
+[sub_resource type="BoxShape3D" id="ShortRailShape"]
+size = Vector3(8, 1.12, 0.4)
 
-[sub_resource type="BoxMesh" id="Step2"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 0.90, 4)
-
-[sub_resource type="BoxMesh" id="Step3"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 1.20, 4)
-
-[sub_resource type="BoxMesh" id="Step4"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 1.50, 4)
-
-[sub_resource type="BoxMesh" id="Step5"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 1.80, 4)
-
-[sub_resource type="BoxMesh" id="Step6"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 2.10, 4)
-
-[sub_resource type="BoxMesh" id="Step7"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 2.40, 4)
-
-[sub_resource type="BoxMesh" id="Step8"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 2.70, 4)
-
-[sub_resource type="BoxMesh" id="Step9"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 3.00, 4)
-
-[sub_resource type="BoxMesh" id="Step10"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 3.30, 4)
-
-[sub_resource type="BoxMesh" id="Step11"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 3.60, 4)
-
-[sub_resource type="BoxMesh" id="Step12"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 3.90, 4)
-
-[sub_resource type="BoxMesh" id="Step13"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 4.20, 4)
-
-[sub_resource type="BoxMesh" id="Step14"]
-material = ExtResource("stone")
-size = Vector3(0.5333, 4.50, 4)
-
-[sub_resource type="BoxMesh" id="FoundationMesh"]
-material = ExtResource("stone")
-size = Vector3(8, 2.4, 4)
-
-[sub_resource type="BoxShape3D" id="SupportShape"]
-size = Vector3(0.4, 4, 4)
-
-[sub_resource type="BoxMesh" id="SupportMesh"]
-material = ExtResource("stone")
-size = Vector3(0.4, 4, 4)
-
-[sub_resource type="BoxShape3D" id="StairRailShape"]
-size = Vector3(9.18, 1, 0.2)
-
-[sub_resource type="BoxMesh" id="StairRailMesh"]
-material = ExtResource("stone")
-size = Vector3(9.18, 1, 0.2)
-
-[sub_resource type="BoxShape3D" id="BalconyShape"]
-size = Vector3(6, 0.5, 4)
-
-[sub_resource type="BoxMesh" id="BalconyMesh"]
-material = ExtResource("stone")
-size = Vector3(6, 0.5, 4)
-
-[sub_resource type="BoxShape3D" id="TongueSideShape"]
-size = Vector3(1, 0.5, 4)
-
-[sub_resource type="BoxMesh" id="TongueSideMesh"]
-material = ExtResource("stone")
-size = Vector3(1, 0.5, 4)
-
-[sub_resource type="BoxShape3D" id="TongueFrontShape"]
-size = Vector3(2, 0.5, 1.5)
-
-[sub_resource type="BoxMesh" id="TongueFrontMesh"]
-material = ExtResource("stone")
-size = Vector3(2, 0.5, 1.5)
-
-[sub_resource type="BoxShape3D" id="TongueBackShape"]
-size = Vector3(2, 0.5, 0.5)
-
-[sub_resource type="BoxMesh" id="TongueBackMesh"]
-material = ExtResource("stone")
-size = Vector3(2, 0.5, 0.5)
-
-[sub_resource type="BoxShape3D" id="RailLongShape"]
-size = Vector3(6, 1, 0.2)
-
-[sub_resource type="BoxMesh" id="RailLongMesh"]
-material = ExtResource("stone")
-size = Vector3(6, 1, 0.2)
-
-[sub_resource type="BoxShape3D" id="RailEndShape"]
-size = Vector3(0.2, 1, 4.2)
-
-[sub_resource type="BoxMesh" id="RailEndMesh"]
-material = ExtResource("stone")
-size = Vector3(0.2, 1, 4.2)
-
-[sub_resource type="BoxShape3D" id="RailStubShape"]
-size = Vector3(1, 1, 0.2)
-
-[sub_resource type="BoxMesh" id="RailStubMesh"]
-material = ExtResource("stone")
-size = Vector3(1, 1, 0.2)
-
-[sub_resource type="BoxShape3D" id="TongueRailShape"]
-size = Vector3(0.2, 1, 4.2)
-
-[sub_resource type="BoxMesh" id="TongueRailMesh"]
-material = ExtResource("stone")
-size = Vector3(0.2, 1, 4.2)
-
-[sub_resource type="BoxShape3D" id="TongueEndShape"]
-size = Vector3(4.4, 1, 0.2)
-
-[sub_resource type="BoxMesh" id="TongueEndMesh"]
-material = ExtResource("stone")
-size = Vector3(4.4, 1, 0.2)
-
-[sub_resource type="StandardMaterial3D" id="HoleRimMaterial"]
-shading_mode = 0
-albedo_color = Color(0.78, 0.97, 1, 1)
-
-[sub_resource type="TorusMesh" id="HoleRimMesh"]
-material = SubResource("HoleRimMaterial")
-inner_radius = 1.08
-outer_radius = 1.22
-rings = 24
-ring_segments = 4
-
-[sub_resource type="StandardMaterial3D" id="UpdraftMaterial"]
-shading_mode = 0
-transparency = 1
-vertex_color_use_as_albedo = true
-billboard_mode = 3
-particles_anim_h_frames = 1
-particles_anim_v_frames = 1
-particles_anim_loop = false
-
-[sub_resource type="QuadMesh" id="UpdraftMesh"]
-material = SubResource("UpdraftMaterial")
-size = Vector2(0.06, 0.5)
-
-[sub_resource type="Gradient" id="UpdraftFade"]
-offsets = PackedFloat32Array(0, 0.25, 1)
-colors = PackedColorArray(0.85, 0.98, 1, 0, 0.85, 0.98, 1, 0.75, 0.85, 0.98, 1, 0)
+[sub_resource type="BoxShape3D" id="EndRailShape"]
+size = Vector3(0.4, 1.12, 4)
 
 [node name="Room051WindWalk" type="Node3D"]
 
-[node name="Stair" type="StaticBody3D" parent="."]
-collision_mask = 0
+[node name="Floor" type="MultiMeshInstance3D" parent="."]
+multimesh = ExtResource("floor")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Stair"]
-shape = SubResource("StairShape")
-
-[node name="Step00" type="MeshInstance3D" parent="Stair"]
-position = Vector3(0.2666, 0.150, 0)
-mesh = SubResource("Step0")
-
-[node name="Step01" type="MeshInstance3D" parent="Stair"]
-position = Vector3(0.7999, 0.300, 0)
-mesh = SubResource("Step1")
-
-[node name="Step02" type="MeshInstance3D" parent="Stair"]
-position = Vector3(1.3333, 0.450, 0)
-mesh = SubResource("Step2")
-
-[node name="Step03" type="MeshInstance3D" parent="Stair"]
-position = Vector3(1.8665, 0.600, 0)
-mesh = SubResource("Step3")
-
-[node name="Step04" type="MeshInstance3D" parent="Stair"]
-position = Vector3(2.3998, 0.750, 0)
-mesh = SubResource("Step4")
-
-[node name="Step05" type="MeshInstance3D" parent="Stair"]
-position = Vector3(2.9331, 0.900, 0)
-mesh = SubResource("Step5")
-
-[node name="Step06" type="MeshInstance3D" parent="Stair"]
-position = Vector3(3.4665, 1.050, 0)
-mesh = SubResource("Step6")
-
-[node name="Step07" type="MeshInstance3D" parent="Stair"]
-position = Vector3(3.9998, 1.200, 0)
-mesh = SubResource("Step7")
-
-[node name="Step08" type="MeshInstance3D" parent="Stair"]
-position = Vector3(4.5331, 1.350, 0)
-mesh = SubResource("Step8")
-
-[node name="Step09" type="MeshInstance3D" parent="Stair"]
-position = Vector3(5.0663, 1.500, 0)
-mesh = SubResource("Step9")
-
-[node name="Step10" type="MeshInstance3D" parent="Stair"]
-position = Vector3(5.5996, 1.650, 0)
-mesh = SubResource("Step10")
-
-[node name="Step11" type="MeshInstance3D" parent="Stair"]
-position = Vector3(6.1330, 1.800, 0)
-mesh = SubResource("Step11")
-
-[node name="Step12" type="MeshInstance3D" parent="Stair"]
-position = Vector3(6.6662, 1.950, 0)
-mesh = SubResource("Step12")
-
-[node name="Step13" type="MeshInstance3D" parent="Stair"]
-position = Vector3(7.1996, 2.100, 0)
-mesh = SubResource("Step13")
-
-[node name="Step14" type="MeshInstance3D" parent="Stair"]
-position = Vector3(7.7329, 2.250, 0)
-mesh = SubResource("Step14")
-
-[node name="StairSouthRail" type="StaticBody3D" parent="."]
-transform = Transform3D(0.8715, -0.4904, 0, 0.4904, 0.8715, 0, 0, 0, 1, 4, 2.75, 2.1)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StairSouthRail"]
-shape = SubResource("StairRailShape")
-
-[node name="Stone" type="MeshInstance3D" parent="StairSouthRail"]
-mesh = SubResource("StairRailMesh")
-
-[node name="StairNorthRail" type="StaticBody3D" parent="."]
-transform = Transform3D(0.8715, -0.4904, 0, 0.4904, 0.8715, 0, 0, 0, 1, 4, 2.75, -2.1)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StairNorthRail"]
-shape = SubResource("StairRailShape")
-
-[node name="Stone" type="MeshInstance3D" parent="StairNorthRail"]
-mesh = SubResource("StairRailMesh")
-
-[node name="StairFoundation" type="MeshInstance3D" parent="Stair"]
-position = Vector3(4, -1.2, 0)
-mesh = SubResource("FoundationMesh")
-
-[node name="BalconySupport" type="StaticBody3D" parent="."]
-position = Vector3(11.8, 2, 0)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BalconySupport"]
-shape = SubResource("SupportShape")
-
-[node name="Stone" type="MeshInstance3D" parent="BalconySupport"]
-mesh = SubResource("SupportMesh")
-
-[node name="Deck" type="Node3D" parent="."]
-
-[node name="Balcony" type="StaticBody3D" parent="Deck"]
-position = Vector3(11, 4.25, 0)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/Balcony"]
-shape = SubResource("BalconyShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/Balcony"]
-mesh = SubResource("BalconyMesh")
-
-[node name="TongueLeft" type="StaticBody3D" parent="Deck"]
-position = Vector3(9.5, 4.25, -4)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueLeft"]
-shape = SubResource("TongueSideShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/TongueLeft"]
-mesh = SubResource("TongueSideMesh")
-
-[node name="TongueRight" type="StaticBody3D" parent="Deck"]
-position = Vector3(12.5, 4.25, -4)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueRight"]
-shape = SubResource("TongueSideShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/TongueRight"]
-mesh = SubResource("TongueSideMesh")
-
-[node name="TongueFront" type="StaticBody3D" parent="Deck"]
-position = Vector3(11, 4.25, -2.75)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueFront"]
-shape = SubResource("TongueFrontShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/TongueFront"]
-mesh = SubResource("TongueFrontMesh")
-
-[node name="TongueBack" type="StaticBody3D" parent="Deck"]
-position = Vector3(11, 4.25, -5.75)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueBack"]
-shape = SubResource("TongueBackShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/TongueBack"]
-mesh = SubResource("TongueBackMesh")
-
-[node name="BalconySouthRail" type="StaticBody3D" parent="Deck"]
-position = Vector3(11, 5, 2.1)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/BalconySouthRail"]
-shape = SubResource("RailLongShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/BalconySouthRail"]
-mesh = SubResource("RailLongMesh")
-
-[node name="BalconyEastRail" type="StaticBody3D" parent="Deck"]
-position = Vector3(14.1, 5, 0)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/BalconyEastRail"]
-shape = SubResource("RailEndShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/BalconyEastRail"]
-mesh = SubResource("RailEndMesh")
-
-[node name="BalconyNorthRailWest" type="StaticBody3D" parent="Deck"]
-position = Vector3(8.5, 5, -2.1)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/BalconyNorthRailWest"]
-shape = SubResource("RailStubShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/BalconyNorthRailWest"]
-mesh = SubResource("RailStubMesh")
-
-[node name="BalconyNorthRailEast" type="StaticBody3D" parent="Deck"]
-position = Vector3(13.5, 5, -2.1)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/BalconyNorthRailEast"]
-shape = SubResource("RailStubShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/BalconyNorthRailEast"]
-mesh = SubResource("RailStubMesh")
-
-[node name="TongueWestRail" type="StaticBody3D" parent="Deck"]
-position = Vector3(8.9, 5, -4.1)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueWestRail"]
-shape = SubResource("TongueRailShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/TongueWestRail"]
-mesh = SubResource("TongueRailMesh")
-
-[node name="TongueEastRail" type="StaticBody3D" parent="Deck"]
-position = Vector3(13.1, 5, -4.1)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueEastRail"]
-shape = SubResource("TongueRailShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/TongueEastRail"]
-mesh = SubResource("TongueRailMesh")
-
-[node name="TongueEndRail" type="StaticBody3D" parent="Deck"]
-position = Vector3(11, 5, -6.1)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueEndRail"]
-shape = SubResource("TongueEndShape")
-
-[node name="Stone" type="MeshInstance3D" parent="Deck/TongueEndRail"]
-mesh = SubResource("TongueEndMesh")
-
-[node name="HoleRim" type="MeshInstance3D" parent="Deck"]
-position = Vector3(11, 4.52, -4.5)
+[node name="Base" type="MultiMeshInstance3D" parent="."]
 cast_shadow = 0
-mesh = SubResource("HoleRimMesh")
+multimesh = ExtResource("base")
 
-[node name="Updraft" type="CPUParticles3D" parent="."]
-position = Vector3(11, 0.6, -4.5)
-amount = 18
-lifetime = 1.6
-mesh = SubResource("UpdraftMesh")
-emission_shape = 3
-emission_box_extents = Vector3(0.9, 0.1, 0.9)
-direction = Vector3(0, 1, 0)
-spread = 6.0
-gravity = Vector3(0, 0, 0)
-initial_velocity_min = 2.4
-initial_velocity_max = 3.4
-color_ramp = SubResource("UpdraftFade")
+[node name="Rails" type="MultiMeshInstance3D" parent="."]
+multimesh = ExtResource("rails")
 
-[node name="WalkLantern" parent="Deck" instance=ExtResource("lantern")]
-position = Vector3(13.4, 4.5, 1.4)
+[node name="WalkFloor" type="StaticBody3D" parent="."]
+position = Vector3(6, -0.24, 0)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WalkFloor"]
+shape = SubResource("WalkFloorShape")
+
+[node name="SouthRail" type="StaticBody3D" parent="."]
+position = Vector3(6, 0.56, 1.8)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthRail"]
+shape = SubResource("LongRailShape")
+
+[node name="NorthRail" type="StaticBody3D" parent="."]
+position = Vector3(4, 0.56, -1.8)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthRail"]
+shape = SubResource("ShortRailShape")
+
+[node name="EndRail" type="StaticBody3D" parent="."]
+position = Vector3(11.8, 0.56, 0)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EndRail"]
+shape = SubResource("EndRailShape")
+
+[node name="WalkLantern" parent="." instance=ExtResource("lantern")]
+position = Vector3(7.1, 0, 1.25)
 scale = Vector3(0.66, 0.66, 0.66)
 
 [node name="LegacyWindTrialEntry" type="Marker3D" parent="."]
-position = Vector3(0.8, 0, 0)
+position = Vector3(4.7, 0, 0.6)
 rotation_degrees = Vector3(0, -90, 0)
 script = ExtResource("spawn")
 spawn_id = &"level_1.wind_trial_entry"
 
 [node name="BookArrival" type="Marker3D" parent="."]
-position = Vector3(10, 4.5, 0.6)
+position = Vector3(1.55, 0, 0)
+rotation_degrees = Vector3(0, -90, 0)
 script = ExtResource("spawn")
 spawn_id = &"level_1.wind_book_arrival"

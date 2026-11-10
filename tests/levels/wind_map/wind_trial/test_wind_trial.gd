@@ -1,5 +1,5 @@
 extends Node
-## Chạy scene này bằng Godot để kiểm tra luồng 5 → 5.1 (rơi qua hố) → 5.2 → 5.3 (tuỳ chọn) → 6 với bản đồ thật.
+## Chạy scene này bằng Godot để kiểm tra luồng 5 → 5.1 → 5.2 → 5.3 (bí mật, tuỳ chọn) → 6 với bản đồ thật.
 
 const WindTrial := preload("res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.gd")
 const WindChallenge := preload("res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.gd")
@@ -19,7 +19,6 @@ var _trial: WindTrial
 var _first: Encounter
 var _second: Encounter
 var _exit_gate: TrialGrille
-var _old_gate: StoneGate
 var _walk_gate: StoneGate
 var _challenge: WindChallenge
 var _secret_wall: SecretWall
@@ -42,20 +41,19 @@ func _run() -> void:
 		_finish()
 		return
 
-	# UC01: từ ban công 5.1 rơi qua hố xuống giữa 5.2, các lối ra khóa.
+	# UC01: đi bộ qua 5.1 vào 5.2, cửa khóa sau lưng.
 	var checkpoint_before: StringName = GameState.get_checkpoint_spawn_id()
-	_check(not _exit_gate.is_open and not _old_gate.is_open and not _secret_wall.is_broken and not _secret_wall.can_break(),
+	_check(not _exit_gate.is_open and _old_stair_blocked() and not _secret_wall.is_broken and not _secret_wall.can_break(),
 		"TC01 lối lên phòng 6 bị chặn, tường giả chưa phá được trước trận")
 	_check(_walk_gate.is_open, "TC02 học Gió xong thì cầu thang từ phòng 9 lên 5.1 mở")
 	_check(not _path_is_clear(Vector3(6, 6.25, -62), Vector3(6, 6.25, -66)), "TC03 cầu thang cũ chặn đường đi tắt")
-	_check(_player.global_position.y > 7.5 and _trial.current_wave == 0, "TC04 đứng trên ban công 5.1, chưa có quái")
-	await _move_until(&"move_right", func() -> bool: return _player.global_position.x >= 34.9)
+	await _move_until(&"move_right", func() -> bool: return _player.global_position.x >= 33.85)
+	_check(GameState.get_checkpoint_spawn_id() == checkpoint_before and _trial.current_wave == 0 and _player.global_position.y < 4.0,
+		"TC04 đi bộ qua 5.1 trên mặt đất, không đổi checkpoint, chưa có quái")
 	await _move_until(&"move_forward", func() -> bool: return _trial.current_wave == 1)
-	await _until(func() -> bool: return _player.is_on_floor(), 120)
 	await _frames(3)
-	_check(_player.global_position.y < 4.0 and GameState.get_checkpoint_spawn_id() == checkpoint_before,
-		"TC04 rơi qua hố xuống sàn 5.2, không đổi checkpoint")
-	_check(_trial.current_wave == 1 and _enemy_count(_first) == 1, "TC05 đáp xuống 5.2, xuất hiện đúng một Bọ")
+	_check(_trial.current_wave == 1 and _enemy_count(_first) == 1, "TC05 vượt ngưỡng 5.2, xuất hiện đúng một Bọ")
+	_check(not (_trial.get_node(^"EntryGate/CollisionShape3D") as CollisionShape3D).disabled, "TC06 cửa vào khóa sau khi Foxy qua")
 	_check(not (_secret_wall.get_node(^"CollisionShape3D") as CollisionShape3D).disabled, "TC06 tường giả vẫn chắn lối sang 5.3")
 	if _enemy_count(_first) != 1:
 		_finish()
@@ -86,22 +84,22 @@ func _run() -> void:
 	_check(shot_frames.size() == 2 and shot_frames[1] - shot_frames[0] >= 30, "TC10 hai phát đầu cách nhau ít nhất nửa giây")
 
 	_player.energy.set_current(0)
-	_player.teleport(Vector3(43.3, 3.65, -63.9), Vector3.BACK)
+	_player.teleport(Vector3(40, 3.65, -63.9), Vector3.BACK)
 	await _frames(10)
-	_aim_at(Vector3(43.3, 3.6, -62.25))
+	_aim_at(Vector3(40, 3.6, -62.25))
 	await _press(&"attack")
 	await _frames(55)
 	_check(_player.energy.current > 0, "TC11 chém hình nộm nạp lại gió từ 0")
 	_player.energy.set_current(3)
 	await _reflect(left, Vector3(34, 3.65, -62.25))
-	_check(not _exit_gate.is_open and not _old_gate.is_open, "TC12 còn một Bọ thì cửa vẫn khóa")
-	await _reflect(right, Vector3(39.4, 3.65, -62.25))
-	_check(_trial.is_active() and _exit_gate.is_open and _old_gate.is_open, "TC13 hạ Bọ cuối mới mở lối lên phòng 6")
+	_check(not _exit_gate.is_open and _old_stair_blocked(), "TC12 còn một Bọ thì cửa vẫn khóa")
+	await _reflect(right, Vector3(38.2, 3.65, -63.2))
+	_check(_trial.is_active() and _exit_gate.is_open and _old_stair_blocked(), "TC13 hạ Bọ cuối mở dốc lên phòng 6, cầu thang cũ vẫn chặn (một lối duy nhất)")
 	await _frames(30)
 	_check(_secret_wall.can_break() and not _secret_wall.is_broken, "TC13 thắng 5.2 thì tường giả mới phá được (chưa tự vỡ)")
 	await _break_secret_wall()
 
-	# UC04: thử thách 5.3 tuỳ chọn, ba đợt, không rơi Soul Jade, thưởng bùa.
+	# UC04: phòng bí mật 5.3 (tuỳ chọn), ba đợt, không rơi Soul Jade, thưởng bùa.
 	await _run_challenge()
 
 	# Đi tiếp: từ 5.2 lên dốc sang phòng 6.
@@ -114,8 +112,8 @@ func _run() -> void:
 
 	# UC03: hồ sơ cũ vẫn nạp được hai vị trí checkpoint đã bỏ.
 	var legacy_entry := SpawnPoint.find_in(_level, LEGACY_ENTRY)
-	_check(is_instance_valid(legacy_entry) and legacy_entry.global_position.distance_to(Vector3(24.8, 3.6, -58)) < 0.1,
-		"TC16 save cũ ở 5.1 xuất hiện ở chân cầu thang")
+	_check(is_instance_valid(legacy_entry) and legacy_entry.global_position.distance_to(Vector3(28.7, 3.6, -57.4)) < 0.1,
+		"TC16 save cũ ở 5.1 vẫn có điểm xuất hiện")
 	var saved := SaveManager.to_dict(GameState.progress)
 	saved["checkpoint"] = {"zone": LEVEL, "spawn": String(LEGACY_EXIT)}
 	GameState.replace_progress(SaveManager.from_dict(saved))
@@ -123,7 +121,7 @@ func _run() -> void:
 	await _bind_loaded_level()
 	_check(_player.global_position.distance_to(Vector3(23.8, 5.4, -74.9)) < 0.3,
 		"TC17 nạp save cũ đưa Foxy về Phòng 6")
-	_check(_trial.is_active() and _exit_gate.is_open and _old_gate.is_open and _secret_wall.is_broken
+	_check(_trial.is_active() and _exit_gate.is_open and _old_stair_blocked() and _secret_wall.is_broken
 		and (_secret_wall.get_node(^"CollisionShape3D") as CollisionShape3D).disabled,
 		"TC18 nạp lại vẫn mở lối lên phòng 6, tường giả vẫn vỡ")
 	_check(not is_instance_valid(_first) and not is_instance_valid(_second), "TC19 nạp lại không tái sinh Bọ")
@@ -150,16 +148,17 @@ func _run_challenge() -> void:
 	var totals: Array[int] = []
 	for wave: Encounter in waves:
 		totals.append(wave.get_shader_warmup_sources().size())
-	_check((_challenge.get_node(^"Roof") as Node3D).visible, "TC30 đứng ngoài thì 5.3 bị mái che kín")
-	_player.teleport(Vector3(34, 3.65, -61.2), Vector3.BACK)
-	await _frames(6)
-	await _move_until(&"move_back", func() -> bool: return _challenge.current_wave == 0)
+	var wall_x: float = _secret_wall.global_position.x
+	_player.teleport(Vector3(wall_x, 3.65, -61.2), Vector3.BACK)
+	await _frames(20)
+	var room_center: Vector3 = _challenge.global_position + Vector3(10, 1, -10)
+	_check(not _player.get_viewport().get_camera_3d().is_position_in_frustum(room_center),
+		"TC30 đứng ở 5.2 cạnh tường giả: phòng 5.3 nằm ngoài khung camera (bí mật nhờ vị trí)")
+	await _move_until(&"move_back", func() -> bool: return _challenge.current_wave == 0, 600)
 	await _frames(30)
 	_check(_challenge.current_wave == 0 and not _challenge.get_node(^"EntryGate").is_open,
 		"TC22 đi thật qua hành lang vào 5.3 thì cửa khóa, bắt đầu đợt 1")
-	await _frames(40)
-	_check(not (_challenge.get_node(^"Roof") as Node3D).visible,
-		"TC30 bước vào 5.3 thì mái mờ dần và ẩn")
+	_check(_player.get_viewport().get_camera_3d().is_position_in_frustum(room_center), "TC30 đi hết cầu vào 5.3 thì thấy phòng")
 	for index: int in range(waves.size()):
 		await _until(func() -> bool: return _challenge.current_wave == index and _enemy_count(waves[index]) > 0, 240)
 		var reward_hidden: bool = not (_challenge.get_node(^"RewardCharm") as Node3D).visible
@@ -226,7 +225,6 @@ func _bind_loaded_level() -> void:
 	_first = _trial.get_node_or_null(^"FirstWave") as Encounter
 	_second = _trial.get_node_or_null(^"SecondWave") as Encounter
 	_exit_gate = _trial.get_node(^"ExitGate") as TrialGrille
-	_old_gate = tier.get_node(^"OldStairTrialGate") as StoneGate
 	_walk_gate = tier.get_node(^"TrialWalkGate") as StoneGate
 	_challenge = tier.get_node(^"Room053WindChallenge") as WindChallenge
 	_secret_wall = _trial.get_node(^"SecretWall") as SecretWall
@@ -293,6 +291,10 @@ func _aim_at(point: Vector3) -> void:
 		_player.get_viewport().warp_mouse(screen)
 
 
+func _old_stair_blocked() -> bool:
+	return not _path_is_clear(Vector3(6, 6.25, -62), Vector3(6, 6.25, -66))
+
+
 func _path_is_clear(from: Vector3, to: Vector3) -> bool:
 	var query := PhysicsRayQueryParameters3D.create(from, to, 1)
 	return _player.get_world_3d().direct_space_state.intersect_ray(query).is_empty()
@@ -302,9 +304,9 @@ func _enemy_count(wave: Encounter) -> int:
 	return wave.get_node(^"Enemies").get_child_count()
 
 
-func _move_until(action: StringName, done: Callable) -> void:
+func _move_until(action: StringName, done: Callable, max_frames: int = 220) -> void:
 	Input.action_press(action)
-	await _until(done, 220)
+	await _until(done, max_frames)
 	Input.action_release(action)
 	await _frames(4)
 
