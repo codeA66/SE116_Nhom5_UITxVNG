@@ -150,7 +150,7 @@ func _run_challenge() -> void:
 	var totals: Array[int] = []
 	for wave: Encounter in waves:
 		totals.append(wave.get_shader_warmup_sources().size())
-	_check((_challenge.get_node(^"ShroudRoom") as Node3D).visible, "TC30 đứng ngoài thì 5.3 bị màn tối che")
+	_check((_challenge.get_node(^"Roof") as Node3D).visible, "TC30 đứng ngoài thì 5.3 bị mái che kín")
 	_player.teleport(Vector3(34, 3.65, -61.2), Vector3.BACK)
 	await _frames(6)
 	await _move_until(&"move_back", func() -> bool: return _challenge.current_wave == 0)
@@ -158,8 +158,8 @@ func _run_challenge() -> void:
 	_check(_challenge.current_wave == 0 and not _challenge.get_node(^"EntryGate").is_open,
 		"TC22 đi thật qua hành lang vào 5.3 thì cửa khóa, bắt đầu đợt 1")
 	await _frames(40)
-	_check(not (_challenge.get_node(^"ShroudRoom") as Node3D).visible and not (_challenge.get_node(^"ShroudCorridor") as Node3D).visible,
-		"TC30 bước vào 5.3 thì màn tối tan")
+	_check(not (_challenge.get_node(^"Roof") as Node3D).visible,
+		"TC30 bước vào 5.3 thì mái mờ dần và ẩn")
 	for index: int in range(waves.size()):
 		await _until(func() -> bool: return _challenge.current_wave == index and _enemy_count(waves[index]) > 0, 240)
 		var reward_hidden: bool = not (_challenge.get_node(^"RewardCharm") as Node3D).visible

@@ -1,6 +1,7 @@
 class_name SecretShroud
 extends MeshInstance3D
-## Màn che phòng bí mật (tham khảo Hollow Knight): khối tối phủ kín hành lang và phòng, đứng ngoài không thấy gì.
+## Lớp che phòng bí mật (tham khảo cách Hollow Knight che phòng ẩn): mái / khối che phủ kín phòng, đứng ngoài
+## chỉ thấy như công trình bình thường. Material phải có transparency để mờ dần.
 ## Player bước vào reveal_area thì tan dần; ra khỏi thì phủ lại để phòng giữ vẻ bí mật khi nhìn từ ngoài.
 ## Hiệu năng: không có _process; chỉ nghe vào/ra của Area3D và chạy một tween ngắn. Tan hẳn thì ẩn mesh.
 
