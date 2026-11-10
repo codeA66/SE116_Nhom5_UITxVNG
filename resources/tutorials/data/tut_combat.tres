@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="TutorialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"combat"
+title = "Vũ Khí & Chiến Đấu"
+category = "Chiến Đấu"
+summary = "Sử dụng vũ khí cận chiến hoặc tầm xa để tiêu diệt quái vật bảo vệ hòn đảo."
+sections = [{
+"heading": "Tấn công cận chiến (Kiếm)",
+"text": "Nhấn [Chuột Trái] để chém kiếm về phía mục tiêu. Đòn đánh có thể ngắt cử động của quái nhỏ.",
+"warning": false
+}, {
+"heading": "Ngắm bắn tầm xa (Cung)",
+"text": "Nhấn [Chuột Phải] để giương cung, di chuột để ngắm và nhả ra để bắn tên gió.",
+"warning": false
+}]
+hint = "[Chuột Trái] Đánh  •  [Chuột Phải] Ngắm bắn  •  [H] Sổ Hướng Dẫn"
+lore = "Thanh kiếm mang hào quang gió chém tan mọi ác niệm."
+order = 3

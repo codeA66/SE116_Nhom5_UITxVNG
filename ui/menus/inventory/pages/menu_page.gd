@@ -21,6 +21,11 @@ func setup_style(menu_style: InventoryStyle) -> void:
 	style = menu_style
 
 
+## Chiều rộng bảng chi tiết riêng của trang (<= 0.0 để dùng mặc định style.detail_width)
+func get_custom_detail_width() -> float:
+	return 0.0
+
+
 ## Trang có hiện trên thanh tiêu đề không (trang Bùa ẩn tới khi có bùa đầu tiên)
 func is_available() -> bool:
 	return true

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3 uid="uid://djc1eu6arm3uk"]
+
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"movement"
+title = "Chào Mừng Đến Với Đảo Foxy"
+category = "Cơ Bản"
+input_actions = Array[StringName]([&"move_forward", &"move_left", &"move_back", &"move_right", &"help"])
+prompt_template = "Dùng {key1} {key2} {key3} {key4} để di chuyển. Nhấn {key5} để mở Sổ Hướng Dẫn."
+sections = Array[Dictionary]([{
+"heading": "Di chuyển 8 hướng",
+"text": "Sử dụng các phím [W, A, S, D] để điều khiển chú Cáo di chuyển linh hoạt theo 8 hướng trong thế giới.",
+"warning": false
+}, {
+"heading": "Khám phá thế giới",
+"text": "Đi qua các khu vực trên đảo Foxy để giải các câu đố cổ xưa và tìm kiếm những sức mạnh nguyên tố ẩn giấu.",
+"warning": false
+}, {
+"heading": "Sổ Hướng Dẫn",
+"text": "Nhấn phím [H] bất kỳ lúc nào để mở Sổ Hướng Dẫn tra cứu lại các cơ chế, kỹ năng và mẹo đã khám phá.",
+"warning": false
+}])
+hint = "[W, A, S, D] Di chuyển  •  [H] Sổ Hướng Dẫn"
+lore = "Hòn đảo Foxy ẩn chứa vô vàn bí ẩn cùng những đền thờ cổ xưa đang chờ bạn khám phá."
+order = 1

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TutorialCatalog" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://resources/tutorials/tutorial_catalog.gd" id="1_catalog"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_movement.tres" id="2_mov"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_dash.tres" id="3_dash"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_combat.tres" id="4_com"]
+
+[resource]
+script = ExtResource("1_catalog")
+tutorials = [ExtResource("2_mov"), ExtResource("3_dash"), ExtResource("4_com")]

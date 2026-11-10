@@ -48,6 +48,7 @@
 [ext_resource type="Resource" path="res://resources/player/currency/soul_jade.tres" id="56_souljade"]
 [ext_resource type="Script" path="res://entities/player/data/currency_data.gd" id="56_souljade_type"]
 [ext_resource type="Script" path="res://components/utility/restore/restore_component.gd" id="57_restore"]
+[ext_resource type="PackedScene" path="res://ui/hud/tutorials/tutorial_popup.tscn" id="58_tutorial_popup"]
 
 [ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="92_burn"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="93_burnvfx"]
@@ -192,6 +193,8 @@ player = NodePath("../..")
 
 [node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor") instance=ExtResource("18_prompt")]
 interactor = NodePath("../../Interactor")
+
+[node name="TutorialPopup" parent="HUD" instance=ExtResource("58_tutorial_popup")]
 
 [node name="CameraRig" type="Node3D" parent="." unique_id=1233256162]
 script = ExtResource("6_camrig")
