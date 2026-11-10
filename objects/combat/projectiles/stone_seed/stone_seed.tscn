@@ -1,0 +1,73 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/projectiles/stone_seed/stone_seed.gd" id="seed"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/burrow_beetle/stone_seed.glb" id="mesh"]
+[ext_resource type="Script" path="res://components/elements/wind/wind_receiver/wind_receiver_component.gd" id="wind"]
+
+[sub_resource type="SphereShape3D" id="catch"]
+radius = 0.52
+
+[sub_resource type="StandardMaterial3D" id="ochre"]
+shading_mode = 0
+albedo_color = Color(0.8, 0.38, 0.14, 1)
+
+[sub_resource type="StandardMaterial3D" id="mint"]
+shading_mode = 0
+albedo_color = Color(0.32, 0.98, 0.76, 1)
+
+[sub_resource type="CylinderMesh" id="dust"]
+material = SubResource("ochre")
+top_radius = 0.065
+bottom_radius = 0.005
+height = 0.6
+radial_segments = 5
+rings = 0
+
+[sub_resource type="CylinderMesh" id="trail"]
+material = SubResource("mint")
+top_radius = 0.06
+bottom_radius = 0.004
+height = 0.95
+radial_segments = 5
+rings = 0
+
+[sub_resource type="TorusMesh" id="ring"]
+material = SubResource("mint")
+inner_radius = 0.192
+outer_radius = 0.22
+rings = 14
+ring_segments = 4
+
+[node name="StoneSeed" type="Node3D"]
+script = ExtResource("seed")
+
+[node name="SeedModel" parent="." instance=ExtResource("mesh")]
+
+[node name="Dust" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0, -0.5)
+rotation_degrees = Vector3(90, 0, 0)
+cast_shadow = 0
+mesh = SubResource("dust")
+
+[node name="Wind" type="Node3D" parent="."]
+visible = false
+
+[node name="Ribbon" type="MeshInstance3D" parent="Wind"]
+rotation_degrees = Vector3(56, 11, 14)
+cast_shadow = 0
+mesh = SubResource("ring")
+
+[node name="Trail" type="MeshInstance3D" parent="Wind"]
+position = Vector3(0, 0, -0.69)
+rotation_degrees = Vector3(90, 0, 0)
+cast_shadow = 0
+mesh = SubResource("trail")
+
+[node name="WindReceiverComponent" type="Area3D" parent="."]
+collision_layer = 128
+collision_mask = 0
+monitoring = false
+script = ExtResource("wind")
+
+[node name="Shape" type="CollisionShape3D" parent="WindReceiverComponent"]
+shape = SubResource("catch")

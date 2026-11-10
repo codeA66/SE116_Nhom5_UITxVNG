@@ -1,0 +1,237 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/paving_stone.tres" id="paving_stone"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/arena_paving.res" id="floor"]
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.gd" id="trial"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.tscn" id="gate"]
+[ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="encounter"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="beetle"]
+[ext_resource type="PackedScene" path="res://objects/combat/training_dummy/wooden_training_dummy.tscn" id="dummy"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="pillar"]
+
+[sub_resource type="BoxShape3D" id="ArenaFloorShape"]
+size = Vector3(20, 0.48, 20)
+
+[sub_resource type="BoxMesh" id="ArenaFloorMesh"]
+material = ExtResource("stone")
+size = Vector3(20, 2.4, 20)
+
+[sub_resource type="BoxShape3D" id="WestSouthWallShape"]
+size = Vector3(0.4, 7.4, 12)
+
+[sub_resource type="BoxMesh" id="WestSouthWallMesh"]
+material = ExtResource("stone")
+size = Vector3(0.4, 1.45, 12)
+
+[sub_resource type="BoxShape3D" id="WestNorthWallShape"]
+size = Vector3(0.4, 7.4, 4)
+
+[sub_resource type="BoxMesh" id="WestNorthWallMesh"]
+material = ExtResource("stone")
+size = Vector3(0.4, 1.45, 4)
+
+[sub_resource type="BoxShape3D" id="EastWallShape"]
+size = Vector3(0.4, 7.4, 20)
+
+[sub_resource type="BoxMesh" id="EastWallMesh"]
+material = ExtResource("stone")
+size = Vector3(0.4, 1.45, 20)
+
+[sub_resource type="BoxShape3D" id="NorthWallShape"]
+size = Vector3(20, 7.4, 0.4)
+
+[sub_resource type="BoxMesh" id="NorthWallMesh"]
+material = ExtResource("stone")
+size = Vector3(20, 1.45, 0.4)
+
+[sub_resource type="BoxShape3D" id="EntryLeftWallShape"]
+size = Vector3(4, 7.4, 0.4)
+
+[sub_resource type="BoxMesh" id="EntryLeftWallMesh"]
+material = ExtResource("stone")
+size = Vector3(4, 1.45, 0.4)
+
+[sub_resource type="BoxShape3D" id="EntryRightWallShape"]
+size = Vector3(12, 7.4, 0.4)
+
+[sub_resource type="BoxMesh" id="EntryRightWallMesh"]
+material = ExtResource("stone")
+size = Vector3(12, 1.45, 0.4)
+
+[sub_resource type="ConvexPolygonShape3D" id="RampShape"]
+points = PackedVector3Array(0, -0.25, -1.85, 0, 1.8, -1.85, 0, -0.25, 1.85, 0, 1.8, 1.85, 6, -0.25, -1.85, 6, 0, -1.85, 6, -0.25, 1.85, 6, 0, 1.85)
+
+[sub_resource type="BoxMesh" id="RampMesh"]
+material = ExtResource("stone")
+size = Vector3(6.26418, 0.18, 3.7)
+
+[sub_resource type="BoxShape3D" id="EntryTriggerShape"]
+size = Vector3(3.95, 7.2, 1.7)
+
+[node name="Room052WindTrial" type="Node3D"]
+script = ExtResource("trial")
+
+[node name="ArenaFloor" type="StaticBody3D" parent="."]
+position = Vector3(10, -0.24, -10)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaFloor"]
+shape = SubResource("ArenaFloorShape")
+
+[node name="Stone" type="MeshInstance3D" parent="ArenaFloor"]
+position = Vector3(0, -1.02, 0)
+mesh = SubResource("ArenaFloorMesh")
+
+[node name="Paving" type="MultiMeshInstance3D" parent="."]
+material_override = ExtResource("paving_stone")
+multimesh = ExtResource("floor")
+
+[node name="WestSouthWall" type="StaticBody3D" parent="."]
+position = Vector3(0.2, 3.7, -6)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestSouthWall"]
+shape = SubResource("WestSouthWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="WestSouthWall"]
+position = Vector3(0, -2.975, 0)
+mesh = SubResource("WestSouthWallMesh")
+
+[node name="WestNorthWall" type="StaticBody3D" parent="."]
+position = Vector3(0.2, 3.7, -18)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestNorthWall"]
+shape = SubResource("WestNorthWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="WestNorthWall"]
+position = Vector3(0, -2.975, 0)
+mesh = SubResource("WestNorthWallMesh")
+
+[node name="EastWall" type="StaticBody3D" parent="."]
+position = Vector3(19.8, 3.7, -10)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
+shape = SubResource("EastWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="EastWall"]
+position = Vector3(0, -2.975, 0)
+mesh = SubResource("EastWallMesh")
+
+[node name="NorthWall" type="StaticBody3D" parent="."]
+position = Vector3(10, 3.7, -19.8)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWall"]
+shape = SubResource("NorthWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="NorthWall"]
+position = Vector3(0, -2.975, 0)
+mesh = SubResource("NorthWallMesh")
+
+[node name="EntryLeftWall" type="StaticBody3D" parent="."]
+position = Vector3(2, 3.7, -0.2)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryLeftWall"]
+shape = SubResource("EntryLeftWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="EntryLeftWall"]
+position = Vector3(0, -2.975, 0)
+mesh = SubResource("EntryLeftWallMesh")
+
+[node name="EntryRightWall" type="StaticBody3D" parent="."]
+position = Vector3(14, 3.7, -0.2)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryRightWall"]
+shape = SubResource("EntryRightWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="EntryRightWall"]
+position = Vector3(0, -2.975, 0)
+mesh = SubResource("EntryRightWallMesh")
+
+[node name="ExitRamp" type="StaticBody3D" parent="."]
+position = Vector3(0, 0, -14)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExitRamp"]
+shape = SubResource("RampShape")
+
+[node name="Stone" type="MeshInstance3D" parent="ExitRamp"]
+position = Vector3(2.9741, 0.8138, 0)
+rotation_degrees = Vector3(0, 0, -16.6992)
+mesh = SubResource("RampMesh")
+
+[node name="EntryTrigger" type="Area3D" parent="."]
+position = Vector3(6, 3.6, -2.05)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger"]
+shape = SubResource("EntryTriggerShape")
+
+[node name="EntryGate" parent="." instance=ExtResource("gate")]
+position = Vector3(6, 0, -0.1)
+starts_open = true
+
+[node name="ExitGate" parent="." instance=ExtResource("gate")]
+position = Vector3(0.35, 1.7, -14)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="EnergyDummy" parent="." instance=ExtResource("dummy")]
+position = Vector3(15.3, 0, -2.25)
+rotation_degrees = Vector3(0, -20, 0)
+
+[node name="RechargeLabel" type="Label3D" parent="EnergyDummy"]
+position = Vector3(0, 2.4, 0)
+billboard = 1
+pixel_size = 0.01
+text = "Đánh để hồi mana"
+font_size = 36
+
+[node name="FarPierLeft" parent="." instance=ExtResource("pillar")]
+position = Vector3(0.3, 0, -19.7)
+scale = Vector3(0.8, 0.7, 0.8)
+
+[node name="FarPierRight" parent="." instance=ExtResource("pillar")]
+position = Vector3(19.7, 0, -19.7)
+scale = Vector3(0.8, 0.7, 0.8)
+
+[node name="FirstWave" parent="." instance=ExtResource("encounter")]
+spawn_interval = 0.0
+enemies_visible_before_start = false
+aggro_on_start = false
+clear_trauma = 0.0
+
+[node name="Trigger" parent="FirstWave" index="0"]
+monitoring = false
+
+[node name="BurrowBeetle1" parent="FirstWave/Enemies" instance=ExtResource("beetle")]
+position = Vector3(6, 0, -10.4)
+rotation_degrees = Vector3(0, 180, 0)
+
+[node name="SecondWave" parent="." instance=ExtResource("encounter")]
+spawn_interval = 0.9
+enemies_visible_before_start = false
+aggro_on_start = false
+clear_trauma = 0.0
+
+[node name="Trigger" parent="SecondWave" index="0"]
+monitoring = false
+
+[node name="BurrowBeetle1" parent="SecondWave/Enemies" instance=ExtResource("beetle")]
+position = Vector3(6.4, 0, -8.8)
+rotation_degrees = Vector3(0, 180, 0)
+
+[node name="BurrowBeetle2" parent="SecondWave/Enemies" instance=ExtResource("beetle")]
+position = Vector3(11.4, 0, -9.7)
+rotation_degrees = Vector3(0, 180, 0)
+
+
+[editable path="FirstWave"]
+
+[editable path="SecondWave"]

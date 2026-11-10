@@ -7,6 +7,9 @@ signal cleared
 @export var guards: Array[RoofBananaGrunt] = []
 @export var moving_seals: Array[ShiftingGardenSeal] = []
 @export var wind_ambush: GardenWindAmbush
+@export_group("Thời gian bệ cuối")
+@export_range(1, 7, 1) var late_stage_remaining: int = 3
+@export_range(1, 20, 1) var late_stage_interval: int = 3
 var started: bool = false
 var completed: bool = false
 var _guard_ids: Array[int] = []
@@ -46,8 +49,13 @@ func begin(actor: Player) -> void:
 
 func _check() -> void:
 	if not started or completed or seals.is_empty(): return
+	var remaining: int = 0
 	for seal: GardenSwitch in seals:
-		if not is_instance_valid(seal) or not seal.is_active(): return
+		if not is_instance_valid(seal): return
+		if not seal.is_active(): remaining += 1
+	if remaining > 0:
+		_update_remaining_intervals(remaining)
+		return
 	completed = true
 	for mover: ShiftingGardenSeal in moving_seals:
 		if is_instance_valid(mover): mover.stop()
@@ -64,6 +72,12 @@ func _check() -> void:
 		if is_instance_valid(guard) and not guard.is_dead(): guard.disable()
 	GardenRewards.offering(reward)
 	get_tree().create_timer(2.2,false).timeout.connect(func() -> void: cleared.emit())
+
+func _update_remaining_intervals(remaining: int) -> void:
+	if remaining > late_stage_remaining: return
+	for mover: ShiftingGardenSeal in moving_seals:
+		if is_instance_valid(mover) and is_instance_valid(mover.seal) and not mover.seal.is_active():
+			mover.set_interval_seconds(late_stage_interval)
 
 func _resolve_moving_seals() -> void:
 	# Editor có thể làm mất tham chiếu khi reload script: khôi phục theo bia mà mỗi component quản lý.

@@ -52,7 +52,7 @@ func _on_open() -> void:
 	paid.emit()
 	if keeper:
 		keeper.play_one_shot(data.accept_animation)
-	await _say(data.thanks_lines)
+	await _say(data.thanks_lines, data.after_payment_story)
 	if not is_active():
 		return
 	npc.close_dialogue()
@@ -61,8 +61,8 @@ func _on_open() -> void:
 	finish()
 
 
-func _say(lines: Array[DialogueLine]) -> void:
-	if lines.is_empty() or not is_active():
+func _say(lines: Array[DialogueLine], story: Dialogue = null) -> void:
+	if not is_active():
 		return
 	var formatted: Array[DialogueLine] = []
 	for line: DialogueLine in lines:
@@ -72,7 +72,15 @@ func _say(lines: Array[DialogueLine]) -> void:
 		copy.speaker = line.speaker
 		copy.text = _format(line.text)
 		formatted.append(copy)
-	await npc.say(formatted)
+	if story and not story.is_available(npc):
+		story = null
+	if story:
+		formatted.append_array(story.lines)
+	if formatted.is_empty():
+		return
+	var result: int = await npc.say(formatted)
+	if is_active() and story and result == DialogueBox.RESULT_DONE:
+		GameState.set_flag(story.flag_on_finish)
 
 
 func _format(text: String) -> String:

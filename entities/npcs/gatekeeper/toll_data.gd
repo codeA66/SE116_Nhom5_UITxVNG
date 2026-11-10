@@ -9,6 +9,8 @@ extends Resource
 @export var decline_option: String = "Thôi"
 ## Nói sau khi nhận tiền, trước khi bước sang bên
 @export var thanks_lines: Array[DialogueLine] = []
+## Đoạn kể thêm ngay sau lời nhận tiền nếu còn đủ điều kiện.
+@export var after_payment_story: Dialogue
 ## Nói khi bấm Trả mà không đủ tiền
 @export var refuse_lines: Array[DialogueLine] = []
 ## Nói khi chọn Thôi

@@ -1,0 +1,126 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://objects/combat/training_dummy/training_dummy.tscn" id="base"]
+[ext_resource type="Material" path="res://assets/materials/ruin_wood.tres" id="wood"]
+
+[sub_resource type="StandardMaterial3D" id="Canvas"]
+albedo_color = Color(0.47, 0.34, 0.18, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="RedPaint"]
+albedo_color = Color(0.34, 0.09, 0.052, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="TargetCenter"]
+albedo_color = Color(0.71, 0.53, 0.29, 1)
+roughness = 0.95
+
+[sub_resource type="CylinderMesh" id="Torso"]
+material = SubResource("Canvas")
+top_radius = 0.34
+bottom_radius = 0.24
+height = 0.64
+radial_segments = 10
+rings = 0
+
+[sub_resource type="SphereMesh" id="Head"]
+material = SubResource("Canvas")
+radius = 0.235
+height = 0.5
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CylinderMesh" id="Headband"]
+material = SubResource("RedPaint")
+top_radius = 0.238
+bottom_radius = 0.238
+height = 0.09
+radial_segments = 12
+rings = 0
+
+[sub_resource type="BoxMesh" id="Arms"]
+material = ExtResource("wood")
+size = Vector3(1.35, 0.16, 0.18)
+
+[sub_resource type="BoxMesh" id="Wrap"]
+material = SubResource("Canvas")
+size = Vector3(0.14, 0.195, 0.215)
+
+[sub_resource type="BoxMesh" id="Post"]
+material = ExtResource("wood")
+size = Vector3(0.19, 1.76, 0.19)
+
+[sub_resource type="BoxMesh" id="Foot"]
+material = ExtResource("wood")
+size = Vector3(0.79, 0.14, 0.19)
+
+[sub_resource type="CylinderMesh" id="Target"]
+material = SubResource("RedPaint")
+top_radius = 0.19
+bottom_radius = 0.19
+height = 0.038
+radial_segments = 12
+rings = 0
+
+[sub_resource type="CylinderMesh" id="TargetDot"]
+material = SubResource("TargetCenter")
+top_radius = 0.08
+bottom_radius = 0.08
+height = 0.015
+radial_segments = 10
+rings = 0
+
+[node name="WoodenTrainingDummy" instance=ExtResource("base")]
+
+[node name="Mesh" parent="." index="1"]
+position = Vector3(0, 1.14, 0)
+scale = Vector3(1, 1, 0.76)
+mesh = SubResource("Torso")
+
+[node name="HealthLabel" parent="." index="5"]
+visible = false
+
+[node name="Frame" type="Node3D" parent="."]
+
+[node name="Post" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0, 0.88, 0)
+mesh = SubResource("Post")
+
+[node name="FootFrontBack" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0, 0.07, 0)
+rotation_degrees = Vector3(0, 90, 0)
+mesh = SubResource("Foot")
+
+[node name="FootLeftRight" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0, 0.072, 0)
+mesh = SubResource("Foot")
+
+[node name="Arms" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0, 1.36, 0)
+mesh = SubResource("Arms")
+
+[node name="WrapLeft" type="MeshInstance3D" parent="Frame"]
+position = Vector3(-0.54, 1.36, 0)
+mesh = SubResource("Wrap")
+
+[node name="WrapRight" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0.54, 1.36, 0)
+mesh = SubResource("Wrap")
+
+[node name="Head" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0, 1.76, 0)
+mesh = SubResource("Head")
+
+[node name="Headband" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0, 1.8, 0)
+mesh = SubResource("Headband")
+
+[node name="Target" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0, 1.16, 0.237)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("Target")
+
+[node name="TargetDot" type="MeshInstance3D" parent="Frame"]
+position = Vector3(0, 1.16, 0.263)
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("TargetDot")

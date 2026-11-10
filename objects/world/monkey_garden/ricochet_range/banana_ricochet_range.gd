@@ -9,6 +9,7 @@ const WEAPON: Script = preload("res://objects/world/monkey_garden/ricochet_range
 @export var reward: OfferingBanana
 @export var targets: Array[RicochetStar] = []
 @export var offering_drop_point: Node3D
+@export_range(0.0, 3.0, 0.1) var automatic_reset_delay: float = 0.7
 var ammo: int = 10
 var score: int = 0
 var _pool: ObjectPool
@@ -16,12 +17,15 @@ var _weapon: BakaWeapon
 var _player: Player
 var completed: bool=false
 var _reset_label: Label3D
+var _automatic_reset: Timer
 func is_cleared() -> bool: return completed
 func begin(_actor: Player) -> void: pass
 @onready var _display: Label3D = $Score
 @onready var _pickup: InteractableComponent = $GunPickup/InteractableComponent
 func _ready() -> void:
 	_pool = ObjectPool.new(); _pool.scene = BULLET; _pool.initial_size = magazine_size; add_child(_pool)
+	_automatic_reset = Timer.new(); _automatic_reset.one_shot = true
+	_automatic_reset.timeout.connect(reset_range); add_child(_automatic_reset)
 	_pickup.interacted.connect(_equip)
 	_pickup.availability_check = func(actor: Node3D) -> bool: return actor is Player and _weapon == null
 	$Reset/InteractableComponent.interacted.connect(func(_actor: Node3D) -> void: reset_range())
@@ -51,16 +55,22 @@ func fire(at: Vector3, direction: Vector3) -> bool:
 	if completed or ammo <= 0: return false
 	ammo -= 1
 	var bullet: RicochetBanana = _pool.acquire() as RicochetBanana
-	if not bullet.finished.is_connected(_pool.release): bullet.finished.connect(_pool.release)
+	if not bullet.finished.is_connected(_bullet_finished): bullet.finished.connect(_bullet_finished)
 	bullet.launch(at,direction)
 	_update_display()
 	return true
 func reset_range() -> void:
 	if completed: return
+	_automatic_reset.stop()
 	ammo = magazine_size; score = 0; _pool.release_all()
 	for target: RicochetStar in targets: target.reset_target()
 	if reward != null: reward.set_available(experiment_reward_available)
 	_update_display()
+func _bullet_finished(bullet: RicochetBanana) -> void:
+	_pool.release(bullet)
+	# Chờ viên cuối cùng bay/nảy xong, để phát bắn đạt điểm thứ năm vẫn được tính.
+	if not completed and ammo == 0 and _pool.get_active_count() == 0:
+		_automatic_reset.start(maxf(automatic_reset_delay,0.01))
 func _struck(_target: RicochetStar) -> void:
 	score += 1
 	_update_display()

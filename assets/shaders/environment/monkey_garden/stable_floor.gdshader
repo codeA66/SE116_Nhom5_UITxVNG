@@ -29,7 +29,8 @@ float dirt_mask(vec2 p) {
   edge = max(-q.x-q.y-1.18,q.x-q.y-1.18);
   if (abs(q.x)<0.29) edge = -2.0;
  } else if (dirt_layout == 4) {
-  float top = q.x < -0.45 ? mix(-0.35,-0.82,(q.x+1.0)/0.55) : q.x < 0.0 ? mix(-0.82,-0.20,(q.x+0.45)/0.45) : q.x < 0.55 ? mix(-0.20,-0.67,q.x/0.55) : mix(-0.67,-0.32,(q.x-0.55)/0.45);
+  // Thu gọn mũi đất cạnh cửa đi sang phòng ngoài cùng bên phải.
+  float top = q.x < -0.45 ? mix(-0.35,-0.82,(q.x+1.0)/0.55) : q.x < 0.0 ? mix(-0.82,-0.20,(q.x+0.45)/0.45) : q.x < 0.55 ? mix(-0.20,-0.67,q.x/0.55) : mix(-0.67,-0.82,(q.x-0.55)/0.45);
   float bottom = q.x < -0.45 ? mix(0.32,0.82,(q.x+1.0)/0.55) : q.x < 0.0 ? mix(0.82,0.28,(q.x+0.45)/0.45) : q.x < 0.55 ? mix(0.28,0.80,q.x/0.55) : mix(0.80,0.40,(q.x-0.55)/0.45);
   edge = max(top-q.y-0.09,q.y-bottom-0.09);
  } else if (dirt_layout == 5) {

@@ -1,43 +1,106 @@
 @tool
 class_name GardenOfferingGate
 extends StoneGate
-## Giữ giao thức Sources; hai lá cửa trượt sang bên, khung ở lại và khóa biến mất.
-var _materials: Array[ShaderMaterial] = []
+## Mỗi lá cửa và collider dùng chung bản lề, tách khỏi model scale không đều.
+@export_range(20.0, 120.0, 1.0) var opening_degrees: float = 90.0
+@export_range(0.1, 1.0, 0.05) var battle_close_time: float = 0.3
+@export_range(0.0, 1.0, 0.05) var battle_close_trauma: float = 0.3
+var _hinges: Array[AnimatableBody3D] = []
+var _opening_tween: Tween
+var _open_amount: float = 0.0
+var _battle_locked: bool = false
 
 func _ready() -> void:
-	# Lớp cha là @tool: trong editor không nhân bản material (sẽ bị lưu lẫn vào scene)
 	if Engine.is_editor_hint():
 		super()
 		return
-	for child: MeshInstance3D in $Visual.find_children("*", "MeshInstance3D", true, false):
-		if child.material_override is ShaderMaterial:
-			var mat: ShaderMaterial = child.material_override.duplicate() as ShaderMaterial
-			child.material_override = mat
-			_materials.append(mat)
+	_make_hinge($Visual/OldGardenDoor/DoorLeaf_Left_004, true)
+	_make_hinge($Visual/OldGardenDoor/DoorLeaf_Right_004, false)
+	_collision.set_deferred("disabled", true)
 	super()
+
+func restore_open() -> void:
+	if _opening_tween: _opening_tween.kill()
+	_battle_locked = false
+	if not persistent_id.is_empty(): GameState.set_flag(persistent_id)
+	_finish_open(true)
+	opened.emit()
+
+func lock_for_battle() -> void:
+	if _battle_locked: return
+	_battle_locked = true; is_open = false
+	if _opening_tween: _opening_tween.kill()
+	_opening_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	_opening_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	_opening_tween.tween_method(_set_open_amount,_open_amount,0.0,battle_close_time)
+	_opening_tween.tween_callback(_battle_closed)
+
+func unlock_after_battle() -> void:
+	if not _battle_locked: return
+	_battle_locked = false; is_open = true
+	if _opening_tween: _opening_tween.kill()
+	_opening_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	_opening_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_opening_tween.tween_method(_set_open_amount,_open_amount,1.0,open_time)
+	_opening_tween.tween_callback(_complete_open)
+
+func is_battle_locked() -> bool:
+	return _battle_locked
+
+func _battle_closed() -> void:
+	_set_open_amount(0.0)
+	if battle_close_trauma > 0.0: ScreenShake.add_trauma(battle_close_trauma)
+	closed.emit()
+
+func _refresh() -> void:
+	if not _battle_locked: super()
+
+func _make_hinge(leaf: MeshInstance3D, left: bool) -> void:
+	var bounds: AABB = leaf.mesh.get_aabb()
+	var edge: Vector3 = bounds.get_center()
+	edge.x = bounds.position.x if left else bounds.end.x
+	edge.y = bounds.position.y
+	var pivot: Vector3 = leaf.global_transform * edge
+	var hinge: AnimatableBody3D = AnimatableBody3D.new()
+	hinge.name = "DoorHingeLeft" if left else "DoorHingeRight"
+	hinge.collision_layer = collision_layer; hinge.collision_mask = 0
+	hinge.transform = Transform3D(Basis.IDENTITY,to_local(pivot))
+	hinge.sync_to_physics = true
+	add_child(hinge)
+	leaf.reparent(hinge, true)
+	var shape: BoxShape3D = BoxShape3D.new()
+	shape.size = bounds.size * leaf.scale.abs()
+	var collider: CollisionShape3D = CollisionShape3D.new()
+	collider.name = "DoorCollision"; collider.shape = shape
+	hinge.add_child(collider)
+	collider.transform = Transform3D(leaf.basis.orthonormalized(), leaf.transform * bounds.get_center())
+	_hinges.append(hinge)
 
 func _sink() -> void:
 	if _sinking: return
-	_sinking = true
-	for part_name: String in ["Interactive_Cyan_Lock","LockBase"]:
-		var lock_part: Node3D = $Visual/OldGardenDoor.get_node_or_null(part_name)
-		if lock_part: lock_part.hide()
+	_sinking = true; _hide_lock()
 	unlock_started.emit()
-	var tween: Tween = create_tween().set_parallel(true)
-	var model: Node3D=$Visual/OldGardenDoor
-	for part_name: String in ["DoorLeaf_Left_004","DoorLeaf_Right_004"]:
-		var leaf: Node3D=model.get_node(part_name)
-		tween.tween_property(leaf,"position:x",leaf.position.x+(-1.8 if "Left" in part_name else 1.8),open_time)
-	tween.chain().tween_callback(_complete_dissolve)
+	_opening_tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	_opening_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_opening_tween.tween_method(_set_open_amount, 0.0, 1.0, open_time)
+	_opening_tween.tween_callback(_complete_open)
 	if open_trauma > 0.0: ScreenShake.add_trauma(open_trauma)
 
-func _set_dissolve(value: float) -> void:
-	for mat: ShaderMaterial in _materials: mat.set_shader_parameter("dissolve", value)
-	if flash_light: flash_light.light_energy = (1.0-value)*2.0
+func _set_open_amount(amount: float) -> void:
+	_open_amount = clampf(amount,0.0,1.0)
+	var angle: float = deg_to_rad(opening_degrees) * _open_amount
+	_hinges[0].rotation.y = angle
+	_hinges[1].rotation.y = -angle
 
-func _complete_dissolve() -> void:
-	for part_name: String in ["DoorLeaf_Left_004","DoorLeaf_Right_004","Interactive_Cyan_Lock","LockBase"]:
-		var part: Node3D=$Visual/OldGardenDoor.get_node_or_null(part_name)
-		if part: part.hide()
+func _hide_lock() -> void:
+	$Visual/OldGardenDoor/Interactive_Cyan_Lock.hide()
+	$Visual/OldGardenDoor/LockBase.hide()
+
+func _finish_open(_instant: bool) -> void:
+	is_open = true; _sinking = true
 	_collision.set_deferred("disabled", true)
+	_hide_lock(); _set_open_amount(1.0)
+
+func _complete_open() -> void:
+	_finish_open(false)
 	opened.emit()

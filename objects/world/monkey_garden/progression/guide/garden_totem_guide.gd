@@ -2,6 +2,7 @@ class_name GardenTotemGuide
 extends Node3D
 signal read_completed
 signal reading_closed
+const MARKER: Texture2D = preload("res://assets/ui/map_wind/tier3/guide_marker.svg")
 @export_multiline var instructions: String
 @export var title: String = "LỜI NHẮN TỪ VƯỜN KHỈ"
 @export var initially_enabled: bool = true
@@ -61,22 +62,13 @@ func _finish_reading() -> void:
 	reading_closed.emit()
 
 func _make_arrow() -> Node3D:
-	var result: Node3D = Node3D.new()
-	var vertices: PackedVector3Array = PackedVector3Array([
-		Vector3(-0.14,0.7,0),Vector3(0.14,0.7,0),Vector3(0.14,0.05,0),
-		Vector3(-0.14,0.7,0),Vector3(0.14,0.05,0),Vector3(-0.14,0.05,0),
-		Vector3(-0.48,0.12,0),Vector3(0.48,0.12,0),Vector3(0,-0.55,0)])
-	for outline: bool in [true,false]:
-		var mesh: ImmediateMesh = ImmediateMesh.new()
-		var material: StandardMaterial3D = StandardMaterial3D.new()
-		material.albedo_color = Color("08253f") if outline else Color("72daff")
-		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-		material.no_depth_test = true; material.cull_mode = BaseMaterial3D.CULL_DISABLED
-		material.render_priority = 1 if outline else 2
-		mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
-		for vertex: Vector3 in vertices: mesh.surface_add_vertex(vertex * (1.15 if outline else 1.0))
-		mesh.surface_end()
-		var surface: MeshInstance3D = MeshInstance3D.new(); surface.mesh = mesh; surface.material_override = material
-		surface.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF; result.add_child(surface)
+	var result: MeshInstance3D = MeshInstance3D.new()
+	var mesh: QuadMesh = QuadMesh.new(); mesh.size = Vector2(0.96,1.44)
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.albedo_texture = MARKER; material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	material.no_depth_test = true; material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	result.mesh = mesh; result.material_override = material
+	result.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	return result

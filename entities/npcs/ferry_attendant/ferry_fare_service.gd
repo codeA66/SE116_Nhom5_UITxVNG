@@ -24,6 +24,8 @@ enum FareResult { PAID, INSUFFICIENT, ALREADY_CALLED, INVALID }
 @export var docked_line: String = "Thuyền đã cập bến. Lên boong là đi được."
 @export var departed_line: String = "Thuyền đã rời bến rồi."
 @export var unavailable_line: String = "Bến tạm ngừng nhận khách."
+## Kể ngay sau khi gọi thuyền nếu người chơi chưa nghe đoạn này.
+@export var after_call_story: Dialogue
 
 var _called: bool = false
 var _session: int = 0
@@ -70,13 +72,8 @@ func _on_open() -> void:
 		return
 	match try_pay_fare():
 		FareResult.PAID:
-			npc.close_dialogue()
-			var animator: AnimationPlayer = npc.animation_player
-			if is_instance_valid(animator) and animator.has_animation(call_animation):
-				npc.play_animation(call_animation)
-				await get_tree().create_timer(animator.get_animation(call_animation).length, false).timeout
-			if session == _session:
-				finish()
+			npc.play_animation(call_animation)
+			await _say(_status_line(), session, after_call_story)
 		FareResult.INSUFFICIENT:
 			await _say(_format(insufficient_line), session)
 		FareResult.ALREADY_CALLED:
@@ -90,13 +87,19 @@ func _on_close() -> void:
 	_session += 1
 
 
-## Mọi câu báo trạng thái đều đi qua cùng cơ chế đóng phiên của Base NPC.
-func _say(text: String, session: int) -> void:
+## Nối câu báo trạng thái với đoạn truyện, giữ hộp thoại nhận phím F suốt phiên.
+func _say(text: String, session: int, story: Dialogue = null) -> void:
 	var line := DialogueLine.new()
 	line.text = text
 	var lines: Array[DialogueLine] = [line]
+	if story and not story.is_available(npc):
+		story = null
+	if story:
+		lines.append_array(story.lines)
 	var result: int = await npc.say(lines)
 	if session == _session:
+		if result == DialogueBox.RESULT_DONE and story:
+			GameState.set_flag(story.flag_on_finish)
 		finish(result == DialogueBox.RESULT_CANCELLED)
 
 

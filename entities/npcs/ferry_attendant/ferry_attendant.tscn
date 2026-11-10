@@ -6,9 +6,14 @@
 [ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="4_dialogue"]
 [ext_resource type="Material" path="res://assets/models/map_wind/wind_palace_v1/palace_vertex_color.tres" id="5_palette"]
 
-[sub_resource type="Resource" id="Greeting"]
-script = ExtResource("4_dialogue")
-opens_service = true
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/npc_story.gd" id="story"]
+[ext_resource type="Script" path="res://components/feedback/conversation/conversation_cinematic.gd" id="cinema"]
+[ext_resource type="Script" path="res://components/feedback/conversation/lantern_motes.gd" id="ambience"]
+[ext_resource type="PackedScene" path="res://ui/dialogue/wind/ferry_dialogue.tscn" id="story_box"]
+[ext_resource type="Resource" path="res://resources/world/npcs/ferry/first.tres" id="story_first"]
+[ext_resource type="Resource" path="res://resources/world/npcs/ferry/lantern.tres" id="story_lantern"]
+[ext_resource type="Resource" path="res://resources/world/npcs/ferry/repeat.tres" id="story_repeat"]
+
 
 [sub_resource type="CapsuleShape3D" id="Body"]
 radius = 0.38
@@ -40,7 +45,7 @@ _data = {&"LanternFlash": SubResource("LanternFlash")}
 
 [node name="FerryAttendant" node_paths=PackedStringArray("animation_player") instance=ExtResource("1_npc")]
 display_name = "Người Giữ Bến"
-dialogues = Array[ExtResource("4_dialogue")]([SubResource("Greeting")])
+dialogues = Array[ExtResource("4_dialogue")]([ExtResource("story_first"), ExtResource("story_lantern"), ExtResource("story_repeat")])
 animation_player = NodePath("Visual/Model/AnimationPlayer")
 idle_animation = &"Idle"
 talk_animation = &"Talk"
@@ -68,9 +73,36 @@ shape = SubResource("Body")
 script = ExtResource("3_service")
 keep_dialogue_open = true
 call_delay = 0.93
+question = "Ngươi muốn sang bên kia? Phí gọi thuyền là {price} {currency}."
+pay_option = "Gọi thuyền — {price} {currency}."
+decline_option = "Tôi chưa đi."
+insufficient_line = "Còn thiếu {missing} {currency}. Cứ giữ lấy chỗ ấy. Bến vẫn còn đây."
+approaching_line = "Thuyền đang đến. Nếu nghe ai gọi từ dưới mạn thuyền, cứ nhìn về phía bến."
+docked_line = "Thuyền đến rồi. Bước cẩn thận. Ta sẽ giữ đèn cho ngươi."
+departed_line = "Thuyền đã rời bến. Ta vẫn nhìn theo… cho đến khi chẳng còn thấy gì."
+unavailable_line = "Lúc này thuyền không về được. Ở gần ánh đèn một chút, khách lạ."
+after_call_story = ExtResource("story_lantern")
 
 [node name="LanternVfx" type="AnimationPlayer" parent="."]
 libraries = {&"": SubResource("SignalAnimations")}
+
+
+[node name="Story" type="Node" parent="."]
+script = ExtResource("story")
+dialogues = Array[ExtResource("4_dialogue")]([ExtResource("story_first"), ExtResource("story_lantern"), ExtResource("story_repeat")])
+dialogue_box_scene = ExtResource("story_box")
+
+[node name="ConversationCinematic" type="Node" parent="."]
+script = ExtResource("cinema")
+enter_time = 1.25
+zoom_ratio = 0.82
+bar_ratio = 0.055
+tint = Color(0.11, 0.065, 0.025, 0.1)
+
+[node name="ConversationAmbience" type="Node3D" parent="."]
+script = ExtResource("ambience")
+particle_count = 8
+particle_color = Color(1, 0.7, 0.3, 0.85)
 
 [connection signal="activated" from="FerryFareService" to="LanternVfx" method="play" binds=[&"LanternFlash"]]
 

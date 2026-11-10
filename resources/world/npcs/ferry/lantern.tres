@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3 uid="uid://cl247he3we5d"]
+
+[ext_resource type="Script" uid="uid://dxmughdmcrllh" path="res://entities/npcs/_base/dialogue/dialogue_condition.gd" id="condition"]
+[ext_resource type="Script" uid="uid://bwy2dqnugxoun" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="dialogue"]
+[ext_resource type="Script" uid="uid://m12exjm455qn" path="res://entities/npcs/_base/dialogue/conditions/flag_condition.gd" id="flag"]
+[ext_resource type="Script" uid="uid://crfm2u46umajv" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="line"]
+
+[sub_resource type="Resource" id="C0"]
+script = ExtResource("flag")
+flag = &"level_1.story.ferry_met"
+
+[sub_resource type="Resource" id="C1"]
+script = ExtResource("flag")
+flag = &"level_1.story.ferry_lantern"
+must_be_set = false
+
+[sub_resource type="Resource" id="L0"]
+script = ExtResource("line")
+text = "Đêm ấy, gió gọi tên từng người. Ai nghe thấy tên mình cũng đi về phía cung điện."
+
+[sub_resource type="Resource" id="L1"]
+script = ExtResource("line")
+text = "Chuyến thuyền cuối trở về lúc trời sáng. Không một người trên boong."
+
+[sub_resource type="Resource" id="L2"]
+script = ExtResource("line")
+text = "Chỉ có chiếc đèn đặt ngay ngắn ở mũi thuyền. Lửa đã tắt… mà quai đèn vẫn còn ấm."
+
+[resource]
+script = ExtResource("dialogue")
+priority = 20
+conditions = Array[ExtResource("condition")]([SubResource("C0"), SubResource("C1")])
+lines = Array[ExtResource("line")]([SubResource("L0"), SubResource("L1"), SubResource("L2")])
+flag_on_finish = &"level_1.story.ferry_lantern"
+opens_service = true

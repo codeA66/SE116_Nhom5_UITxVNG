@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.gd" id="script"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/grille_leaf.tscn" id="leaf"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="pier"]
+[ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
+
+[sub_resource type="BoxShape3D" id="Lock"]
+size = Vector3(4.15, 7.4, 0.6)
+
+[sub_resource type="BoxMesh" id="Track"]
+material = ExtResource("stone")
+size = Vector3(4.3, 0.05, 0.48)
+
+[node name="TrialGrille" type="StaticBody3D"]
+collision_mask = 0
+script = ExtResource("script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 3.7, 0)
+shape = SubResource("Lock")
+
+[node name="Left" parent="." instance=ExtResource("leaf")]
+position = Vector3(-1.035, 0, 0)
+
+[node name="Right" parent="." instance=ExtResource("leaf")]
+position = Vector3(1.035, 0, 0)
+rotation_degrees = Vector3(0, 180, 0)
+
+[node name="LeftPier" parent="." instance=ExtResource("pier")]
+position = Vector3(-2.42, 0, 0.05)
+scale = Vector3(0.68, 0.71, 0.68)
+
+[node name="RightPier" parent="." instance=ExtResource("pier")]
+position = Vector3(2.42, 0, 0.05)
+scale = Vector3(0.68, 0.71, 0.68)
+
+[node name="Track" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.012, 0)
+mesh = SubResource("Track")

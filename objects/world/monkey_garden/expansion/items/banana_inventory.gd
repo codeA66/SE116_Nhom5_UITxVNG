@@ -1,5 +1,5 @@
 class_name BananaInventory
-extends Node
+extends BananaPeelResponse
 @export var settings: BananaItemSettings = preload("res://resources/world/monkey_garden/banana_item_settings.tres")
 var has_boots: bool = false
 var popup: ItemDiscoveryPopup
