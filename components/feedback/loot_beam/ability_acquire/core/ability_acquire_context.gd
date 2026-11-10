@@ -98,6 +98,11 @@ func lift(amount: float) -> void:
 func set_focus_push(extra: float) -> void:
 	_push_extra = maxf(extra, 0.0)
 	_apply_camera()
+## Giữ rung màn hình đúng một mức (tăng hoặc giảm): ScreenShake chỉ cộng dồn nên hạ mức thì ghi thẳng trauma.
+func hold_shake(level: float) -> void:
+	level = clampf(level, 0.0, ScreenShake.MAX_TRAUMA)
+	if level > ScreenShake.trauma: ScreenShake.add_trauma(level - ScreenShake.trauma)
+	else: ScreenShake.trauma = level
 ## Cáo sáng lên theo năng lượng hút vào (lớp phủ cộng sáng, không đổi vật liệu gốc)
 func set_actor_glow(amount: float) -> void:
 	if _glow_material == null: return

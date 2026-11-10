@@ -21,6 +21,7 @@ func _phase_enter() -> void:
 
 func _phase_update(progress: float) -> void:
 	super._phase_update(progress)
+	_ramp_shake(progress)
 	if not context.data.continuous_energy:
 		_visual.update(progress, elapsed)
 
@@ -28,3 +29,15 @@ func _phase_update(progress: float) -> void:
 func exit() -> void:
 	super.exit()
 	_visual.stop()
+
+
+## Rung bắt đầu khi đốm đầu tiên chạm người rồi dồn dập dần tới cuối pha (nhịp đốm lao vào nhanh dần).
+func _ramp_shake(progress: float) -> void:
+	var data: AbilityAcquireData = context.data
+	if data.absorb_shake_max <= 0.0:
+		return
+	if progress < data.absorb_shake_delay:
+		context.hold_shake(0.0)
+		return
+	var ramp: float = (progress - data.absorb_shake_delay) / maxf(1.0 - data.absorb_shake_delay, data.minimum_time)
+	context.hold_shake(lerpf(data.absorb_shake_start, data.absorb_shake_max, pow(clampf(ramp, 0.0, 1.0), data.absorb_shake_curve)))
