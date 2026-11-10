@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_floor.res" id="floor"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/trial_floor_dim.tres" id="floor_dim"]
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_base.res" id="base"]
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_rails.res" id="rails"]
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
@@ -21,6 +22,7 @@ size = Vector3(0.4, 1.12, 4)
 [node name="Room051WindWalk" type="Node3D"]
 
 [node name="Floor" type="MultiMeshInstance3D" parent="."]
+material_override = ExtResource("floor_dim")
 multimesh = ExtResource("floor")
 
 [node name="Base" type="MultiMeshInstance3D" parent="."]

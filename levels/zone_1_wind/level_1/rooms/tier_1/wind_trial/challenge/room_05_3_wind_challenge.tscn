@@ -1,6 +1,9 @@
 [gd_scene format=3]
 
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_floor.res" id="room_floor"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/trial_floor_dim.tres" id="floor_dim"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/secret_floor_dark.tres" id="floor_dark"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/secret_wall_dark.tres" id="wall_dark"]
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_base.res" id="room_base"]
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_walls.res" id="room_walls"]
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/bridge_deck.res" id="bridge_deck"]
@@ -46,16 +49,20 @@ radius = 0.62
 script = ExtResource("challenge")
 
 [node name="Floor" type="MultiMeshInstance3D" parent="."]
+material_override = ExtResource("floor_dark")
 multimesh = ExtResource("room_floor")
 
 [node name="Base" type="MultiMeshInstance3D" parent="."]
+material_override = ExtResource("wall_dark")
 cast_shadow = 0
 multimesh = ExtResource("room_base")
 
 [node name="Walls" type="MultiMeshInstance3D" parent="."]
+material_override = ExtResource("wall_dark")
 multimesh = ExtResource("room_walls")
 
 [node name="BridgeDeck" type="MultiMeshInstance3D" parent="."]
+material_override = ExtResource("floor_dim")
 multimesh = ExtResource("bridge_deck")
 
 [node name="BridgeRails" type="MultiMeshInstance3D" parent="."]
@@ -141,9 +148,21 @@ shape = SubResource("EntryTriggerShape")
 position = Vector3(1.6, 0, -1.6)
 scale = Vector3(0.66, 0.66, 0.66)
 
+[node name="LanternWestLight" type="OmniLight3D" parent="."]
+position = Vector3(1.6, 1.4, -1.9)
+light_color = Color(0.95, 0.71, 0.35, 1)
+light_energy = 1.4
+omni_range = 5.0
+
 [node name="LanternEast" parent="." instance=ExtResource("lantern")]
 position = Vector3(18.4, 0, -1.6)
 scale = Vector3(0.66, 0.66, 0.66)
+
+[node name="LanternEastLight" type="OmniLight3D" parent="."]
+position = Vector3(18.4, 1.4, -1.9)
+light_color = Color(0.95, 0.71, 0.35, 1)
+light_energy = 1.4
+omni_range = 5.0
 
 [node name="Altar" type="StaticBody3D" parent="."]
 position = Vector3(10, 0, -10)
@@ -158,8 +177,8 @@ shape = SubResource("AltarShape")
 [node name="AltarLight" type="OmniLight3D" parent="Altar"]
 position = Vector3(0, 2.2, 0)
 light_color = Color(0.78, 0.95, 1, 1)
-light_energy = 1.2
-omni_range = 5.0
+light_energy = 2.0
+omni_range = 6.5
 
 [node name="RewardCharm" parent="." instance=ExtResource("charm_pickup")]
 position = Vector3(10, 0.45, -10)
