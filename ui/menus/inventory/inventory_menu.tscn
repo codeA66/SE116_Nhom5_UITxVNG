@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/elements/elements_page.tscn" id="9_elements"]
 [ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/items/items_page.tscn" id="10_items"]
 [ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/charms/charms_page.tscn" id="11_charms"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/tutorials/tutorials_page.tscn" id="12_tutorials"]
 
 [sub_resource type="ShaderMaterial" id="Backdrop"]
 shader = ExtResource("3_vignette")
@@ -161,6 +162,9 @@ layout_mode = 1
 layout_mode = 1
 
 [node name="CharmsPage" parent="Body/Pages" instance=ExtResource("11_charms")]
+layout_mode = 1
+
+[node name="TutorialsPage" parent="Body/Pages" instance=ExtResource("12_tutorials")]
 layout_mode = 1
 
 [node name="Detail" parent="Body" instance=ExtResource("8_detail")]

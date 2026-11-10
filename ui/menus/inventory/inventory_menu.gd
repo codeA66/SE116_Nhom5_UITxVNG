@@ -10,6 +10,7 @@ signal closed
 
 @export var player: Player
 @export var toggle_action: StringName = &"inventory"
+@export var help_action: StringName = &"help"
 @export var previous_page_action: StringName = &"menu_prev_page"
 @export var next_page_action: StringName = &"menu_next_page"
 @export var style: InventoryStyle = preload("res://resources/ui/inventory_style.tres")
@@ -58,7 +59,7 @@ func _ready() -> void:
 		page.hide()
 		_pages.append(page)
 	for progress_signal: Signal in [GameState.fusion_changed, GameState.progress_changed, GameState.progress_replaced,
-			GameState.items_changed, GameState.charms_changed]:
+			GameState.items_changed, GameState.charms_changed, GameState.tutorials_changed]:
 		progress_signal.connect(_refresh_if_open)
 	GameState.charm_station_changed.connect(_refresh_if_open.unbind(1))
 	GameState.ability_level_changed.connect(_refresh_if_open.unbind(2))
@@ -66,6 +67,13 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(help_action):
+		get_viewport().set_input_as_handled()
+		if visible and _current_page() is TutorialsPage:
+			close()
+		elif player == null or player.controls_enabled:
+			open_to_page_type(TutorialsPage)
+		return
 	if event.is_action_pressed(toggle_action):
 		get_viewport().set_input_as_handled()
 		if visible:
@@ -88,12 +96,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			close()
 
 
-func open() -> void:
+func open(target_index: int = -1) -> void:
 	if visible:
 		return
 	var available := _available_pages()
 	if available.is_empty():
 		return
+	if target_index >= 0:
+		_page_index = target_index
 	_page_index = clampi(_page_index, 0, available.size() - 1)
 	visible = true
 	if player:
@@ -103,6 +113,24 @@ func open() -> void:
 	_animate_open(true)
 	_play_sound(&"open")
 	opened.emit()
+
+
+## Mở menu và nhảy trực tiếp đến trang của kiểu class chỉ định (ví dụ TutorialsPage)
+func open_to_page_type(target_type: Variant) -> void:
+	var available := _available_pages()
+	var found_index := -1
+	for i in available.size():
+		if is_instance_of(available[i], target_type):
+			found_index = i
+			break
+	if found_index >= 0:
+		if not visible:
+			open(found_index)
+		else:
+			_page_index = found_index
+			_show_page(available[_page_index], 0)
+	elif not visible:
+		open()
 
 
 func close() -> void:
@@ -155,6 +183,8 @@ func _show_page(page: MenuPage, direction: int) -> void:
 	for other: MenuPage in _pages:
 		if other != page:
 			other.hide()
+	var custom_w := page.get_custom_detail_width()
+	_detail.custom_minimum_size.x = custom_w if custom_w > 0.0 else style.detail_width
 	page.refresh()
 	page.show()
 	page.focus_default()

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TutorialCatalog" format=3 uid="uid://dtw0iqfkuklcs"]
+
+[ext_resource type="Script" uid="uid://cwy6q1fpft8vr" path="res://resources/tutorials/tutorial_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="2_5qo0x"]
+[ext_resource type="Resource" uid="uid://djc1eu6arm3uk" path="res://resources/tutorials/data/tut_movement.tres" id="2_mov"]
+[ext_resource type="Resource" uid="uid://1qcwmfithx5u" path="res://resources/tutorials/data/tut_dash.tres" id="3_dash"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_combat.tres" id="4_com"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_sword.tres" id="5_sword"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_bow.tres" id="6_bow"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_inventory.tres" id="7_inv"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_wind_blast.tres" id="8_wind"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_flame_breath.tres" id="9_fire"]
+
+[resource]
+script = ExtResource("1_catalog")
+tutorials = Array[ExtResource("2_5qo0x")]([ExtResource("2_mov"), ExtResource("3_dash"), ExtResource("4_com"), ExtResource("5_sword"), ExtResource("6_bow"), ExtResource("7_inv"), ExtResource("8_wind"), ExtResource("9_fire")])

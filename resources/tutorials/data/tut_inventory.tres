@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3]
+
+[ext_resource type="Script" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"inventory"
+title = "Túi Đồ & Dung Hợp Nguyên Tố"
+category = "Hệ Thống"
+input_actions = Array[StringName]([&"inventory", &"help"])
+prompt_template = "Nhấn {key1} để mở Túi Đồ & Dung Hợp. Nhấn {key2} để mở Sổ Hướng Dẫn."
+summary = "Nơi quản lý nguyên tố vừa thức tỉnh, dung hợp vào Kiếm/Cung để mở khóa đòn đánh đặc biệt và quản lý Bùa hộ mệnh."
+sections = Array[Dictionary]([{
+"heading": "Dung hợp nguyên tố",
+"text": "Trong tab Nguyên Tố, chọn nguyên tố đang sở hữu và gắn vào Kiếm hoặc Cung để truyền sức mạnh nguyên tố vào từng đòn đánh.",
+"warning": false
+}, {
+"heading": "Đổi trang nhanh",
+"text": "Dùng phím [Z] và [C] để chuyển đổi giữa các trang Nguyên Tố, Túi Đồ, Bùa Hộ Mệnh và Sổ Hướng Dẫn.",
+"warning": false
+}])
+hint = "[Tab] Mở Túi Đồ  •  [Z / C] Đổi trang  •  [H] Sổ Hướng Dẫn"
+lore = "Sức mạnh nguyên tố cổ xưa đang chảy trong cơ thể, chờ được giải phóng qua từng vũ khí."
+order = 5

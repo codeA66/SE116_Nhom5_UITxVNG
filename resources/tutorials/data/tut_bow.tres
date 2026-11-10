@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3 uid="uid://itropikulvgf"]
+
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"bow"
+title = "Cung Tên (Tầm Xa)"
+category = "Chiến Đấu"
+input_actions = Array[StringName]([&"aim"])
+prompt_template = "Giữ {key1} để giương cung ngắm bắn, buông chuột để phóng tên."
+summary = "Vũ khí tầm xa luôn sẵn sàng bằng chuột phải, tiêu diệt kẻ thù từ xa và kích hoạt cơ chế bí mật."
+sections = Array[Dictionary]([{
+"heading": "Ngắm bắn chuẩn xác",
+"text": "Giữ [RMB] để giương cung ngắm bắn, rê chuột đến mục tiêu và buông chuột để phóng tên.",
+"warning": false
+}, {
+"heading": "Bắn cơ chế từ xa",
+"text": "Mũi tên có thể kích hoạt các bia ngắm, công tắc hoặc đánh động kẻ địch ở những vị trí ngoài tầm đi bộ.",
+"warning": false
+}])
+lore = "Cây cung uốn từ gỗ dẻo dai giúp chú Cáo tấn công an toàn trước những đối thủ khổng lồ."
+order = 4

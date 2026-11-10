@@ -28,10 +28,15 @@ signal charms_changed
 signal charm_station_changed(inside: bool)
 ## Đổi vật phẩm đang chọn dùng bằng phím use_item (TNT...)
 signal selected_item_changed
+## Mở khóa bài hướng dẫn mới (Popup và Sổ Hướng Dẫn nghe)
+signal tutorial_unlocked(tutorial: TutorialData)
+## Danh sách bài hướng dẫn vừa đổi
+signal tutorials_changed
 
 const NEW_GAME: NewGameData = preload("res://resources/player/new_game.tres")
 const FUSIONS: FusionTable = preload("res://resources/combat/fusion/fusion_table.tres")
 const ITEMS: ItemCatalog = preload("res://resources/player/items/catalog.tres")
+const TUTORIALS: TutorialCatalog = preload("res://resources/tutorials/catalog.tres")
 
 var progress: PlayerProgress = PlayerProgress.new()
 
@@ -111,6 +116,7 @@ func unlock_ability(ability: AbilityData) -> void:
 	progress.abilities.append(ability)
 	ability_unlocked.emit(ability)
 	progress_changed.emit()
+	unlock_tutorial(ability.id, false)
 
 
 ## Chọn vật phẩm dùng nút (QuickItemData, đã có trong túi) để phím use_item (T) dùng. id rỗng = bỏ chọn
@@ -331,6 +337,44 @@ func exit_charm_station() -> void:
 	_charm_stations -= 1
 	if _charm_stations == 0:
 		charm_station_changed.emit(false)
+
+
+## Kiểm tra bài hướng dẫn đã mở khóa chưa
+func has_tutorial(id: StringName) -> bool:
+	return progress.unlocked_tutorials.has(id)
+
+
+## Lấy danh sách các TutorialData đã mở khóa theo đúng thứ tự
+func get_unlocked_tutorials() -> Array[TutorialData]:
+	var result: Array[TutorialData] = []
+	for id: StringName in progress.unlocked_tutorials:
+		var tut := TUTORIALS.get_tutorial(id)
+		if tut:
+			result.append(tut)
+	return result
+
+
+## Mở khóa hướng dẫn: nếu chưa có thì thêm vào danh sách, set cờ và phát signal (popup = false để lưu âm thầm)
+func unlock_tutorial(tutorial_or_id: Variant, popup: bool = true) -> bool:
+	var tutorial: TutorialData = null
+	var id: StringName = &""
+	if tutorial_or_id is TutorialData:
+		tutorial = tutorial_or_id as TutorialData
+		id = tutorial.id
+	elif tutorial_or_id is StringName or tutorial_or_id is String:
+		id = StringName(tutorial_or_id)
+		tutorial = TUTORIALS.get_tutorial(id)
+	
+	if id.is_empty() or has_tutorial(id):
+		return false
+	
+	progress.unlocked_tutorials.append(id)
+	set_flag(StringName("tut_" + String(id)))
+	tutorials_changed.emit()
+	progress_changed.emit()
+	if tutorial and popup:
+		tutorial_unlocked.emit(tutorial)
+	return true
 
 
 func has_flag(id: StringName) -> bool:
