@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3 uid="uid://6i1ighmi6pl4"]
+
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"sword"
+title = "Kiếm Thép (Cận Chiến)"
+category = "Chiến Đấu"
+input_actions = Array[StringName]([&"attack"])
+prompt_template = "Nhấn {key1} để chém kiếm liên hoàn."
+summary = "Vũ khí cận chiến sắc bén, chém chuỗi combo 3 đòn bất kỳ lúc nào bằng chuột trái và có thể dung hợp nguyên tố."
+sections = Array[Dictionary]([{
+"heading": "Đòn đánh combo 3 nhát",
+"text": "Nhấn [LMB] liên tiếp để thực hiện chuỗi chém 3 đòn. Nhát chém cuối cùng có tầm quét rộng và lực đẩy lùi mạnh.",
+"warning": false
+}, {
+"heading": "Tương tác môi trường",
+"text": "Dùng kiếm chém để phát quang bụi cỏ, phá vỡ các chướng ngại vật mỏng manh hoặc phản lại đạn của quái.",
+"warning": false
+}])
+lore = "Thanh kiếm rèn từ thép cổ đền thờ, nhẹ và bén ngót trong tay chú Cáo."
+order = 3

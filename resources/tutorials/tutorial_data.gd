@@ -74,9 +74,9 @@ static func get_action_key_name(action: StringName) -> String:
 			var mouse := event as InputEventMouseButton
 			match mouse.button_index:
 				MOUSE_BUTTON_LEFT:
-					return "Chuột trái"
+					return "LMB"
 				MOUSE_BUTTON_RIGHT:
-					return "Chuột phải"
+					return "RMB"
 				MOUSE_BUTTON_MIDDLE:
-					return "Chuột giữa"
+					return "MMB"
 	return ""

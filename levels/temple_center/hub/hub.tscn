@@ -24,6 +24,8 @@
 [ext_resource type="PackedScene" path="res://objects/hub/hub_key/fire_key.tscn" id="22_fire_key"]
 [ext_resource type="PackedScene" path="res://objects/core/triggers/tutorial_trigger/tutorial_trigger.tscn" id="23_tut_trigger"]
 [ext_resource type="Resource" uid="uid://djc1eu6arm3uk" path="res://resources/tutorials/data/tut_movement.tres" id="24_tut_movement"]
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="25_jxn7q"]
+[ext_resource type="Resource" uid="uid://1qcwmfithx5u" path="res://resources/tutorials/data/tut_dash.tres" id="25_tut_dash"]
 
 [sub_resource type="Resource" id="AllZones"]
 script = ExtResource("12_cleared")
@@ -167,6 +169,8 @@ wait_for_cutscene = NodePath("../IntroCutscene")
 
 [node name="IntroTutorialTrigger" parent="." unique_id=836143957 node_paths=PackedStringArray("wait_for_cutscene") instance=ExtResource("23_tut_trigger")]
 tutorial = ExtResource("24_tut_movement")
+tutorials = Array[ExtResource("25_jxn7q")]([ExtResource("24_tut_movement"), ExtResource("25_tut_dash")])
 wait_for_cutscene = NodePath("../IntroCutscene")
+delay_after_cutscene = 4.0
 
 [connection signal="combat_ready" from="." to="AreaTitleTrigger" method="announce"]

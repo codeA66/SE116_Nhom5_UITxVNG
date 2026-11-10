@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3 uid="uid://le6ruoscuwxe"]
+
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"flame_breath"
+title = "Phun Lửa (Flame Breath)"
+category = "Kỹ Năng"
+input_action = &"skill_fire"
+prompt_template = "Nhấn {key} để phun lửa thiêu đốt."
+summary = "Ngọn lửa rực cháy thiêu đốt mục tiêu phía trước, thắp sáng đuốc cổ và phá hủy các vật cản bằng gỗ/mạng nhện."
+sections = Array[Dictionary]([{
+"heading": "Thiêu đốt mục tiêu",
+"text": "Phun luồng lửa nóng rực gây sát thương liên tục và thiêu đốt mọi kẻ thù đứng trước mặt.",
+"warning": false
+}, {
+"heading": "Thắp sáng & Khai phá",
+"text": "Ngọn lửa có thể thắp sáng các bệ đuốc cổ trong hầm tối và thiêu rụi các màng nhện hoặc chướng ngại vật dễ cháy.",
+"warning": false
+}])
+hint = "[Q] Phun Lửa  •  [H] Sổ Hướng Dẫn"
+lore = "Sức nóng của ngọn lửa thiêng cổ xưa sưởi ấm và bùng cháy trong linh hồn chú Cáo."
+order = 7

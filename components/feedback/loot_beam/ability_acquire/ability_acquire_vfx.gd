@@ -139,6 +139,7 @@ func _finish() -> void:
 	if not _active: return
 	_cleanup()
 	finished.emit()
+	GameState.unlock_tutorial(&"inventory")
 ## Không dùng tween/timer chạy tiếp sau lượt; mọi thứ được trả đồng bộ.
 func _cleanup() -> void:
 	_active = false

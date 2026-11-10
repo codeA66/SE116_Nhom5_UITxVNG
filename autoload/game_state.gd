@@ -116,6 +116,7 @@ func unlock_ability(ability: AbilityData) -> void:
 	progress.abilities.append(ability)
 	ability_unlocked.emit(ability)
 	progress_changed.emit()
+	unlock_tutorial(ability.id, false)
 
 
 ## Chọn vật phẩm dùng nút (QuickItemData, đã có trong túi) để phím use_item (T) dùng. id rỗng = bỏ chọn
@@ -353,8 +354,8 @@ func get_unlocked_tutorials() -> Array[TutorialData]:
 	return result
 
 
-## Mở khóa hướng dẫn: nếu chưa có thì thêm vào danh sách, set cờ và phát signal
-func unlock_tutorial(tutorial_or_id: Variant) -> bool:
+## Mở khóa hướng dẫn: nếu chưa có thì thêm vào danh sách, set cờ và phát signal (popup = false để lưu âm thầm)
+func unlock_tutorial(tutorial_or_id: Variant, popup: bool = true) -> bool:
 	var tutorial: TutorialData = null
 	var id: StringName = &""
 	if tutorial_or_id is TutorialData:
@@ -371,7 +372,7 @@ func unlock_tutorial(tutorial_or_id: Variant) -> bool:
 	set_flag(StringName("tut_" + String(id)))
 	tutorials_changed.emit()
 	progress_changed.emit()
-	if tutorial:
+	if tutorial and popup:
 		tutorial_unlocked.emit(tutorial)
 	return true
 

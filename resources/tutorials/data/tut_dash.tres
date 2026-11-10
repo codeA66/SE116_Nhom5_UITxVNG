@@ -1,24 +1,22 @@
 [gd_resource type="Resource" script_class="TutorialData" format=3 uid="uid://1qcwmfithx5u"]
 
 [ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
-[ext_resource type="Resource" path="res://abilities/dash/dash.tres" id="2_dash"]
 
 [resource]
 script = ExtResource("1_tut")
 id = &"dash"
 title = "Lướt Nhanh (Dash)"
 category = "Kỹ Năng"
-art_ability = ExtResource("2_dash")
 input_action = &"dash"
 prompt_template = "Nhấn {key} để lướt nhanh về phía trước."
 summary = "Lướt nhanh giúp phóng về phía trước tức thì, né tránh đòn đánh nguy hiểm hoặc vượt vực thẳm."
 sections = Array[Dictionary]([{
-"heading": "Lướt trên mặt đất",
-"text": "Nhấn [Shift] khi đang chạy để tăng tốc tức thì và lướt qua kẻ địch.",
+"heading": "Lướt nhanh",
+"text": "Nhấn [Shift] khi đang di chuyển để tăng tốc tức thì và lướt qua kẻ địch.",
 "warning": false
 }, {
-"heading": "Lướt trên không",
-"text": "Có thể kết hợp nhảy và lướt trên không để vượt qua các vực thẳm rộng.",
+"heading": "Né tránh nguy hiểm",
+"text": "Lướt nhanh để né các đòn tấn công nguy hiểm hoặc vượt qua các khe hẹp và cạm bẫy.",
 "warning": false
 }])
 hint = "[Shift] Lướt  •  [H] Sổ Hướng Dẫn"

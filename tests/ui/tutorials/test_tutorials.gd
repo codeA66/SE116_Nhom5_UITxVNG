@@ -20,6 +20,7 @@ func _run() -> void:
 	await _test_popup()
 	await _test_menu_and_help_key()
 	await _test_hub_and_trigger()
+	_test_new_tutorials_and_skill_acquire()
 	
 	if _fails == 0:
 		print("=== TẤT CẢ TEST TUTORIALS THÀNH CÔNG! ===")
@@ -80,7 +81,7 @@ func _test_popup() -> void:
 	var key_node: Control = popup.get_first_key_glyph()
 	_assert(key_node != null and key_node.get(&"text") == "Shift", "Tự động lấy đúng phím [Shift] từ InputMap action dash")
 	var art_box: Control = popup.get_node(^"%ArtBox")
-	_assert(art_box.visible, "ArtBox hiện khi có hình ảnh / kỹ năng")
+	_assert(not art_box.visible, "ArtBox tự ẩn khi tutorial không có hình ảnh để dồn chữ lên")
 	
 	popup.dismiss()
 	await get_tree().create_timer(0.3).timeout
@@ -127,5 +128,22 @@ func _test_hub_and_trigger() -> void:
 	var trigger: TutorialTrigger = hub.get_node_or_null(^"IntroTutorialTrigger") as TutorialTrigger
 	_assert(trigger != null, "Tìm thấy IntroTutorialTrigger trong Hub")
 	_assert(trigger.tutorial != null and trigger.tutorial.id == &"movement", "Trigger gán đúng tutorial movement")
+	_assert(trigger.tutorials.size() == 2, "Trigger chứa chuỗi 2 tutorial (movement & dash)")
+	_assert(trigger.delay_after_cutscene == 4.0, "delay_after_cutscene là 4.0 giây theo cấu hình")
 	_assert(trigger.wait_for_cutscene != null, "Trigger liên kết đúng với IntroCutscene")
 	hub.queue_free()
+
+
+func _test_new_tutorials_and_skill_acquire() -> void:
+	print("\nTest 6: Kiểm tra các tutorial mới (sword, bow, inventory, skill)")
+	var catalog: TutorialCatalog = GameState.TUTORIALS
+	_assert(catalog.get_tutorial(&"sword") != null, "Tìm thấy tutorial sword trong catalog")
+	_assert(catalog.get_tutorial(&"bow") != null, "Tìm thấy tutorial bow trong catalog")
+	_assert(catalog.get_tutorial(&"inventory") != null, "Tìm thấy tutorial inventory trong catalog")
+	_assert(catalog.get_tutorial(&"wind_blast") != null, "Tìm thấy tutorial wind_blast trong catalog")
+	_assert(catalog.get_tutorial(&"flame_breath") != null, "Tìm thấy tutorial flame_breath trong catalog")
+	
+	# Test mở khóa skill âm thầm lưu vào Sổ Hướng Dẫn
+	var wind_skill: AbilityData = preload("res://abilities/wind_blast/wind_blast.tres")
+	GameState.unlock_ability(wind_skill)
+	_assert(GameState.has_tutorial(&"wind_blast"), "Nhặt skill mới tự động lưu tutorial vào Sổ Hướng Dẫn")
