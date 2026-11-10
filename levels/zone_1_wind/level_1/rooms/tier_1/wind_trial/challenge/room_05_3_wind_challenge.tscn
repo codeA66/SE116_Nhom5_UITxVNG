@@ -1,0 +1,282 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/paving_stone.tres" id="paving_stone"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/arena_paving.res" id="floor"]
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.gd" id="challenge"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.tscn" id="gate"]
+[ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="encounter"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="guard"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="beetle"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="caster"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/werewolf/werewolf.tscn" id="wolf"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="charm_pickup"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/challenge_charm.tres" id="charm"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="pillar"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(20, 0.48, 20)
+
+[sub_resource type="BoxMesh" id="FloorMesh"]
+material = ExtResource("stone")
+size = Vector3(20, 2.4, 20)
+
+[sub_resource type="BoxShape3D" id="CorridorFloorShape"]
+size = Vector3(4, 0.48, 4)
+
+[sub_resource type="BoxMesh" id="CorridorFloorMesh"]
+material = ExtResource("stone")
+size = Vector3(4, 2.4, 4)
+
+[sub_resource type="BoxShape3D" id="EntryTriggerShape"]
+size = Vector3(4, 3.2, 2)
+
+[sub_resource type="BoxShape3D" id="SideWallShape"]
+size = Vector3(0.4, 1.6, 20)
+
+[sub_resource type="BoxMesh" id="SideWallMesh"]
+material = ExtResource("stone")
+size = Vector3(0.4, 1.6, 20)
+
+[sub_resource type="BoxShape3D" id="SouthWallShape"]
+size = Vector3(20, 1.6, 0.4)
+
+[sub_resource type="BoxMesh" id="SouthWallMesh"]
+material = ExtResource("stone")
+size = Vector3(20, 1.6, 0.4)
+
+[sub_resource type="BoxShape3D" id="NorthLeftWallShape"]
+size = Vector3(4, 1.6, 0.4)
+
+[sub_resource type="BoxMesh" id="NorthLeftWallMesh"]
+material = ExtResource("stone")
+size = Vector3(4, 1.6, 0.4)
+
+[sub_resource type="BoxShape3D" id="NorthRightWallShape"]
+size = Vector3(12, 1.6, 0.4)
+
+[sub_resource type="BoxMesh" id="NorthRightWallMesh"]
+material = ExtResource("stone")
+size = Vector3(12, 1.6, 0.4)
+
+[sub_resource type="BoxShape3D" id="CorridorRailShape"]
+size = Vector3(0.4, 1.6, 4)
+
+[sub_resource type="BoxMesh" id="CorridorRailMesh"]
+material = ExtResource("stone")
+size = Vector3(0.4, 1.6, 4)
+
+[node name="Room053WindChallenge" type="Node3D"]
+script = ExtResource("challenge")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+position = Vector3(10, -0.24, -10)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floor"]
+position = Vector3(0, -0.96, 0)
+mesh = SubResource("FloorMesh")
+
+[node name="Paving" type="MultiMeshInstance3D" parent="."]
+material_override = ExtResource("paving_stone")
+multimesh = ExtResource("floor")
+
+[node name="CorridorFloor" type="StaticBody3D" parent="."]
+position = Vector3(6, -0.24, -22)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CorridorFloor"]
+shape = SubResource("CorridorFloorShape")
+
+[node name="Stone" type="MeshInstance3D" parent="CorridorFloor"]
+position = Vector3(0, -0.96, 0)
+mesh = SubResource("CorridorFloorMesh")
+
+[node name="WestWall" type="StaticBody3D" parent="."]
+position = Vector3(0.2, 0.8, -10)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestWall"]
+shape = SubResource("SideWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="WestWall"]
+mesh = SubResource("SideWallMesh")
+
+[node name="EastWall" type="StaticBody3D" parent="."]
+position = Vector3(19.8, 0.8, -10)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
+shape = SubResource("SideWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="EastWall"]
+mesh = SubResource("SideWallMesh")
+
+[node name="SouthWall" type="StaticBody3D" parent="."]
+position = Vector3(10, 0.8, -0.2)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthWall"]
+shape = SubResource("SouthWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="SouthWall"]
+mesh = SubResource("SouthWallMesh")
+
+[node name="NorthLeftWall" type="StaticBody3D" parent="."]
+position = Vector3(2, 0.8, -19.8)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthLeftWall"]
+shape = SubResource("NorthLeftWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="NorthLeftWall"]
+mesh = SubResource("NorthLeftWallMesh")
+
+[node name="NorthRightWall" type="StaticBody3D" parent="."]
+position = Vector3(14, 0.8, -19.8)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthRightWall"]
+shape = SubResource("NorthRightWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="NorthRightWall"]
+mesh = SubResource("NorthRightWallMesh")
+
+[node name="CorridorWestRail" type="StaticBody3D" parent="."]
+position = Vector3(3.8, 0.8, -22)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CorridorWestRail"]
+shape = SubResource("CorridorRailShape")
+
+[node name="Stone" type="MeshInstance3D" parent="CorridorWestRail"]
+mesh = SubResource("CorridorRailMesh")
+
+[node name="CorridorEastRail" type="StaticBody3D" parent="."]
+position = Vector3(8.2, 0.8, -22)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CorridorEastRail"]
+shape = SubResource("CorridorRailShape")
+
+[node name="Stone" type="MeshInstance3D" parent="CorridorEastRail"]
+mesh = SubResource("CorridorRailMesh")
+
+[node name="EntryGate" parent="." instance=ExtResource("gate")]
+position = Vector3(6, 0, -19.9)
+starts_open = true
+
+[node name="EntryTrigger" type="Area3D" parent="."]
+position = Vector3(6, 1.6, -16.6)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger"]
+shape = SubResource("EntryTriggerShape")
+
+[node name="Sign" type="Label3D" parent="."]
+position = Vector3(6, 3.4, -20.2)
+billboard = 1
+pixel_size = 0.01
+text = "THỬ THÁCH GIÓ
+3 đợt"
+font_size = 40
+outline_size = 10
+
+[node name="PierNorthWest" parent="." instance=ExtResource("pillar")]
+position = Vector3(0.3, 0, -19.7)
+scale = Vector3(0.8, 0.7, 0.8)
+
+[node name="PierNorthEast" parent="." instance=ExtResource("pillar")]
+position = Vector3(19.7, 0, -19.7)
+scale = Vector3(0.8, 0.7, 0.8)
+
+[node name="PierSouthWest" parent="." instance=ExtResource("pillar")]
+position = Vector3(0.3, 0, -0.3)
+scale = Vector3(0.8, 0.7, 0.8)
+
+[node name="PierSouthEast" parent="." instance=ExtResource("pillar")]
+position = Vector3(19.7, 0, -0.3)
+scale = Vector3(0.8, 0.7, 0.8)
+
+[node name="LanternWest" parent="." instance=ExtResource("lantern")]
+position = Vector3(1.4, 0, -1.4)
+scale = Vector3(0.66, 0.66, 0.66)
+
+[node name="LanternEast" parent="." instance=ExtResource("lantern")]
+position = Vector3(18.6, 0, -1.4)
+scale = Vector3(0.66, 0.66, 0.66)
+
+[node name="RewardCharm" parent="." instance=ExtResource("charm_pickup")]
+position = Vector3(10, 0, -10)
+persistent_id = &"level_1.wind_challenge_charm"
+charm = ExtResource("charm")
+starts_hidden = true
+
+[node name="Waves" type="Node3D" parent="."]
+
+[node name="Wave1" parent="Waves" instance=ExtResource("encounter")]
+spawn_interval = 0.35
+enemies_visible_before_start = false
+clear_trauma = 0.25
+
+[node name="Trigger" parent="Waves/Wave1" index="0"]
+monitoring = false
+
+[node name="Wave2" parent="Waves" instance=ExtResource("encounter")]
+spawn_interval = 0.5
+enemies_visible_before_start = false
+clear_trauma = 0.25
+
+[node name="Trigger" parent="Waves/Wave2" index="0"]
+monitoring = false
+
+[node name="Wave3" parent="Waves" instance=ExtResource("encounter")]
+spawn_interval = 0.7
+enemies_visible_before_start = false
+clear_trauma = 0.25
+
+[node name="Trigger" parent="Waves/Wave3" index="0"]
+monitoring = false
+
+[node name="Guard1" parent="Waves/Wave1/Enemies" instance=ExtResource("guard")]
+position = Vector3(6, 0, -8)
+
+[node name="Guard2" parent="Waves/Wave1/Enemies" instance=ExtResource("guard")]
+position = Vector3(10, 0, -6)
+
+[node name="Guard3" parent="Waves/Wave1/Enemies" instance=ExtResource("guard")]
+position = Vector3(14, 0, -8)
+
+[node name="Guard1" parent="Waves/Wave2/Enemies" instance=ExtResource("guard")]
+position = Vector3(5, 0, -6)
+
+[node name="Guard2" parent="Waves/Wave2/Enemies" instance=ExtResource("guard")]
+position = Vector3(15, 0, -6)
+
+[node name="Beetle1" parent="Waves/Wave2/Enemies" instance=ExtResource("beetle")]
+position = Vector3(7, 0, -3)
+
+[node name="Beetle2" parent="Waves/Wave2/Enemies" instance=ExtResource("beetle")]
+position = Vector3(13, 0, -3)
+
+[node name="Caster1" parent="Waves/Wave3/Enemies" instance=ExtResource("caster")]
+position = Vector3(4, 0, -4)
+
+[node name="Caster2" parent="Waves/Wave3/Enemies" instance=ExtResource("caster")]
+position = Vector3(16, 0, -4)
+
+[node name="Wolf1" parent="Waves/Wave3/Enemies" instance=ExtResource("wolf")]
+position = Vector3(10, 0, -5)
+
+
+[editable path="Waves/Wave1"]
+
+[editable path="Waves/Wave2"]
+
+[editable path="Waves/Wave3"]

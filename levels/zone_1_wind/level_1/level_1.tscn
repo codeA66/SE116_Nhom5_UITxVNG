@@ -38,6 +38,7 @@
 [ext_resource type="PackedScene" uid="uid://6b38aottgqnl" path="res://levels/zone_1_wind/level_1/rooms/tier_3/tier3_test.tscn" id="tier3_map"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_1_wind_walk.tscn" id="trial_walk"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.tscn" id="trial_arena"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.tscn" id="trial_challenge"]
 [ext_resource type="PackedScene" path="res://objects/gates/stone_gate/stone_gate.tscn" id="trial_stone_gate"]
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="trial_legacy_spawn"]
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_10.res" id="Room09GrandStairTerrainBatch10"]
@@ -161,6 +162,14 @@ position = Vector3(24, 3.6, -58)
 [node name="Room052WindTrial" parent="Rooms/Tier1" instance=ExtResource("trial_arena")]
 position = Vector3(28, 3.6, -60)
 
+[node name="Room053WindChallenge" parent="Rooms/Tier1" instance=ExtResource("trial_challenge")]
+position = Vector3(28, 3.6, -36)
+
+[node name="TrialWalkGate" parent="Rooms/Tier1" node_paths=PackedStringArray("sources") instance=ExtResource("trial_stone_gate")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 24.4, 3.6, -58)
+sources = [NodePath("../Room05InnerGarden/WindShrine")]
+open_trauma = 0.0
+
 [node name="OldStairTrialGate" parent="Rooms/Tier1" node_paths=PackedStringArray("sources") instance=ExtResource("trial_stone_gate")]
 position = Vector3(6, 5.4, -64)
 sources = [NodePath("../Room052WindTrial")]
@@ -272,7 +281,7 @@ light_energy = 0.4
 
 [node name="Tier2Zone" parent="." unique_id=1802627525 node_paths=PackedStringArray("hide_when_inside", "sun") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 26, -180)
-hide_when_inside = [NodePath("../Rooms/Tier1/Room01Dock"), NodePath("../Rooms/Tier1/Room02Foyer"), NodePath("../Rooms/Tier1/Room03BannerCorridor"), NodePath("../Rooms/Tier1/Room04GuardHall"), NodePath("../Rooms/Tier1/Room05InnerGarden"), NodePath("../Rooms/Tier1/Room051WindWalk"), NodePath("../Rooms/Tier1/Room052WindTrial"), NodePath("../Rooms/Tier1/OldStairTrialGate"), NodePath("../Rooms/Tier1/Room06TowerBase"), NodePath("../Rooms/Tier1/Room07SailStorage"), NodePath("../Rooms/Tier1/Room08RelicRoom"), NodePath("../Rooms/Tier1/Room09GrandStair")]
+hide_when_inside = [NodePath("../Rooms/Tier1/Room01Dock"), NodePath("../Rooms/Tier1/Room02Foyer"), NodePath("../Rooms/Tier1/Room03BannerCorridor"), NodePath("../Rooms/Tier1/Room04GuardHall"), NodePath("../Rooms/Tier1/Room05InnerGarden"), NodePath("../Rooms/Tier1/Room051WindWalk"), NodePath("../Rooms/Tier1/Room052WindTrial"), NodePath("../Rooms/Tier1/Room053WindChallenge"), NodePath("../Rooms/Tier1/TrialWalkGate"), NodePath("../Rooms/Tier1/OldStairTrialGate"), NodePath("../Rooms/Tier1/Room06TowerBase"), NodePath("../Rooms/Tier1/Room07SailStorage"), NodePath("../Rooms/Tier1/Room08RelicRoom"), NodePath("../Rooms/Tier1/Room09GrandStair")]
 sun = NodePath("../Lighting/MoonLight")
 
 [node name="Shape" parent="Tier2Zone" index="0"]

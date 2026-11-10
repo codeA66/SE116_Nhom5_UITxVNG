@@ -46,14 +46,14 @@ material = ExtResource("stone")
 size = Vector3(20, 1.45, 0.4)
 
 [sub_resource type="BoxShape3D" id="EntryLeftWallShape"]
-size = Vector3(4, 7.4, 0.4)
+size = Vector3(4, 1.6, 0.4)
 
 [sub_resource type="BoxMesh" id="EntryLeftWallMesh"]
 material = ExtResource("stone")
 size = Vector3(4, 1.45, 0.4)
 
 [sub_resource type="BoxShape3D" id="EntryRightWallShape"]
-size = Vector3(12, 7.4, 0.4)
+size = Vector3(12, 1.6, 0.4)
 
 [sub_resource type="BoxMesh" id="EntryRightWallMesh"]
 material = ExtResource("stone")
@@ -67,7 +67,7 @@ material = ExtResource("stone")
 size = Vector3(6.26418, 0.18, 3.7)
 
 [sub_resource type="BoxShape3D" id="EntryTriggerShape"]
-size = Vector3(3.95, 7.2, 1.7)
+size = Vector3(5, 3.2, 4)
 
 [node name="Room052WindTrial" type="Node3D"]
 script = ExtResource("trial")
@@ -136,6 +136,7 @@ position = Vector3(2, 3.7, -0.2)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryLeftWall"]
+position = Vector3(0, -2.9, 0)
 shape = SubResource("EntryLeftWallShape")
 
 [node name="Stone" type="MeshInstance3D" parent="EntryLeftWall"]
@@ -147,6 +148,7 @@ position = Vector3(14, 3.7, -0.2)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryRightWall"]
+position = Vector3(0, -2.9, 0)
 shape = SubResource("EntryRightWallShape")
 
 [node name="Stone" type="MeshInstance3D" parent="EntryRightWall"]
@@ -166,7 +168,7 @@ rotation_degrees = Vector3(0, 0, -16.6992)
 mesh = SubResource("RampMesh")
 
 [node name="EntryTrigger" type="Area3D" parent="."]
-position = Vector3(6, 3.6, -2.05)
+position = Vector3(7, 1.6, -2.5)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
@@ -174,9 +176,8 @@ monitorable = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger"]
 shape = SubResource("EntryTriggerShape")
 
-[node name="EntryGate" parent="." instance=ExtResource("gate")]
+[node name="ChallengeGate" parent="." instance=ExtResource("gate")]
 position = Vector3(6, 0, -0.1)
-starts_open = true
 
 [node name="ExitGate" parent="." instance=ExtResource("gate")]
 position = Vector3(0.35, 1.7, -14)

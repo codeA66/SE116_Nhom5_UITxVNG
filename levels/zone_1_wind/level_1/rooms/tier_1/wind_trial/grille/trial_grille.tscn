@@ -6,7 +6,7 @@
 [ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
 
 [sub_resource type="BoxShape3D" id="Lock"]
-size = Vector3(4.15, 7.4, 0.6)
+size = Vector3(4.15, 3, 0.6)
 
 [sub_resource type="BoxMesh" id="Track"]
 material = ExtResource("stone")
@@ -17,7 +17,7 @@ collision_mask = 0
 script = ExtResource("script")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-position = Vector3(0, 3.7, 0)
+position = Vector3(0, 1.5, 0)
 shape = SubResource("Lock")
 
 [node name="Left" parent="." instance=ExtResource("leaf")]
