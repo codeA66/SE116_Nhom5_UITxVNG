@@ -22,6 +22,7 @@ func _run() -> void:
 	get_tree().quit(0 if _failures.is_empty() else 1)
 
 func _case(path: String, missing_links: bool) -> void:
+	GameState.replace_progress(PlayerProgress.new())
 	var world: ZoneRoot = load(path).instantiate() as ZoneRoot
 	world.shader_warmup = null
 	world.process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -39,7 +40,7 @@ func _case(path: String, missing_links: bool) -> void:
 	var player: Player = world.get_node("Player")
 	player.health.damaged.connect(func(_damage: int) -> void: player.health.heal_full())
 	var context: String = ("recovered" if missing_links else "saved")+" "+path.get_file()
-	_check(trap.moving_seals.size()==5,context+" resolves five movers")
+	_check(trap.moving_seals.size()==7,context+" resolves seven movers")
 	for mover: ShiftingGardenSeal in trap.moving_seals:
 		_check(is_instance_valid(mover) and mover.anchors.size()==3,context+" valid mover and anchors")
 	player.teleport(tier.global_position+Vector3(35,0.1,10),Vector3.FORWARD)
@@ -57,7 +58,8 @@ func _case(path: String, missing_links: bool) -> void:
 	await _frames(50)
 	for index: int in trap.seals.size():
 		_check(trap.seals[index].global_position.distance_to(positions[index])>0.1,context+" teleports seal "+str(index+1))
-		_check(trap.seals[index].glow.scale.is_equal_approx(Vector3(0.5,1.0,0.5)) and trap.seals[index].scale==Vector3.ONE,context+" preserves seal height and unscaled physics after teleport "+str(index+1))
+		_check(trap.seals[index].glow.scale.is_equal_approx(Vector3(0.75,1.0,0.75)) and trap.seals[index].scale==Vector3.ONE,context+" preserves larger seal width, original height and unscaled physics after teleport "+str(index+1))
+		_check(trap.seals[index].appearance_halo.visible,context+" highlights an unactivated seal")
 	await _open_guide(player,guide)
 	var held: Vector3 = trap.seals[0].global_position
 	await _frames(30)
@@ -67,10 +69,17 @@ func _case(path: String, missing_links: bool) -> void:
 	for seal: GardenSwitch in trap.seals:
 		await _activate_seal(player,seal)
 		_check(seal.is_active(),context+" F activates "+str(seal.name))
+		_check(not seal.appearance_halo.visible,context+" removes locator after activation")
 		if seal == trap.seals[2]:
-			_check(not trap.completed and not trap.reward.available,context+" first three seals do not clear the five-seal trial")
+			_check(not trap.completed and not trap.reward.available,context+" first three seals do not clear the seven-seal trial")
+			for mover: ShiftingGardenSeal in trap.moving_seals:
+				if not mover.seal.is_active(): _check(mover.interval==2,context+" four remaining still use two seconds")
+		elif seal == trap.seals[3]:
+			await _check_dwell(trap,3,context)
+		elif seal == trap.seals[5]:
+			_check(trap.moving_seals[6].interval==3,context+" final seal remains at three seconds")
 	await _frames(145)
-	_check(trap.completed and trap.reward.available,context+" rewards land after all five seals")
+	_check(trap.completed and trap.reward.available,context+" rewards land after all seven seals")
 	_check(not trap.wind_ambush.hazard.running,context+" clear stops wind")
 	var stopped: Vector3 = trap.seals[0].global_position
 	await _frames(185)
@@ -81,6 +90,18 @@ func _case(path: String, missing_links: bool) -> void:
 	await _frames(3)
 	world.queue_free()
 	await _frames(3)
+
+func _check_dwell(trap: TrapGardenChallenge, seconds: int, context: String) -> void:
+	var pending: Array[GardenSwitch] = []
+	var positions: Array[Vector3] = []
+	for seal: GardenSwitch in trap.seals:
+		if not seal.is_active(): pending.append(seal); positions.append(seal.global_position)
+	await _frames((seconds-1)*60+12)
+	for index: int in pending.size():
+		_check(pending[index].global_position.is_equal_approx(positions[index]),context+" remains available until "+str(seconds)+" seconds")
+	await _frames(55)
+	for index: int in pending.size():
+		_check(not pending[index].global_position.is_equal_approx(positions[index]),context+" moves after "+str(seconds)+" seconds")
 
 func _activate_seal(player: Player, seal: GardenSwitch) -> void:
 	# Đuổi theo vị trí hiện tại; bia có thể vừa teleport trong lúc người chơi tiến tới.
@@ -93,6 +114,7 @@ func _activate_seal(player: Player, seal: GardenSwitch) -> void:
 		if player.interactor.current == seal.interaction: player.interactor.try_interact()
 
 func _right_room_and_boss(path: String) -> void:
+	GameState.replace_progress(PlayerProgress.new())
 	var world: ZoneRoot = load(path).instantiate() as ZoneRoot
 	world.shader_warmup = null
 	world.process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -155,6 +177,9 @@ func _open_guide(player: Player, guide: GardenTotemGuide) -> void:
 	await _frames(8)
 	_check(player.interactor.try_interact(),"F reaches guide")
 	await _frames(22)
+	# Popup chặn F trong 220 ms thực; fixed-fps không được bỏ qua khoảng này.
+	var ready_at: int = Time.get_ticks_msec()+240
+	while Time.get_ticks_msec() < ready_at: await get_tree().process_frame
 
 func _press_f() -> void:
 	var event: InputEventAction = InputEventAction.new()

@@ -2,17 +2,18 @@ class_name GardenOfferingRitual
 extends Node3D
 ## Chỉ bật nguồn mở cổng sau khi mọi luồng sáng đã tới khóa.
 signal activated
+const RISE_VFX: PackedScene = preload("res://assets/vfx/wind/garden/offering_rise/offering_rise.tscn")
 @export var pedestals: Array[OfferingPedestal] = []
 @export var lock_target: MeshInstance3D
 @export var boots: BananaItemPickup
-@export_range(0.2, 3.0, 0.1) var rise_time: float = 0.7
+@export_range(0.2, 3.0, 0.1) var rise_time: float = 0.95
 @export_range(0.4, 5.0, 0.1) var flight_time: float = 1.6
 @export_range(0.1, 1.0, 0.05) var morph_time: float = 0.3
 @export var light_color: Color = Color(1,0.81,0.26)
 var _started: bool = false
 var _finished: bool = false
 var _orbs: Array[MeshInstance3D] = []
-var _rises: Array[CPUParticles3D] = []
+var _rises: Array[GardenOfferingRise] = []
 
 func _ready() -> void:
 	set_process(false); set_physics_process(false)
@@ -20,11 +21,7 @@ func _ready() -> void:
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; material.emission_enabled = true; material.emission = light_color*1.7
 	var sphere: SphereMesh = SphereMesh.new(); sphere.radius = 0.15; sphere.height = 0.3; sphere.radial_segments = 12; sphere.rings = 6; sphere.material = material
 	for pedestal: OfferingPedestal in pedestals:
-		var rise: CPUParticles3D = CPUParticles3D.new(); rise.amount = 18; rise.lifetime = rise_time; rise.one_shot = true; rise.explosiveness = 0.35
-		rise.emitting = false; rise.direction = Vector3.UP; rise.spread = 7; rise.gravity = Vector3(0,-0.3,0)
-		rise.initial_velocity_min = 2.4; rise.initial_velocity_max = 3.8; rise.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE; rise.emission_sphere_radius = 0.28
-		var streak: BoxMesh = BoxMesh.new(); streak.size = Vector3(0.025,0.32,0.025); streak.material = material; rise.mesh = streak
-		rise.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var rise: GardenOfferingRise = RISE_VFX.instantiate() as GardenOfferingRise
 		pedestal.offering_anchor.add_child(rise); _rises.append(rise)
 		var orb: MeshInstance3D = MeshInstance3D.new(); orb.mesh = sphere; orb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(orb); orb.hide(); _orbs.append(orb)
@@ -36,8 +33,20 @@ func _ready() -> void:
 func is_active() -> bool:
 	return _finished
 
+func restore_completed(items: Array[OfferingBanana]) -> void:
+	if _finished: return
+	_started = true; _finished = true
+	for index: int in mini(items.size(),pedestals.size()):
+		var pedestal: OfferingPedestal = pedestals[index]
+		var item: OfferingBanana = items[index]
+		item.reparent(pedestal.offering_anchor,false)
+		item.position = Vector3.ZERO; item.on_offered(pedestal); item.set_available(true)
+		pedestal.item = item; pedestal.interaction.enabled = false
+		pedestal.status_glow.show()
+	boots.reveal()
+
 func _placed(pedestal: OfferingPedestal) -> void:
-	_rises[pedestals.find(pedestal)].restart()
+	_rises[pedestals.find(pedestal)].play(rise_time,light_color)
 	for source: OfferingPedestal in pedestals:
 		if not source.is_active(): return
 	if _started: return

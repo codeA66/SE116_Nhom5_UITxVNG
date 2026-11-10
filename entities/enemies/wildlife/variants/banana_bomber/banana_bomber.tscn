@@ -7,6 +7,9 @@
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_grunt/animations/all.tres" id="all"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/monkey_grunt/animations/throw_actions.tres" id="throws"]
 [ext_resource type="Script" path="res://entities/enemies/wildlife/variants/banana_bomber/warning/banana_bomb_warning.gd" id="warning"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/variants/banana_bomber/states/wind/bomber_wind_launched.gd" id="wind_state"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/variants/banana_bomber/states/wind/bomber_wind_receiver.gd" id="wind_receiver"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/variants/banana_bomber/states/wind/bomber_peel_response.gd" id="peel_response"]
 [node name="BananaBomber" instance=ExtResource("base")]
 script = ExtResource("s")
 data = ExtResource("d")
@@ -15,6 +18,15 @@ chase_state = &"BomberChase"
 libraries = {&"":ExtResource("all"),&"Throws":ExtResource("throws"),&"Bomb":ExtResource("a")}
 [node name="BomberChase" type="Node" parent="StateMachine"]
 script = ExtResource("c")
+
+[node name="WindLaunched" type="Node" parent="StateMachine"]
+script = ExtResource("wind_state")
+
+[node name="WindReceiverComponent" parent="."]
+script = ExtResource("wind_receiver")
+
+[node name="PeelResponse" type="Node" parent="."]
+script = ExtResource("peel_response")
 
 [node name="WarningIndicator" type="Node3D" parent="."]
 position = Vector3(0, 2.65, 0)

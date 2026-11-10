@@ -1,17 +1,24 @@
-[gd_resource type="Resource" script_class="BoulderThrowSkillData" format=3]
-[ext_resource type="Script" path="res://entities/enemies/wildlife/monkey_chieftain/skills/boulder_throw_skill_data.gd" id="s"]
+[gd_resource type="Resource" script_class="BoulderThrowSkillData" format=3 uid="uid://cj61nrmytg1l6"]
+
+[ext_resource type="Script" uid="uid://cdnkamj7wiwip" path="res://entities/enemies/wildlife/monkey_chieftain/skills/boulder_throw_skill_data.gd" id="s"]
+
 [resource]
 script = ExtResource("s")
+rock_radius = 1.44
+impact_radius = 3.0
+flight_time = 0.7666666
+shard_radius = 1.44
+shard_size_ratio = 0.55
+shard_flight_time = 0.8
 skill_id = &"boulder_throw"
 state = &"BoulderThrow"
-animation = &"Boulder/Monkey_Chieftain_Boulder_Throw"
-duration = 2.8
-windup_end = 1.35
-release_time = 1.35
-melee_enabled = false
-maximum_range = 11.5
-track_during_windup = true
 cooldown = 1.0
+maximum_range = 11.5
+windup_end = 1.35
+track_during_windup = true
+melee_enabled = false
+animation = &"Boulder/Monkey_Chieftain_Boulder_Throw"
 damage = 3
 knockback = 3.0
 hitstop = 0.025
+duration = 2.8

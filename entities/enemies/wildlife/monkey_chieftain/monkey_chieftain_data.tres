@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://kxfld7qttmo4" path="res://entities/enemies/wildlife/_shared/wild_enemy_data.gd" id="data"]
 [ext_resource type="Resource" path="res://entities/enemies/wildlife/monkey_chieftain/movement.tres" id="move"]
 [ext_resource type="Resource" path="res://entities/enemies/wildlife/monkey_chieftain/skills/leap_claw.tres" id="s0"]
-[ext_resource type="Resource" path="res://entities/enemies/wildlife/monkey_chieftain/skills/boulder_throw.tres" id="s1"]
+[ext_resource type="Resource" uid="uid://cj61nrmytg1l6" path="res://entities/enemies/wildlife/monkey_chieftain/skills/boulder_throw.tres" id="s1"]
 [ext_resource type="Script" uid="uid://spirok3yst3w" path="res://entities/enemies/wildlife/_shared/skills/enemy_skill_data.gd" id="skill"]
 
 [resource]
@@ -12,16 +12,16 @@ idle_animation = &"Monkey_Chieftain_Idle"
 walk_animation = &"Gorilla_Locomotion"
 run_animation = &"Gorilla_Quadrupedal_Run_Fast"
 alert_animation = &"Gorilla_ChestBeat_Roar"
-model_scale = 0.42
+model_scale = 0.504
 skills = Array[ExtResource("skill")]([ExtResource("s0"), ExtResource("s1")])
 advance_on_cooldown = true
 approach_stop_distance = 1.4
 display_name = "Monkey Chieftain"
 max_health = 20
 movement = ExtResource("move")
-detect_range = 10.0
-lose_range = 13.0
-leash_range = 18.0
+detect_range = 110.0
+lose_range = 130.0
+leash_range = 130.0
 attack = ExtResource("s0")
 attack_range = 6.5
 hitbox_reach = 2.4

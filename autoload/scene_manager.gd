@@ -7,6 +7,7 @@ signal zone_changed(zone_path: String)
 signal zone_ready
 
 const FADE_LAYER_SCENE := preload("res://ui/transition/fade_layer.tscn")
+const PHYSICS_DRAIN := preload("res://ui/transition/scene_physics_drain.gd")
 ## Scene không có ZoneRoot sẽ không báo zone_ready: chờ tối đa chừng này frame rồi vẫn sáng lại
 const ZONE_READY_TIMEOUT_FRAMES := 30
 ## Khu đầu tiên của game: mở game lần đầu, hoặc chết khi chưa chạm checkpoint nào.
@@ -41,6 +42,8 @@ func change_zone(zone_path: String, spawn_id: StringName = &"") -> void:
 		return
 	_busy = true
 	await _fade.fade_out(fade_duration)
+	var physics_drain := PHYSICS_DRAIN.new()
+	await physics_drain.prepare(get_tree().current_scene)
 	# Hồi sinh: tiến trình về bản chốt ở checkpoint, làm lúc màn đã tối để không thấy cổng / vật đổi trạng thái.
 	# Chuyển khu thường thì giữ nguyên tiến trình đang chơi
 	if _restore_on_load:
@@ -50,10 +53,12 @@ func change_zone(zone_path: String, spawn_id: StringName = &"") -> void:
 	_zone_ready = false
 	var error := get_tree().change_scene_to_file(zone_path)
 	if error != OK:
+		await physics_drain.restore()
 		push_error("SceneManager: không tải được '%s' (%s)" % [zone_path, error])
 		await _fade.fade_in(fade_duration)
 		_busy = false
 		return
+	physics_drain.clear()
 	await get_tree().scene_changed
 	var zone := get_tree().current_scene
 	# Khu có hợp đồng chuẩn bị combat phải báo xong, không bị cắt sau 30 frame.

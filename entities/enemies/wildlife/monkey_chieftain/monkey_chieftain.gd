@@ -15,6 +15,12 @@ var _next_boulder: bool = false
 var _display_elapsed: float = 0.0
 var _buff_applied: bool = false
 @onready var summoner: ChieftainSummoner = $Summoner
+@onready var peel_boost: ChieftainPeelBoost = $PeelResponse
+@onready var pathfinder: ChieftainPathfinder = $Pathfinder
+
+func move_toward_direction(direction: Vector3, delta: float) -> void:
+	var chasing: bool = state_machine.current_state != null and state_machine.current_state.name in [chase_state,&"Watch"]
+	super(pathfinder.steer(direction) if chasing else direction,delta)
 
 func complete_introduction() -> void:
 	# Vừa diễn vỗ ngực trước trận: không lặp ngay một lần nữa khi AI bắt đầu đánh.
@@ -25,7 +31,9 @@ func complete_introduction() -> void:
 func choose_skill() -> EnemySkillData:
 	var desired: StringName = &"boulder_throw" if _next_boulder else &"leap_claw"
 	for skill: EnemySkillData in wildlife.skills:
-		if skill.skill_id == desired and skill_ready(skill): return skill
+		if skill.skill_id != desired or not skill_ready(skill): continue
+		if desired == &"leap_claw" and not pathfinder.clear_attack_path(): continue
+		return skill
 	# Chờ tới tầm nhảy thay vì lặp mãi đòn ném khi đang luân phiên.
 	return null
 
@@ -52,6 +60,7 @@ func begin_alert() -> float:
 
 func _pre_state_update(delta: float) -> void:
 	super(delta)
+	movement.max_speed = _base_move_speed*(1.12 if battle_buff_active() else 1.0)*peel_boost.speed_multiplier()
 	_battlecry_left = maxf(_battlecry_left - delta, 0.0)
 	_summon_left = maxf(_summon_left - delta, 0.0)
 	_display_gap_left = maxf(_display_gap_left - delta, 0.0)

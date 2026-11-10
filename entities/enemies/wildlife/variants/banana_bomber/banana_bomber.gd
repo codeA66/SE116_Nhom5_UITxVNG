@@ -1,16 +1,19 @@
 class_name BananaBomber
 extends MonkeyGrunt
-## Một lần bắt mục tiêu, một đồng hồ không reset; chết trước ngòi nổ thì hủy hoàn toàn.
+## Ngòi nổ truy đuổi; E đặt lại đồng hồ và chuyển sang state hất rồi mới nổ.
 signal armed
 signal exploded
 const BLAST: PackedScene = preload("res://assets/vfx/enemies/monkey/banana_blast/banana_blast.tscn")
 @export_range(0.1, 15.0, 0.1) var fuse_time: float = 2.0
 @export_range(0.1, 3.0, 0.05) var speed_multiplier: float = 1.3
-@export_range(0.02, 0.25, 0.01) var wind_detonation_delay: float = 0.08
+@export_range(0.0, 0.5, 0.01) var wind_detonation_delay: float = 0.05
 @export var blast_radius: float = 3.2
 @export var blast_push: float = 9.0
 var is_armed: bool = false
 var fuse_elapsed: float = 0.0
+var is_wind_launched: bool = false
+var wind_launch_direction: Vector3
+var _wind_fuse_duration: float = 0.0
 var _exploding: bool = false
 var detonated: bool = false
 var _blink_phase: float = 0.0
@@ -69,16 +72,17 @@ func _pre_state_update(delta: float) -> void:
 	super(delta)
 	if not is_armed or is_dead() or _exploding: return
 	fuse_elapsed += delta
-	if fuse_elapsed >= maxf(fuse_time, 0.1):
+	if not is_wind_launched and fuse_elapsed >= maxf(fuse_time, 0.1):
 		_exploding = true
-		_detonate.call_deferred()
+		_detonate_if_pending.call_deferred()
 
 func _process(delta: float) -> void:
 	if _banana == null or _skeleton == null: return
 	_banana.global_position = _skeleton.global_transform * ((_skeleton.get_bone_global_pose(_hands.x).origin + _skeleton.get_bone_global_pose(_hands.y).origin) * 0.5)
 	_banana.global_rotation = Vector3(0, model.rotation.y, 0)
 	if not is_armed or is_dead(): return
-	var progress: float = clampf(fuse_elapsed / maxf(fuse_time,0.1),0,1)
+	var duration: float = _wind_fuse_duration if is_wind_launched else fuse_time
+	var progress: float = clampf(fuse_elapsed / maxf(duration,0.1),0,1)
 	_blink_phase += delta * lerpf(2.0,20.0,progress*progress) * TAU
 	var amount: float = smoothstep(-0.2,0.2,sin(_blink_phase))
 	_bomb_material.vertex_color_use_as_albedo = false
@@ -89,6 +93,7 @@ func _process(delta: float) -> void:
 
 func _on_died() -> void:
 	is_armed = false
+	is_wind_launched = false
 	if _banana: _banana.hide()
 	set_process(false)
 	super()
@@ -121,8 +126,26 @@ func apply_battle_buff(duration: float = 10.0) -> void:
 	if wind_receiver: wind_receiver.set_push_immunity(false)
 
 func _on_wind_pushed(impulse: Vector3) -> void:
+	if is_dead() or detonated: return
+	arm(); _exploding = false
+	wind_launch_direction = impulse.normalized()
+	state_machine.transition_to(&"WindLaunched")
+
+func begin_wind_launch(duration: float) -> void:
+	is_wind_launched = true
+	fuse_elapsed = 0.0
+	_wind_fuse_duration = duration + wind_detonation_delay
+
+func end_wind_launch() -> void:
+	is_wind_launched = false
+
+func resists_knockback() -> bool:
+	return is_wind_launched or super()
+
+func detonate_after_wind() -> void:
 	if is_dead() or _exploding: return
-	arm(); _exploding = true
-	super(impulse)
-	# Để lực gió dịch chuyển body trước khi nổ, không nổ ngay tại điểm va chạm ban đầu.
-	get_tree().create_timer(wind_detonation_delay,false).timeout.connect(_detonate)
+	_exploding = true
+	_detonate_if_pending.call_deferred()
+
+func _detonate_if_pending() -> void:
+	if _exploding and not is_dead() and not detonated: _detonate()

@@ -43,6 +43,9 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		set_process(false)
 		return
+	# Cắt cảnh cập nhật trong _process và đọc mục tiêu đã nội suy, nên camera dùng nội suy thủ công.
+	camera.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	camera.top_level = true
 	var box := BoxShape3D.new()
 	box.size = trigger_size
 	var shape := _trigger.get_node("CollisionShape3D") as CollisionShape3D

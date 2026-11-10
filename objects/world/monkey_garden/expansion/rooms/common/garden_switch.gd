@@ -3,6 +3,7 @@ extends StaticBody3D
 signal activated
 @export var interaction: InteractableComponent
 @export var glow: MeshInstance3D
+@export var appearance_halo: MeshInstance3D
 @export var inactive_color: Color = Color("c9cdd1")
 @export var active_color: Color = Color("ffdc37")
 var _light: OmniLight3D
@@ -37,6 +38,7 @@ func play_teleport_pop() -> void:
 func _press(_actor: Node3D) -> void:
 	if active: return
 	active = true; interaction.enabled = false
+	if is_instance_valid(appearance_halo): appearance_halo.hide()
 	var material: StandardMaterial3D = glow.material_override as StandardMaterial3D
 	material.albedo_color = active_color; material.emission_enabled = true; material.emission = active_color
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
