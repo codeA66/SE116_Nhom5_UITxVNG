@@ -12,14 +12,12 @@ const SWORD := preload("res://resources/combat/weapons/sword.tres")
 @export var room_cutaways: Array[RoomCutaway] = []
 @export var standalone_test: bool = true
 @export var main_hud_position: Vector2 = Vector2(24,245)
-@export var main_hud_line_gap: float = 28.0
 
 var _player: Player
 var _player_camera: Camera3D
 var _overview: bool = false
 
-@onready var _counter: Label = $TestSetup/Interface/Counter
-@onready var _carry_hint: Label = $TestSetup/Interface/CarryHint
+@onready var _offering_hud: Tier3OfferingHud = $TestSetup/Interface/OfferingHud
 
 func _enter_tree() -> void:
 	var ancestor: Node = get_parent()
@@ -43,15 +41,14 @@ func _ready() -> void:
 			(zone as ZoneRoot).combat_ready.connect(_parent_combat_ready,CONNECT_ONE_SHOT)
 		$TestSetup/Lighting.queue_free()
 		$TestSetup/SafetyNet.queue_free()
-		$TestSetup/Interface/PreviewHint.queue_free()
-		_counter.position = main_hud_position
-		_carry_hint.position = main_hud_position+Vector2(0,main_hud_line_gap)
+		_offering_hud.position = main_hud_position
 	for pedestal: OfferingPedestal in offering_pedestals:
 		pedestal.activated.connect(_update_counter)
 	boss_gate.opened.connect(_reveal_boss_room)
 	boss_gate.unlock_started.connect(_begin_reveal)
-	boss_veil.show()
+	boss_veil.visible = not boss_gate.is_open
 	boss_decoration.show()
+	_restore_boss_access.call_deferred()
 	if standalone_test: await super._ready()
 	_player_camera = get_viewport().get_camera_3d()
 	_update_counter()
@@ -65,7 +62,7 @@ func _configure_player(player: Player) -> void:
 	var carry: CarryComponent = player.get_node_or_null("CarryComponent") as CarryComponent
 	if carry == null:
 		carry = CarryComponent.new(); carry.name = "CarryComponent"; player.add_child(carry)
-	(carry as CarryComponent).holding_changed.connect(_holding_changed)
+	_offering_hud.bind_player(player,$OfferingHudBounds,standalone_test)
 	var compass: OfferingCompass = OfferingCompass.new(); compass.name = "OfferingCompass"
 	for banana: Node in $Bananas.get_children():
 		if banana is OfferingBanana: compass.targets.append(banana)
@@ -94,22 +91,34 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
-func _holding_changed(item: Node3D) -> void:
-	_carry_hint.text = "Đang mang chuối — di chuyển tới bục; F để đặt hoặc thả" if item else ""
-
-
 func _update_counter() -> void:
 	var count := 0
 	for pedestal: OfferingPedestal in offering_pedestals:
 		if pedestal.is_active():
 			count += 1
-	_counter.text = "Chuối trên bục: %d / %d" % [count, offering_pedestals.size()]
+	_offering_hud.set_count(count,offering_pedestals.size())
 
 
 func _reveal_boss_room() -> void:
 	boss_veil.hide()
 	boss_decoration.show()
-	_counter.text = "Đủ 5 chuối — cổng khu thủ lĩnh đã mở"
+	_update_counter()
+
+func _restore_boss_access() -> void:
+	var host: ZoneRoot = self
+	var ancestor: Node = get_parent()
+	while ancestor:
+		if ancestor is ZoneRoot: host = ancestor as ZoneRoot; break
+		ancestor = ancestor.get_parent()
+	# Save cũ đã ở trong boss nhưng chưa có cờ mở cổng vẫn phải hồi sinh nhìn thấy phòng.
+	var inside_checkpoint: bool = GameState.get_checkpoint_spawn_id() == &"level_1.tier3_boss_gate" and GameState.get_checkpoint_zone() == host.scene_file_path
+	if not boss_gate.is_open and not inside_checkpoint: return
+	var items: Array[OfferingBanana] = []
+	for child: Node in $Bananas.get_children():
+		if child is OfferingBanana: items.append(child)
+	($OfferingPuzzle/OfferingRitual as GardenOfferingRitual).restore_completed(items)
+	(boss_gate as GardenOfferingGate).restore_open()
+	_reveal_boss_room()
 
 
 func _begin_reveal() -> void:

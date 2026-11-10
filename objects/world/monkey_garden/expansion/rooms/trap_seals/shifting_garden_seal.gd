@@ -56,6 +56,16 @@ func begin() -> void:
 func stop() -> void:
 	_timer.stop(); _label.hide()
 
+func set_interval_seconds(seconds: int) -> void:
+	var next_interval: int = maxi(seconds,1)
+	if interval == next_interval: return
+	interval = next_interval
+	if not is_instance_valid(_timer) or _timer.is_stopped() or seal.is_active(): return
+	# Mỗi mốc tiến độ cho người chơi đủ trọn thời gian mới để tới bệ còn lại.
+	_remaining = interval
+	_label.text = str(_remaining)
+	_timer.start()
+
 func _tick() -> void:
 	_remaining -= 1
 	if _remaining<=0:

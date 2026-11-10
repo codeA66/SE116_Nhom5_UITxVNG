@@ -21,6 +21,7 @@ var _shards: Array[Dictionary] = []
 var _terrain: ShapeCast3D
 var _damage: ShapeCast3D
 var _sphere: SphereShape3D
+var _fragment_radius: float = 0.0
 var _flight_hits: Array[HurtboxComponent] = []
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 static var _stone_mesh: ArrayMesh
@@ -93,6 +94,7 @@ func _ready() -> void:
 
 func prepare(skill: BoulderThrowSkillData, at: Vector3, source: WildEnemy) -> void:
 	_skill = skill
+	_fragment_radius = maxf(skill.rock_radius * clampf(skill.shard_size_ratio,0.1,0.8),0.01)
 	_source = weakref(source)
 	global_transform = Transform3D.IDENTITY
 	destination = at
@@ -152,8 +154,8 @@ func _physics_process(delta: float) -> void:
 				continue
 			var mesh: MeshInstance3D = shard.mesh
 			var t: float = minf(age / float(shard.time), 1.0)
-			var at: Vector3 = _arc(shard.origin, shard.target + Vector3.UP * _skill.shard_radius * 0.45, t, _skill.shard_arc_height)
-			var collision: Dictionary = _sweep(mesh.global_position, at, _skill.shard_radius * 0.45, shard.hits)
+			var at: Vector3 = _arc(shard.origin, shard.target + Vector3.UP * _fragment_radius, t, _skill.shard_arc_height)
+			var collision: Dictionary = _sweep(mesh.global_position, at, _fragment_radius, shard.hits)
 			mesh.global_position = at
 			mesh.rotate_x(delta * (4.0 + index))
 			if t >= 1.0 or not collision.is_empty():
@@ -183,14 +185,15 @@ func _impact_main(at: Vector3) -> void:
 		var angle: float = (float(index) + _rng.randf_range(-0.25, 0.25)) * TAU / maxi(_skill.shard_count, 1)
 		var minimum: float = maxf(_skill.shard_ring_min, _skill.impact_radius + _skill.shard_radius + 0.3)
 		var radius: float = _rng.randf_range(minimum, maxf(minimum, _skill.shard_ring_max))
-		shard.origin = at + Vector3.UP * 0.5
+		# Đặt toàn bộ mảnh phía trên mặt va chạm, tránh ShapeCast chạm sàn ngay tick đầu.
+		shard.origin = at + Vector3.UP * (_fragment_radius * 1.2 + 0.12)
 		shard.target = _ground(at + Vector3(cos(angle), 0, sin(angle)) * radius)
 		shard.time = maxf(_skill.shard_flight_time, 0.1) * _rng.randf_range(0.88, 1.12)
 		shard.landed = false
 		(shard.hits as Array).clear()
 		var mesh: MeshInstance3D = shard.mesh
 		mesh.global_position = shard.origin
-		mesh.scale = Vector3(0.8, 1.2, 0.9) * _skill.shard_radius * 0.45
+		mesh.scale = Vector3(0.8, 1.2, 0.9) * _fragment_radius
 		mesh.show()
 		(shard.indicator as AoeCircleIndicator).show_indicator(shard.target, _skill.shard_radius, shard.time)
 	main_impacted.emit(at)

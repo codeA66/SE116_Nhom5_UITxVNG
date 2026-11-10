@@ -2,11 +2,14 @@ class_name GardenKingEncounter
 extends Area3D
 signal cleared
 signal intro_requested
+signal approached(player: Player)
+signal guard_registered(guard: Enemy)
 @export var guards: Array[Enemy] = []
 @export var encounter_flag: StringName = &"level_1.monkey_king_defeated"
 @export var introduction: CameraCutscene
 @export var leader: MonkeyChieftain
 @export var interface_layer: CanvasLayer
+@export_range(0.1, 15.0, 0.1) var boss_peel_lifetime: float = 2.0
 var fighting: bool = false
 var started: bool = false
 var _alive: int = 0
@@ -23,6 +26,12 @@ func _ready() -> void:
 	body_entered.connect(_entered)
 
 func _setup() -> void:
+	if GameState.has_flag(encounter_flag):
+		started = true; _completed = true; _leader_defeated = true
+		set_deferred("monitoring",false)
+		for guard: Enemy in guards:
+			if is_instance_valid(guard): guard.queue_free()
+		return
 	if introduction:
 		introduction.camera.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		introduction.started.connect(_hide_interface)
@@ -37,9 +46,11 @@ func _setup() -> void:
 func _track_guard(guard: Enemy) -> void:
 	if not is_instance_valid(guard) or guard in _tracked or guard.is_dead(): return
 	_tracked.append(guard); _guard_ids.append(guard.get_instance_id())
+	guard_registered.emit(guard)
 	guard.died.connect(_died,CONNECT_ONE_SHOT); _alive += 1
 	var emitter: EnemyProjectileEmitter = guard.get_node_or_null("ProjectileEmitter") as EnemyProjectileEmitter
 	if emitter:
+		emitter.peel_lifetime_override = boss_peel_lifetime
 		for pool: ObjectPool in emitter.pools.values():
 			if pool not in _projectile_pools: _projectile_pools.append(pool)
 
@@ -53,6 +64,7 @@ func _on_summoned(monkeys: Array[MonkeyGrunt]) -> void:
 func _entered(body: Node3D) -> void:
 	if started or not body is Player: return
 	started = true; _player = body as Player; set_deferred("monitoring",false)
+	approached.emit(_player)
 	if introduction: intro_requested.emit()
 	else: _fight()
 

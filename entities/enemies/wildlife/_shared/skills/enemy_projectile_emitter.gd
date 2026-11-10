@@ -4,6 +4,7 @@ extends Node
 signal projectile_fired(projectile: EnemyProjectile)
 @export var pool_size: int = 3
 @export var max_live_projectiles: int = 32
+@export_range(-1.0, 30.0, 0.1) var peel_lifetime_override: float = -1.0
 var pools: Dictionary[PackedScene, ObjectPool] = {}
 var _held: Dictionary[ProjectileSkillData, Node3D] = {}
 var _sockets: Dictionary[ProjectileSkillData, BoneAttachment3D] = {}
@@ -76,6 +77,7 @@ func launch(skill: ProjectileSkillData, facing: Vector3) -> EnemyProjectile:
 		var target_at: Vector3 = _actor.target.global_position + Vector3.UP * 0.95
 		direction = (target_at - at).normalized()
 	projectile.launch(skill, at, direction, _actor, _actor.target)
+	if peel_lifetime_override >= 0.0: projectile.peel_lifetime = peel_lifetime_override
 	if _actor.has_method("get_projectile_exclusions"):
 		for body: CollisionObject3D in _actor.call("get_projectile_exclusions"):
 			if is_instance_valid(body): projectile.ignore_collision(body)

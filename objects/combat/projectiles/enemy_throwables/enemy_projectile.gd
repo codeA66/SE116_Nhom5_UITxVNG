@@ -22,6 +22,7 @@ var _source: WeakRef
 var _reflected: bool = false
 var _return_target: WeakRef
 var _wind: BananaWindReceiver
+var _default_peel_lifetime: float
 @onready var visual: Node3D = $Visual
 @onready var peel_visual: Node3D = $PeelVisual
 @onready var _cast: ShapeCast3D = $Sweep
@@ -29,6 +30,7 @@ var _wind: BananaWindReceiver
 @onready var _burst: Node3D = $ContactBurst
 
 func _ready() -> void:
+	_default_peel_lifetime = peel_lifetime
 	set_as_top_level(true)
 	if leaves_peel:
 		_wind = BananaWindReceiver.new()
@@ -40,6 +42,8 @@ func _ready() -> void:
 	pool_released()
 
 func launch(skill: ProjectileSkillData, at: Vector3, direction: Vector3, source: WildEnemy, target: Node3D) -> void:
+	peel_lifetime = _default_peel_lifetime
+	persistent_peel = false
 	_attack = skill
 	_source = weakref(source)
 	source_instance_id = source.get_instance_id()
@@ -165,8 +169,8 @@ func place_peel(at: Vector3) -> void:
 func _stepped(body: Node3D) -> void:
 	if phase != Phase.PEEL or not body is Character: return
 	var actor: Character = body as Character
-	var inventory: BananaInventory = actor.get_node_or_null("BananaInventory") as BananaInventory
-	if inventory and inventory.step_on_peel():
+	var response: BananaPeelResponse = BananaPeelResponse.find_on(actor)
+	if response and response.step_on_peel():
 		_burst.global_position = actor.global_position+Vector3.UP*0.04
 		_begin_burst(Color("54ff92")); return
 	if actor.banana_slip == null or not actor.banana_slip.begin(): return

@@ -238,14 +238,6 @@ shape = SubResource("Tier3ZoneShape")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -263)
 checkpoint_id = &"level_1.tier3_entry"
 
-[node name="Tier3RangeCheckpoint" parent="." unique_id=921076827 instance=ExtResource("tier3_checkpoint")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 21.62, -280)
-checkpoint_id = &"level_1.tier3_range_entry"
-
-[node name="Tier3TrapCheckpoint" parent="." unique_id=181999268 instance=ExtResource("tier3_checkpoint")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 21.62, -284)
-checkpoint_id = &"level_1.tier3_trap_entry"
-
 [node name="Tier3VisibilityZone" parent="." unique_id=697991845 node_paths=PackedStringArray("show_when_inside", "suspend_when_outside") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -295)
 show_when_inside = [NodePath("../Rooms/Tier3"), NodePath("../Tier3Bridge")]

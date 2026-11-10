@@ -36,18 +36,21 @@ var _peek_time_left: float = 0.0
 
 func _ready() -> void:
 	top_level = true
+	# Rig tự nội suy theo nhịp hiển thị; rung/teleport không bị nội suy vật lý lần thứ hai.
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	add_to_group(GROUP)
 	snap()
 
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	_lookahead = _lookahead.lerp(_get_desired_lookahead(), 1.0 - exp(-lookahead_response * delta))
 	if _peek_time_left > 0.0:
 		_peek_time_left -= delta
 		if _peek_time_left <= 0.0:
 			_peek_target = Vector3.ZERO
 	_peek = _peek.lerp(_peek_target, 1.0 - exp(-peek_response * delta))
-	global_position = global_position.lerp(_target.global_position + _lookahead + _peek, 1.0 - exp(-follow_speed * delta))
+	var target_position: Vector3 = _target.get_global_transform_interpolated().origin
+	global_position = global_position.lerp(target_position + _lookahead + _peek, 1.0 - exp(-follow_speed * delta))
 
 
 ## Nhảy ngay tới mục tiêu (dùng khi dịch chuyển), không lướt từ vị trí cũ

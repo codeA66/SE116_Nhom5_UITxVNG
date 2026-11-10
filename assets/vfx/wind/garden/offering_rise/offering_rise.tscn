@@ -1,0 +1,105 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/wind/garden/offering_rise/offering_rise.gd" id="script"]
+[ext_resource type="Shader" path="res://assets/vfx/wind/garden/offering_rise/offering_rise.gdshader" id="column_shader"]
+[ext_resource type="Shader" path="res://assets/vfx/wind/garden/seal_halo.gdshader" id="ring_shader"]
+
+[sub_resource type="ShaderMaterial" id="ColumnMaterial"]
+shader = ExtResource("column_shader")
+
+[sub_resource type="CylinderMesh" id="ColumnMesh"]
+top_radius = 0.25
+bottom_radius = 0.5
+height = 4.0
+radial_segments = 20
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="ShaderMaterial" id="RingMaterial"]
+shader = ExtResource("ring_shader")
+
+[sub_resource type="PlaneMesh" id="RingMesh"]
+size = Vector2(2.3, 2.3)
+
+[sub_resource type="StandardMaterial3D" id="ParticleMaterial"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 0.95, 0.65, 1)
+emission_enabled = true
+emission = Color(1, 0.78, 0.2, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="BoxMesh" id="StreakMesh"]
+material = SubResource("ParticleMaterial")
+size = Vector3(0.035, 0.5, 0.035)
+
+[sub_resource type="SphereMesh" id="SparkMesh"]
+material = SubResource("ParticleMaterial")
+radius = 0.035
+height = 0.07
+radial_segments = 4
+rings = 2
+
+[sub_resource type="Gradient" id="FadeGradient"]
+offsets = PackedFloat32Array(0, 0.15, 0.6, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 0.9, 0.5, 0.9, 1, 0.7, 0.1, 0)
+
+[node name="OfferingRise" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Column" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2, 0)
+material_override = SubResource("ColumnMaterial")
+mesh = SubResource("ColumnMesh")
+cast_shadow = 0
+
+[node name="BasePulse" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.03, 0)
+material_override = SubResource("RingMaterial")
+mesh = SubResource("RingMesh")
+cast_shadow = 0
+
+[node name="RisingStreaks" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 40
+lifetime = 0.75
+one_shot = true
+explosiveness = 0.25
+mesh = SubResource("StreakMesh")
+emission_shape = 1
+emission_sphere_radius = 0.42
+direction = Vector3(0, 1, 0)
+spread = 10.0
+gravity = Vector3(0, 0.8, 0)
+initial_velocity_min = 3.8
+initial_velocity_max = 6.0
+scale_amount_min = 0.6
+scale_amount_max = 1.2
+color_ramp = SubResource("FadeGradient")
+cast_shadow = 0
+
+[node name="Sparks" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 18
+lifetime = 0.8
+one_shot = true
+explosiveness = 0.4
+mesh = SubResource("SparkMesh")
+emission_shape = 1
+emission_sphere_radius = 0.5
+direction = Vector3(0, 1, 0)
+spread = 20.0
+gravity = Vector3(0, 0.3, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+color_ramp = SubResource("FadeGradient")
+cast_shadow = 0
+
+[node name="PlacementLight" type="OmniLight3D" parent="."]
+position = Vector3(0, 1, 0)
+light_color = Color(1, 0.8, 0.2, 1)
+light_energy = 0.0
+omni_range = 3.5
+shadow_enabled = false
