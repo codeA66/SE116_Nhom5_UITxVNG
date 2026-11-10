@@ -84,6 +84,12 @@ size = Vector3(260, 90, 250)
 [sub_resource type="BoxShape3D" id="OldStairLock"]
 size = Vector3(28, 8, 0.7)
 
+[sub_resource type="BoxShape3D" id="TrialDeckArenaShape"]
+size = Vector3(20, 3.6, 20)
+
+[sub_resource type="BoxShape3D" id="TrialDeckCorridorShape"]
+size = Vector3(4, 3.6, 4)
+
 [node name="Level1" type="Node3D" unique_id=497319913]
 script = ExtResource("1_5r1qf")
 
@@ -287,6 +293,17 @@ sun = NodePath("../Lighting/MoonLight")
 [node name="Shape" parent="Tier2Zone" index="0"]
 shape = SubResource("BoxShape3D_nhm3y")
 
+[node name="TrialDeckZone" parent="." node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 5.4, -70)
+hide_when_inside = [NodePath("../Rooms/Tier1/Room051WindWalk/Deck")]
+
+[node name="Shape" parent="TrialDeckZone" index="0"]
+shape = SubResource("TrialDeckArenaShape")
+
+[node name="CorridorShape" type="CollisionShape3D" parent="TrialDeckZone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 12)
+shape = SubResource("TrialDeckCorridorShape")
+
 [node name="Tier1Zone" parent="." unique_id=1958989838 node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, -39)
 hide_when_inside = [NodePath("../Rooms/Tier2")]
@@ -357,6 +374,7 @@ area = ExtResource("area_tier_3")
 [editable path="SecretZone"]
 [editable path="Tier2Zone"]
 [editable path="Tier1Zone"]
+[editable path="TrialDeckZone"]
 [editable path="Tier3Zone"]
 [editable path="Tier3VisibilityZone"]
 [editable path="Rooms/Tier1/Room05InnerGarden"]

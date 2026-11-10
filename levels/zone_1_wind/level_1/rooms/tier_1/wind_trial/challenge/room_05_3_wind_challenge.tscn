@@ -78,7 +78,7 @@ collision_mask = 0
 shape = SubResource("FloorShape")
 
 [node name="Stone" type="MeshInstance3D" parent="Floor"]
-position = Vector3(0, -0.96, 0)
+position = Vector3(0, -1.02, 0)
 mesh = SubResource("FloorMesh")
 
 [node name="Paving" type="MultiMeshInstance3D" parent="."]
@@ -178,15 +178,6 @@ monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger"]
 shape = SubResource("EntryTriggerShape")
-
-[node name="Sign" type="Label3D" parent="."]
-position = Vector3(6, 3.4, -20.2)
-billboard = 1
-pixel_size = 0.01
-text = "THỬ THÁCH GIÓ
-3 đợt"
-font_size = 40
-outline_size = 10
 
 [node name="PierNorthWest" parent="." instance=ExtResource("pillar")]
 position = Vector3(0.3, 0, -19.7)

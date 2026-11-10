@@ -2,7 +2,6 @@
 
 [ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
-[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="pillar"]
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
 
 [sub_resource type="ConvexPolygonShape3D" id="StairShape"]
@@ -67,6 +66,17 @@ size = Vector3(0.5333, 4.20, 4)
 [sub_resource type="BoxMesh" id="Step14"]
 material = ExtResource("stone")
 size = Vector3(0.5333, 4.50, 4)
+
+[sub_resource type="BoxMesh" id="FoundationMesh"]
+material = ExtResource("stone")
+size = Vector3(8, 2.4, 4)
+
+[sub_resource type="BoxShape3D" id="SupportShape"]
+size = Vector3(0.4, 4, 4)
+
+[sub_resource type="BoxMesh" id="SupportMesh"]
+material = ExtResource("stone")
+size = Vector3(0.4, 4, 4)
 
 [sub_resource type="BoxShape3D" id="StairRailShape"]
 size = Vector3(9.18, 1, 0.2)
@@ -254,135 +264,143 @@ shape = SubResource("StairRailShape")
 [node name="Stone" type="MeshInstance3D" parent="StairNorthRail"]
 mesh = SubResource("StairRailMesh")
 
-[node name="Balcony" type="StaticBody3D" parent="."]
+[node name="StairFoundation" type="MeshInstance3D" parent="Stair"]
+position = Vector3(4, -1.2, 0)
+mesh = SubResource("FoundationMesh")
+
+[node name="BalconySupport" type="StaticBody3D" parent="."]
+position = Vector3(11.8, 2, 0)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BalconySupport"]
+shape = SubResource("SupportShape")
+
+[node name="Stone" type="MeshInstance3D" parent="BalconySupport"]
+mesh = SubResource("SupportMesh")
+
+[node name="Deck" type="Node3D" parent="."]
+
+[node name="Balcony" type="StaticBody3D" parent="Deck"]
 position = Vector3(11, 4.25, 0)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Balcony"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/Balcony"]
 shape = SubResource("BalconyShape")
 
-[node name="Stone" type="MeshInstance3D" parent="Balcony"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/Balcony"]
 mesh = SubResource("BalconyMesh")
 
-[node name="TongueLeft" type="StaticBody3D" parent="."]
+[node name="TongueLeft" type="StaticBody3D" parent="Deck"]
 position = Vector3(9.5, 4.25, -4)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TongueLeft"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueLeft"]
 shape = SubResource("TongueSideShape")
 
-[node name="Stone" type="MeshInstance3D" parent="TongueLeft"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/TongueLeft"]
 mesh = SubResource("TongueSideMesh")
 
-[node name="TongueRight" type="StaticBody3D" parent="."]
+[node name="TongueRight" type="StaticBody3D" parent="Deck"]
 position = Vector3(12.5, 4.25, -4)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TongueRight"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueRight"]
 shape = SubResource("TongueSideShape")
 
-[node name="Stone" type="MeshInstance3D" parent="TongueRight"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/TongueRight"]
 mesh = SubResource("TongueSideMesh")
 
-[node name="TongueFront" type="StaticBody3D" parent="."]
+[node name="TongueFront" type="StaticBody3D" parent="Deck"]
 position = Vector3(11, 4.25, -2.75)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TongueFront"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueFront"]
 shape = SubResource("TongueFrontShape")
 
-[node name="Stone" type="MeshInstance3D" parent="TongueFront"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/TongueFront"]
 mesh = SubResource("TongueFrontMesh")
 
-[node name="TongueBack" type="StaticBody3D" parent="."]
+[node name="TongueBack" type="StaticBody3D" parent="Deck"]
 position = Vector3(11, 4.25, -5.75)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TongueBack"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueBack"]
 shape = SubResource("TongueBackShape")
 
-[node name="Stone" type="MeshInstance3D" parent="TongueBack"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/TongueBack"]
 mesh = SubResource("TongueBackMesh")
 
-[node name="BalconySouthRail" type="StaticBody3D" parent="."]
+[node name="BalconySouthRail" type="StaticBody3D" parent="Deck"]
 position = Vector3(11, 5, 2.1)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BalconySouthRail"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/BalconySouthRail"]
 shape = SubResource("RailLongShape")
 
-[node name="Stone" type="MeshInstance3D" parent="BalconySouthRail"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/BalconySouthRail"]
 mesh = SubResource("RailLongMesh")
 
-[node name="BalconyEastRail" type="StaticBody3D" parent="."]
+[node name="BalconyEastRail" type="StaticBody3D" parent="Deck"]
 position = Vector3(14.1, 5, 0)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BalconyEastRail"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/BalconyEastRail"]
 shape = SubResource("RailEndShape")
 
-[node name="Stone" type="MeshInstance3D" parent="BalconyEastRail"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/BalconyEastRail"]
 mesh = SubResource("RailEndMesh")
 
-[node name="BalconyNorthRailWest" type="StaticBody3D" parent="."]
+[node name="BalconyNorthRailWest" type="StaticBody3D" parent="Deck"]
 position = Vector3(8.5, 5, -2.1)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BalconyNorthRailWest"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/BalconyNorthRailWest"]
 shape = SubResource("RailStubShape")
 
-[node name="Stone" type="MeshInstance3D" parent="BalconyNorthRailWest"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/BalconyNorthRailWest"]
 mesh = SubResource("RailStubMesh")
 
-[node name="BalconyNorthRailEast" type="StaticBody3D" parent="."]
+[node name="BalconyNorthRailEast" type="StaticBody3D" parent="Deck"]
 position = Vector3(13.5, 5, -2.1)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BalconyNorthRailEast"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/BalconyNorthRailEast"]
 shape = SubResource("RailStubShape")
 
-[node name="Stone" type="MeshInstance3D" parent="BalconyNorthRailEast"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/BalconyNorthRailEast"]
 mesh = SubResource("RailStubMesh")
 
-[node name="TongueWestRail" type="StaticBody3D" parent="."]
+[node name="TongueWestRail" type="StaticBody3D" parent="Deck"]
 position = Vector3(8.9, 5, -4.1)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TongueWestRail"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueWestRail"]
 shape = SubResource("TongueRailShape")
 
-[node name="Stone" type="MeshInstance3D" parent="TongueWestRail"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/TongueWestRail"]
 mesh = SubResource("TongueRailMesh")
 
-[node name="TongueEastRail" type="StaticBody3D" parent="."]
+[node name="TongueEastRail" type="StaticBody3D" parent="Deck"]
 position = Vector3(13.1, 5, -4.1)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TongueEastRail"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueEastRail"]
 shape = SubResource("TongueRailShape")
 
-[node name="Stone" type="MeshInstance3D" parent="TongueEastRail"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/TongueEastRail"]
 mesh = SubResource("TongueRailMesh")
 
-[node name="TongueEndRail" type="StaticBody3D" parent="."]
+[node name="TongueEndRail" type="StaticBody3D" parent="Deck"]
 position = Vector3(11, 5, -6.1)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TongueEndRail"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Deck/TongueEndRail"]
 shape = SubResource("TongueEndShape")
 
-[node name="Stone" type="MeshInstance3D" parent="TongueEndRail"]
+[node name="Stone" type="MeshInstance3D" parent="Deck/TongueEndRail"]
 mesh = SubResource("TongueEndMesh")
 
-[node name="BalconyPierEast" parent="." instance=ExtResource("pillar")]
-position = Vector3(13.6, 0, 1.6)
-scale = Vector3(0.5, 1, 0.5)
-
-[node name="BalconyPierWest" parent="." instance=ExtResource("pillar")]
-position = Vector3(13.6, 0, -1.6)
-scale = Vector3(0.5, 1, 0.5)
-
-[node name="HoleRim" type="MeshInstance3D" parent="."]
+[node name="HoleRim" type="MeshInstance3D" parent="Deck"]
 position = Vector3(11, 4.52, -4.5)
 cast_shadow = 0
 mesh = SubResource("HoleRimMesh")
@@ -401,7 +419,7 @@ initial_velocity_min = 2.4
 initial_velocity_max = 3.4
 color_ramp = SubResource("UpdraftFade")
 
-[node name="WalkLantern" parent="." instance=ExtResource("lantern")]
+[node name="WalkLantern" parent="Deck" instance=ExtResource("lantern")]
 position = Vector3(13.4, 4.5, 1.4)
 scale = Vector3(0.66, 0.66, 0.66)
 
