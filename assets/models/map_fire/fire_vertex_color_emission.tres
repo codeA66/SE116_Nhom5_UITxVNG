@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bqiv6e33x6nvm"]
 
 [sub_resource type="Shader" id="Shader_fire_emit"]
 code = "shader_type spatial;
@@ -17,5 +17,6 @@ void fragment() {
 
 [resource]
 resource_name = "Fire_VertexColor_Emission"
+render_priority = 0
 shader = SubResource("Shader_fire_emit")
 shader_parameter/emission_energy = 1.0

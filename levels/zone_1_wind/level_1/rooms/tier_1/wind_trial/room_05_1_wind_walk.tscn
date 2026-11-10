@@ -1,0 +1,102 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/paving_stone.tres" id="paving_stone"]
+[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_paving.res" id="floor"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
+
+[sub_resource type="BoxShape3D" id="WalkFloorShape"]
+size = Vector3(12, 0.48, 4)
+
+[sub_resource type="BoxMesh" id="WalkFloorMesh"]
+material = ExtResource("stone")
+size = Vector3(12, 0.48, 4)
+
+[sub_resource type="BoxShape3D" id="SouthRailShape"]
+size = Vector3(12, 0.64, 0.2)
+
+[sub_resource type="BoxMesh" id="SouthRailMesh"]
+material = ExtResource("stone")
+size = Vector3(12, 0.64, 0.2)
+
+[sub_resource type="BoxShape3D" id="NorthRailShape"]
+size = Vector3(8, 0.64, 0.2)
+
+[sub_resource type="BoxMesh" id="NorthRailMesh"]
+material = ExtResource("stone")
+size = Vector3(8, 0.64, 0.2)
+
+[sub_resource type="BoxShape3D" id="EndRailShape"]
+size = Vector3(0.2, 0.64, 4)
+
+[sub_resource type="BoxMesh" id="EndRailMesh"]
+material = ExtResource("stone")
+size = Vector3(0.2, 0.64, 4)
+
+[node name="Room051WindWalk" type="Node3D"]
+
+[node name="WalkFloor" type="StaticBody3D" parent="."]
+position = Vector3(6, -0.24, 0)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WalkFloor"]
+shape = SubResource("WalkFloorShape")
+
+[node name="Stone" type="MeshInstance3D" parent="WalkFloor"]
+position = Vector3(0, -0.08, 0)
+mesh = SubResource("WalkFloorMesh")
+
+[node name="Paving" type="MultiMeshInstance3D" parent="."]
+material_override = ExtResource("paving_stone")
+multimesh = ExtResource("floor")
+
+[node name="SouthRail" type="StaticBody3D" parent="."]
+position = Vector3(6, 0.32, 1.9)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthRail"]
+shape = SubResource("SouthRailShape")
+
+[node name="Stone" type="MeshInstance3D" parent="SouthRail"]
+position = Vector3(0, 0, 0)
+mesh = SubResource("SouthRailMesh")
+
+[node name="NorthRail" type="StaticBody3D" parent="."]
+position = Vector3(4, 0.32, -1.9)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthRail"]
+shape = SubResource("NorthRailShape")
+
+[node name="Stone" type="MeshInstance3D" parent="NorthRail"]
+position = Vector3(0, 0, 0)
+mesh = SubResource("NorthRailMesh")
+
+[node name="EndRail" type="StaticBody3D" parent="."]
+position = Vector3(11.9, 0.32, 0)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EndRail"]
+shape = SubResource("EndRailShape")
+
+[node name="Stone" type="MeshInstance3D" parent="EndRail"]
+position = Vector3(0, 0, 0)
+mesh = SubResource("EndRailMesh")
+
+[node name="WalkLantern" parent="." instance=ExtResource("lantern")]
+position = Vector3(7.1, 0.62, -1.9)
+scale = Vector3(0.66, 0.66, 0.66)
+
+[node name="LegacyWindTrialEntry" type="Marker3D" parent="."]
+position = Vector3(4.7, 0, 0.6)
+rotation_degrees = Vector3(0, -90, 0)
+script = ExtResource("spawn")
+spawn_id = &"level_1.wind_trial_entry"
+
+[node name="BookArrival" type="Marker3D" parent="."]
+position = Vector3(1.55, 0, 0)
+rotation_degrees = Vector3(0, -90, 0)
+script = ExtResource("spawn")
+spawn_id = &"level_1.wind_book_arrival"
+

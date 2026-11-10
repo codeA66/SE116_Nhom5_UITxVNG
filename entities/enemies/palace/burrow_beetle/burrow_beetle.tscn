@@ -1,0 +1,76 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="base"]
+[ext_resource type="Script" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.gd" id="beetle"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/burrow_beetle/burrow_beetle.glb" id="skin"]
+[ext_resource type="Resource" path="res://resources/enemies/burrow_beetle/burrow_beetle.tres" id="data"]
+[ext_resource type="Script" path="res://entities/enemies/palace/burrow_beetle/states/exposed.gd" id="idle"]
+[ext_resource type="Script" path="res://entities/enemies/palace/burrow_beetle/states/burrow.gd" id="burrow"]
+[ext_resource type="Script" path="res://entities/enemies/palace/burrow_beetle/states/fire_seed.gd" id="attack"]
+[ext_resource type="Script" path="res://entities/enemies/palace/burrow_beetle/stone_hurtbox.gd" id="hurtbox"]
+[ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="pool"]
+[ext_resource type="PackedScene" path="res://objects/combat/projectiles/stone_seed/stone_seed.tscn" id="seed"]
+
+[sub_resource type="BoxShape3D" id="body"]
+size = Vector3(1.4, 1.0, 1.5)
+
+[sub_resource type="BoxShape3D" id="hit"]
+size = Vector3(1.55, 1.2, 1.75)
+
+[sub_resource type="StandardMaterial3D" id="soil"]
+albedo_color = Color(0.35, 0.22, 0.14, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="soil_mound"]
+material = SubResource("soil")
+top_radius = 0.65
+bottom_radius = 0.91
+height = 0.12
+radial_segments = 10
+rings = 0
+
+[node name="BurrowBeetle" instance=ExtResource("base")]
+script = ExtResource("beetle")
+data = ExtResource("data")
+collision_mask = 1
+
+[node name="CollisionShape3D" parent="." index="0"]
+position = Vector3(0, 0.5, 0)
+shape = SubResource("body")
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="BeetleSkin" parent="Model/Visual" index="2" instance=ExtResource("skin")]
+
+[node name="HurtboxComponent" parent="." index="4"]
+script = ExtResource("hurtbox")
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+position = Vector3(0, 0.6, 0)
+shape = SubResource("hit")
+
+[node name="Idle" parent="StateMachine" index="1"]
+script = ExtResource("idle")
+
+[node name="Attack" parent="StateMachine" index="4"]
+script = ExtResource("attack")
+
+[node name="Burrow" type="Node" parent="StateMachine" index="8"]
+script = ExtResource("burrow")
+
+[node name="DeathEffectComponent" parent="."]
+script = null
+
+[node name="Mound" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.012, 0)
+cast_shadow = 0
+mesh = SubResource("soil_mound")
+
+[node name="SeedPool" type="Node" parent="."]
+script = ExtResource("pool")
+scene = ExtResource("seed")
+initial_size = 2

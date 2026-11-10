@@ -33,6 +33,7 @@ var _rise: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group(&"gameplay_overlay")
 	apply_style()
 	# Đổi hồ sơ = lượt chơi khác: quên khu vừa hiện để vào lại vẫn có chữ
 	SaveManager.slot_changed.connect(reset_history.unbind(1))

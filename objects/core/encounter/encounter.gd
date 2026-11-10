@@ -110,12 +110,14 @@ func start() -> void:
 	for enemy in _pending:
 		if is_instance_valid(enemy) and not enemy.is_dead():
 			queue.append(enemy)
-	_pending.clear()
+	# Giữ tham chiếu đến quái chưa xuất hiện để _exit_tree dọn nếu player rời phòng giữa đợt.
+	_pending.assign(queue)
 	_alive = queue.size()
 	if _alive == 0:
 		_finish()
 		return
 	for enemy: Enemy in queue:
+		_pending.erase(enemy)
 		_spawn(enemy)
 		if spawn_interval > 0.0:
 			await get_tree().create_timer(spawn_interval, false).timeout

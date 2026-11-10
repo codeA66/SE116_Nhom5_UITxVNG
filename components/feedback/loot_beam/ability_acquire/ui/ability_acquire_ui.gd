@@ -190,6 +190,8 @@ func _build() -> void:
 	_black.color = Color(0.0, 0.0, 0.0, 0.0)
 	_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_black)
+	# Anchor phủ kín: engine tự giãn theo cửa sổ, không cần nối size_changed (tránh gọi vào node đã rời cây)
+	_black.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_black.hide()
 	_panel = PANEL_SCENE.instantiate() as AbilityAcquirePanel
 	_root.add_child(_panel)
@@ -203,12 +205,3 @@ func _build() -> void:
 	_slot_fx = SlotFx.new()
 	_slot_fx.data = data
 	_root.add_child(_slot_fx)
-	get_viewport().size_changed.connect(_layout)
-	_layout()
-## Position là tọa độ local thực, không phải offset của anchor center.
-func _layout() -> void:
-	_root.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	_shade.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	_root.size = get_viewport().get_visible_rect().size
-	_shade.size = _root.size
-	_black.size = _root.size

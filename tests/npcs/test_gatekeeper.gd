@@ -147,8 +147,7 @@ func _uc1_closed() -> void:
 func _open_question(keeper: Gatekeeper) -> void:
 	await _until_grounded()
 	await _press(&"interact")
-	await _settle(keeper)
-	await _press(&"interact")
+	await _advance_story(keeper)
 	for i in 120:
 		if _state(keeper) == &"Serve" or _state(keeper) == &"Idle":
 			break
@@ -156,19 +155,29 @@ func _open_question(keeper: Gatekeeper) -> void:
 	await _settle(keeper)
 
 
+## Lời chào có thể gồm nhiều câu và thay đổi theo tiến trình truyện.
+func _advance_story(keeper: Gatekeeper) -> void:
+	for i in 12:
+		if _state(keeper) != &"Talk":
+			break
+		await _settle(keeper)
+		await _press(&"interact")
+		await _physics(2)
+
+
 func _uc2_not_enough() -> void:
 	_set_jade(10)
 	await _open_question(_keeper_a)
 	_check(_state(_keeper_a) == &"Serve", "UC2: hết lời chào -> hỏi tiền (%s)" % _state(_keeper_a))
 	var question := _text(_keeper_a)
-	_check(question.contains("50") and question.contains("10"), "UC2: câu hỏi ghi giá và số đang có ('%s')" % question)
+	_check(question.contains("50") and question.contains("Soul Jade"), "UC2: câu hỏi ghi giá và loại tiền ('%s')" % question)
 	await _shot("question")
 	await _press(&"interact")
 	await _physics(4)
 	_check(_jade() == 10, "UC2: thiếu tiền -> không trừ (%d)" % _jade())
 	_check(_anim(_keeper_a) == &"Refuse", "UC2: chạy Refuse (%s)" % _anim(_keeper_a))
 	await _settle(_keeper_a)
-	_check(_text(_keeper_a).contains("Có 10"), "UC2: câu từ chối ghi số đang có ('%s')" % _text(_keeper_a))
+	_check(_text(_keeper_a).contains("có 10"), "UC2: câu từ chối ghi số đang có ('%s')" % _text(_keeper_a))
 	await _press(&"interact")
 	await _physics(6)
 	_check(_state(_keeper_a) == &"Idle" and _player.controls_enabled, "UC2: xong -> Idle, trả điều khiển")
@@ -180,7 +189,7 @@ func _uc3_decline_and_cancel() -> void:
 	await _press(&"ui_down")
 	await _press(&"interact")
 	await _settle(_keeper_a)
-	_check(_text(_keeper_a).contains("ngắm"), "UC3: chọn Thôi -> câu tiễn ('%s')" % _text(_keeper_a))
+	_check(_text(_keeper_a).contains("Trời còn sáng"), "UC3: từ chối -> câu tiễn ('%s')" % _text(_keeper_a))
 	await _press(&"interact")
 	await _physics(6)
 	_check(_jade() == 10 and _blocked(_barrier_a), "UC3: Thôi -> tiền giữ nguyên, rào đóng")
@@ -209,8 +218,15 @@ func _uc5_pay() -> void:
 	_check(GameState.has_flag(FLAG_A), "UC5: bật cờ đã trả")
 	_check(_anim(_keeper_a) == &"Accept", "UC5: chạy Accept (%s)" % _anim(_keeper_a))
 	await _settle(_keeper_a)
-	_check(_text(_keeper_a).contains("Qua đi"), "UC5: câu cảm ơn ('%s')" % _text(_keeper_a))
+	_check(_text(_keeper_a).contains("nhường lối"), "UC5: câu nhận tiền ('%s')" % _text(_keeper_a))
 	await _press(&"interact")
+	_check(_text(_keeper_a).contains("Người dưới bến"), "UC5: F đọc tiếp chuyện tiếng gõ ngay sau lời nhận tiền")
+	var box := _keeper_a.get_dialogue_box()
+	for i in 8:
+		if not box.is_open():
+			break
+		await _press(&"interact")
+	_check(GameState.has_flag(&"level_1.story.gate_knocking"), "UC5: đọc hết chuyện mới ghi cờ đã nghe")
 	await _physics(4)
 	await _wait(_face_turn_wait())
 	_check(_anim(_keeper_a) == &"StepAside", "UC5: bước sang bên (%s)" % _anim(_keeper_a))
@@ -230,8 +246,8 @@ func _uc5_pay() -> void:
 func _uc6_after_paid() -> void:
 	await _press(&"interact")
 	await _settle(_keeper_a)
-	_check(_text(_keeper_a).contains("Trả rồi"), "UC6: nói lại -> câu đã trả ('%s')" % _text(_keeper_a))
-	await _press(&"interact")
+	_check(_text(_keeper_a).contains("Ta vẫn nhớ"), "UC6: nói lại -> câu ngắn sau khi đã nghe chuyện ('%s')" % _text(_keeper_a))
+	await _advance_story(_keeper_a)
 	await _physics(8)
 	_check(_state(_keeper_a) == &"Idle" and _jade() == 20, "UC6: không hỏi tiền, tiền không đổi (%s, %d)" % [_state(_keeper_a), _jade()])
 

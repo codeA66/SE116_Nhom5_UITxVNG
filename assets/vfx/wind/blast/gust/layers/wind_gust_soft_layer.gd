@@ -59,9 +59,9 @@ static func build_ribbon(points: PackedVector3Array, widths: PackedFloat32Array,
 	arrays[Mesh.ARRAY_VERTEX] = vertices
 	arrays[Mesh.ARRAY_TEX_UV] = uv
 	arrays[Mesh.ARRAY_INDEX] = indices
-	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	return mesh
+	var ribbon_mesh := ArrayMesh.new()
+	ribbon_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return ribbon_mesh
 
 
 ## Gộp nhiều dải thành một mesh (một lần vẽ)

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3 uid="uid://co3hqb5euga4h"]
+
+[ext_resource type="Script" uid="uid://dxmughdmcrllh" path="res://entities/npcs/_base/dialogue/dialogue_condition.gd" id="condition"]
+[ext_resource type="Script" uid="uid://bwy2dqnugxoun" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="dialogue"]
+[ext_resource type="Script" uid="uid://crfm2u46umajv" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="line"]
+[ext_resource type="Script" uid="uid://rrf762xwikqx" path="res://entities/npcs/gatekeeper/toll_paid_condition.gd" id="paid"]
+
+[sub_resource type="Resource" id="C0"]
+script = ExtResource("paid")
+must_be_paid = false
+
+[sub_resource type="Resource" id="L0"]
+script = ExtResource("line")
+text = "Ta vẫn giữ cửa. Cũng như người dưới kia vẫn giữ bến."
+
+[resource]
+script = ExtResource("dialogue")
+conditions = Array[ExtResource("condition")]([SubResource("C0")])
+lines = Array[ExtResource("line")]([SubResource("L0")])
+opens_service = true

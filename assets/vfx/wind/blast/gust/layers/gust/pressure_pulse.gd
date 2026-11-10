@@ -24,7 +24,7 @@ func _ready() -> void:
 	gust.visual_burst.connect(_on_burst)
 
 
-func _on_burst(data: WindBlastData, _span: float) -> void:
+func _on_burst(data: WindBlastData, _burst_span: float) -> void:
 	var physics_step: float = 1.0 / Engine.physics_ticks_per_second
 	var lifetime: float = maxf(physics_step, minf(data.active_time, FLASH_TIME))
 	begin_layer(lifetime, Vector3(data.width, data.height, data.reach))

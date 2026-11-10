@@ -39,7 +39,7 @@ func _process(delta: float) -> void:
 		visual_dissolve.emit(_cast_data,maxf(linger_time,MIN_TIME))
 	if _cast_age >= get_blast_time():
 		_reset_visual()
-		blast_finished.emit()
+		_notify_blast_finished()
 
 ## Test và các scene cũ vẫn đọc cùng trạng thái gồng.
 func is_charging() -> bool:
@@ -74,7 +74,7 @@ func _start_gust(data: WindBlastData) -> void:
 	show()
 	set_process(true)
 	if had_charge:
-		charge_finished.emit()
+		_notify_charge_finished()
 	visual_burst.emit(data,_gust_span)
 
 ## Vùng đẩy cũng phát stop giữa lượt, chỉ hủy hình khi chưa bung.

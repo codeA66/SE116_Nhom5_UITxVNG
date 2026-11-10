@@ -26,3 +26,11 @@ func is_playing() -> bool:
 ## Tổng thời gian hình còn hiện kể từ lúc vùng đẩy bật (s)
 func get_blast_time() -> float:
 	return 0.0
+
+
+func _notify_charge_finished() -> void:
+	charge_finished.emit()
+
+
+func _notify_blast_finished() -> void:
+	blast_finished.emit()

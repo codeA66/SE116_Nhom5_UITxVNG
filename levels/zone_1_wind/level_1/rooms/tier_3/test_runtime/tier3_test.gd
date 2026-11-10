@@ -30,6 +30,7 @@ func _enter_tree() -> void:
 		ancestor = ancestor.get_parent()
 
 func _ready() -> void:
+	$TestSetup/Interface.add_to_group(&"gameplay_overlay")
 	if standalone_test:
 		player_spawned.connect(_configure_player)
 		GameState.set_weapon(SWORD)

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3 uid="uid://cca8xn3gbx8l3"]
+
+[ext_resource type="Script" uid="uid://dxmughdmcrllh" path="res://entities/npcs/_base/dialogue/dialogue_condition.gd" id="condition"]
+[ext_resource type="Script" uid="uid://bwy2dqnugxoun" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="dialogue"]
+[ext_resource type="Script" uid="uid://crfm2u46umajv" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="line"]
+
+[sub_resource type="Resource" id="L0"]
+script = ExtResource("line")
+text = "Ta từng nghĩ, cứ thắp đèn thì người lạc đường sẽ tìm được về."
+
+[sub_resource type="Resource" id="L1"]
+script = ExtResource("line")
+text = "Bây giờ ta chỉ mong người trở về vẫn nhận ra ánh đèn này."
+
+[resource]
+script = ExtResource("dialogue")
+lines = Array[ExtResource("line")]([SubResource("L0"), SubResource("L1")])
+opens_service = true
