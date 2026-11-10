@@ -22,7 +22,7 @@ var _exit_gate: TrialGrille
 var _old_gate: StoneGate
 var _walk_gate: StoneGate
 var _challenge: WindChallenge
-var _challenge_gate: TrialGrille
+var _secret_wall: SecretWall
 
 
 func _ready() -> void:
@@ -44,8 +44,8 @@ func _run() -> void:
 
 	# UC01: từ ban công 5.1 rơi qua hố xuống giữa 5.2, các lối ra khóa.
 	var checkpoint_before: StringName = GameState.get_checkpoint_spawn_id()
-	_check(not _exit_gate.is_open and not _old_gate.is_open and not _challenge_gate.is_open,
-		"TC01 lối lên phòng 6 và cửa sang 5.3 bị chặn trước trận")
+	_check(not _exit_gate.is_open and not _old_gate.is_open and not _secret_wall.is_broken and not _secret_wall.can_break(),
+		"TC01 lối lên phòng 6 bị chặn, tường giả chưa phá được trước trận")
 	_check(_walk_gate.is_open, "TC02 học Gió xong thì cầu thang từ phòng 9 lên 5.1 mở")
 	_check(not _path_is_clear(Vector3(6, 6.25, -62), Vector3(6, 6.25, -66)), "TC03 cầu thang cũ chặn đường đi tắt")
 	_check(_player.global_position.y > 7.5 and _trial.current_wave == 0, "TC04 đứng trên ban công 5.1, chưa có quái")
@@ -56,7 +56,7 @@ func _run() -> void:
 	_check(_player.global_position.y < 4.0 and GameState.get_checkpoint_spawn_id() == checkpoint_before,
 		"TC04 rơi qua hố xuống sàn 5.2, không đổi checkpoint")
 	_check(_trial.current_wave == 1 and _enemy_count(_first) == 1, "TC05 đáp xuống 5.2, xuất hiện đúng một Bọ")
-	_check(not (_challenge_gate.get_node(^"CollisionShape3D") as CollisionShape3D).disabled, "TC06 cửa sang 5.3 vẫn khóa")
+	_check(not (_secret_wall.get_node(^"CollisionShape3D") as CollisionShape3D).disabled, "TC06 tường giả vẫn chắn lối sang 5.3")
 	if _enemy_count(_first) != 1:
 		_finish()
 		return
@@ -98,8 +98,8 @@ func _run() -> void:
 	await _reflect(right, Vector3(39.4, 3.65, -62.25))
 	_check(_trial.is_active() and _exit_gate.is_open and _old_gate.is_open, "TC13 hạ Bọ cuối mới mở lối lên phòng 6")
 	await _frames(30)
-	_check(_challenge_gate.is_open and (_challenge_gate.get_node(^"CollisionShape3D") as CollisionShape3D).disabled,
-		"TC13 hạ Bọ cuối mở cửa sang 5.3")
+	_check(_secret_wall.can_break() and not _secret_wall.is_broken, "TC13 thắng 5.2 thì tường giả mới phá được (chưa tự vỡ)")
+	await _break_secret_wall()
 
 	# UC04: thử thách 5.3 tuỳ chọn, ba đợt, không rơi Soul Jade, thưởng bùa.
 	await _run_challenge()
@@ -123,8 +123,9 @@ func _run() -> void:
 	await _bind_loaded_level()
 	_check(_player.global_position.distance_to(Vector3(23.8, 5.4, -74.9)) < 0.3,
 		"TC17 nạp save cũ đưa Foxy về Phòng 6")
-	_check(_trial.is_active() and _exit_gate.is_open and _old_gate.is_open and _challenge_gate.is_open,
-		"TC18 nạp lại vẫn mở lối lên phòng 6 và cửa sang 5.3")
+	_check(_trial.is_active() and _exit_gate.is_open and _old_gate.is_open and _secret_wall.is_broken
+		and (_secret_wall.get_node(^"CollisionShape3D") as CollisionShape3D).disabled,
+		"TC18 nạp lại vẫn mở lối lên phòng 6, tường giả vẫn vỡ")
 	_check(not is_instance_valid(_first) and not is_instance_valid(_second), "TC19 nạp lại không tái sinh Bọ")
 	await _frames(3)
 	_check(_challenge.is_active() and _challenge.get_node_or_null(^"Waves/Wave1") == null
@@ -149,12 +150,16 @@ func _run_challenge() -> void:
 	var totals: Array[int] = []
 	for wave: Encounter in waves:
 		totals.append(wave.get_shader_warmup_sources().size())
+	_check((_challenge.get_node(^"ShroudRoom") as Node3D).visible, "TC30 đứng ngoài thì 5.3 bị màn tối che")
 	_player.teleport(Vector3(34, 3.65, -61.2), Vector3.BACK)
 	await _frames(6)
 	await _move_until(&"move_back", func() -> bool: return _challenge.current_wave == 0)
 	await _frames(30)
 	_check(_challenge.current_wave == 0 and not _challenge.get_node(^"EntryGate").is_open,
 		"TC22 đi thật qua hành lang vào 5.3 thì cửa khóa, bắt đầu đợt 1")
+	await _frames(40)
+	_check(not (_challenge.get_node(^"ShroudRoom") as Node3D).visible and not (_challenge.get_node(^"ShroudCorridor") as Node3D).visible,
+		"TC30 bước vào 5.3 thì màn tối tan")
 	for index: int in range(waves.size()):
 		await _until(func() -> bool: return _challenge.current_wave == index and _enemy_count(waves[index]) > 0, 240)
 		var reward_hidden: bool = not (_challenge.get_node(^"RewardCharm") as Node3D).visible
@@ -179,11 +184,32 @@ func _run_challenge() -> void:
 	_check(_challenge.is_active() and is_instance_valid(charm) and charm.visible and _challenge.get_node(^"EntryGate").is_open,
 		"TC25 xong đợt 3: cửa mở, bùa hiện giữa phòng")
 	if is_instance_valid(charm):
-		_player.teleport(charm.global_position + Vector3(0, 0.05, 1.0), Vector3.FORWARD)
+		_player.teleport(Vector3(charm.global_position.x, 3.65, charm.global_position.z + 1.1), Vector3.FORWARD)
 		await _frames(12)
 		await _press(&"interact")
 		await _frames(10)
 	_check(GameState.owns_charm(CHARM.id), "TC26 nhặt bùa thưởng, bùa có trong trang Bùa")
+
+
+func _break_secret_wall() -> void:
+	var hints: Array[int] = [0]
+	_secret_wall.hinted.connect(func() -> void: hints[0] += 1)
+	var wall: Vector3 = _secret_wall.global_position
+	_player.teleport(Vector3(wall.x, 3.65, -61.1), Vector3.BACK)
+	await _frames(10)
+	_aim_at(Vector3(wall.x, 3.6, wall.z))
+	await _press(&"attack")
+	await _frames(40)
+	_check(hints[0] > 0 and not _secret_wall.is_broken, "TC28 chém tường giả: có gợi ý, tường chưa vỡ")
+	_player.energy.set_current(3)
+	_player.teleport(Vector3(wall.x, 3.65, -62.6), Vector3.BACK)
+	await _frames(40)
+	_aim_at(Vector3(wall.x, 3.6, wall.z))
+	await _press(&"skill")
+	await _until(func() -> bool: return _secret_wall.is_broken, 120)
+	_check(_secret_wall.is_broken and GameState.has_flag(&"level_1.wind_secret_wall"), "TC29 Thổi Gió vào tường giả: tường vỡ, lưu cờ")
+	await _frames(100)
+	_check(not (_secret_wall.get_node(^"Debris") as Node3D).visible, "TC29 mảnh đá rơi xong thì ẩn hẳn")
 
 
 func _load_level() -> void:
@@ -203,7 +229,7 @@ func _bind_loaded_level() -> void:
 	_old_gate = tier.get_node(^"OldStairTrialGate") as StoneGate
 	_walk_gate = tier.get_node(^"TrialWalkGate") as StoneGate
 	_challenge = tier.get_node(^"Room053WindChallenge") as WindChallenge
-	_challenge_gate = _trial.get_node(^"ChallengeGate") as TrialGrille
+	_secret_wall = _trial.get_node(^"SecretWall") as SecretWall
 	await _frames(3)
 
 

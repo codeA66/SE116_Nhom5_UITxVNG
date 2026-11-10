@@ -1,7 +1,7 @@
 extends Node3D
 ## Đấu trường bắt buộc sau khi học Gió: người chơi rơi qua hố của 5.1 xuống giữa phòng là bắt đầu.
-## Hai đợt dùng Encounter riêng. Chỉ đợt cuối mới chốt tiến trình và mở cả hai lối: dốc lên Phòng 6 (đi tiếp)
-## và cửa sang Phòng 5.3 (thử thách tuỳ chọn).
+## Hai đợt dùng Encounter riêng. Chỉ đợt cuối mới chốt tiến trình và mở dốc lên Phòng 6 (đi tiếp).
+## Thắng xong thì tường giả (SecretWall, nguồn là phòng này) mới phá được bằng Thổi Gió để vào phòng bí mật 5.3.
 
 signal activated
 
@@ -14,7 +14,6 @@ const TrialGrille := preload("grille/trial_grille.gd")
 var current_wave: int = 0
 
 @onready var _trigger: Area3D = $EntryTrigger
-@onready var _challenge_gate: TrialGrille = $ChallengeGate
 @onready var _exit_gate: TrialGrille = $ExitGate
 @onready var _intro: Encounter = $FirstWave
 @onready var _final: Encounter = $SecondWave
@@ -23,7 +22,6 @@ var current_wave: int = 0
 func _ready() -> void:
 	if is_active():
 		_trigger.monitoring = false
-		_challenge_gate.set_open(true, false)
 		_exit_gate.set_open(true, false)
 		_intro.queue_free()
 		_final.queue_free()
@@ -61,6 +59,5 @@ func _start_final_wave() -> void:
 
 func _finish() -> void:
 	GameState.set_flag(cleared_flag)
-	_challenge_gate.set_open(true)
 	_exit_gate.set_open(true)
 	activated.emit()

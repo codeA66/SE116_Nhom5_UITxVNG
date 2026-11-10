@@ -12,7 +12,9 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/wildlife/werewolf/werewolf.tscn" id="wolf"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="charm_pickup"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/challenge_charm.tres" id="charm"]
-[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="pillar"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/charm_altar.glb" id="altar"]
+[ext_resource type="PackedScene" path="res://objects/world/light_shaft/light_shaft.tscn" id="light_shaft"]
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/secret_shroud.gd" id="shroud"]
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
 
 [sub_resource type="BoxShape3D" id="FloorShape"]
@@ -31,6 +33,27 @@ size = Vector3(4, 2.4, 4)
 
 [sub_resource type="BoxShape3D" id="EntryTriggerShape"]
 size = Vector3(4, 3.2, 2)
+
+[sub_resource type="CylinderShape3D" id="AltarShape"]
+height = 1.0
+radius = 0.62
+
+[sub_resource type="StandardMaterial3D" id="ShroudMaterial"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.03, 0.04, 0.06, 1)
+
+[sub_resource type="BoxMesh" id="ShroudRoomMesh"]
+size = Vector3(21, 2.8, 20.8)
+
+[sub_resource type="BoxMesh" id="ShroudCorridorMesh"]
+size = Vector3(5, 2.8, 3.6)
+
+[sub_resource type="BoxShape3D" id="RevealRoomShape"]
+size = Vector3(20, 3, 20)
+
+[sub_resource type="BoxShape3D" id="RevealCorridorShape"]
+size = Vector3(4, 3, 4)
 
 [sub_resource type="BoxShape3D" id="SideWallShape"]
 size = Vector3(0.4, 1.6, 20)
@@ -179,22 +202,6 @@ monitorable = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger"]
 shape = SubResource("EntryTriggerShape")
 
-[node name="PierNorthWest" parent="." instance=ExtResource("pillar")]
-position = Vector3(0.3, 0, -19.7)
-scale = Vector3(0.8, 0.7, 0.8)
-
-[node name="PierNorthEast" parent="." instance=ExtResource("pillar")]
-position = Vector3(19.7, 0, -19.7)
-scale = Vector3(0.8, 0.7, 0.8)
-
-[node name="PierSouthWest" parent="." instance=ExtResource("pillar")]
-position = Vector3(0.3, 0, -0.3)
-scale = Vector3(0.8, 0.7, 0.8)
-
-[node name="PierSouthEast" parent="." instance=ExtResource("pillar")]
-position = Vector3(19.7, 0, -0.3)
-scale = Vector3(0.8, 0.7, 0.8)
-
 [node name="LanternWest" parent="." instance=ExtResource("lantern")]
 position = Vector3(1.4, 0, -1.4)
 scale = Vector3(0.66, 0.66, 0.66)
@@ -203,11 +210,63 @@ scale = Vector3(0.66, 0.66, 0.66)
 position = Vector3(18.6, 0, -1.4)
 scale = Vector3(0.66, 0.66, 0.66)
 
-[node name="RewardCharm" parent="." instance=ExtResource("charm_pickup")]
+[node name="Altar" type="StaticBody3D" parent="."]
 position = Vector3(10, 0, -10)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Altar"]
+position = Vector3(0, 0.5, 0)
+shape = SubResource("AltarShape")
+
+[node name="Model" parent="Altar" instance=ExtResource("altar")]
+
+[node name="AltarShaft" parent="Altar" instance=ExtResource("light_shaft")]
+height = 7.0
+width = 0.9
+tilt_degrees = 12.0
+shaft_count = 3
+spread = 1.2
+color = Color(0.82, 0.95, 1, 1)
+intensity = 0.18
+
+[node name="AltarLight" type="OmniLight3D" parent="Altar"]
+position = Vector3(0, 2.2, 0)
+light_color = Color(0.78, 0.95, 1, 1)
+light_energy = 1.2
+omni_range = 5.0
+
+[node name="RewardCharm" parent="." instance=ExtResource("charm_pickup")]
+position = Vector3(10, 0.45, -10)
 persistent_id = &"level_1.wind_challenge_charm"
 charm = ExtResource("charm")
 starts_hidden = true
+
+[node name="RevealArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="RoomShape" type="CollisionShape3D" parent="RevealArea"]
+position = Vector3(10, 1.5, -10)
+shape = SubResource("RevealRoomShape")
+
+[node name="CorridorShape" type="CollisionShape3D" parent="RevealArea"]
+position = Vector3(6, 1.5, -22)
+shape = SubResource("RevealCorridorShape")
+
+[node name="ShroudRoom" type="MeshInstance3D" parent="." node_paths=PackedStringArray("reveal_area")]
+position = Vector3(10, 1, -10)
+material_override = SubResource("ShroudMaterial")
+mesh = SubResource("ShroudRoomMesh")
+script = ExtResource("shroud")
+reveal_area = NodePath("../RevealArea")
+
+[node name="ShroudCorridor" type="MeshInstance3D" parent="." node_paths=PackedStringArray("reveal_area")]
+position = Vector3(6, 1, -22.1)
+material_override = SubResource("ShroudMaterial")
+mesh = SubResource("ShroudCorridorMesh")
+script = ExtResource("shroud")
+reveal_area = NodePath("../RevealArea")
 
 [node name="Waves" type="Node3D" parent="."]
 

@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="beetle"]
 [ext_resource type="PackedScene" path="res://objects/combat/training_dummy/wooden_training_dummy.tscn" id="dummy"]
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="pillar"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/secret_wall/secret_wall.tscn" id="secret_wall"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/rubble_cluster.glb" id="rubble"]
 
 [sub_resource type="BoxShape3D" id="ArenaFloorShape"]
 size = Vector3(20, 0.48, 20)
@@ -176,17 +178,13 @@ monitorable = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger"]
 shape = SubResource("EntryTriggerShape")
 
-[node name="ChallengeGate" parent="." instance=ExtResource("gate")]
-position = Vector3(6, 0, -0.1)
+[node name="SecretWall" parent="." node_paths=PackedStringArray("sources") instance=ExtResource("secret_wall")]
+position = Vector3(6, 0, -0.2)
+persistent_id = &"level_1.wind_secret_wall"
+sources = [NodePath("..")]
 
-[node name="ChallengeSign" type="Label3D" parent="."]
-position = Vector3(6, 3, -1.4)
-billboard = 1
-pixel_size = 0.01
-text = "THỬ THÁCH GIÓ
-3 đợt"
-font_size = 40
-outline_size = 10
+[node name="SecretRubble" parent="." instance=ExtResource("rubble")]
+transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, 8.7, 0, -0.85)
 
 [node name="ExitGate" parent="." instance=ExtResource("gate")]
 position = Vector3(0.35, 1.7, -14)
