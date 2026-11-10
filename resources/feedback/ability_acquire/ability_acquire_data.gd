@@ -195,6 +195,15 @@ extends Resource
 @export_group("Feedback")
 @export var shake: float = 0.34
 @export var hitstop: float = 0.055
+## Rung tăng dần trong pha Hấp thu (đốm bay vào người): từ absorb_shake_start lên absorb_shake_max. 0 = tắt
+@export_range(0.0, 1.0, 0.01) var absorb_shake_start: float = 0.0
+@export_range(0.0, 1.0, 0.01) var absorb_shake_max: float = 0.0
+## Phần đầu pha Hấp thu chưa rung (đốm chưa chạm người)
+@export_range(0.0, 0.95, 0.01) var absorb_shake_delay: float = 0.1
+## Số mũ đường tăng: > 1 thì càng về cuối càng dồn dập
+@export_range(0.1, 6.0, 0.1) var absorb_shake_curve: float = 2.0
+## Bật: rung Burst giảm đều và hết đúng lúc Burst kết thúc, không kéo sang pha sau
+@export var shake_ends_with_burst: bool = false
 @export_group("UI")
 @export var canvas_layer: int = 20
 @export var confirm_mouse_button: MouseButton = MOUSE_BUTTON_LEFT

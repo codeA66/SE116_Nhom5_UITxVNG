@@ -9,7 +9,7 @@ func _phase_enter() -> void:
 	renderer.update_book(1.0)
 	renderer.enter_phase(2)
 ## Hold hình cục bộ vài mili giây; không để timer HitStop toàn cục rò sau khi hủy.
-func _phase_update(_progress: float) -> void:
+func _phase_update(progress: float) -> void:
 	var t: float = clampf(maxf(elapsed-context.data.hitstop,0.0)/maxf(duration-context.data.hitstop,context.data.minimum_time),0.0,1.0)
 	renderer.update_phase(2,t,elapsed)
 	var release: float = (1.0-t)*(1.0-t)
@@ -19,3 +19,9 @@ func _phase_update(_progress: float) -> void:
 	context.set_focus_push(context.data.get_gather_extra_push())
 	context.set_actor_glow(lerpf(context.data.actor_glow_burst,context.data.actor_glow_gather,t)*strength)
 	ui.set_grade(context.data.gather_dim*(1.0-t),context.data.gather_desaturation*(1.0-t),context.data.fullscreen_pulse*flash*strength,release*strength,t)
+	# Đỉnh rung đặt lúc vào pha (ability_acquire_vfx); ở đây giảm đều để hết rung đúng lúc nổ xong
+	if context.data.shake_ends_with_burst: context.hold_shake(context.data.shake*strength*(1.0-progress))
+## Không để rung của cú nổ kéo sang pha sau.
+func exit() -> void:
+	super.exit()
+	if context != null and context.active and context.data.shake_ends_with_burst: context.hold_shake(0.0)

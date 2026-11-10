@@ -8,8 +8,9 @@
 [ext_resource type="Resource" path="res://resources/player/items/keys/hub_wind_key.tres" id="6"]
 [ext_resource type="Resource" path="res://resources/player/items/keys/energy_stone.tres" id="7"]
 [ext_resource type="Resource" path="res://resources/player/items/tools/tnt.tres" id="tnt"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/challenge_charm.tres" id="challenge_charm"]
 
 [resource]
 script = ExtResource("1")
 items = Array[ExtResource("2")]([ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("tnt")])
-charms = Array[ExtResource("3")]([])
+charms = Array[ExtResource("3")]([ExtResource("challenge_charm")])

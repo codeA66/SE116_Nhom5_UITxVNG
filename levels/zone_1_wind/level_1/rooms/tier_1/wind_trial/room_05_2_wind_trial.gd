@@ -1,5 +1,7 @@
 extends Node3D
-## Hai đợt dùng Encounter riêng. Chỉ đợt cuối mới chốt tiến trình và mở cổng.
+## Đấu trường bắt buộc sau khi học Gió: đi từ lối 5.1 qua cửa song sắt là cửa đóng sau lưng và bắt đầu.
+## Hai đợt dùng Encounter riêng. Chỉ đợt cuối mới chốt tiến trình và mở dốc lên Phòng 6 (đi tiếp).
+## Thắng xong thì tường giả (SecretWall, nguồn là phòng này) mới phá được bằng Thổi Gió để vào phòng bí mật 5.3.
 
 signal activated
 
@@ -21,6 +23,7 @@ var current_wave: int = 0
 func _ready() -> void:
 	if is_active():
 		_trigger.monitoring = false
+		_entry_gate.set_open(true, false)
 		_exit_gate.set_open(true, false)
 		_intro.queue_free()
 		_final.queue_free()
@@ -35,6 +38,7 @@ func is_active() -> bool:
 	return GameState.has_flag(cleared_flag)
 
 
+## Qua ngưỡng cửa thì khoá cửa sau lưng: trận bắt buộc, chỉ mở lại khi thắng.
 func _on_entry(body: Node3D) -> void:
 	if not body is Player or current_wave != 0 or not GameState.has_ability(WIND_ID):
 		return

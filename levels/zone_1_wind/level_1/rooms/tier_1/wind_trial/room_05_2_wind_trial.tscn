@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="beetle"]
 [ext_resource type="PackedScene" path="res://objects/combat/training_dummy/wooden_training_dummy.tscn" id="dummy"]
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="pillar"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/secret_wall/secret_wall.tscn" id="secret_wall"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/rubble_cluster.glb" id="rubble"]
 
 [sub_resource type="BoxShape3D" id="ArenaFloorShape"]
 size = Vector3(20, 0.48, 20)
@@ -46,18 +48,25 @@ material = ExtResource("stone")
 size = Vector3(20, 1.45, 0.4)
 
 [sub_resource type="BoxShape3D" id="EntryLeftWallShape"]
-size = Vector3(4, 7.4, 0.4)
+size = Vector3(4, 1.6, 0.4)
 
 [sub_resource type="BoxMesh" id="EntryLeftWallMesh"]
 material = ExtResource("stone")
 size = Vector3(4, 1.45, 0.4)
 
 [sub_resource type="BoxShape3D" id="EntryRightWallShape"]
-size = Vector3(12, 7.4, 0.4)
+size = Vector3(6, 1.6, 0.4)
 
 [sub_resource type="BoxMesh" id="EntryRightWallMesh"]
 material = ExtResource("stone")
-size = Vector3(12, 1.45, 0.4)
+size = Vector3(6, 1.45, 0.4)
+
+[sub_resource type="BoxShape3D" id="EntryFarWallShape"]
+size = Vector3(2, 1.6, 0.4)
+
+[sub_resource type="BoxMesh" id="EntryFarWallMesh"]
+material = ExtResource("stone")
+size = Vector3(2, 1.45, 0.4)
 
 [sub_resource type="ConvexPolygonShape3D" id="RampShape"]
 points = PackedVector3Array(0, -0.25, -1.85, 0, 1.8, -1.85, 0, -0.25, 1.85, 0, 1.8, 1.85, 6, -0.25, -1.85, 6, 0, -1.85, 6, -0.25, 1.85, 6, 0, 1.85)
@@ -136,6 +145,7 @@ position = Vector3(2, 3.7, -0.2)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryLeftWall"]
+position = Vector3(0, -2.9, 0)
 shape = SubResource("EntryLeftWallShape")
 
 [node name="Stone" type="MeshInstance3D" parent="EntryLeftWall"]
@@ -143,10 +153,11 @@ position = Vector3(0, -2.975, 0)
 mesh = SubResource("EntryLeftWallMesh")
 
 [node name="EntryRightWall" type="StaticBody3D" parent="."]
-position = Vector3(14, 3.7, -0.2)
+position = Vector3(11, 3.7, -0.2)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryRightWall"]
+position = Vector3(0, -2.9, 0)
 shape = SubResource("EntryRightWallShape")
 
 [node name="Stone" type="MeshInstance3D" parent="EntryRightWall"]
@@ -178,12 +189,32 @@ shape = SubResource("EntryTriggerShape")
 position = Vector3(6, 0, -0.1)
 starts_open = true
 
+[node name="EntryFarWall" type="StaticBody3D" parent="."]
+position = Vector3(19, 3.7, -0.2)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryFarWall"]
+position = Vector3(0, -2.9, 0)
+shape = SubResource("EntryFarWallShape")
+
+[node name="Stone" type="MeshInstance3D" parent="EntryFarWall"]
+position = Vector3(0, -2.975, 0)
+mesh = SubResource("EntryFarWallMesh")
+
+[node name="SecretWall" parent="." node_paths=PackedStringArray("sources") instance=ExtResource("secret_wall")]
+position = Vector3(16, 0, -0.2)
+persistent_id = &"level_1.wind_secret_wall"
+sources = [NodePath("..")]
+
+[node name="SecretRubble" parent="." instance=ExtResource("rubble")]
+transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, 13.4, 0, -0.85)
+
 [node name="ExitGate" parent="." instance=ExtResource("gate")]
 position = Vector3(0.35, 1.7, -14)
 rotation_degrees = Vector3(0, 90, 0)
 
 [node name="EnergyDummy" parent="." instance=ExtResource("dummy")]
-position = Vector3(15.3, 0, -2.25)
+position = Vector3(12, 0, -2.25)
 rotation_degrees = Vector3(0, -20, 0)
 
 [node name="RechargeLabel" type="Label3D" parent="EnergyDummy"]
