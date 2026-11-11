@@ -42,6 +42,11 @@ func physics_update(delta: float) -> void:
 		state_machine.transition_to(&"Melee")
 		return
 	
+	# Ở tầm giậm đá Magma tỏa tròn
+	if distance >= boss.data.magma_stomp_min_range and distance <= boss.data.magma_stomp_max_range and boss.can_magma_stomp():
+		state_machine.transition_to(&"MagmaStomp")
+		return
+	
 	# Ở tầm nhảy dậm đất
 	if distance >= boss.data.jump_slam_min_range and distance <= boss.data.jump_slam_max_range and boss.can_jump_slam():
 		state_machine.transition_to(&"JumpSlam")

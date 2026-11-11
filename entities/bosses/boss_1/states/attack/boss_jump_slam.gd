@@ -53,15 +53,19 @@ func physics_update(delta: float) -> void:
 			boss.face_direction(to_player.normalized(), delta)
 		return
 	
-	# Pha 2: Bay trên không về phía mục tiêu
+	# Pha 2: Bay trên không về phía mục tiêu (quỹ đạo nhảy vòng cung)
 	if _timer >= _effective_windup and _timer < _effective_impact:
+		var flight_total: float = _effective_impact - _effective_windup
+		var elapsed_flight: float = _timer - _effective_windup
 		var flight_time: float = maxf(_effective_impact - _timer, 0.05)
 		var to_target: Vector3 = _jump_target - boss.global_position
 		to_target.y = 0.0
 		var horizontal_vel: Vector3 = to_target / flight_time
 		boss.velocity.x = horizontal_vel.x
 		boss.velocity.z = horizontal_vel.z
-		boss.velocity.y = 2.0 # Giữ bay nhẹ trên không
+		# Nhảy vòng cung: nửa đầu bay lên, nửa sau lao xuống sàn
+		var progress: float = clampf(elapsed_flight / flight_total, 0.0, 1.0)
+		boss.velocity.y = (1.0 - 2.0 * progress) * 6.0
 		boss.face_direction(to_target.normalized(), delta)
 		return
 	
@@ -70,6 +74,18 @@ func physics_update(delta: float) -> void:
 		_slammed = true
 		boss.velocity = Vector3.ZERO
 		boss.hide_jump_indicator()
+		
+		# Snap Boss xuống chạm mặt sàn đấu nếu còn trên không
+		var space_state := boss.get_world_3d().direct_space_state
+		var query := PhysicsRayQueryParameters3D.create(
+			boss.global_position + Vector3.UP * 1.0,
+			boss.global_position + Vector3.DOWN * 10.0,
+			1
+		)
+		var hit := space_state.intersect_ray(query)
+		if not hit.is_empty():
+			boss.global_position.y = (hit["position"] as Vector3).y
+			
 		boss.trigger_ground_slam()
 	
 	# Pha 4: Chờ phục hồi sau cú dậm

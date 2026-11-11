@@ -5,10 +5,8 @@ extends BossState
 func enter(_previous: StringName) -> void:
 	boss.play_anim(&"Buff")
 	boss.activate_invulnerable_shield()
-	
-	var shake: Node = boss.get_node_or_null(^"/root/ScreenShake")
-	if shake and shake.has_method(&"add_trauma"):
-		shake.add_trauma(0.4)
+	boss.perform_buff_roar()
+	boss.summon_minions_for_current_phase()
 
 
 func physics_update(delta: float) -> void:
