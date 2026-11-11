@@ -40,6 +40,15 @@ extends Resource
 @export var fireball_cooldown_phase2: float = 3.5
 @export var fireball_cooldown_phase3: float = 10.0
 
+@export_group("Magma Stomp Attack")
+@export var magma_stomp_damage: int = 2
+@export var magma_stomp_knockback: float = 7.0
+@export var magma_stomp_cooldown_phase1: float = 8.0
+@export var magma_stomp_cooldown_phase2: float = 6.0
+@export var magma_stomp_cooldown_phase3: float = 4.0
+@export var magma_stomp_min_range: float = 2.0
+@export var magma_stomp_max_range: float = 9.0
+
 @export_group("Buff & Multipliers")
 @export var damage_multiplier_phase3: int = 2
 @export var anim_speed_phase1: float = 1.0

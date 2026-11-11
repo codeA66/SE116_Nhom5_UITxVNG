@@ -96,7 +96,7 @@ Vì game không dùng thanh máu, người chơi nhận biết trạng thái c�
 | Thành phần | Loại | Kế thừa / Dùng từ đâu | Lý do |
 |---|---|---|---|
 | **Scene gốc Boss** (`boss_1.tscn`) | **Kế thừa** | Kế thừa từ `entities/_base/character.tscn` | Tận dụng trọn vẹn Jolt Physics 3D, hệ thống máu `HealthComponent`, vùng nhận đòn `HurtboxComponent`, co giãn `SquashStretch`, bóng `BlobShadow`, `WindReceiverComponent` và khung `StateMachine` có sẵn. |
-| **Visual & Model** | **Tái sử dụng** | `assets/models/bosses/boss_1/boss_profile/Boss2.glb` | Dùng model có sẵn từ boss profile (15k poly đúng trần Art Guide). Nhúng vào node `Model/Visual` của scene. |
+| **Visual & Model** | **Tái sử dụng** | `assets/models/bosses/boss_1/boss_profile/model/boss_1.glb` | Dùng model có sẵn từ boss profile (15k poly đúng trần Art Guide). Nhúng vào node `Model/Visual` của scene. |
 | **Animation Library** | **Tái sử dụng** | `boss_animation_library.tres` | Dùng 10 clips đã chuẩn hóa root-motion và xương từ `boss_profile/animation/`. |
 | **Sóng kích mặt đất** | **Tái sử dụng** | `objects/shockwave/ground_shockwave.tscn` | Cơ chế sóng chấn đã có sẵn, chỉ cần gọi `launch()` khi Boss tiếp đất trong đòn `Jump Attack`. |
 | **Script chính Boss** (`boss_1.gd`) | **Tạo mới** | `extends Character` | Quản lý logic đặc thù của Boss: khóa máu 50%/20%, đếm stack khiên, super armor (chặn stagger), điều phối chuyển phase và phát signal cho Boss UI. |
