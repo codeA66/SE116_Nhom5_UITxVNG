@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FireCasterData" format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_caster/fire_caster_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_caster/fire_caster_movement.tres" id="2_move"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_caster/fire_caster_attack.tres" id="3_attack"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_caster/fire_bolt.tres" id="4_bolt"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Quỷ Xương Lửa"
+max_health = 4
+movement = ExtResource("2_move")
+detect_range = 9.0
+lose_range = 13.0
+leash_range = 15.0
+attack = ExtResource("3_attack")
+attack_range = 9.0
+attack_cooldown = 1.8
+patrol_radius = 3.0
+stun_time = 0.3
+wind_multiplier = 1.6
+stagger_on_wind = true
+bolt = ExtResource("4_bolt")

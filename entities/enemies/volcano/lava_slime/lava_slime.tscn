@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_enemy"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/lava_slime/lava_slime.gd" id="2_slime"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/lava_slime/lava_slime.tres" id="3_data"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/lava_slime/lava_slime.glb" id="4_model"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/lava_slime/lava_slime_animations.tres" id="5_anims"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/lava_slime/states/slime_hop.gd" id="6_hop"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/lava_slime/states/slime_fuse.gd" id="7_fuse"]
+[ext_resource type="Script" path="res://components/combat/damage_area/explosion_component.gd" id="8_boom"]
+
+[sub_resource type="BoxShape3D" id="HurtShape"]
+size = Vector3(1.1, 0.7, 0.95)
+
+[node name="LavaSlime" instance=ExtResource("1_enemy")]
+script = ExtResource("2_slime")
+data = ExtResource("3_data")
+chase_state = &"SlimeHop"
+attack_state = &"SlimeFuse"
+
+[node name="AnimationPlayer" parent="."]
+libraries = {
+&"": ExtResource("5_anims")
+}
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="LavaSlimeModel" parent="Model/Visual" instance=ExtResource("4_model")]
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+shape = SubResource("HurtShape")
+
+[node name="ExplosionComponent" type="Node3D" parent="."]
+editor_description = "Vụ nổ khi hết ngòi; số liệu lấy từ LavaSlimeData."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+script = ExtResource("8_boom")
+
+[node name="FuseSound" type="AudioStreamPlayer3D" parent="."]
+editor_description = "Tiếng xì ngòi (chưa có file)."
+
+[node name="SlimeHop" type="Node" parent="StateMachine"]
+script = ExtResource("6_hop")
+
+[node name="SlimeFuse" type="Node" parent="StateMachine"]
+script = ExtResource("7_fuse")

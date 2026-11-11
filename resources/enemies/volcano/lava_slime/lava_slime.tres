@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="LavaSlimeData" format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/volcano/lava_slime/lava_slime_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/lava_slime/lava_slime_movement.tres" id="2_move"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/lava_slime/lava_slime_explosion.tres" id="3_boom"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Slime Dung Nham"
+max_health = 3
+movement = ExtResource("2_move")
+detect_range = 9.0
+lose_range = 13.0
+leash_range = 16.0
+attack = ExtResource("3_boom")
+attack_range = 2.0
+attack_cooldown = 0.0
+patrol_radius = 3.0
+stun_time = 0.25
+wind_multiplier = 1.6
+stagger_on_wind = true

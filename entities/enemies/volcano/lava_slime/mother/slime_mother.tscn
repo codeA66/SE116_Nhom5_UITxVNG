@@ -1,0 +1,36 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/lava_slime/lava_slime.tscn" id="1_slime"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/lava_slime/mother/slime_mother.gd" id="2_mother"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/lava_slime/lava_slime_mother.tres" id="3_data"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/lava_slime/mother/states/mother_slam.gd" id="4_slam"]
+
+[sub_resource type="CapsuleShape3D" id="MotherBody"]
+radius = 1.1
+height = 2.2
+
+[sub_resource type="BoxShape3D" id="MotherHurt"]
+size = Vector3(2.7, 1.75, 2.4)
+
+[node name="SlimeMother" instance=ExtResource("1_slime")]
+script = ExtResource("2_mother")
+data = ExtResource("3_data")
+attack_state = &"MotherSlam"
+
+[node name="CollisionShape3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("MotherBody")
+
+[node name="Model" parent="."]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 0, 0, 0)
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+shape = SubResource("MotherHurt")
+
+[node name="ExplosionComponent" parent="."]
+hurtbox_mask = 2
+burst_scale = 3.5
+
+[node name="MotherSlam" type="Node" parent="StateMachine"]
+script = ExtResource("4_slam")
