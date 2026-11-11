@@ -12,6 +12,9 @@
 [ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/items/items_page.tscn" id="10_items"]
 [ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/charms/charms_page.tscn" id="11_charms"]
 [ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/tutorials/tutorials_page.tscn" id="12_tutorials"]
+[ext_resource type="Script" path="res://ui/menus/inventory/widgets/category_tabs.gd" id="13_category_tabs"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/settings/settings_page.tscn" id="14_settings"]
+[ext_resource type="PackedScene" path="res://ui/menus/inventory/pages/quit/quit_page.tscn" id="15_quit"]
 
 [sub_resource type="ShaderMaterial" id="Backdrop"]
 shader = ExtResource("3_vignette")
@@ -52,9 +55,91 @@ script = ExtResource("4_frame")
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 110.0
+offset_bottom = 126.0
 grow_horizontal = 2
 mouse_filter = 2
+
+[node name="Categories" type="HBoxContainer" parent="Header"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -320.0
+offset_top = 18.0
+offset_right = 320.0
+offset_bottom = 58.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 48
+alignment = 1
+script = ExtResource("13_category_tabs")
+
+[node name="Inventory" type="VBoxContainer" parent="Header/Categories"]
+layout_mode = 2
+mouse_filter = 0
+alignment = 1
+
+[node name="Content" type="HBoxContainer" parent="Header/Categories/Inventory"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Key" type="Control" parent="Header/Categories/Inventory/Content"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("6_key")
+text = "Q"
+font_size = 13
+
+[node name="Name" type="Label" parent="Header/Categories/Inventory/Content"]
+layout_mode = 2
+text = "TÚI ĐỒ"
+
+[node name="Indicator" type="Control" parent="Header/Categories/Inventory"]
+custom_minimum_size = Vector2(140, 8)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+script = ExtResource("7_rule")
+flourish = true
+flourish_size = 5.0
+
+[node name="Divider" type="Label" parent="Header/Categories"]
+modulate = Color(0.6, 0.6, 0.6, 0.5)
+layout_mode = 2
+text = "•"
+
+[node name="System" type="VBoxContainer" parent="Header/Categories"]
+layout_mode = 2
+mouse_filter = 0
+alignment = 1
+
+[node name="Content" type="HBoxContainer" parent="Header/Categories/System"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Name" type="Label" parent="Header/Categories/System/Content"]
+layout_mode = 2
+text = "HỆ THỐNG"
+
+[node name="Key" type="Control" parent="Header/Categories/System/Content"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("6_key")
+text = "E"
+font_size = 13
+
+[node name="Indicator" type="Control" parent="Header/Categories/System"]
+custom_minimum_size = Vector2(140, 8)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+script = ExtResource("7_rule")
+flourish = true
+flourish_size = 5.0
 
 [node name="Tabs" type="HBoxContainer" parent="Header"]
 layout_mode = 1
@@ -62,9 +147,9 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -360.0
-offset_top = 34.0
+offset_top = 64.0
 offset_right = 360.0
-offset_bottom = 104.0
+offset_bottom = 124.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_constants/separation = 36
@@ -100,12 +185,12 @@ layout_mode = 2
 horizontal_alignment = 1
 
 [node name="Rule" type="Control" parent="Header/Tabs/Center"]
-custom_minimum_size = Vector2(260, 26)
+custom_minimum_size = Vector2(260, 20)
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("7_rule")
 flourish = true
-flourish_size = 9.0
+flourish_size = 8.0
 
 [node name="Next" type="HBoxContainer" parent="Header/Tabs"]
 layout_mode = 2
@@ -130,9 +215,9 @@ anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -320.0
-offset_top = 44.0
+offset_top = 32.0
 offset_right = -70.0
-offset_bottom = 72.0
+offset_bottom = 60.0
 grow_horizontal = 0
 horizontal_alignment = 2
 
@@ -142,7 +227,7 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 70.0
-offset_top = 128.0
+offset_top = 138.0
 offset_right = -70.0
 offset_bottom = -64.0
 grow_horizontal = 2
@@ -155,16 +240,40 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="ElementsPage" parent="Body/Pages" instance=ExtResource("9_elements")]
+[node name="InventoryPages" type="Control" parent="Body/Pages"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ElementsPage" parent="Body/Pages/InventoryPages" instance=ExtResource("9_elements")]
 layout_mode = 1
 
-[node name="ItemsPage" parent="Body/Pages" instance=ExtResource("10_items")]
+[node name="ItemsPage" parent="Body/Pages/InventoryPages" instance=ExtResource("10_items")]
 layout_mode = 1
 
-[node name="CharmsPage" parent="Body/Pages" instance=ExtResource("11_charms")]
+[node name="CharmsPage" parent="Body/Pages/InventoryPages" instance=ExtResource("11_charms")]
 layout_mode = 1
 
-[node name="TutorialsPage" parent="Body/Pages" instance=ExtResource("12_tutorials")]
+[node name="SystemPages" type="Control" parent="Body/Pages"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TutorialsPage" parent="Body/Pages/SystemPages" instance=ExtResource("12_tutorials")]
+layout_mode = 1
+
+[node name="SettingsPage" parent="Body/Pages/SystemPages" instance=ExtResource("14_settings")]
+layout_mode = 1
+
+[node name="QuitPage" parent="Body/Pages/SystemPages" instance=ExtResource("15_quit")]
 layout_mode = 1
 
 [node name="Detail" parent="Body" instance=ExtResource("8_detail")]
@@ -177,9 +286,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -420.0
+offset_left = -460.0
 offset_top = -52.0
-offset_right = 420.0
+offset_right = 460.0
 offset_bottom = -28.0
 grow_horizontal = 2
 grow_vertical = 0
