@@ -22,6 +22,7 @@ func _run() -> void:
 	await _test_hub_and_trigger()
 	_test_new_tutorials_and_skill_acquire()
 	await _test_category_hierarchy_and_navigation()
+	_test_tutorial_save_and_load()
 	
 	if _fails == 0:
 		print("=== TẤT CẢ TEST TUTORIALS THÀNH CÔNG! ===")
@@ -201,3 +202,33 @@ func _test_category_hierarchy_and_navigation() -> void:
 	await get_tree().create_timer(0.25).timeout
 	_assert(not menu.visible, "Menu đóng thành công")
 	menu.queue_free()
+
+
+func _test_tutorial_save_and_load() -> void:
+	print("\nTest 8: Lưu & nạp tiến trình hướng dẫn qua SaveManager")
+	var p := PlayerProgress.new()
+	p.unlocked_tutorials = [&"movement", &"dash", &"sword"]
+	
+	# 1. Kiểm tra serialize to_dict
+	var dict := SaveManager.to_dict(p)
+	_assert(dict.has("tutorials"), "File save chứa khóa 'tutorials'")
+	var saved_tuts: Array = dict.get("tutorials", [])
+	_assert(saved_tuts.size() == 3, "Lưu đủ 3 bài hướng dẫn")
+	_assert(saved_tuts[0] == "movement" and saved_tuts[1] == "dash" and saved_tuts[2] == "sword", "Thứ tự hướng dẫn giữ nguyên khi ghi file")
+	
+	# 2. Kiểm tra deserialize from_dict
+	var loaded := SaveManager.from_dict(dict)
+	_assert(loaded.unlocked_tutorials.size() == 3, "Nạp lại đủ 3 hướng dẫn từ save")
+	_assert(loaded.unlocked_tutorials[0] == &"movement" and loaded.unlocked_tutorials[2] == &"sword", "ID hướng dẫn nạp lại đúng kiểu StringName")
+	_assert(loaded.flags.has(&"tut_movement"), "Cờ thế giới tut_movement được khôi phục")
+	_assert(loaded.flags.has(&"tut_dash"), "Cờ thế giới tut_dash được khôi phục")
+	_assert(loaded.flags.has(&"tut_sword"), "Cờ thế giới tut_sword được khôi phục")
+	
+	# 3. Kiểm tra hồi sinh checkpoint giữ lại hướng dẫn
+	GameState.progress = PlayerProgress.new()
+	GameState.set_checkpoint("res://levels/temple_center/hub/hub.tscn", &"default")
+	_assert(GameState.progress.unlocked_tutorials.is_empty(), "Ban đầu chưa có tutorial")
+	GameState.unlock_tutorial(TUTORIAL_DATA, false)
+	_assert(GameState.has_tutorial(&"movement"), "Vừa mở khóa movement trước khi chết")
+	GameState.restore_checkpoint()
+	_assert(GameState.has_tutorial(&"movement"), "Chết hồi sinh checkpoint VẪN GIỮ tutorial movement trong Sổ Hướng Dẫn")
