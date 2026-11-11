@@ -19,6 +19,11 @@ signal brightened
 @export_range(0.0, 1.0, 0.01) var dark_light_ratio: float = 0.0
 @export_range(0.0, 1.0, 0.01) var dark_ambient_ratio: float = 0.2
 @export_range(0.05, 5.0, 0.05) var fade_time: float = 0.8
+@export_group("Làm dịu nguồn sáng bên ngoài")
+## Material dùng chung của mặt dung nham ngoài hầm: dịu bớt khi ở trong để bóng tối không bị tương phản gắt. Để trống = bỏ qua
+@export var dim_material: ShaderMaterial
+@export var dim_parameter: StringName = &"brightness"
+@export_range(0.0, 1.0, 0.01) var dim_ratio: float = 0.45
 @export_group("Quầng sáng quanh player")
 ## Tắt khi khu có nguồn sáng mang theo riêng (vd. đuốc cầm tay từ lửa trại)
 @export var use_carried_light: bool = true
@@ -33,6 +38,7 @@ var _inside: int = 0
 var _sun_energy: float
 var _bounce_energy: float
 var _ambient_energy: float
+var _dim_base: float = 1.0
 var _tween: Tween
 
 @onready var _carried: OmniLight3D = $CarriedLight
@@ -50,6 +56,9 @@ func _ready() -> void:
 	_sun_energy = sun.light_energy if sun else 0.0
 	_bounce_energy = bounce_light.light_energy if bounce_light else 0.0
 	_ambient_energy = world_environment.environment.ambient_light_energy if world_environment else 0.0
+	if dim_material:
+		var value: Variant = dim_material.get_shader_parameter(dim_parameter)
+		_dim_base = float(value) if value != null else 1.0
 	_carried.top_level = true
 	_carried.light_color = carried_light_color
 	_carried.omni_range = carried_light_range
@@ -71,6 +80,9 @@ func _exit_tree() -> void:
 	# Environment là resource dùng chung: trả lại mức sáng gốc khi rời scene giữa lúc tối
 	if world_environment and world_environment.environment:
 		world_environment.environment.ambient_light_energy = _ambient_energy
+	# Material dung nham cũng dùng chung: trả độ sáng gốc
+	if dim_material:
+		dim_material.set_shader_parameter(dim_parameter, _dim_base)
 
 
 ## Thể body (player) đi qua chỗ hai hộp chồng nhau vẫn tính là ở trong: đếm số hộp đang chạm
@@ -105,6 +117,9 @@ func _set_dark(dark: bool) -> void:
 		_tween.tween_property(bounce_light, ^"light_energy", _bounce_energy * k, fade_time)
 	if world_environment:
 		_tween.tween_property(world_environment.environment, ^"ambient_light_energy", _ambient_energy * (dark_ambient_ratio if dark else 1.0), fade_time)
+	if dim_material:
+		var from: float = float(dim_material.get_shader_parameter(dim_parameter))
+		_tween.tween_method(_set_dim, from, _dim_base * (dim_ratio if dark else 1.0), fade_time)
 	if use_carried_light:
 		_carried.visible = true
 		_tween.tween_property(_carried, ^"light_energy", carried_light_energy if dark else 0.0, fade_time)
@@ -115,3 +130,7 @@ func _set_dark(dark: bool) -> void:
 	elif use_carried_light:
 		_tween.chain().tween_callback(_carried.hide)
 		brightened.emit()
+
+
+func _set_dim(value: float) -> void:
+	dim_material.set_shader_parameter(dim_parameter, value)

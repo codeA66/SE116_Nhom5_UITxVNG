@@ -33,13 +33,12 @@ func _ready() -> void:
 func _run() -> void:
 	await _frames(30)
 	_player.get_node("HurtboxComponent").set_invincible(9999.0)
-	var cover: Node = _level.get_node("Rooms/CellarCover")
+	var cover: Node = _level.get_node("Rooms/Tier1/CellarCover")
 	var roof2: Node3D = cover.get_node("Room02/Roof")
 	var walls2: Node3D = cover.get_node("Room02/TallWalls")
 	var roof3: Node3D = cover.get_node("Room03/Roof")
 	var zone: DarkZone = _level.get_node("CellarDarkZone") as DarkZone
 	var campfire: Node3D = _level.get_node("Room5Campfire")
-	var bundle: Node3D = _level.get_node("Room5StickBundle")
 	# 1. Ngoài hầm
 	_player.teleport(Vector3(62, 4.4, 40))
 	await _frames(20)
@@ -55,36 +54,31 @@ func _run() -> void:
 	var base_state: String = String(_player.state_machine.current_state.name)
 	print("  đối chứng attack khi chưa cầm gậy: state %s" % base_state)
 	await _frames(60)
-	# 2. Lấy gậy
-	_player.teleport(bundle.global_position + Vector3(0, 0.1, 0.9), Vector3.FORWARD)
-	await _frames(10)
-	await _press(&"interact")
-	await _frames(5)
-	var torch: HandTorch = HandTorch.find_on(_player)
-	_check(torch != null and not torch.is_lit, "bấm interact ở bó gậy: cầm gậy chưa cháy")
-	if torch == null:
-		_finish()
-		return
-	# 3a. Lửa trại lúc đầu tắt: chưa châm được
+	# 2. Lửa trại lúc đầu tắt: chưa nhận được đuốc, và không còn bó gậy
 	var fire: Campfire = campfire as Campfire
+	_check(_level.get_node_or_null("Room5StickBundle") == null, "không còn bó gậy ở phòng 5")
 	_check(not fire.is_lit and not fire.get_node("Light").visible, "lửa trại lúc đầu tắt")
 	_player.teleport(campfire.global_position + Vector3(1.8, 0.1, 0.0), Vector3.LEFT)
 	await _frames(10)
 	await _press(&"interact")
 	await _frames(5)
-	_check(not torch.is_lit, "lửa trại tắt: interact không châm được đuốc")
-	# 3b. Phun lửa (đòn lửa) trúng thì lửa trại bùng cháy
+	_check(HandTorch.find_on(_player) == null, "lửa trại tắt: interact không nhận được đuốc")
+	# 3. Phun lửa (đòn lửa) trúng thì lửa trại bùng cháy; đến lấy thì được gậy đã châm
 	fire.get_node("BurnableComponent").ignite()
 	await _frames(40)
 	_check(fire.is_lit and fire.get_node("Light").visible, "trúng lửa: lửa trại cháy")
 	await _capture("campfire_lit.png")
-	# 3. Châm ở lửa trại
 	_player.teleport(campfire.global_position + Vector3(1.8, 0.1, 0.0), Vector3.LEFT)
 	await _frames(10)
 	await _press(&"interact")
 	await _frames(5)
+	var torch: HandTorch = HandTorch.find_on(_player)
+	_check(torch != null and torch.is_lit, "lửa trại đã cháy: interact nhận ngay gậy đã đốt")
+	if torch == null:
+		_finish()
+		return
 	var light: OmniLight3D = torch.get_node("Light")
-	_check(torch.is_lit and light.visible and light.light_energy > 1.0, "lại gần lửa trại bấm interact: đuốc cháy (còn %.0f s)" % torch.time_left())
+	_check(torch.is_lit and light.visible and light.light_energy > 1.0, "đuốc sáng sau khi nhận (còn %.0f s)" % torch.time_left())
 	await _capture("hand_torch_lit.png")
 	# 4. Vẫn đánh được
 	_player.teleport(Vector3(62, 4.4, 40))

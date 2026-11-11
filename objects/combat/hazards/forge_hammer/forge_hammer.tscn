@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/hazards/forge_hammer/forge_hammer.gd" id="1_hammer"]
+[ext_resource type="PackedScene" path="res://objects/combat/indicators/aoe_circle_indicator.tscn" id="2_indicator"]
+[ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="3_damage"]
+
+[sub_resource type="StandardMaterial3D" id="Iron"]
+albedo_color = Color(0.13, 0.11, 0.1, 1)
+metallic = 0.6
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="HotFace"]
+albedo_color = Color(0.9, 0.3, 0.06, 1)
+emission_enabled = true
+emission = Color(1, 0.35, 0.05, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="BoxMesh" id="HeadMesh"]
+material = SubResource("Iron")
+size = Vector3(1.8, 0.9, 1.8)
+
+[sub_resource type="BoxMesh" id="FaceMesh"]
+material = SubResource("HotFace")
+size = Vector3(1.6, 0.08, 1.6)
+
+[sub_resource type="CylinderMesh" id="RodMesh"]
+material = SubResource("Iron")
+top_radius = 0.18
+bottom_radius = 0.22
+height = 8.0
+radial_segments = 8
+rings = 1
+
+[sub_resource type="BoxShape3D" id="DamageShape"]
+size = Vector3(2, 1.6, 2)
+
+[node name="ForgeHammer" type="Node3D"]
+script = ExtResource("1_hammer")
+
+[node name="PhaseTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="Indicator" parent="." instance=ExtResource("2_indicator")]
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("HeadMesh")
+
+[node name="Face" type="MeshInstance3D" parent="Head"]
+editor_description = "Mặt búa nung đỏ: nhìn từ trên vẫn thấy búa đang ở đâu."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.92, 0)
+cast_shadow = 0
+mesh = SubResource("FaceMesh")
+
+[node name="Rod" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.9, 0)
+mesh = SubResource("RodMesh")
+
+[node name="DamageArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("3_damage")
+knockback = 10.0
+hit_interval = 0.8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("DamageShape")
+disabled = true

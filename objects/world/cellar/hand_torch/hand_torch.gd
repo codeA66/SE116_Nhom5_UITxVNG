@@ -14,13 +14,18 @@ const NODE_NAME: StringName = &"HandTorch"
 @export var light_energy: float = 2.6
 @export var light_range: float = 8.0
 @export var light_color: Color = Color(1.0, 0.6, 0.28)
-## Những giây cuối đèn yếu dần để báo sắp tắt
+## Những giây cuối lửa lập loè mạnh để báo sắp tắt
 @export_range(0.0, 60.0, 0.5) var fade_warning: float = 10.0
+@export_group("Gợi ý khi tắt")
+@export var burned_out_hint: String = "Về lửa trại châm lại"
+@export_range(0.5, 10.0, 0.1) var burned_out_hint_time: float = 3.0
 
 var is_lit: bool = false
 
 var _tween: Tween
 
+@onready var _feedback: FlameFeedback = $FlameFeedback
+@onready var _hint: WorldHint = $BurnOutHint
 @onready var _light: OmniLight3D = $Light
 # Ngọn lửa là node con tên bắt đầu bằng "Flame" trong model (glTF có thể thêm hậu tố)
 @onready var _flame: Node3D = $Model.find_child("Flame*", true, false) as Node3D
@@ -53,6 +58,7 @@ func _ready() -> void:
 	_timer.one_shot = true
 	_timer.timeout.connect(_on_burned_out)
 	_igniter.area_entered.connect(_on_area_entered)
+	_feedback.setup(_flame, _light, light_energy)
 	_set_lit_visual(false)
 
 
@@ -63,11 +69,13 @@ func light_up() -> void:
 	_timer.start(burn_time)
 	if _tween:
 		_tween.kill()
-	_light.light_energy = light_energy
-	if fade_warning > 0.0 and burn_time > fade_warning:
-		_tween = create_tween()
-		_tween.tween_interval(burn_time - fade_warning)
-		_tween.tween_property(_light, ^"light_energy", light_energy * 0.35, fade_warning)
+	_feedback.ignite()
+	# Lửa nhỏ dần theo thời gian còn lại để người chơi nhìn là biết; giây cuối thì lập loè
+	var warning: float = minf(fade_warning, burn_time)
+	_tween = create_tween()
+	_tween.tween_property(_feedback, ^"intensity", 0.0, maxf(burn_time - warning, 0.01))
+	if warning > 0.0:
+		_tween.tween_callback(func() -> void: _feedback.sputter = true)
 	lit.emit()
 
 
@@ -79,7 +87,10 @@ func _on_burned_out() -> void:
 	is_lit = false
 	if _tween:
 		_tween.kill()
+	_feedback.extinguish()
 	_set_lit_visual(false)
+	if not burned_out_hint.is_empty():
+		_hint.flash(burned_out_hint, burned_out_hint_time)
 	burned_out.emit()
 
 

@@ -92,7 +92,8 @@ func is_wall_lowered(wall: Node3D) -> bool:
 func get_room(zone: TierZone) -> Node3D:
 	if rooms_root == null or zone == null:
 		return null
-	return rooms_root.get_node_or_null(NodePath(String(zone.name).trim_suffix("Zone"))) as Node3D
+	# Phòng có thể nằm trong nhóm tier (Rooms/Tier1/Room01...): tìm sâu, chỉ chạy khi đổi phòng nên không tốn mỗi frame
+	return rooms_root.find_child(String(zone.name).trim_suffix("Zone"), true, false) as Node3D
 
 
 func _apply_shades() -> void:

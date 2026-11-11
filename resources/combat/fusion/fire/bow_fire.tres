@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" path="res://components/elements/fire/fire_touch/fire_touch.tscn" id="5_touch"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_arrow/fire_arrow_trail.tscn" id="6_trail"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_arrow/impact/fire_arrow_hit_vfx.tscn" id="7_hit"]
+[ext_resource type="Script" uid="uid://ddtyj7qgpvus0" path="res://abilities/fusion/fire/effects/light_on_impact_effect.gd" id="8_light"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/fire/ember_light/ember_light.tscn" id="9_ember"]
 
 [sub_resource type="Resource" id="IgniteImpact"]
 script = ExtResource("4_impact")
@@ -15,10 +17,15 @@ hit_scene = ExtResource("7_hit")
 flight_scene = ExtResource("6_trail")
 warmup_scenes = Array[PackedScene]([ExtResource("5_touch"), ExtResource("6_trail"), ExtResource("7_hit")])
 
+[sub_resource type="Resource" id="EmberOnImpact"]
+script = ExtResource("8_light")
+ember_scene = ExtResource("9_ember")
+warmup_scenes = Array[PackedScene]([ExtResource("9_ember")])
+
 [resource]
 script = ExtResource("1_fusion")
 weapon_slot = 1
 element = ExtResource("2_fire")
 display_name = "Cung Lửa"
-description = "Tên trúng đâu bùng lửa quanh đó khoảng 1 m, đốt cháy mọi thứ dễ cháy."
-effects = Array[ExtResource("3_effect_base")]([SubResource("IgniteImpact")])
+description = "Tên trúng đâu bùng lửa quanh đó khoảng 1 m, đốt cháy mọi thứ dễ cháy, và để lại đốm lửa sáng một lúc."
+effects = Array[ExtResource("3_effect_base")]([SubResource("IgniteImpact"), SubResource("EmberOnImpact")])

@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/fire_puzzle/cracked_wall/cracked_wall.gd" id="1_wall"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_secret_4m.glb" id="2_intact"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_broken_4m.glb" id="3_broken"]
+[ext_resource type="Script" path="res://components/combat/hurtbox/hurtbox_component.gd" id="4_hurtbox"]
+
+[sub_resource type="BoxShape3D" id="Body"]
+size = Vector3(4, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="HitZone"]
+size = Vector3(4.2, 3.6, 1.2)
+
+[node name="CrackedWall" type="StaticBody3D"]
+editor_description = "Tường nứt rộng 4 m (một ô cửa), mặt tường dọc trục X cục bộ. Chỉ vỡ khi bị nổ."
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_wall")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("Body")
+
+[node name="Intact" type="Node3D" parent="."]
+
+[node name="Model" parent="Intact" instance=ExtResource("2_intact")]
+
+[node name="Rubble" type="Node3D" parent="."]
+editor_description = "Tường đổ còn lại sau khi vỡ (đi qua được)."
+transform = Transform3D(1, 0, 0, 0, 0.3, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Model" parent="Rubble" instance=ExtResource("3_broken")]
+
+[node name="HurtboxComponent" type="Area3D" parent="."]
+editor_description = "Chỉ để vụ nổ (ExplosionComponent, TNT) tìm thấy tường; invulnerable nên đòn thường không có tác dụng."
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+script = ExtResource("4_hurtbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+shape = SubResource("HitZone")

@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/spider_web/web_patch.gd" id="1_patch"]
+[ext_resource type="Resource" path="res://resources/combat/spider_web/spider_web.tres" id="2_data"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/fire_spider/web_patch.glb" id="3_model"]
+[ext_resource type="Script" path="res://components/combat/health/health_component.gd" id="4_health"]
+[ext_resource type="Script" path="res://components/combat/hurtbox/hurtbox_component.gd" id="5_hurt"]
+[ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="6_burn"]
+[ext_resource type="Resource" path="res://objects/gates/burnable_barrier/barrier_burn.tres" id="7_burndata"]
+
+[sub_resource type="CylinderShape3D" id="PatchShape"]
+resource_local_to_scene = true
+height = 0.6
+radius = 1.0
+
+[sub_resource type="CylinderShape3D" id="HurtShape"]
+resource_local_to_scene = true
+height = 0.6
+radius = 0.9
+
+[node name="WebPatch" type="Area3D"]
+editor_description = "Tấm tơ nhện: bước vào là dính (chậm + khóa dash). Chém đủ nhát hoặc đốt lửa để phá."
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1_patch")
+data = ExtResource("2_data")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("PatchShape")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("3_model")]
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("4_health")
+max_health = 4
+
+[node name="HurtboxComponent" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("5_hurt")
+health = NodePath("../HealthComponent")
+fixed_damage_per_hit = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("HurtShape")
+
+[node name="BurnableComponent" parent="." node_paths=PackedStringArray("match_shape_of") instance=ExtResource("6_burn")]
+match_shape_of = NodePath("../HurtboxComponent/CollisionShape3D")
+data = ExtResource("7_burndata")

@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_enemy"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_caster/fire_caster.gd" id="2_caster"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_caster/fire_caster.tres" id="3_data"]
+[ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="4_pool"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_caster/fire_bolt/fire_bolt.tscn" id="5_bolt"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_caster/states/fire_chase.gd" id="6_keep"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_caster/states/cast_fire_bolt.gd" id="7_cast"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/fire_caster/fire_caster.glb" id="8_model"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/fire_caster/fire_caster_animations.tres" id="9_anims"]
+
+
+[node name="FireCaster" instance=ExtResource("1_enemy")]
+script = ExtResource("2_caster")
+data = ExtResource("3_data")
+chase_state = &"FireChase"
+attack_state = &"CastFireBolt"
+
+[node name="AnimationPlayer" parent="."]
+libraries = {
+&"": ExtResource("9_anims")
+}
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="FireCasterModel" parent="Model/Visual" instance=ExtResource("8_model")]
+
+[node name="CastLight" type="OmniLight3D" parent="Model/Visual/FireCasterModel/FireCasterModel/Rig/Skeleton3D/Orb"]
+editor_description = "Sáng dần lúc niệm: báo trước cú bắn."
+visible = false
+light_color = Color(1, 0.42, 0.1, 1)
+light_energy = 0.0
+omni_range = 1.6
+omni_attenuation = 2.0
+
+[node name="BoltPool" type="Node" parent="."]
+script = ExtResource("4_pool")
+scene = ExtResource("5_bolt")
+initial_size = 3
+
+[node name="CastSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="FireSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="FireChase" type="Node" parent="StateMachine"]
+script = ExtResource("6_keep")
+
+[node name="CastFireBolt" type="Node" parent="StateMachine"]
+script = ExtResource("7_cast")

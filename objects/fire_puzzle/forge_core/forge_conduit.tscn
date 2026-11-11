@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/fire_puzzle/forge_core/forge_conduit.gd" id="1_conduit"]
+
+[sub_resource type="StandardMaterial3D" id="FlameMat"]
+shading_mode = 0
+albedo_color = Color(1, 0.55, 0.12, 1)
+
+[sub_resource type="PrismMesh" id="FlameMesh"]
+material = SubResource("FlameMat")
+size = Vector3(0.7, 1.3, 0.7)
+
+[node name="ForgeConduit" type="Node3D"]
+script = ExtResource("1_conduit")
+
+[node name="Flame" type="MeshInstance3D" parent="."]
+editor_description = "Ngọn lửa trên miệng ống: ẩn tới khi có lõi."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+cast_shadow = 0
+mesh = SubResource("FlameMesh")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+light_color = Color(1, 0.5, 0.15, 1)
+light_energy = 0.0
+omni_range = 7.0

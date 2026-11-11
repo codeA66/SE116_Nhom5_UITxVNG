@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="burn_comp"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="burn_vfx"]
+[ext_resource type="Script" path="res://objects/fire_puzzle/flammables/_base/flammable.gd" id="flammable"]
+[ext_resource type="Resource" path="res://objects/fire_puzzle/flammables/wooden_crate/wooden_crate_burn.tres" id="burn_data"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/crate_stack.glb" id="model"]
+
+[sub_resource type="BoxShape3D" id="Body"]
+size = Vector3(2.2, 2.0, 2.2)
+
+[sub_resource type="BoxShape3D" id="BurnZone"]
+size = Vector3(2.6, 2.2, 2.6)
+
+[node name="WoodenCrate" type="StaticBody3D"]
+editor_description = "Chồng thùng gỗ: chắn lối, cháy rụi thì mở."
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("flammable")
+body_radius = 1.1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+shape = SubResource("Body")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("model")]
+
+[node name="BurnableComponent" parent="." instance=ExtResource("burn_comp")]
+data = ExtResource("burn_data")
+
+[node name="Zone" type="CollisionShape3D" parent="BurnableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+shape = SubResource("BurnZone")
+
+[node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("burn_vfx")]
+burnable = NodePath("../BurnableComponent")

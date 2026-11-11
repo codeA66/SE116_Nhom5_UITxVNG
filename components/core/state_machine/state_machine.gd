@@ -23,6 +23,21 @@ func physics_update(delta: float) -> void:
 	if current_state:
 		current_state.physics_update(delta)
 
+## Thêm state lúc chạy (kỹ năng gắn thêm vào entity mà không sửa scene gốc). Trùng tên thì bỏ qua, trả false
+func add_state(state: State) -> bool:
+	if _states.has(state.name):
+		return false
+	if state.get_parent() != self:
+		add_child(state)
+	_states[state.name] = state
+	state.state_machine = self
+	return true
+
+
+func has_state(state_name: StringName) -> bool:
+	return _states.has(state_name)
+
+
 func transition_to(state_name: StringName) -> void:
 	var next: State = _states.get(state_name)
 	if next == null:

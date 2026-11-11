@@ -39,6 +39,27 @@ ability_id = &"flame_breath"
 input_action = &"skill_fire"
 glyph_id = &"flame_breath"
 active_states = Array[StringName]([&"FlameBreath"])
+[node name="CycloneSlot" type="Control" parent="."]
+mouse_filter = 2
+script = ExtResource("3")
+ability_id = &"fire_cyclone"
+input_action = &"skill_cyclone"
+glyph_id = &"fire_cyclone"
+active_states = Array[StringName]([&"FireCyclone"])
+[node name="GrappleSlot" type="Control" parent="."]
+mouse_filter = 2
+script = ExtResource("3")
+ability_id = &"grapple"
+input_action = &"skill_grapple"
+glyph_id = &"grapple"
+active_states = Array[StringName]([&"Grapple"])
+[node name="ShieldSlot" type="Control" parent="."]
+mouse_filter = 2
+script = ExtResource("3")
+ability_id = &"slag_shield"
+input_action = &"skill_shield"
+glyph_id = &"slag_shield"
+active_states = Array[StringName]([&"SlagShield"])
 [node name="BindingRefresh" type="Timer" parent="."]
 wait_time = 0.25
 autostart = true

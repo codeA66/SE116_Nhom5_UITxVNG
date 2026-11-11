@@ -4,12 +4,16 @@
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="2_spawn"]
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/fire/fire_shrine_visual.tscn" id="3_visual"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_trigger"]
-radius = 1.6
+[sub_resource type="CylinderShape3D" id="Trigger"]
+height = 1.1
+radius = 0.9
 
-[sub_resource type="CylinderShape3D" id="Body"]
-height = 2.0
-radius = 0.7
+; Mặt bệ vát thoải (~33°, dưới floor_max_angle 45°) để Player đi bộ lên được, không có bước nhảy cao 0,26 m
+[sub_resource type="ConvexPolygonShape3D" id="Pad"]
+points = PackedVector3Array(1.750, 0.000, 0.000, 1.617, 0.000, 0.670, 1.237, 0.000, 1.237, 0.670, 0.000, 1.617, 0.000, 0.000, 1.750, -0.670, 0.000, 1.617, -1.237, 0.000, 1.237, -1.617, 0.000, 0.670, -1.750, 0.000, 0.000, -1.617, 0.000, -0.670, -1.237, 0.000, -1.237, -0.670, 0.000, -1.617, -0.000, 0.000, -1.750, 0.670, 0.000, -1.617, 1.237, 0.000, -1.237, 1.617, 0.000, -0.670, 1.300, 0.260, 0.000, 1.201, 0.260, 0.497, 0.919, 0.260, 0.919, 0.497, 0.260, 1.201, 0.000, 0.260, 1.300, -0.497, 0.260, 1.201, -0.919, 0.260, 0.919, -1.201, 0.260, 0.497, -1.300, 0.260, 0.000, -1.201, 0.260, -0.497, -0.919, 0.260, -0.919, -0.497, 0.260, -1.201, -0.000, 0.260, -1.300, 0.497, 0.260, -1.201, 0.919, 0.260, -0.919, 1.201, 0.260, -0.497)
+
+[sub_resource type="BoxShape3D" id="LampPost"]
+size = Vector3(0.8, 1.1, 0.8)
 
 [node name="FireCheckpoint" type="Node3D" node_paths=PackedStringArray("visual")]
 script = ExtResource("1_cp")
@@ -20,9 +24,12 @@ visual = NodePath("FireShrineVisual")
 [node name="Body" type="StaticBody3D" parent="."]
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("Body")
+[node name="PadShape" type="CollisionShape3D" parent="Body"]
+shape = SubResource("Pad")
+
+[node name="LampPostShape" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -1.95)
+shape = SubResource("LampPost")
 
 [node name="Trigger" type="Area3D" parent="."]
 collision_layer = 0
@@ -30,9 +37,9 @@ collision_mask = 2
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Trigger"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-shape = SubResource("SphereShape3D_trigger")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("Trigger")
 
 [node name="Spawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26, 0.9)
 script = ExtResource("2_spawn")

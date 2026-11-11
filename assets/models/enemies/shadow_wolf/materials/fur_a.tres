@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/character/shadow_rim.gdshader" id="1_rim"]
+
+[resource]
+resource_name = "ShadowWolf_Fur_A"
+shader = ExtResource("1_rim")
+shader_parameter/albedo = Color(0.030, 0.030, 0.036, 1)
+shader_parameter/roughness = 1.0
+shader_parameter/rim_color = Color(0.45, 0.42, 1, 1)
+shader_parameter/rim_power = 3.0
+shader_parameter/rim_strength = 0.9
+shader_parameter/fade = 0.0

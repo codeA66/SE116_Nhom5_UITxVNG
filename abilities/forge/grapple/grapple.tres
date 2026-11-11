@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="GrappleData" format=3]
+
+[ext_resource type="Script" path="res://abilities/forge/grapple/grapple_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://abilities/forge/grapple/grapple_state.gd" id="2_state"]
+
+[resource]
+script = ExtResource("1_data")
+state_script = ExtResource("2_state")
+input_action = &"skill_grapple"
+state = &"Grapple"
+id = &"grapple"
+display_name = "Móc kéo"
+accent_color = Color(0.85, 0.55, 0.3, 1)
+description = "(Thử nghiệm) Bắn móc tới vòng móc phía trước để bay qua hố; không có vòng thì kéo quái nhỏ về phía mình."
+acquire_verb = "Đã rèn"
+acquire_prompt = "Nhấn {key} để bắn móc."
+energy_cost = 1

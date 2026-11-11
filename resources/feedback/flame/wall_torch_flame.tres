@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="FlameFeedbackData" format=3]
+
+[ext_resource type="Script" path="res://objects/world/cellar/flame_feedback/flame_feedback_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+ignite_pop_scale = Vector3(1.6, 2.2, 1.6)
+ignite_pop_time = 0.32
+flash_multiplier = 2.2
+flash_settle_time = 0.6
+spark_amount = 22
+ignite_trauma = 0.12
+flicker_amount = 0.08
+flicker_speed = 7.0
+burn_min_intensity = 1.0
+sputter_flicker_amount = 0.08
+sputter_flicker_speed = 7.0
+smoke_amount = 8
+particle_size = 1.3
+emission_radius = 0.1
+flame_amount = 28
+plume_amount = 6
+ember_amount = 5
+plume_height = 0.4
+light_wobble = 0.08
+color_flicker = 0.3
+dying_red_shift = 0.0
+fill_light_energy = 0.0
+core_scale = 0.6
+blob_scale = 0.8

@@ -1,6 +1,6 @@
 extends Node
 ## Kiểm tra bẫy lửa đuổi theo trên cầu gạch Nether, đo bằng va chạm và input thật:
-## 1. Vừa chạm cầu: cảnh báo ngay (không chờ), lửa phụt đúng chỗ, mất máu và bị hất ra.
+## 1. Chạm cầu: sau first_delay thì cảnh báo (không chờ đứng yên), lửa phụt đúng chỗ, mất máu và bị hất ra.
 ## 2. Đi liên tục từ đầu cầu tới quảng trường: lửa đuổi theo nhịp follow_interval, vẫn qua được cầu.
 ## 3. Đứng yên trên quảng trường (ngoài vùng bẫy): không bị phun.
 ## Chạy: godot --headless --path . res://tests/levels/fire_level_3/lava_geyser_test.tscn  (thêm -- --capture để chụp ảnh lúc phụt)
@@ -19,6 +19,13 @@ var _triggers: int = 0
 
 
 func _ready() -> void:
+	# Không ghi save thật; đánh dấu quái canh cầu đã hạ để chỉ đo bẫy lửa (Guard2 đứng cách BRIDGE_MID 1,4 m và bắn người chơi)
+	if GameState.progress_changed.is_connected(SaveManager.save_game):
+		GameState.progress_changed.disconnect(SaveManager.save_game)
+	if GameState.progress_committed.is_connected(SaveManager.save_game):
+		GameState.progress_committed.disconnect(SaveManager.save_game)
+	GameState.replace_progress(PlayerProgress.new())
+	GameState.set_flag(&"level_3.bridge_guards")
 	var level: ZoneRoot = LEVEL.instantiate()
 	level.player_spawned.connect(func(p: Player) -> void: _player = p)
 	add_child(level)
@@ -38,7 +45,9 @@ func _run(level: Node) -> void:
 	var t: float = 0.0
 	var first_trigger: float = -1.0
 	var shot: bool = false
-	while t < max_wait and _player.health.current_health == hp:
+	# Đủ thời gian cho trễ lần đầu + cảnh báo + phụt dù chỉnh thông số bẫy
+	var wait_limit: float = maxf(max_wait, _trap.first_delay + _trap.geyser_warning_time + 1.5)
+	while t < wait_limit and _player.health.current_health == hp:
 		await get_tree().physics_frame
 		t += get_physics_process_delta_time()
 		if _triggers > 0 and first_trigger < 0.0:
@@ -52,7 +61,8 @@ func _run(level: Node) -> void:
 	if capture:
 		await _save("lava_geyser_burst.png")
 	var pushed: float = Vector2(_player.global_position.x - BRIDGE_MID.x, _player.global_position.z - BRIDGE_MID.z).length()
-	_check(first_trigger > 0.0 and first_trigger <= 0.2, "kích hoạt ngay khi chạm cầu (%.2f s)" % first_trigger)
+	# Lần đầu phun sau first_delay của bẫy (đọc từ scene, 0 = phun ngay)
+	_check(first_trigger > 0.0 and absf(first_trigger - _trap.first_delay) <= 0.2, "kích hoạt sau first_delay %.2f s khi chạm cầu (%.2f s)" % [_trap.first_delay, first_trigger])
 	_check(_player.health.current_health < hp, "bị phun trúng lúc %.2f s, máu %d → %d" % [hit_at, hp, _player.health.current_health])
 	_check(pushed > 0.5, "bị hất khỏi chỗ đứng (%.1f m)" % pushed)
 	# Chờ mạch nghỉ xong cho sạch trạng thái

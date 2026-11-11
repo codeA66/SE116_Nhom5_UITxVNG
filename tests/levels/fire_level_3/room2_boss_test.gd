@@ -1,9 +1,11 @@
 extends Node
-## Mini-boss phòng 2 → cổng khóa đầu lối đi hướng tây (va chạm, input và node thật):
+## Trận 2 Nhện Lửa phòng 2 (thay mini-boss) → cổng khóa đầu lối đi hướng tây (va chạm, input và node thật):
 ## 1. Hai cổng tây (8 m) chặn đường từ quảng trường đầu cầu sang lối đi hướng tây.
-## 2. Vào phòng 2 nhưng chưa chạm bệ thờ: boss vẫn ngủ yên.
-## 3. Đi tới bệ thờ: trận bắt đầu, boss nhắm player; boss trâu hơn quái thường (3 đòn chưa chết).
-## 4. Hạ boss: lưu cờ, hai cổng tây chìm xuống, đi qua được.
+## 2. Chưa vào phòng 2: không còn mini-boss, hai nhện ngủ yên, trận chưa chạy.
+## 3. Bước vào phòng (hộp kích hoạt phủ cả phòng, không cần chạm bệ thờ): trận bắt đầu, cả hai nhện nhắm player;
+##    hạ một con chưa xong trận (cờ chưa đặt, cổng tây còn đóng).
+## 4. Hạ hết nhện: lưu cờ, rơi chìa; hai cổng tây vẫn đóng cho tới khi nhặt chìa và bấm tương tác ở ổ khóa giữa lối.
+## 5. Chưa có chìa mà bấm ổ khóa: hộp thoại báo cần chìa. Có chìa: hai cổng tây chìm xuống, đi qua được.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/room2_boss_test.tscn (-- --capture để chụp ảnh)
 
 const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
@@ -33,37 +35,85 @@ func _run() -> void:
 	_player.get_node("HurtboxComponent").set_invincible(9999.0)
 	var gates: Array[StoneGate] = [_level.get_node("WestGates/WestGateSouth") as StoneGate, _level.get_node("WestGates/WestGateNorth") as StoneGate]
 	var encounter: Encounter = _level.get_node("Room2/Room2BossEncounter") as Encounter
-	var boss: Enemy = encounter.get_node("Enemies/MiniBoss") as Enemy
+	var spiders: Array[FireSpider] = []
+	for child: Node in encounter.get_node("Enemies").get_children():
+		if child is FireSpider:
+			spiders.append(child as FireSpider)
 	# 1. Cổng tây chặn cả hai làn
 	for z: float in [50.0, 54.0]:
 		await _walk_from(Vector3(59, 4.4, z), Vector3(70, 4, z))
 		_check(_player.global_position.x < 64.0, "cổng tây chặn làn z = %.0f (x = %.2f)" % [z, _player.global_position.x])
-	# 2. Vào phòng 2, chưa chạm bệ thờ
-	_player.teleport(Vector3(19, 0.4, 37))
+	# 2. Chưa vào phòng 2
+	_check(encounter.get_node("Enemies").get_node_or_null("MiniBoss") == null, "phòng 2 không còn mini-boss")
+	_check(spiders.size() == 2, "phòng 2 có đúng 2 Nhện Lửa (%d)" % spiders.size())
+	_check(not encounter.is_running() and spiders.all(func(sp: FireSpider) -> bool: return not sp.is_dead() and sp.target == null), "chưa vào phòng 2: hai nhện ngủ yên, trận chưa chạy")
+	# 3. Bước vào phòng (không chạm bệ thờ)
+	_player.teleport(Vector3(26, 0.4, 28))
 	await _frames(60)
-	_check(not encounter.is_running() and not boss.is_dead(), "vào phòng 2 chưa chạm bệ thờ: boss còn ngủ")
-	_check(boss.health.max_health == 15 and is_equal_approx(boss.scale.x, 1.4), "boss dùng dữ liệu mini-boss (%d máu, scale %.1f)" % [boss.health.max_health, boss.scale.x])
-	# 3. Đi tới bệ thờ
-	await _walk_from(Vector3(22, 0.4, 36), Vector3(25.2, 0, 33.2))
-	await _frames(20)
-	_check(encounter.is_running() and boss.target == _player, "chạm bệ thờ: trận bắt đầu, boss nhắm player")
+	_check(encounter.is_running(), "bước vào phòng 2: trận bắt đầu (không cần chạm bệ thờ)")
+	_check(spiders.all(func(sp: FireSpider) -> bool: return sp.target == _player), "cả hai nhện nhắm player")
 	await _frames(40)
-	await _capture("room2_boss_fight.png")
-	for _i: int in range(3):
-		boss.health.take_damage(1)
-	_check(not boss.is_dead(), "boss trâu hơn quái thường: 3 đòn chưa chết (còn %d)" % boss.health.current_health)
-	_check(not gates[0].is_open and not gates[1].is_open, "chưa hạ boss: cổng tây vẫn đóng")
-	# 4. Hạ boss
-	boss.health.take_damage(9999)
+	await _capture("room2_spider_fight.png")
+	spiders[0].health.take_damage(9999)
+	await _frames(30)
+	_check(spiders[0].is_dead() and not spiders[1].is_dead() and not GameState.has_flag(encounter.persistent_id), "hạ một nhện: trận chưa xong, chưa đặt cờ")
+	_check(not gates[0].is_open and not gates[1].is_open, "chưa hạ hết nhện: cổng tây vẫn đóng")
+	# 4. Hạ nốt con còn lại
+	spiders[1].health.take_damage(9999)
 	await _frames(150)
-	_check(GameState.has_flag(encounter.persistent_id), "hạ boss: lưu cờ %s" % encounter.persistent_id)
-	_check(gates[0].is_open and gates[1].is_open, "hai cổng tây mở")
+	_check(GameState.has_flag(encounter.persistent_id), "hạ hết nhện: lưu cờ %s" % encounter.persistent_id)
+	var drop: KeyDrop = _level.get_node("Room2/WestKeyDrop") as KeyDrop
+	var key: KeyPickup = _find_key(_level.get_node("Room2"))
+	_check(key != null and key.key_id == drop.key_id and not GameState.has_flag(drop.key_id), "hạ hết nhện: chìa rơi, chưa nhặt")
+	_check(not gates[0].is_open and not gates[1].is_open, "hạ hết nhện mà chưa có chìa: hai cổng tây vẫn đóng")
+	# 5a. Chưa có chìa, bấm ổ khóa
+	var lock: KeyLock = _level.get_node("WestGates/WestKeyLock") as KeyLock
+	_player.teleport(lock.global_transform * Vector3(0, 0.1, 1.3), -lock.global_basis.z)
+	await _frames(25)
+	await _press(&"interact")
+	await _frames(10)
+	var dialog: DialogBox = _find_dialog(lock)
+	_check(dialog != null and dialog.is_open and not lock.is_active(), "chưa có chìa: ổ khóa báo cần chìa, cổng vẫn khóa")
+	if dialog:
+		dialog.choose(true)
+	await _frames(40)
+	# 5b. Nhặt chìa rồi mở ổ
+	_player.teleport(key.global_position + Vector3(0, 0.2, 0.9), Vector3.FORWARD)
+	await _frames(25)
+	await _press(&"interact")
+	await _frames(30)
+	_check(GameState.has_flag(drop.key_id), "nhặt chìa: có cờ %s" % drop.key_id)
+	_player.teleport(lock.global_transform * Vector3(0, 0.1, 1.3), -lock.global_basis.z)
+	await _frames(25)
+	await _press(&"interact")
+	await _frames(150)
+	_check(lock.is_active() and gates[0].is_open and gates[1].is_open, "bấm ổ khóa có chìa: hai cổng tây mở")
 	for z: float in [50.0, 54.0]:
 		await _walk_from(Vector3(59, 4.4, z), Vector3(70, 4, z))
 		_check(_player.global_position.x > 67.0, "đi qua cổng tây làn z = %.0f (x = %.2f)" % [z, _player.global_position.x])
 	await _capture("west_gate_open.png")
-	print("ROOM2 BOSS RESULT: %s" % ("OK" if _failed == 0 else "%d FAIL" % _failed))
+	print("ROOM2 SPIDERS RESULT: %s" % ("OK" if _failed == 0 else "%d FAIL" % _failed))
 	get_tree().quit(0 if _failed == 0 else 1)
+
+
+func _find_key(room: Node) -> KeyPickup:
+	for c: Node in room.get_children():
+		if c is KeyPickup:
+			return c as KeyPickup
+	return null
+
+
+func _find_dialog(host: Node) -> DialogBox:
+	for c: Node in host.get_children():
+		if c is DialogBox:
+			return c as DialogBox
+	return null
+
+
+func _press(action: StringName) -> void:
+	Input.action_press(action)
+	await _frames(2)
+	Input.action_release(action)
 
 
 func _walk_from(start: Vector3, target: Vector3) -> void:

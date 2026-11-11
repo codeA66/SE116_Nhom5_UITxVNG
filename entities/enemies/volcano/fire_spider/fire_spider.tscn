@@ -1,0 +1,71 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_enemy"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_spider/fire_spider.gd" id="2_spider"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_spider/fire_spider.tres" id="3_data"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/fire_spider/fire_spider.glb" id="4_model"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/fire_spider/fire_spider_animations.tres" id="5_anims"]
+[ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="6_pool"]
+[ext_resource type="PackedScene" path="res://objects/combat/spider_web/web_bolt.tscn" id="7_bolt"]
+[ext_resource type="Script" path="res://components/combat/damage_area/explosion_component.gd" id="8_impact"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_spider/states/spider_chase.gd" id="9_chase"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_spider/states/spider_pounce.gd" id="10_pounce"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_spider/states/spider_web_shot.gd" id="11_web"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 0.55
+height = 1.2
+
+[sub_resource type="BoxShape3D" id="HurtShape"]
+size = Vector3(1.6, 1.0, 1.6)
+
+[node name="FireSpider" instance=ExtResource("1_enemy")]
+script = ExtResource("2_spider")
+data = ExtResource("3_data")
+chase_state = &"SpiderChase"
+attack_state = &"Attack"
+
+[node name="CollisionShape3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("BodyShape")
+
+[node name="AnimationPlayer" parent="."]
+libraries = {
+&"": ExtResource("5_anims")
+}
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="FireSpiderModel" parent="Model/Visual" instance=ExtResource("4_model")]
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("HurtShape")
+
+[node name="WebPool" type="Node" parent="."]
+script = ExtResource("6_pool")
+scene = ExtResource("7_bolt")
+initial_size = 2
+
+[node name="LandImpact" type="Node3D" parent="."]
+editor_description = "Vùng sát thương lúc đáp của nhảy vồ: chỉ trúng player (mask 2), không làm cháy."
+script = ExtResource("8_impact")
+hurtbox_mask = 2
+ignite_targets = false
+shake_trauma = 0.25
+burst_scale = 1.0
+
+[node name="SpiderChase" type="Node" parent="StateMachine"]
+script = ExtResource("9_chase")
+
+[node name="SpiderWebShot" type="Node" parent="StateMachine"]
+script = ExtResource("11_web")
+priority = 0
+
+[node name="SpiderPounce" type="Node" parent="StateMachine"]
+script = ExtResource("10_pounce")
+priority = 1

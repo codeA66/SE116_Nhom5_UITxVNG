@@ -1,39 +1,56 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/lighting/fire_lighting.tscn" id="1_l5u1a"]
-[ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="2_t4mk4"]
-[ext_resource type="PackedScene" path="res://objects/core/kill_zone/kill_zone.tscn" id="3_3tcpi"]
-[ext_resource type="Script" path="res://objects/core/kill_zone/kill_zone.gd" id="4_7tmkw"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_01_spawn.tscn" id="5_ys4l6"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_02_combat_c2.tscn" id="6_ffehm"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_03_combat_treasure.tscn" id="7_kywtb"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_04_treasure_north.tscn" id="8_pd4qe"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_05_ambush.tscn" id="9_u2gvv"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_06_choke_point.tscn" id="10_4f1bo"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_07_hub.tscn" id="11_rmt2l"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_08_arena.tscn" id="12_32lgw"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_09_side_room.tscn" id="13_cem0a"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_10_boss.tscn" id="14_g03qk"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_11_treasure_south.tscn" id="15_t5010"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_12_drained_lava.tscn" id="16_a7umj"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_13_secret.tscn" id="17_m7jl0"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_14_crumbling.tscn" id="18_8x864"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/room_15_ruins_plaza.tscn" id="19_lp14q"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/nether_bridge.tscn" id="20_px2hq"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/cellar_cover.tscn" id="21_kfuu5"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/connectors.tscn" id="22_5n403"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/lighting/fire_lighting.tscn" id="1_t5010"]
+[ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="2_a7umj"]
+[ext_resource type="PackedScene" path="res://objects/core/kill_zone/kill_zone.tscn" id="3_m7jl0"]
+[ext_resource type="Script" path="res://objects/core/kill_zone/kill_zone.gd" id="4_8x864"]
+[ext_resource type="PackedScene" path="res://objects/combat/hazards/lava_zone/lava_splash.tscn" id="lava_splash_scene"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_01_spawn.tscn" id="5_lp14q"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_02_combat_c2.tscn" id="6_px2hq"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_03_combat_treasure.tscn" id="7_kfuu5"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_04_treasure_north.tscn" id="8_5n403"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_05_ambush.tscn" id="9_hu4v4"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_06_choke_point.tscn" id="10_g821r"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_07_hub.tscn" id="11_qmqvp"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_08_arena.tscn" id="12_ar2a0"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_09_side_room.tscn" id="13_tx3g6"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_10_boss.tscn" id="14_8yc0n"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_11_treasure_south.tscn" id="15_7posk"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_12_drained_lava.tscn" id="16_54ghw"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_13_secret.tscn" id="17_kunnk"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_14_crumbling.tscn" id="18_ddvef"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/room_15_ruins_plaza.tscn" id="19_d1wuh"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/nether_bridge.tscn" id="20_ekxkl"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/cellar_cover.tscn" id="21_w6tmj"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_1/connectors.tscn" id="22_khufb"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_01_arrival.tscn" id="23_48k2y"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_02_hammer_hall.tscn" id="24_8371h"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_03_forge_hub.tscn" id="25_jsure"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_04_timber_works.tscn" id="26_lecrx"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_05_slime_hall.tscn" id="27_j44ph"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_06_dark_forge.tscn" id="28_am3hg"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_07_blackout.tscn" id="29_gq6sj"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_08_lava_tide.tscn" id="30_74oxx"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_09_wisp_hall.tscn" id="31_5uqjc"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_t1_forge.tscn" id="room_t2_t1_forge"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_t2_anvil.tscn" id="room_t2_t2_anvil"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_t3_crucible.tscn" id="room_t2_t3_crucible"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_t4_chain.tscn" id="room_t2_t4_chain"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_t5_smelter.tscn" id="room_t2_t5_smelter"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_t6_summit.tscn" id="room_t2_t6_summit"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/t2_s_ice_cave.tscn" id="35_lxn5w"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_2/connectors.tscn" id="36_t22de"]
 
 [ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="zone_root_script"]
 
 [ext_resource type="Script" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="zone_camera_view_script"]
 [ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="camera_view_data_script"]
 
-[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/ability_pickup.tscn" id="ability_pickup_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/fire/fire_ability_pickup.tscn" id="fire_ability_pickup_scene"]
 [ext_resource type="Resource" path="res://abilities/flame_breath/flame_breath.tres" id="flame_breath_data"]
 [ext_resource type="PackedScene" path="res://objects/gates/burnable_barrier/burnable_barrier.tscn" id="burnable_barrier_scene"]
 [ext_resource type="PackedScene" path="res://objects/combat/spawner_cage/spawner_cage.tscn" id="spawner_cage_scene"]
 [ext_resource type="Script" path="res://objects/combat/spawner_cage/flag_reveal.gd" id="flag_reveal_script"]
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="cage_enemy_scene"]
 
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/fire/fire_checkpoint.tscn" id="fire_checkpoint_scene"]
 
@@ -41,11 +58,11 @@
 [ext_resource type="PackedScene" path="res://objects/world/cellar/ignitable_brazier/ignitable_brazier.tscn" id="brazier_scene"]
 
 [ext_resource type="PackedScene" path="res://objects/world/cellar/hand_torch/campfire.tscn" id="campfire_scene"]
-[ext_resource type="PackedScene" path="res://objects/world/cellar/hand_torch/stick_bundle.tscn" id="stick_bundle_scene"]
 
 [ext_resource type="PackedScene" path="res://objects/gates/stone_gate/fire_cellar_gate.tscn" id="cellar_gate_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="encounter_scene"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="room3_enemy_scene"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_spider/fire_spider.tscn" id="fire_spider_scene"]
 [ext_resource type="Script" path="res://objects/wind_puzzle/flag_source/flag_source.gd" id="flag_source_script"]
 [ext_resource type="Script" path="res://objects/world/cellar/ignitable_brazier/brazier_group.gd" id="brazier_group_script"]
 
@@ -81,16 +98,63 @@
 [ext_resource type="Script" path="res://entities/_base/data/weapon_data.gd" id="kit_weapon_data"]
 [ext_resource type="Script" path="res://abilities/ability_data.gd" id="kit_ability_data"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hu4v4"]
+
+[ext_resource type="Script" path="res://objects/fire_puzzle/flammables/_base/flammable_reset.gd" id="flammable_reset_script"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/flammables/dry_vines/dry_vines.tscn" id="flammable_vines"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/flammables/wooden_crate/wooden_crate.tscn" id="flammable_crate"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/flammables/oil_barrel/oil_barrel.tscn" id="flammable_oil"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/flammables/rope_bridge/rope_bridge.tscn" id="flammable_bridge"]
+
+[ext_resource type="PackedScene" path="res://objects/traversal/crumbling_floor/crumbling_floor.tscn" id="crumbling_floor_scene"]
+[ext_resource type="Resource" path="res://resources/world/puzzles/crumbling_floor_one_way.tres" id="crumbling_one_way"]
+[ext_resource type="PackedScene" path="res://objects/combat/training_dummy/wooden_training_dummy.tscn" id="training_dummy_scene"]
+
+
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/wisp_flame/wisp_flame.tscn" id="wisp_flame_scene"]
+[ext_resource type="Script" path="res://objects/fire_puzzle/wisp_flame/wisp_group.gd" id="wisp_group_script"]
+[ext_resource type="Script" path="res://objects/fire_puzzle/wave_spawner/wave_spawner.gd" id="wave_spawner_script"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/shadow_wolf/shadow_wolf.tscn" id="wave_enemy_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/chest/treasure_chest.tscn" id="t2_chest_scene"]
+
+[ext_resource type="Script" path="res://components/elements/cold/cold_zone.gd" id="cold_zone_script"]
+[ext_resource type="Script" path="res://components/elements/cold/warm_zone.gd" id="warm_zone_script"]
+
+[ext_resource type="Script" path="res://abilities/forge/_base/forge_skill_installer.gd" id="forge_installer_script"]
+[ext_resource type="Script" path="res://abilities/forge/_base/forge_skill_data.gd" id="forge_skill_data_script"]
+[ext_resource type="PackedScene" path="res://abilities/forge/grapple/ring/grapple_ring.tscn" id="grapple_ring_scene"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/forge_shards/forge_shard.tscn" id="forge_shard_scene"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/forge_shards/shard_counter.tscn" id="shard_counter_scene"]
+[ext_resource type="Resource" path="res://resources/world/puzzles/forge_shards.tres" id="forge_shards_data"]
+[ext_resource type="Resource" path="res://abilities/forge/fire_cyclone/fire_cyclone.tres" id="forge_skill_0"]
+[ext_resource type="Resource" path="res://abilities/forge/grapple/grapple.tres" id="forge_skill_1"]
+[ext_resource type="Resource" path="res://abilities/forge/slag_shield/slag_shield.tres" id="forge_skill_2"]
+
+[ext_resource type="Script" path="res://entities/enemies/volcano/shadow_wolf/wolf_pack.gd" id="wolf_pack_script"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/lava_slime/mother/slime_mother.tscn" id="t2_mother_scene"]
+[ext_resource type="PackedScene" path="res://entities/bosses/forge_boss/forge_boss.tscn" id="t2_boss_scene"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_caster/fire_caster.tscn" id="t2_enemy_caster"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/shadow_wolf/shadow_wolf.tscn" id="t2_enemy_wolf"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/lava_slime/lava_slime.tscn" id="t2_enemy_slime"]
+
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/cracked_wall/cracked_wall.tscn" id="cracked_wall_scene"]
+[ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="area_title_scene"]
+[ext_resource type="Resource" path="res://resources/world/zones/areas/fire/tier_1.tres" id="tier_1_area"]
+[ext_resource type="Resource" path="res://resources/world/zones/areas/fire/tier_2.tres" id="tier_2_area"]
+
+[ext_resource type="PackedScene" path="res://objects/gates/stone_gate/key_lock.tscn" id="key_lock_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/key/key_drop.tscn" id="key_drop_scene"]
+[ext_resource type="PackedScene" path="res://objects/gates/red_key_door/red_key_pickup.tscn" id="red_key_pickup_scene"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n3gf7"]
 shading_mode = 0
 disable_fog = true
 albedo_color = Color(0.06, 0.035, 0.04, 1)
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_g821r"]
-size = Vector2(264, 192)
+[sub_resource type="PlaneMesh" id="PlaneMesh_1i07y"]
+size = Vector2(456, 192)
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_qmqvp"]
-size = Vector2(184, 112)
+[sub_resource type="PlaneMesh" id="PlaneMesh_y6tll"]
+size = Vector2(376, 112)
 
 [sub_resource type="Resource" id="Zone3CameraView"]
 script = ExtResource("camera_view_data_script")
@@ -144,90 +208,210 @@ size = Vector3(20.0, 12.0, 16.0)
 [sub_resource type="BoxShape3D" id="RoomZone_room_15_ruins_plaza"]
 size = Vector3(20.0, 12.0, 12.0)
 
-[node name="Level3" type="Node3D" unique_id=1386575137]
+[sub_resource type="BoxShape3D" id="RoomZone_t2_01_arrival"]
+size = Vector3(16.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_02_hammer_hall"]
+size = Vector3(32.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_03_forge_hub"]
+size = Vector3(28.0, 12.0, 28.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_04_timber_works"]
+size = Vector3(20.0, 12.0, 20.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_05_slime_hall"]
+size = Vector3(24.0, 12.0, 24.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_06_dark_forge"]
+size = Vector3(20.0, 12.0, 20.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_07_blackout"]
+size = Vector3(28.0, 12.0, 28.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_08_lava_tide"]
+size = Vector3(28.0, 12.0, 24.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_09_wisp_hall"]
+size = Vector3(24.0, 12.0, 24.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_t1_forge"]
+size = Vector3(12.0, 12.0, 12.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_t2_anvil"]
+size = Vector3(16.0, 12.0, 12.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_t3_crucible"]
+size = Vector3(16.0, 12.0, 12.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_t4_chain"]
+size = Vector3(16.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_t5_smelter"]
+size = Vector3(16.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_t6_summit"]
+size = Vector3(16.0, 12.0, 16.0)
+
+[sub_resource type="BoxShape3D" id="RoomZone_t2_s_ice_cave"]
+size = Vector3(20.0, 12.0, 20.0)
+
+[sub_resource type="BoxShape3D" id="IceColdShape"]
+size = Vector3(20.0, 14.0, 20.0)
+
+[sub_resource type="SphereShape3D" id="IceWarmShape"]
+radius = 3.0
+
+[sub_resource type="BoxShape3D" id="Tier1ZoneShape"]
+size = Vector3(188.0, 24.0, 112.0)
+
+[sub_resource type="BoxShape3D" id="Tier2ZoneShape"]
+size = Vector3(168.0, 44.0, 108.0)
+
+[node name="Level3" type="Node3D" unique_id=1587887155]
 script = ExtResource("zone_root_script")
 
-[node name="FireLighting" type="Node3D" parent="." unique_id=2139099334 instance=ExtResource("1_l5u1a")]
+[node name="FireLighting" type="Node3D" parent="." unique_id=135340820 instance=ExtResource("1_t5010")]
 editor_description = "Ánh sáng map Lửa: nền đỏ tím tối, sương độ cao đỏ cam để chân nền đỡ tan vào hơi nóng. Nắng cam nhạt rọi gần thẳng xuống (mặt trên sáng, mặt đứng tối) giống zone 1; đèn hắt từ dưới lên giả ánh dung nham chiếu lên mặt đứng."
 
-[node name="AbyssGround" type="MeshInstance3D" parent="." unique_id=2033067877]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, -8, 52)
-material_override = SubResource("StandardMaterial3D_hu4v4")
+[node name="AbyssGround" type="MeshInstance3D" parent="." unique_id=1896557869]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 184, -8, 52)
+material_override = SubResource("StandardMaterial3D_n3gf7")
 cast_shadow = 0
-mesh = SubResource("PlaneMesh_g821r")
+mesh = SubResource("PlaneMesh_1i07y")
 
-[node name="LavaSea" type="MeshInstance3D" parent="." unique_id=679813510]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, -7.6, 52)
-material_override = ExtResource("2_t4mk4")
+[node name="LavaSea" type="MeshInstance3D" parent="." unique_id=959231956]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 184, -7.6, 52)
+material_override = ExtResource("2_a7umj")
 cast_shadow = 0
-mesh = SubResource("PlaneMesh_qmqvp")
+mesh = SubResource("PlaneMesh_y6tll")
 
-[node name="AbyssKillZone" type="Area3D" parent="." unique_id=630899391 instance=ExtResource("3_3tcpi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, -7, 52)
+[node name="AbyssKillZone" type="Area3D" parent="." unique_id=1734315108 instance=ExtResource("3_m7jl0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 184, -7, 52)
 collision_layer = 0
 collision_mask = 6
-script = ExtResource("4_7tmkw")
-size = Vector3(264, 2, 192)
+script = ExtResource("4_8x864")
+size = Vector3(456, 2, 192)
 lethal = true
+splash_scene = ExtResource("lava_splash_scene")
+splash_y_offset = -0.6
 
-[node name="Rooms" type="Node3D" parent="." unique_id=785751967]
+[node name="Rooms" type="Node3D" parent="." unique_id=851609528]
 
-[node name="Room01Spawn" type="Node3D" parent="Rooms" unique_id=368636432 instance=ExtResource("5_ys4l6")]
+[node name="Tier1" type="Node3D" parent="Rooms" unique_id=1248780341]
+
+[node name="Room01Spawn" type="Node3D" parent="Rooms/Tier1" unique_id=927154820 instance=ExtResource("5_lp14q")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 19.5147, 4, 90.4853)
 
-[node name="Room02CombatC2" type="Node3D" parent="Rooms" unique_id=1316771458 instance=ExtResource("6_ffehm")]
+[node name="Room02CombatC2" type="Node3D" parent="Rooms/Tier1" unique_id=21974860 instance=ExtResource("6_px2hq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0, 32)
 
-[node name="Room03CombatTreasure" type="Node3D" parent="Rooms" unique_id=1036719643 instance=ExtResource("7_kywtb")]
+[node name="Room03CombatTreasure" type="Node3D" parent="Rooms/Tier1" unique_id=2020388948 instance=ExtResource("7_kfuu5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 0, 16)
 
-[node name="Room04TreasureNorth" type="Node3D" parent="Rooms" unique_id=1472342937 instance=ExtResource("8_pd4qe")]
+[node name="Room04TreasureNorth" type="Node3D" parent="Rooms/Tier1" unique_id=2083204184 instance=ExtResource("8_5n403")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 8, 10)
 
-[node name="Room05Ambush" type="Node3D" parent="Rooms" unique_id=344764492 instance=ExtResource("9_u2gvv")]
+[node name="Room05Ambush" type="Node3D" parent="Rooms/Tier1" unique_id=444263784 instance=ExtResource("9_hu4v4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 4, 38)
 
-[node name="Room06ChokePoint" type="Node3D" parent="Rooms" unique_id=304555532 instance=ExtResource("10_4f1bo")]
+[node name="Room06ChokePoint" type="Node3D" parent="Rooms/Tier1" unique_id=424259854 instance=ExtResource("10_g821r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 102, 4, 54)
 
-[node name="Room07Hub" type="Node3D" parent="Rooms" unique_id=699405124 instance=ExtResource("11_rmt2l")]
+[node name="Room07Hub" type="Node3D" parent="Rooms/Tier1" unique_id=1943549786 instance=ExtResource("11_qmqvp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 124, 4, 48)
 
-[node name="Room08Arena" type="Node3D" parent="Rooms" unique_id=1659796535 instance=ExtResource("12_32lgw")]
+[node name="Room08Arena" type="Node3D" parent="Rooms/Tier1" unique_id=847439141 instance=ExtResource("12_ar2a0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 114, 8, 14)
 
-[node name="Room09SideRoom" type="Node3D" parent="Rooms" unique_id=2104781074 instance=ExtResource("13_cem0a")]
+[node name="Room09SideRoom" type="Node3D" parent="Rooms/Tier1" unique_id=1645395114 instance=ExtResource("13_tx3g6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 8, 16)
 
-[node name="Room10Boss" type="Node3D" parent="Rooms" unique_id=708895893 instance=ExtResource("14_g03qk")]
+[node name="Room10Boss" type="Node3D" parent="Rooms/Tier1" unique_id=1882018622 instance=ExtResource("14_8yc0n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 162, 4, 46)
 
-[node name="Room11TreasureSouth" type="Node3D" parent="Rooms" unique_id=1382977853 instance=ExtResource("15_t5010")]
+[node name="Room11TreasureSouth" type="Node3D" parent="Rooms/Tier1" unique_id=1546797821 instance=ExtResource("15_7posk")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 0, 78)
 
-[node name="Room12DrainedLava" type="Node3D" parent="Rooms" unique_id=645532339 instance=ExtResource("16_a7umj")]
+[node name="Room12DrainedLava" type="Node3D" parent="Rooms/Tier1" unique_id=1530683019 instance=ExtResource("16_54ghw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 0, 74)
 
-[node name="Room13Secret" type="Node3D" parent="Rooms" unique_id=1370913669 instance=ExtResource("17_m7jl0")]
+[node name="Room13Secret" type="Node3D" parent="Rooms/Tier1" unique_id=331747673 instance=ExtResource("17_kunnk")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0, 82)
 
-[node name="Room14Crumbling" type="Node3D" parent="Rooms" unique_id=1193588268 instance=ExtResource("18_8x864")]
+[node name="Room14Crumbling" type="Node3D" parent="Rooms/Tier1" unique_id=153597954 instance=ExtResource("18_ddvef")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 142, 4, 72)
 
-[node name="Room15RuinsPlaza" type="Node3D" parent="Rooms" unique_id=1947805507 instance=ExtResource("19_lp14q")]
+[node name="Room15RuinsPlaza" type="Node3D" parent="Rooms/Tier1" unique_id=690430755 instance=ExtResource("19_d1wuh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 142, 0, 98)
 
-[node name="NetherBridge" type="Node3D" parent="Rooms" unique_id=528367578 instance=ExtResource("20_px2hq")]
+[node name="NetherBridge" type="Node3D" parent="Rooms/Tier1" unique_id=1079916242 instance=ExtResource("20_ekxkl")]
 
-[node name="CellarCover" type="Node3D" parent="Rooms" unique_id=72600301 instance=ExtResource("21_kfuu5")]
+[node name="CellarCover" type="Node3D" parent="Rooms/Tier1" unique_id=979110749 instance=ExtResource("21_w6tmj")]
 
-[node name="Connectors" type="Node3D" parent="." unique_id=836009012 instance=ExtResource("22_5n403")]
+[node name="Connectors" type="Node3D" parent="Rooms/Tier1" unique_id=1223187668 instance=ExtResource("22_khufb")]
+
+[node name="Tier2" type="Node3D" parent="Rooms" unique_id=1998555658]
+
+[node name="T201Arrival" type="Node3D" parent="Rooms/Tier2" unique_id=1046208801 instance=ExtResource("23_48k2y")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 208, 4, 52)
+
+[node name="T202HammerHall" type="Node3D" parent="Rooms/Tier2" unique_id=990903102 instance=ExtResource("24_8371h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 240, 4, 52)
+
+[node name="T203ForgeHub" type="Node3D" parent="Rooms/Tier2" unique_id=1360566435 instance=ExtResource("25_jsure")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278, 4, 50)
+
+[node name="T204TimberWorks" type="Node3D" parent="Rooms/Tier2" unique_id=1829616872 instance=ExtResource("26_lecrx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278, 8, 14)
+
+[node name="T205SlimeHall" type="Node3D" parent="Rooms/Tier2" unique_id=773553306 instance=ExtResource("27_j44ph")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 308, 8, 12)
+
+[node name="T206DarkForge" type="Node3D" parent="Rooms/Tier2" unique_id=1938799021 instance=ExtResource("28_am3hg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 310, 4, 50)
+
+[node name="T207Blackout" type="Node3D" parent="Rooms/Tier2" unique_id=1450722186 instance=ExtResource("29_gq6sj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 342, 4, 50)
+
+[node name="T208LavaTide" type="Node3D" parent="Rooms/Tier2" unique_id=1013682096 instance=ExtResource("30_74oxx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278, 0, 88)
+
+[node name="T209WispHall" type="Node3D" parent="Rooms/Tier2" unique_id=1677128603 instance=ExtResource("31_5uqjc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 312, 0, 88)
+
+[node name="T2T1Forge" type="Node3D" parent="Rooms/Tier2" instance=ExtResource("room_t2_t1_forge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 254, 8, 30)
+
+[node name="T2T2Anvil" type="Node3D" parent="Rooms/Tier2" instance=ExtResource("room_t2_t2_anvil")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 232, 12, 30)
+
+[node name="T2T3Crucible" type="Node3D" parent="Rooms/Tier2" instance=ExtResource("room_t2_t3_crucible")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 208, 16, 30)
+
+[node name="T2T4Chain" type="Node3D" parent="Rooms/Tier2" instance=ExtResource("room_t2_t4_chain")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 208, 20, 8)
+
+[node name="T2T5Smelter" type="Node3D" parent="Rooms/Tier2" instance=ExtResource("room_t2_t5_smelter")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 232, 24, 8)
+
+[node name="T2T6Summit" type="Node3D" parent="Rooms/Tier2" instance=ExtResource("room_t2_t6_summit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 256, 28, 8)
+
+[node name="T2SIceCave" type="Node3D" parent="Rooms/Tier2" unique_id=641790524 instance=ExtResource("35_lxn5w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 338, 8, 14)
+
+[node name="Connectors" type="Node3D" parent="Rooms/Tier2" unique_id=1729103324 instance=ExtResource("36_t22de")]
 
 [node name="ZoneCameraView" type="Node" parent="."]
 script = ExtResource("zone_camera_view_script")
 view = SubResource("Zone3CameraView")
 
 [node name="Pickups" type="Node3D" parent="."]
+
+[node name="StartCheckpoint" parent="." instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.39, 4.32, 92.61)
+checkpoint_id = &"level_3.start"
 
 [node name="PlazaCheckpoint" parent="." instance=ExtResource("fire_checkpoint_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61.0, 4.32000017166138, 57.5)
@@ -243,7 +427,7 @@ checkpoint_id = &"level_3.boss"
 
 [node name="Room4SpawnerCage" parent="." instance=ExtResource("spawner_cage_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 74.0, 8.31999969482422, 7.0)
-enemy_scene = ExtResource("cage_enemy_scene")
+enemy_scene = ExtResource("t2_enemy_caster")
 persistent_id = &"level_3.room4_cage_cleared"
 active_area_size = Vector3(15.0, 4.0, 19.0)
 active_area_offset = Vector3(-2.0, -0.31999999284744, 3.0)
@@ -252,7 +436,7 @@ active_area_offset = Vector3(-2.0, -0.31999999284744, 3.0)
 script = ExtResource("flag_reveal_script")
 flag = &"level_3.room4_cage_cleared"
 
-[node name="FlameBreathBook" parent="Pickups/Room4BookReveal" instance=ExtResource("ability_pickup_scene")]
+[node name="FlameBreathBook" parent="Pickups/Room4BookReveal" instance=ExtResource("fire_ability_pickup_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70.0, 8.31999969482422, 13.0)
 ability = ExtResource("flame_breath_data")
 persistent_id = &"level_3.flame_breath_book"
@@ -263,13 +447,12 @@ sun = NodePath("../FireLighting/SunLight")
 bounce_light = NodePath("../FireLighting/LavaBounceLight")
 world_environment = NodePath("../FireLighting/Environment")
 use_carried_light = false
+dark_ambient_ratio = 0.28
+dim_material = ExtResource("2_a7umj")
 
 [node name="Room5Campfire" parent="." instance=ExtResource("campfire_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59.5, 4.32000017166138, 37.5)
 persistent_id = &"level_3.room5_campfire_lit"
-
-[node name="Room5StickBundle" parent="." instance=ExtResource("stick_bundle_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61.5, 4.32000017166138, 40.5)
 
 [node name="CellarTorches" type="Node3D" parent="."]
 
@@ -349,13 +532,13 @@ required_flag = &"level_3.room3_torches_lit"
 enemies_visible_before_start = false
 trigger_size = Vector3(18, 4, 14)
 
-[node name="Enemy1" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Enemy1" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("t2_enemy_wolf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0, 0.0, -3.0)
 
-[node name="Enemy2" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Enemy2" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("t2_enemy_wolf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0, 0.0, -3.0)
 
-[node name="Enemy3" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Enemy3" parent="Room3/Room3Encounter/Enemies" instance=ExtResource("t2_enemy_wolf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 4.0)
 
 [node name="Room3ClearedSource" type="Node" parent="Room3"]
@@ -384,34 +567,48 @@ persistent_id = &"level_3.room_3_west_gate"
 [node name="Room2BossEncounter" parent="Room2" instance=ExtResource("encounter_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.0, 0.31999999284744, 32.0)
 persistent_id = &"level_3.room2_miniboss"
-trigger_size = Vector3(3.5, 4.0, 3.5)
+trigger_size = Vector3(18, 4, 14)
 clear_trauma = 0.5
 
-[node name="MiniBoss" parent="Room2/Room2BossEncounter/Enemies" instance=ExtResource("room3_enemy_scene")]
-transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0.0, 0.0, -4.5)
-data = ExtResource("room2_boss_data")
+[node name="Spider1" parent="Room2/Room2BossEncounter/Enemies" instance=ExtResource("fire_spider_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0, 0.0, 4.0)
+
+[node name="Spider2" parent="Room2/Room2BossEncounter/Enemies" instance=ExtResource("fire_spider_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0, 0.0, 4.0)
 
 [node name="Room2ClearedSource" type="Node" parent="Room2"]
 script = ExtResource("flag_source_script")
 flag = &"level_3.room2_miniboss"
 
+[node name="WestKeyDrop" parent="Room2" node_paths=PackedStringArray("encounter") instance=ExtResource("key_drop_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0.32, 32)
+encounter = NodePath("../Room2BossEncounter")
+key_scene = ExtResource("red_key_pickup_scene")
+key_id = &"level_3.west_key"
+
 [node name="WestGates" type="Node3D" parent="."]
+
+[node name="WestKeyLock" parent="WestGates" instance=ExtResource("key_lock_scene")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 62.85, 4.32, 52)
+key_id = &"level_3.west_key"
+persistent_id = &"level_3.west_gate_unlocked"
+locked_text = "Cần chìa khóa để mở cổng."
 
 [node name="WestGateSouth" parent="WestGates" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
 transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 64.3499984741211, 4.32000017166138, 50.0)
-sources = [NodePath("../../Room2/Room2ClearedSource")]
+sources = [NodePath("../WestKeyLock")]
 persistent_id = &"level_3.west_gate_south"
 
 [node name="WestGateNorth" parent="WestGates" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
 transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 64.3499984741211, 4.32000017166138, 54.0)
-sources = [NodePath("../../Room2/Room2ClearedSource")]
+sources = [NodePath("../WestKeyLock")]
 persistent_id = &"level_3.west_gate_north"
 
 [node name="Room8" type="Node3D" parent="."]
 
 [node name="Room8Cage1" parent="Room8" node_paths=PackedStringArray("shield") instance=ExtResource("spawner_cage_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.0, 8.31999969482422, 9.0)
-enemy_scene = ExtResource("cage_enemy_scene")
+enemy_scene = ExtResource("t2_enemy_slime")
 spawn_interval = 5.0
 max_alive = 2
 spawn_radius = 3.4
@@ -424,7 +621,7 @@ active_area_offset = Vector3(6.0, 0.0, 5.0)
 
 [node name="Room8Cage2" parent="Room8" node_paths=PackedStringArray("shield") instance=ExtResource("spawner_cage_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120.0, 8.31999969482422, 9.0)
-enemy_scene = ExtResource("cage_enemy_scene")
+enemy_scene = ExtResource("t2_enemy_slime")
 spawn_interval = 5.0
 max_alive = 2
 spawn_radius = 3.4
@@ -437,7 +634,7 @@ active_area_offset = Vector3(-6.0, 0.0, 5.0)
 
 [node name="Room8Cage3" parent="Room8" node_paths=PackedStringArray("shield") instance=ExtResource("spawner_cage_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 108.0, 8.31999969482422, 19.0)
-enemy_scene = ExtResource("cage_enemy_scene")
+enemy_scene = ExtResource("t2_enemy_caster")
 spawn_interval = 5.0
 max_alive = 2
 spawn_radius = 3.4
@@ -450,7 +647,7 @@ active_area_offset = Vector3(6.0, 0.0, -5.0)
 
 [node name="Room8Cage4" parent="Room8" node_paths=PackedStringArray("shield") instance=ExtResource("spawner_cage_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120.0, 8.31999969482422, 19.0)
-enemy_scene = ExtResource("cage_enemy_scene")
+enemy_scene = ExtResource("t2_enemy_caster")
 spawn_interval = 5.0
 max_alive = 2
 spawn_radius = 3.4
@@ -473,7 +670,7 @@ transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -
 
 [node name="Room11Cage" parent="Room11" instance=ExtResource("spawner_cage_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72.0, 0.31999999284744, 78.0)
-enemy_scene = ExtResource("cage_enemy_scene")
+enemy_scene = ExtResource("t2_enemy_slime")
 persistent_id = &"level_3.room11_cage_cleared"
 active_area_size = Vector3(15.0, 4.0, 19.0)
 active_area_offset = Vector3(0.0, -0.32, 0.0)
@@ -490,14 +687,14 @@ persistent_id = &"level_3.room11_chest"
 
 [node name="Room14CageWest" parent="Room14" instance=ExtResource("spawner_cage_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 137.0, 4.32000017166138, 69.0)
-enemy_scene = ExtResource("cage_enemy_scene")
+enemy_scene = ExtResource("t2_enemy_slime")
 persistent_id = &"level_3.room14_cage_west"
 active_area_size = Vector3(19.0, 4.0, 15.0)
 active_area_offset = Vector3(5.0, -0.32, 3.0)
 
 [node name="Room14CageEast" parent="Room14" instance=ExtResource("spawner_cage_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 147.0, 4.32000017166138, 68.0)
-enemy_scene = ExtResource("cage_enemy_scene")
+enemy_scene = ExtResource("t2_enemy_slime")
 persistent_id = &"level_3.room14_cage_east"
 active_area_size = Vector3(19.0, 4.0, 15.0)
 active_area_offset = Vector3(-5.0, -0.32, 4.0)
@@ -523,13 +720,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 persistent_id = &"level_3.room12_guards"
 trigger_size = Vector3(15.0, 4.0, 19.0)
 
-[node name="Guard1" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Guard1" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("t2_enemy_caster")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.20000004768372, 0.0, 5.19999980926514)
 
-[node name="Guard2" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Guard2" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("t2_enemy_caster")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.20000004768372, 0.0, 5.19999980926514)
 
-[node name="Guard3" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Guard3" parent="Room12HostageRescue/Guards/Enemies" instance=ExtResource("t2_enemy_caster")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 6.60000038146973)
 
 [node name="WarpPortals" type="Node3D" parent="."]
@@ -561,13 +758,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.0, 4.32000017166138, 67.0)
 persistent_id = &"level_3.bridge_guards"
 trigger_size = Vector3(30.0, 4.0, 30.0)
 
-[node name="Guard1" parent="BridgeGuards/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Guard1" parent="BridgeGuards/Enemies" instance=ExtResource("t2_enemy_caster")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0, 0.0, 6.0)
 
-[node name="Guard2" parent="BridgeGuards/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Guard2" parent="BridgeGuards/Enemies" instance=ExtResource("t2_enemy_caster")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 0.0)
 
-[node name="Guard3" parent="BridgeGuards/Enemies" instance=ExtResource("room3_enemy_scene")]
+[node name="Guard3" parent="BridgeGuards/Enemies" instance=ExtResource("t2_enemy_caster")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0, 0.0, -6.0)
 
 [node name="Room10BossFight" parent="." instance=ExtResource("boss_fight_scene")]
@@ -583,8 +780,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0.0, 0.0)
 script = ExtResource("flag_reveal_script")
 flag = &"level_3.boss_defeated"
 
-[node name="ExitPortal" parent="Room10ExitReveal" instance=ExtResource("vortex_visual_scene")]
+[node name="ExitPortal" parent="Room10ExitReveal" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
 transform = Transform3D(-0.00000004371139, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.00000004371139, 173.0, 4.32000017166138, 46.0)
+target = NodePath("../../Tier2Links/Tier2ArrivalPortal")
+required_flag = &"level_3.boss_defeated"
 
 [node name="FinalTrial" parent="." instance=ExtResource("final_trial_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 124.0, 4.32000017166138, 48.0)
@@ -771,8 +970,739 @@ script = ExtResource("tier_zone_script")
 [node name="Shape" type="CollisionShape3D" parent="RoomFocus/Room15RuinsPlazaZone"]
 shape = SubResource("RoomZone_room_15_ruins_plaza")
 
+[node name="T201ArrivalZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 208.0, 7.0, 52.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T201ArrivalZone"]
+shape = SubResource("RoomZone_t2_01_arrival")
+
+[node name="T202HammerHallZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 240.0, 7.0, 52.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T202HammerHallZone"]
+shape = SubResource("RoomZone_t2_02_hammer_hall")
+
+[node name="T203ForgeHubZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 278.0, 7.0, 50.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T203ForgeHubZone"]
+shape = SubResource("RoomZone_t2_03_forge_hub")
+
+[node name="T204TimberWorksZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 278.0, 11.0, 14.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T204TimberWorksZone"]
+shape = SubResource("RoomZone_t2_04_timber_works")
+
+[node name="T205SlimeHallZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 308.0, 11.0, 12.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T205SlimeHallZone"]
+shape = SubResource("RoomZone_t2_05_slime_hall")
+
+[node name="T206DarkForgeZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 310.0, 7.0, 50.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T206DarkForgeZone"]
+shape = SubResource("RoomZone_t2_06_dark_forge")
+
+[node name="T207BlackoutZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 342.0, 7.0, 50.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T207BlackoutZone"]
+shape = SubResource("RoomZone_t2_07_blackout")
+
+[node name="T208LavaTideZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 278.0, 3.0, 88.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T208LavaTideZone"]
+shape = SubResource("RoomZone_t2_08_lava_tide")
+
+[node name="T209WispHallZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 312.0, 3.0, 88.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T209WispHallZone"]
+shape = SubResource("RoomZone_t2_09_wisp_hall")
+
+[node name="T2T1ForgeZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 254.0, 11.0, 30.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T2T1ForgeZone"]
+shape = SubResource("RoomZone_t2_t1_forge")
+
+[node name="T2T2AnvilZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 232.0, 15.0, 30.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T2T2AnvilZone"]
+shape = SubResource("RoomZone_t2_t2_anvil")
+
+[node name="T2T3CrucibleZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 208.0, 19.0, 30.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T2T3CrucibleZone"]
+shape = SubResource("RoomZone_t2_t3_crucible")
+
+[node name="T2T4ChainZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 208.0, 23.0, 8.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T2T4ChainZone"]
+shape = SubResource("RoomZone_t2_t4_chain")
+
+[node name="T2T5SmelterZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 232.0, 27.0, 8.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T2T5SmelterZone"]
+shape = SubResource("RoomZone_t2_t5_smelter")
+
+[node name="T2T6SummitZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 256.0, 31.0, 8.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T2T6SummitZone"]
+shape = SubResource("RoomZone_t2_t6_summit")
+
+[node name="T2SIceCaveZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 338.0, 11.0, 14.0)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T2SIceCaveZone"]
+shape = SubResource("RoomZone_t2_s_ice_cave")
+
 [node name="StarterKit" type="Node" parent="."]
 script = ExtResource("starter_kit_script")
 weapons = Array[ExtResource("kit_weapon_data")]([ExtResource("kit_sword"), ExtResource("kit_bow")])
 abilities = Array[ExtResource("kit_ability_data")]([ExtResource("kit_wind")])
 held_weapon = ExtResource("kit_sword")
+
+[node name="Tier2Mechanics" type="Node3D" parent="."]
+
+[node name="Room04Flammables" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="Room04Reset" type="Node" parent="Tier2Mechanics" node_paths=PackedStringArray("zone", "targets_root")]
+script = ExtResource("flammable_reset_script")
+zone = NodePath("../../RoomFocus/T204TimberWorksZone")
+targets_root = NodePath("../Room04Flammables")
+
+[node name="RopeBridge" parent="Tier2Mechanics/Room04Flammables" instance=ExtResource("flammable_bridge")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 278.0, 8.31999969482422, 18.0)
+
+[node name="BridgeVines" parent="Tier2Mechanics/Room04Flammables" instance=ExtResource("flammable_vines")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 278.0, 8.31999969482422, 15.6000003814697)
+
+[node name="LedgeCrates" parent="Tier2Mechanics/Room04Flammables" instance=ExtResource("flammable_crate")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 270.0, 8.31999969482422, 18.0)
+
+[node name="LedgeOilBarrel" parent="Tier2Mechanics/Room04Flammables" instance=ExtResource("flammable_oil")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 271.200012207031, 8.31999969482422, 20.6000003814697)
+
+[node name="ExitVines" parent="Tier2Mechanics/Room04Flammables" instance=ExtResource("flammable_vines")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 287.649993896484, 8.31999969482422, 14.0)
+persistent_id = &"level_3.t2_exit_vines"
+
+[node name="Room07Blackout" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="DarkZone" parent="Tier2Mechanics/Room07Blackout" node_paths=PackedStringArray("sun", "bounce_light", "world_environment") instance=ExtResource("dark_zone_scene")]
+boxes = Array[AABB]([AABB(328.0, -2.0, 36.0, 28.0, 12.0, 28.0)])
+sun = NodePath("../../../FireLighting/SunLight")
+bounce_light = NodePath("../../../FireLighting/LavaBounceLight")
+world_environment = NodePath("../../../FireLighting/Environment")
+dark_ambient_ratio = 0.03
+use_carried_light = false
+
+[node name="TrainingDummy" parent="Tier2Mechanics/Room07Blackout" instance=ExtResource("training_dummy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 330.0, 4.32000017166138, 45.5999984741211)
+
+[node name="Path" type="Node3D" parent="Tier2Mechanics/Room07Blackout"]
+
+[node name="Tile01" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 333.0, 4.32, 50.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile02" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 335.0, 4.32, 50.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile03" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 337.0, 4.32, 50.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile04" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 339.0, 4.32, 50.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile05" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 339.0, 4.32, 52.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile06" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 339.0, 4.32, 54.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile07" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 339.0, 4.32, 56.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile08" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 341.0, 4.32, 56.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile09" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 343.0, 4.32, 56.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile10" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.0, 4.32, 56.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile11" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.0, 4.32, 54.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile12" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.0, 4.32, 52.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile13" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.0, 4.32, 50.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile14" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.0, 4.32, 48.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile15" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.0, 4.32, 46.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Tile16" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.0, 4.32, 44.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+
+[node name="Portals" type="Node3D" parent="Tier2Mechanics/Room07Blackout"]
+
+[node name="BlackoutReturnPortal" parent="Tier2Mechanics/Room07Blackout/Portals" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.00000004371139, 355.0, 4.32000017166138, 40.0)
+target = NodePath("../HubEastPortal")
+required_flag = &"level_3.t2_shard_east"
+
+[node name="HubEastPortal" parent="Tier2Mechanics/Room07Blackout/Portals" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 286.0, 4.32000017166138, 37.5999984741211)
+target = NodePath("../BlackoutReturnPortal")
+required_flag = &"level_3.t2_shard_east"
+
+[node name="Room09Wisps" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="WispGroup" type="Node3D" parent="Tier2Mechanics/Room09Wisps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 312.0, 0.31999999284744, 88.0)
+script = ExtResource("wisp_group_script")
+persistent_id = &"level_3.t2_wisps_cleared"
+
+[node name="Wisp1" parent="Tier2Mechanics/Room09Wisps/WispGroup" instance=ExtResource("wisp_flame_scene")]
+radius = Vector2(3.0, 2.0)
+speed = 0.1
+phase = 0.0
+
+[node name="Wisp2" parent="Tier2Mechanics/Room09Wisps/WispGroup" instance=ExtResource("wisp_flame_scene")]
+radius = Vector2(3.0, 2.0)
+speed = 0.1
+phase = 0.5
+
+[node name="Wisp3" parent="Tier2Mechanics/Room09Wisps/WispGroup" instance=ExtResource("wisp_flame_scene")]
+radius = Vector2(6.0, 4.5)
+speed = -0.07
+phase = 0.15
+
+[node name="Wisp4" parent="Tier2Mechanics/Room09Wisps/WispGroup" instance=ExtResource("wisp_flame_scene")]
+radius = Vector2(6.0, 4.5)
+speed = -0.07
+phase = 0.65
+
+[node name="Wisp5" parent="Tier2Mechanics/Room09Wisps/WispGroup" instance=ExtResource("wisp_flame_scene")]
+radius = Vector2(9.0, 8.0)
+speed = 0.05
+phase = 0.35
+
+[node name="Wisp6" parent="Tier2Mechanics/Room09Wisps/WispGroup" instance=ExtResource("wisp_flame_scene")]
+radius = Vector2(9.0, 8.0)
+speed = 0.05
+phase = 0.85
+
+[node name="WaveSpawner" type="Node3D" parent="Tier2Mechanics/Room09Wisps" node_paths=PackedStringArray("zone", "stop_source")]
+script = ExtResource("wave_spawner_script")
+enemy_scene = ExtResource("wave_enemy_scene")
+zone = NodePath("../../../RoomFocus/T209WispHallZone")
+stop_source = NodePath("../WispGroup")
+per_wave = 3
+
+[node name="Point1" type="Marker3D" parent="Tier2Mechanics/Room09Wisps/WaveSpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 303.0, 0.31999999284744, 79.0)
+
+[node name="Point2" type="Marker3D" parent="Tier2Mechanics/Room09Wisps/WaveSpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 321.0, 0.31999999284744, 79.0)
+
+[node name="Point3" type="Marker3D" parent="Tier2Mechanics/Room09Wisps/WaveSpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 321.0, 0.31999999284744, 97.0)
+
+[node name="ChestReveal" type="Node3D" parent="Tier2Mechanics/Room09Wisps"]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.t2_wisps_cleared"
+
+[node name="Chest" parent="Tier2Mechanics/Room09Wisps/ChestReveal" instance=ExtResource("t2_chest_scene")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 320.0, 0.31999999284744, 96.0)
+persistent_id = &"level_3.t2_wisp_chest"
+
+[node name="IceCave" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="WarmZone" type="Area3D" parent="Tier2Mechanics/IceCave"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 334.0, 9.31999969482422, 14.0)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("warm_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="Tier2Mechanics/IceCave/WarmZone"]
+shape = SubResource("IceWarmShape")
+
+[node name="ColdZone" type="Area3D" parent="Tier2Mechanics/IceCave" node_paths=PackedStringArray("warm_zones")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 338.0, 11.0, 14.0)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("cold_zone_script")
+warm_zones = [NodePath("../WarmZone")]
+
+[node name="Shape" type="CollisionShape3D" parent="Tier2Mechanics/IceCave/ColdZone"]
+shape = SubResource("IceColdShape")
+
+[node name="Chest" parent="Tier2Mechanics/IceCave" instance=ExtResource("t2_chest_scene")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 345.0, 8.31999969482422, 7.0)
+persistent_id = &"level_3.t2_ice_chest"
+
+[node name="ForgeSkillInstaller" type="Node" parent="."]
+script = ExtResource("forge_installer_script")
+skills = Array[ExtResource("forge_skill_data_script")]([ExtResource("forge_skill_0"), ExtResource("forge_skill_1"), ExtResource("forge_skill_2")])
+
+[node name="ForgeShards" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="NorthShardReveal" type="Node3D" parent="Tier2Mechanics/ForgeShards"]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.t2_slime_hall"
+
+[node name="NorthShard" parent="Tier2Mechanics/ForgeShards/NorthShardReveal" instance=ExtResource("forge_shard_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 312.0, 8.86, 4.0)
+persistent_id = &"level_3.t2_shard_north"
+key_id = &"level_3.t2_shard_north"
+
+[node name="EastShardReveal" type="Node3D" parent="Tier2Mechanics/ForgeShards"]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.t2_dark_forge_pack"
+
+[node name="EastShard" parent="Tier2Mechanics/ForgeShards/EastShardReveal" instance=ExtResource("forge_shard_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 348.0, 4.86, 41.0)
+persistent_id = &"level_3.t2_shard_east"
+key_id = &"level_3.t2_shard_east"
+
+[node name="SouthShardReveal" type="Node3D" parent="Tier2Mechanics/ForgeShards"]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.t2_wisps_cleared"
+
+[node name="SouthShard" parent="Tier2Mechanics/ForgeShards/SouthShardReveal" instance=ExtResource("forge_shard_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 316.0, 0.86, 92.0)
+persistent_id = &"level_3.t2_shard_south"
+key_id = &"level_3.t2_shard_south"
+
+[node name="ShardCounter" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_counter_scene")]
+shards = ExtResource("forge_shards_data")
+
+[node name="GrappleRings" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="Room4Ring" parent="Tier2Mechanics/GrappleRings" instance=ExtResource("grapple_ring_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 284.0, 11.6000003814697, 22.0)
+
+[node name="Tier2Fights" type="Node3D" parent="."]
+
+[node name="T2HubAmbush" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 4.32000017166138, 50.0)
+persistent_id = &"level_3.t2_hub_ambush"
+trigger_size = Vector3(26.0, 4.0, 26.0)
+
+[node name="Pack" type="Node" parent="Tier2Fights/T2HubAmbush"]
+script = ExtResource("wolf_pack_script")
+
+[node name="Caster1" parent="Tier2Fights/T2HubAmbush/Enemies" instance=ExtResource("t2_enemy_caster")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.0, 0.0, 8.0)
+
+[node name="Caster2" parent="Tier2Fights/T2HubAmbush/Enemies" instance=ExtResource("t2_enemy_caster")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.0, 0.0, -8.0)
+
+[node name="Wolf1" parent="Tier2Fights/T2HubAmbush/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0, 0.0, 6.0)
+pack = NodePath("../../Pack")
+
+[node name="Wolf2" parent="Tier2Fights/T2HubAmbush/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0, 0.0, -4.0)
+pack = NodePath("../../Pack")
+
+[node name="T2TimberCaster" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 8.31999969482422, 14.0)
+persistent_id = &"level_3.t2_timber_caster"
+trigger_size = Vector3(20.0, 4.0, 20.0)
+
+[node name="Caster1" parent="Tier2Fights/T2TimberCaster/Enemies" instance=ExtResource("t2_enemy_caster")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.0, 0.0, 8.5)
+
+[node name="T2SlimeHall" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 308.0, 8.31999969482422, 12.0)
+persistent_id = &"level_3.t2_slime_hall"
+trigger_size = Vector3(24.0, 4.0, 24.0)
+
+[node name="Slime1" parent="Tier2Fights/T2SlimeHall/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0, 0.0, -4.0)
+
+[node name="Slime2" parent="Tier2Fights/T2SlimeHall/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0, 0.0, -4.0)
+
+[node name="Slime3" parent="Tier2Fights/T2SlimeHall/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0.0, 6.0)
+
+[node name="Slime4" parent="Tier2Fights/T2SlimeHall/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.0, 0.0, 5.0)
+
+[node name="T2DarkForgePack" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 310.0, 4.32000017166138, 50.0)
+persistent_id = &"level_3.t2_dark_forge_pack"
+trigger_size = Vector3(20.0, 4.0, 20.0)
+
+[node name="Pack" type="Node" parent="Tier2Fights/T2DarkForgePack"]
+script = ExtResource("wolf_pack_script")
+
+[node name="Wolf1" parent="Tier2Fights/T2DarkForgePack/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0.0, -4.0)
+pack = NodePath("../../Pack")
+
+[node name="Wolf2" parent="Tier2Fights/T2DarkForgePack/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0.0, -4.0)
+pack = NodePath("../../Pack")
+
+[node name="Wolf3" parent="Tier2Fights/T2DarkForgePack/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 5.0)
+pack = NodePath("../../Pack")
+
+[node name="TowerT1Wolves" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 254.0, 8.31999969482422, 30.0)
+persistent_id = &"level_3.t2_t1_cleared"
+trigger_size = Vector3(11.0, 4.0, 11.0)
+
+[node name="Pack" type="Node" parent="Tier2Fights/TowerT1Wolves"]
+script = ExtResource("wolf_pack_script")
+
+[node name="Wolf1" parent="Tier2Fights/TowerT1Wolves/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, -3.0)
+pack = NodePath("../../Pack")
+
+[node name="Wolf2" parent="Tier2Fights/TowerT1Wolves/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.0, 1.0)
+pack = NodePath("../../Pack")
+
+[node name="Wolf3" parent="Tier2Fights/TowerT1Wolves/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.0, 2.0)
+pack = NodePath("../../Pack")
+
+[node name="Wolf4" parent="Tier2Fights/TowerT1Wolves/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 0.0, 4.0)
+pack = NodePath("../../Pack")
+
+[node name="TowerT2Casters" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 232.0, 12.3199996948242, 30.0)
+persistent_id = &"level_3.t2_t2_cleared"
+trigger_size = Vector3(15.0, 4.0, 11.0)
+
+[node name="Caster1" parent="Tier2Fights/TowerT2Casters/Enemies" instance=ExtResource("t2_enemy_caster")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0.0, -3.5)
+
+[node name="Slime1" parent="Tier2Fights/TowerT2Casters/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 0.0, -3.0)
+
+[node name="Slime2" parent="Tier2Fights/TowerT2Casters/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 0.0, 3.0)
+
+[node name="Slime3" parent="Tier2Fights/TowerT2Casters/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0, 0.0, 0.0)
+
+[node name="TowerT3Slimes" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 208.0, 16.3199996948242, 30.0)
+persistent_id = &"level_3.t2_t3_cleared"
+trigger_size = Vector3(15.0, 4.0, 11.0)
+
+[node name="Pack" type="Node" parent="Tier2Fights/TowerT3Slimes"]
+script = ExtResource("wolf_pack_script")
+
+[node name="Slime1" parent="Tier2Fights/TowerT3Slimes/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, 4.0)
+
+[node name="Slime2" parent="Tier2Fights/TowerT3Slimes/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0.0, 4.5)
+
+[node name="Slime3" parent="Tier2Fights/TowerT3Slimes/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0, 0.0, -3.5)
+
+[node name="Slime4" parent="Tier2Fights/TowerT3Slimes/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.0, -3.0)
+
+[node name="Slime5" parent="Tier2Fights/TowerT3Slimes/Enemies" instance=ExtResource("t2_enemy_slime")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 0.0, 0.5)
+
+[node name="Wolf1" parent="Tier2Fights/TowerT3Slimes/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.0, 0.0, 2.0)
+pack = NodePath("../../Pack")
+
+[node name="Wolf2" parent="Tier2Fights/TowerT3Slimes/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0, 0.0, 4.5)
+pack = NodePath("../../Pack")
+
+[node name="Wolf3" parent="Tier2Fights/TowerT3Slimes/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 0.0, -1.5)
+pack = NodePath("../../Pack")
+
+[node name="TowerT5Mixed" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 232.0, 24.3199996948242, 8.0)
+persistent_id = &"level_3.t2_t5_cleared"
+trigger_size = Vector3(15.0, 4.0, 15.0)
+
+[node name="Pack" type="Node" parent="Tier2Fights/TowerT5Mixed"]
+script = ExtResource("wolf_pack_script")
+
+[node name="Caster1" parent="Tier2Fights/TowerT5Mixed/Enemies" instance=ExtResource("t2_enemy_caster")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.0, -5.0)
+
+[node name="Caster2" parent="Tier2Fights/TowerT5Mixed/Enemies" instance=ExtResource("t2_enemy_caster")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.0, 5.0)
+
+[node name="Wolf1" parent="Tier2Fights/TowerT5Mixed/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.0, -4.5)
+pack = NodePath("../../Pack")
+
+[node name="Wolf2" parent="Tier2Fights/TowerT5Mixed/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.0, 4.5)
+pack = NodePath("../../Pack")
+
+[node name="Wolf3" parent="Tier2Fights/TowerT5Mixed/Enemies" node_paths=PackedStringArray("pack") instance=ExtResource("t2_enemy_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 0.0, 0.0)
+pack = NodePath("../../Pack")
+
+[node name="TowerT4MotherFight" parent="Tier2Fights" instance=ExtResource("boss_fight_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 208.0, 20.3199996948242, 8.0)
+boss_scene = ExtResource("t2_mother_scene")
+persistent_id = &"level_3.t2_t4_cleared"
+trigger_size = Vector3(14.0, 4.0, 14.0)
+
+[node name="Spawn" parent="Tier2Fights/TowerT4MotherFight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0, 0.0, -4.0)
+
+[node name="T2BossFight" parent="Tier2Fights" instance=ExtResource("boss_fight_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 256.0, 28.3199996948242, 9.0)
+boss_scene = ExtResource("t2_boss_scene")
+persistent_id = &"level_3.t2_boss_defeated"
+trigger_size = Vector3(14.0, 4.0, 14.0)
+
+[node name="Spawn" parent="Tier2Fights/T2BossFight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.0, -4.0)
+
+[node name="Tier3PortalReveal" type="Node3D" parent="Tier2Fights"]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.t2_boss_defeated"
+
+[node name="Tier3PortalFrame" parent="Tier2Fights/Tier3PortalReveal" instance=ExtResource("vortex_visual_scene")]
+transform = Transform3D(-1.0, 0.0, -0.00000008742278, 0.0, 1.0, 0.0, 0.00000008742278, 0.0, -1.0, 256.0, 28.3199996948242, 1.5)
+
+[node name="TowerGateSource" type="Node" parent="Tier2Fights"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_tower_unlocked"
+
+[node name="TowerGate" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 250.0, 4.32000017166138, 44.3499984741211)
+sources = [NodePath("../TowerGateSource")]
+persistent_id = &"level_3.t2_tower_gate"
+
+[node name="FloorGate1Source" type="Node" parent="Tier2Fights"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_t1_cleared"
+
+[node name="FloorGate1" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 248.350006103516, 8.31999969482422, 30.0)
+sources = [NodePath("../FloorGate1Source")]
+persistent_id = &"level_3.t2_floor_gate_1"
+
+[node name="FloorGate2Source" type="Node" parent="Tier2Fights"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_t2_cleared"
+
+[node name="FloorGate2" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 224.350006103516, 12.3199996948242, 30.0)
+sources = [NodePath("../FloorGate2Source")]
+persistent_id = &"level_3.t2_floor_gate_2"
+
+[node name="FloorGate3Source" type="Node" parent="Tier2Fights"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_t3_cleared"
+
+[node name="FloorGate3" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 210.0, 16.3199996948242, 24.3500003814697)
+sources = [NodePath("../FloorGate3Source")]
+persistent_id = &"level_3.t2_floor_gate_3"
+
+[node name="FloorGate4Source" type="Node" parent="Tier2Fights"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_t4_cleared"
+
+[node name="FloorGate4" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 215.649993896484, 20.3199996948242, 6.0)
+sources = [NodePath("../FloorGate4Source")]
+persistent_id = &"level_3.t2_floor_gate_4"
+
+[node name="FloorGate5Source" type="Node" parent="Tier2Fights"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_t5_cleared"
+
+[node name="FloorGate5" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 239.649993896484, 24.3199996948242, 6.0)
+sources = [NodePath("../FloorGate5Source")]
+persistent_id = &"level_3.t2_floor_gate_5"
+
+[node name="IceCaveWall" parent="Tier2Mechanics" instance=ExtResource("cracked_wall_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 319.649993896484, 8.31999969482422, 14.0)
+persistent_id = &"level_3.t2_ice_cave_wall"
+
+[node name="Tier2Links" type="Node3D" parent="."]
+
+[node name="Tier2ArrivalPortal" parent="Tier2Links" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 203.0, 4.32000017166138, 52.0)
+target = NodePath("../../Room10ExitReveal/ExitPortal")
+required_flag = &"level_3.boss_defeated"
+
+[node name="ArrivalCheckpoint" parent="Tier2Links" instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 212.0, 4.32000017166138, 57.0)
+checkpoint_id = &"level_3.t2_arrival"
+
+[node name="HubCheckpoint" parent="Tier2Links" instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 273.0, 4.32000017166138, 60.5)
+checkpoint_id = &"level_3.t2_hub"
+
+[node name="FoyerCheckpoint" parent="Tier2Links" instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 252.5, 4.32000017166138, 57.0)
+checkpoint_id = &"level_3.t2_foyer"
+
+[node name="TowerMidCheckpoint" parent="Tier2Links" instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 203.5, 16.3199996948242, 30.0)
+checkpoint_id = &"level_3.t2_tower_mid"
+
+[node name="AreaTitles" type="Node" parent="."]
+
+[node name="Tier1Zone" type="Area3D" parent="." node_paths=PackedStringArray("hide_when_inside")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90.0, 8.0, 52.0)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("tier_zone_script")
+hide_when_inside = [NodePath("../Rooms/Tier2")]
+
+[node name="Shape" type="CollisionShape3D" parent="Tier1Zone"]
+shape = SubResource("Tier1ZoneShape")
+
+[node name="Tier1" parent="AreaTitles" instance=ExtResource("area_title_scene")]
+area = ExtResource("tier_1_area")
+
+[node name="Tier2Zone" type="Area3D" parent="." node_paths=PackedStringArray("hide_when_inside")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 280.0, 18.0, 50.0)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("tier_zone_script")
+hide_when_inside = [NodePath("../Rooms/Tier1")]
+
+[node name="Shape" type="CollisionShape3D" parent="Tier2Zone"]
+shape = SubResource("Tier2ZoneShape")
+
+[node name="Tier2" parent="AreaTitles" instance=ExtResource("area_title_scene")]
+area = ExtResource("tier_2_area")
+
+[connection signal="player_entered" from="Tier1Zone" to="AreaTitles/Tier1" method="announce"]
+[connection signal="player_entered" from="Tier2Zone" to="AreaTitles/Tier2" method="announce"]
+[connection signal="player_entered" from="Tier2Zone" to="Tier2Mechanics/ForgeShards/ShardCounter" method="show_counter"]
+[connection signal="player_exited" from="Tier2Zone" to="Tier2Mechanics/ForgeShards/ShardCounter" method="hide_counter"]

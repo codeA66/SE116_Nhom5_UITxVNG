@@ -3,9 +3,36 @@
 [ext_resource type="Script" path="res://objects/world/cellar/ignitable_brazier/ignitable_brazier.gd" id="1_brazier"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/torch_standing.glb" id="2_model"]
 [ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="3_burn"]
+[ext_resource type="PackedScene" path="res://objects/world/cellar/flame_feedback/flame_feedback.tscn" id="4_feedback"]
+[ext_resource type="Resource" path="res://resources/feedback/flame/wall_torch_flame.tres" id="5_flame_data"]
+[ext_resource type="PackedScene" path="res://components/core/interaction/world_hint/world_hint.tscn" id="6_hint"]
 
 [sub_resource type="BoxShape3D" id="IgniteZone"]
 size = Vector3(1.6, 2.6, 1.6)
+
+[sub_resource type="ParticleProcessMaterial" id="EmberProcess"]
+emission_shape = 1
+emission_sphere_radius = 0.12
+direction = Vector3(0, 1, 0)
+spread = 25.0
+initial_velocity_min = 0.25
+initial_velocity_max = 0.6
+gravity = Vector3(0, 0.15, 0)
+scale_min = 0.5
+scale_max = 1.0
+color = Color(1, 0.45, 0.12, 1)
+
+[sub_resource type="StandardMaterial3D" id="EmberMat"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="EmberQuad"]
+material = SubResource("EmberMat")
+size = Vector2(0.06, 0.06)
 
 [node name="IgnitableBrazier" type="Node3D"]
 script = ExtResource("1_brazier")
@@ -23,3 +50,26 @@ omni_range = 9.0
 [node name="Zone" type="CollisionShape3D" parent="BurnableComponent"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
 shape = SubResource("IgniteZone")
+
+[node name="FlameFeedback" parent="." instance=ExtResource("4_feedback")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+data = ExtResource("5_flame_data")
+
+[node name="EmberLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, 0)
+light_color = Color(1, 0.4, 0.12, 1)
+light_energy = 1.0
+shadow_enabled = false
+omni_range = 2.4
+
+[node name="Embers" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
+cast_shadow = 0
+amount = 8
+lifetime = 1.8
+visibility_aabb = AABB(-1, -0.5, -1, 2, 3, 2)
+process_material = SubResource("EmberProcess")
+draw_pass_1 = SubResource("EmberQuad")
+
+[node name="Hint" parent="." instance=ExtResource("6_hint")]
+label_offset = Vector3(0, 2.9, 0)

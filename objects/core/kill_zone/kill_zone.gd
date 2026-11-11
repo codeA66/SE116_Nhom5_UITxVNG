@@ -18,6 +18,13 @@ extends Area3D
 ## Chết thật (hồi sinh ở checkpoint) thay vì đưa về chỗ đứng an toàn
 @export var lethal: bool = false
 
+## Hiệu ứng bắn lên mặt vùng khi có thứ rơi vào (dung nham, nước...). Để trống = không hiệu ứng
+@export var splash_scene: PackedScene
+## Độ cao chỗ bắn so với tâm vùng (m): đặt bằng mặt dung nham / nước thật nếu khác tâm hộp
+@export var splash_y_offset: float = 0.0
+
+var _splash: SplashPoolComponent
+
 @onready var _box_sync: BoxShapeSyncComponent = $BoxShapeSync
 
 
@@ -27,10 +34,17 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	monitorable = false
+	if splash_scene:
+		_splash = SplashPoolComponent.new()
+		_splash.splash_scene = splash_scene
+		add_child(_splash)
 	body_entered.connect(_on_body_entered)
 
 
 func _on_body_entered(body: Node3D) -> void:
+	if _splash:
+		# Bắn ngay dưới chỗ body rơi vào, ở độ cao mặt chất lỏng
+		_splash.play(Vector3(body.global_position.x, global_position.y + splash_y_offset, body.global_position.z))
 	if lethal and body.has_method(&"on_lethal_zone_entered"):
 		body.call(&"on_lethal_zone_entered")
 	elif body.has_method(&"on_kill_zone_entered"):

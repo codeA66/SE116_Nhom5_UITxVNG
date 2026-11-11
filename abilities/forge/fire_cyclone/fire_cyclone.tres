@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FireCycloneData" format=3]
+
+[ext_resource type="Script" path="res://abilities/forge/fire_cyclone/fire_cyclone_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://abilities/forge/fire_cyclone/fire_cyclone_state.gd" id="2_state"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/fire.svg" id="3_icon"]
+
+[resource]
+script = ExtResource("1_data")
+state_script = ExtResource("2_state")
+input_action = &"skill_cyclone"
+state = &"FireCyclone"
+id = &"fire_cyclone"
+display_name = "Lốc Lửa"
+icon = ExtResource("3_icon")
+accent_color = Color(1, 0.4, 0.1, 1)
+description = "(Thử nghiệm) Phóng cột lốc lửa trôi chậm về phía trước, hút quái nhỏ và đốt mọi thứ cháy được."
+acquire_verb = "Đã rèn"
+acquire_prompt = "Nhấn {key} để phóng Lốc Lửa."
+energy_cost = 2

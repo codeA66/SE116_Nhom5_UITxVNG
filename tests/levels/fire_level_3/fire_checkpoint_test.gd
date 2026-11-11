@@ -32,6 +32,12 @@ func _run() -> void:
 	var cp: Checkpoint = _level.get_node("PlazaCheckpoint") as Checkpoint
 	var light: OmniLight3D = cp.get_node("FireShrineVisual/Light")
 	var flame: Node3D = cp.get_node("FireShrineVisual/Model").find_child("Flame*", true, false) as Node3D
+	# 0. Checkpoint đầu nằm dưới chân người chơi lúc spawn và đã kích hoạt ngay (đứng lên là kích hoạt, không bấm gì)
+	var start_cp: Checkpoint = _level.get_node("StartCheckpoint") as Checkpoint
+	var start_flat: float = Vector2(_player.global_position.x - start_cp.global_position.x, _player.global_position.z - start_cp.global_position.z).length()
+	_check(start_flat < 0.5 and _player.is_on_floor() and absf(_player.global_position.y - start_cp.global_position.y - 0.26) < 0.15, "spawn đứng trên bệ checkpoint đầu (lệch %.2f m, y %.2f)" % [start_flat, _player.global_position.y])
+	_check(start_cp.is_active() and GameState.get_checkpoint_spawn_id() == &"level_3.start", "checkpoint đầu tự kích hoạt khi đứng lên: %s" % GameState.get_checkpoint_spawn_id())
+	await _capture("fire_checkpoint_start.png")
 	# 1. Miếu tắt
 	_check(not cp.is_active() and not light.visible and flame != null and not flame.visible, "lúc đầu miếu tắt")
 	# 2. Bị thương rồi đi tới miếu
@@ -42,6 +48,7 @@ func _run() -> void:
 	_check(GameState.get_checkpoint_spawn_id() == &"level_3.plaza" and cp.is_active(), "chạm miếu: lưu checkpoint %s" % GameState.get_checkpoint_spawn_id())
 	_check(_player.health.current_health == _player.health.max_health and hurt_hp < _player.health.max_health, "hồi đầy máu (%d → %d)" % [hurt_hp, _player.health.current_health])
 	_check(light.visible and light.light_energy > 2.0 and flame.visible, "miếu sáng: lửa hiện, đèn %.2f" % light.light_energy)
+	_check(_player.is_on_floor() and absf(_player.global_position.y - cp.global_position.y - 0.26) < 0.15, "đứng lên mặt bệ (y = %.2f, bệ cao 0,26)" % (_player.global_position.y - cp.global_position.y))
 	await _capture("fire_checkpoint_lit.png")
 	# 3. Điểm hồi sinh
 	var spawn: Node3D = cp.get_node("Spawn")
@@ -51,14 +58,28 @@ func _run() -> void:
 	_check(_player.is_on_floor() and absf(p.y - spawn.global_position.y) < 0.3 and Vector2(p.x - spawn.global_position.x, p.z - spawn.global_position.z).length() < 0.3, "điểm hồi sinh đứng vững trên sàn (%.2f, %.2f, %.2f)" % [p.x, p.y, p.z])
 	# 4. Checkpoint phòng 6: chạm thì lưu sang level_3.room6, miếu quảng trường tắt, miếu phòng 6 sáng
 	var cp6: Checkpoint = _level.get_node("Room6Checkpoint") as Checkpoint
-	await _walk_from(Vector3(102, 4.4, 53), cp6.global_position)
+	# Đi chéo tới bệ để tránh trụ đèn đặc ở lưng bệ (phía -Z)
+	await _walk_from(Vector3(104.5, 4.4, 53.5), cp6.global_position)
 	await _frames(60)
-	_check(GameState.get_checkpoint_spawn_id() == &"level_3.room6" and cp6.is_active() and not cp.is_active(), "chạm miếu phòng 6: lưu checkpoint level_3.room6, miếu quảng trường tắt")
+	_check(GameState.get_checkpoint_spawn_id() == &"level_3.room6" and cp6.is_active() and not cp.is_active(), "chạm miếu phòng 6: lưu checkpoint level_3.room6, miếu quảng trường tắt (id=%s, active6=%s, pos=%s)" % [GameState.get_checkpoint_spawn_id(), cp6.is_active(), _player.global_position])
 	var spawn6: Node3D = cp6.get_node("Spawn")
 	_player.teleport(spawn6.global_position + Vector3(0, 0.1, 0))
 	await _frames(60)
 	_check(_player.is_on_floor() and absf(_player.global_position.y - spawn6.global_position.y) < 0.3, "điểm hồi sinh phòng 6 đứng vững trên sàn (y = %.2f)" % _player.global_position.y)
 	await _capture("room6_checkpoint.png")
+	# 5. Hiệu ứng khi kích hoạt lại miếu quảng trường: hạt, vòng sáng, rồi tự tắt; đứng tiếp không bắn lại
+	var burst: GPUParticles3D = cp.get_node("FireShrineVisual/ActivateBurst")
+	var ring: MeshInstance3D = cp.get_node("FireShrineVisual/PulseRing")
+	var burst_done: Array[int] = [0]
+	burst.finished.connect(func() -> void: burst_done[0] += 1)
+	_check(not burst.emitting and not ring.visible, "trước khi kích hoạt: chưa có hiệu ứng")
+	_player.teleport(cp.global_position + Vector3(0, 0.4, 0))
+	await _frames(15)
+	_check(cp.is_active() and burst_done[0] == 0 and ring.visible, "kích hoạt: hạt đang bay (xong %d), vòng %s" % [burst_done[0], ring.visible])
+	await _frames(8)
+	await _capture("fire_checkpoint_fx.png")
+	await _frames(150)
+	_check(cp.is_active() and burst_done[0] == 1 and not burst.emitting and not ring.visible, "đứng tiếp: hiệu ứng tắt, hạt chỉ bắn đúng 1 lần (%d)" % burst_done[0])
 	print("FIRE CHECKPOINT RESULT: %s" % ("OK" if _failed == 0 else "%d FAIL" % _failed))
 	get_tree().quit(0 if _failed == 0 else 1)
 

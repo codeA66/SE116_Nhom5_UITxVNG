@@ -1,5 +1,5 @@
 extends CrumblingFloorState
-## Mất va chạm ngay, phần hình rơi xuống rồi ẩn. Hết respawn_time thì hiện lại.
+## Mất va chạm ngay, phần hình rơi xuống rồi ẩn. Hết respawn_time thì hiện lại (trừ khi data.respawns tắt).
 
 var _timer: float = 0.0
 var _fall_speed: float = 0.0
@@ -21,5 +21,8 @@ func physics_update(delta: float) -> void:
 		floor_tile.set_visual_offset(Vector3(0.0, y, 0.0))
 		if -y >= d.fall_distance:
 			floor_tile.hide_visual()
-	if _timer >= d.respawn_time:
+			# Rơi hẳn: không còn việc gì, tắt xử lý của ô
+			if not d.respawns:
+				floor_tile.set_physics_process(false)
+	if d.respawns and _timer >= d.respawn_time:
 		state_machine.transition_to(SOLID)

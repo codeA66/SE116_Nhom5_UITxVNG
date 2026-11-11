@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="FireSpiderData" format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_spider/fire_spider_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_spider/fire_spider_movement.tres" id="2_move"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_spider/fire_spider_bite.tres" id="3_bite"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_spider/fire_spider_pounce.tres" id="4_pounce"]
+[ext_resource type="Resource" path="res://resources/combat/spider_web/spider_web.tres" id="5_web"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Nhện Lửa"
+max_health = 4
+movement = ExtResource("2_move")
+detect_range = 9.0
+lose_range = 13.0
+leash_range = 16.0
+attack = ExtResource("3_bite")
+attack_range = 1.7
+hitbox_reach = 1.6
+attack_cooldown = 1.0
+patrol_radius = 3.0
+stun_time = 0.3
+pounce_attack = ExtResource("4_pounce")
+web = ExtResource("5_web")

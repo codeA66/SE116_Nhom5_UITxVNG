@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AttackData" format=3]
+
+[ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+animation = &"Cast"
+damage = 1
+damage_type = 1
+knockback = 4.0
+active_start = 0.8
+active_end = 0.85
+duration = 1.3
+lunge_speed = 0.0

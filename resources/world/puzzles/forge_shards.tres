@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ForgeShardSet" format=3]
+
+[ext_resource type="Script" path="res://objects/fire_puzzle/forge_shards/forge_shard_set.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+shard_flags = Array[StringName]([&"level_3.t2_shard_north", &"level_3.t2_shard_east", &"level_3.t2_shard_south"])
+label_format = "Mảnh vỡ %d/%d"

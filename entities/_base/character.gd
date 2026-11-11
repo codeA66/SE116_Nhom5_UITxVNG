@@ -27,6 +27,21 @@ func _ready() -> void:
 	# g = 2h / t * t , v = gt
 	gravity = 2.0 * movement.jump_height / (movement.time_to_apex * movement.time_to_apex)
 	jump_velocity = gravity * movement.time_to_apex
+	_transfer_root_yaw()
+
+
+## Hướng nhìn chỉ xoay node Model và coi gốc là không xoay. Đặt nhân vật xoay sẵn trong level (cho quay mặt về
+## player...) thì chuyển góc xoay ngang của gốc sang Model, gốc về thẳng; giữ nguyên tỉ lệ (miniboss phóng to ở gốc).
+## Không xoay thì không làm gì. Bỏ nghiêng (X / Z) của gốc: nhân vật luôn đứng thẳng.
+func _transfer_root_yaw() -> void:
+	var root_scale := basis.get_scale()
+	if basis.orthonormalized().is_equal_approx(Basis.IDENTITY):
+		return
+	var yaw := basis.orthonormalized().get_euler().y
+	basis = Basis.from_scale(root_scale)
+	if model:
+		model.rotation.y = wrapf(model.rotation.y + yaw, -PI, PI)
+	reset_physics_interpolation()
 
 
 func _physics_process(delta: float) -> void:
