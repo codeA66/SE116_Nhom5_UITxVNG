@@ -400,9 +400,15 @@ func discard_pending_flags() -> void:
 
 ## Chết: mọi thứ về bản chụp ở lần chạm checkpoint gần nhất. SceneManager gọi lúc màn đã tối, trước khi tải lại khu
 func restore_checkpoint() -> void:
+	var old_tutorials := progress.unlocked_tutorials.duplicate()
 	progress = _committed.snapshot()
+	for tut_id: StringName in old_tutorials:
+		if not progress.unlocked_tutorials.has(tut_id):
+			progress.unlocked_tutorials.append(tut_id)
+			progress.flags[StringName("tut_" + String(tut_id))] = true
 	reset_player_health()
 	progress_replaced.emit()
+	tutorials_changed.emit()
 
 
 ## Thay toàn bộ tiến trình. Không phát progress_changed để không ghi đè file save ngay khi vừa đọc
@@ -419,6 +425,7 @@ func replace_progress(new_progress: PlayerProgress) -> void:
 	_committed = progress.snapshot()
 	reset_player_health()
 	progress_replaced.emit()
+	tutorials_changed.emit()
 
 
 func has_checkpoint() -> bool:

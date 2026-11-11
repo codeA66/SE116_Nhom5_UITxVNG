@@ -1,0 +1,73 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/menus/inventory/pages/settings/settings_page.gd" id="1_page"]
+[ext_resource type="Theme" path="res://ui/theme/menu_theme.tres" id="2_theme"]
+
+[node name="SettingsPage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_page")
+page_title = "Cài Đặt"
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 28
+
+[node name="Heading" type="Label" parent="Layout"]
+layout_mode = 2
+text = "HỆ THỐNG / THIẾT LẬP"
+horizontal_alignment = 1
+
+[node name="Controls" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="MasterVolume" type="HBoxContainer" parent="Layout/Controls"]
+custom_minimum_size = Vector2(420, 40)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Layout/Controls/MasterVolume"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Âm Lượng Tổng"
+
+[node name="Slider" type="HSlider" parent="Layout/Controls/MasterVolume"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 5.0
+value = 80.0
+
+[node name="Value" type="Label" parent="Layout/Controls/MasterVolume"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "80%"
+horizontal_alignment = 2
+
+[node name="Fullscreen" type="HBoxContainer" parent="Layout/Controls"]
+custom_minimum_size = Vector2(420, 40)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Layout/Controls/Fullscreen"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Toàn Màn Hình"
+
+[node name="Check" type="CheckBox" parent="Layout/Controls/Fullscreen"]
+layout_mode = 2
+text = "Bật"

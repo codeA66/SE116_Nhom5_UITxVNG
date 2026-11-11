@@ -21,6 +21,8 @@ func _run() -> void:
 	await _test_menu_and_help_key()
 	await _test_hub_and_trigger()
 	_test_new_tutorials_and_skill_acquire()
+	await _test_category_hierarchy_and_navigation()
+	_test_tutorial_save_and_load()
 	
 	if _fails == 0:
 		print("=== TẤT CẢ TEST TUTORIALS THÀNH CÔNG! ===")
@@ -147,3 +149,86 @@ func _test_new_tutorials_and_skill_acquire() -> void:
 	var wind_skill: AbilityData = preload("res://abilities/wind_blast/wind_blast.tres")
 	GameState.unlock_ability(wind_skill)
 	_assert(GameState.has_tutorial(&"wind_blast"), "Nhặt skill mới tự động lưu tutorial vào Sổ Hướng Dẫn")
+
+
+func _test_category_hierarchy_and_navigation() -> void:
+	print("\nTest 7: Phân cấp menu: Túi Đồ (Tab / Q) vs Hệ Thống (H / E)")
+	var menu: InventoryMenu = MENU_SCENE.instantiate()
+	add_child(menu)
+	await get_tree().process_frame
+	
+	# 1. Mở mặc định vào Túi Đồ
+	menu.open(InventoryMenu.Category.INVENTORY)
+	await get_tree().process_frame
+	_assert(menu.visible, "Menu mở ra ở Túi Đồ")
+	_assert(menu._current_category == InventoryMenu.Category.INVENTORY, "Category hiện tại là INVENTORY")
+	_assert(menu._currency_label.visible, "Tiền Soul Jade hiển thị khi ở Túi Đồ")
+	
+	# Kiểm tra các trang con của Túi Đồ
+	var inv_pages := menu._inventory_pages
+	_assert(inv_pages.size() == 3, "Túi Đồ có đúng 3 trang con (Elements, Items, Charms)")
+	for p: MenuPage in inv_pages:
+		_assert(not (p is TutorialsPage), "TutorialsPage KHÔNG nằm trong Túi Đồ")
+	
+	# 2. Chuyển sang Hệ Thống bằng E (+1)
+	menu._change_category(1)
+	await get_tree().process_frame
+	_assert(menu._current_category == InventoryMenu.Category.SYSTEM, "Chuyển thành công sang category SYSTEM")
+	_assert(not menu._currency_label.visible, "Tiền Soul Jade ẩn khi ở Hệ Thống")
+	
+	# Kiểm tra các trang con của Hệ Thống
+	var sys_pages := menu._system_pages
+	_assert(sys_pages.size() == 3, "Hệ Thống có 3 trang con (Tutorials, Settings, Quit)")
+	_assert(sys_pages[0] is TutorialsPage, "Trang đầu tiên của Hệ Thống là TutorialsPage")
+	
+	# Đổi trang trong Hệ Thống
+	menu._change_page(1)
+	await get_tree().process_frame
+	_assert(menu.get_current_page() is SettingsPage, "Đổi trang tiếp theo trong Hệ Thống ra SettingsPage")
+	
+	# 3. Phím H mở thẳng vào TutorialsPage
+	menu.open_to_page_type(TutorialsPage)
+	await get_tree().process_frame
+	_assert(menu._current_category == InventoryMenu.Category.SYSTEM, "Nhảy đúng sang category SYSTEM")
+	_assert(menu.get_current_page() is TutorialsPage, "Trang đang xem là TutorialsPage")
+	
+	# 4. Chuyển ngược lại Túi Đồ bằng Q (-1)
+	menu._change_category(-1)
+	await get_tree().process_frame
+	_assert(menu._current_category == InventoryMenu.Category.INVENTORY, "Chuyển ngược lại thành công sang INVENTORY")
+	_assert(menu._currency_label.visible, "Tiền Soul Jade hiện lại")
+	
+	menu.close()
+	await get_tree().create_timer(0.25).timeout
+	_assert(not menu.visible, "Menu đóng thành công")
+	menu.queue_free()
+
+
+func _test_tutorial_save_and_load() -> void:
+	print("\nTest 8: Lưu & nạp tiến trình hướng dẫn qua SaveManager")
+	var p := PlayerProgress.new()
+	p.unlocked_tutorials = [&"movement", &"dash", &"sword"]
+	
+	# 1. Kiểm tra serialize to_dict
+	var dict := SaveManager.to_dict(p)
+	_assert(dict.has("tutorials"), "File save chứa khóa 'tutorials'")
+	var saved_tuts: Array = dict.get("tutorials", [])
+	_assert(saved_tuts.size() == 3, "Lưu đủ 3 bài hướng dẫn")
+	_assert(saved_tuts[0] == "movement" and saved_tuts[1] == "dash" and saved_tuts[2] == "sword", "Thứ tự hướng dẫn giữ nguyên khi ghi file")
+	
+	# 2. Kiểm tra deserialize from_dict
+	var loaded := SaveManager.from_dict(dict)
+	_assert(loaded.unlocked_tutorials.size() == 3, "Nạp lại đủ 3 hướng dẫn từ save")
+	_assert(loaded.unlocked_tutorials[0] == &"movement" and loaded.unlocked_tutorials[2] == &"sword", "ID hướng dẫn nạp lại đúng kiểu StringName")
+	_assert(loaded.flags.has(&"tut_movement"), "Cờ thế giới tut_movement được khôi phục")
+	_assert(loaded.flags.has(&"tut_dash"), "Cờ thế giới tut_dash được khôi phục")
+	_assert(loaded.flags.has(&"tut_sword"), "Cờ thế giới tut_sword được khôi phục")
+	
+	# 3. Kiểm tra hồi sinh checkpoint giữ lại hướng dẫn
+	GameState.progress = PlayerProgress.new()
+	GameState.set_checkpoint("res://levels/temple_center/hub/hub.tscn", &"default")
+	_assert(GameState.progress.unlocked_tutorials.is_empty(), "Ban đầu chưa có tutorial")
+	GameState.unlock_tutorial(TUTORIAL_DATA, false)
+	_assert(GameState.has_tutorial(&"movement"), "Vừa mở khóa movement trước khi chết")
+	GameState.restore_checkpoint()
+	_assert(GameState.has_tutorial(&"movement"), "Chết hồi sinh checkpoint VẪN GIỮ tutorial movement trong Sổ Hướng Dẫn")
