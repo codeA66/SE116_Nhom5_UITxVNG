@@ -36,8 +36,14 @@ func apply_style() -> void:
 ## Signal máu thật điều khiển cả đầy/rỗng và cảnh báo; không kiểm tra từng frame.
 func _refresh(current: int, max_value: int) -> void:
 	_resize_segments(maxi(max_value,0))
+	var refill_delay: float = 0.0
 	for index: int in range(_segments.size()):
-		_segments[index].call(&"set_filled",index<current,_initialized)
+		var segment: Control = _segments[index]
+		if index < current and not bool(segment.get(&"filled")):
+			segment.call(&"set_filled", true, _initialized, refill_delay)
+			refill_delay = minf(refill_delay + 0.055, 0.18)
+		else:
+			segment.call(&"set_filled", index < current, _initialized)
 		_segments[index].call(&"set_low_health",current>0 and current<=style.health_low_threshold and index==current-1)
 	_fit_segments()
 ## Chỉ tạo/hủy node khi sức chứa thay đổi; damage và heal tái dùng mọi ô.
