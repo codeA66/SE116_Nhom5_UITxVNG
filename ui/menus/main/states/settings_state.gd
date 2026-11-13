@@ -1,5 +1,6 @@
 extends MenuState
-## Khung cài đặt (chưa có nội dung). Quay lại / Esc -> menu chính.
+## Màn Cài đặt (khung dùng chung với menu tạm dừng và màn Tab). Quay lại / Esc -> menu chính;
+## Esc lúc đang chờ phím mới chỉ huỷ việc chờ.
 
 
 func enter(_previous: StringName) -> void:
@@ -14,7 +15,7 @@ func exit() -> void:
 
 
 func handle_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"ui_cancel"):
+	if event.is_action_pressed(&"ui_cancel") and not menu.settings_screen.panel.handle_cancel():
 		_on_back()
 
 

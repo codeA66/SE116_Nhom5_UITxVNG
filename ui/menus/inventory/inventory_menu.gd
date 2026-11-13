@@ -14,6 +14,8 @@ enum Category {
 	SYSTEM = 1,
 }
 
+const GROUP := &"inventory_menu"
+
 @export var player: Player
 @export var toggle_action: StringName = &"inventory"
 @export var help_action: StringName = &"help"
@@ -48,6 +50,8 @@ var _page_tween: Tween
 
 
 func _ready() -> void:
+	# Menu tạm dừng tìm màn Tab qua nhóm này để mở thẳng Sổ hướng dẫn
+	add_to_group(GROUP)
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_frame.color = style.ornament
@@ -94,6 +98,14 @@ func _setup_pages_in_holder(holder: Control, target_array: Array[MenuPage]) -> v
 		target_array.append(page)
 
 
+## Đóng bằng Tab phải đọc trước giao diện: Tab cũng là phím chuyển focus của Godot (ui_focus_next),
+## ô đang được chọn trong màn sẽ nuốt mất nếu chờ tới _unhandled_input
+func _input(event: InputEvent) -> void:
+	if visible and event.is_action_pressed(toggle_action):
+		get_viewport().set_input_as_handled()
+		close()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(help_action):
 		get_viewport().set_input_as_handled()
@@ -104,18 +116,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed(toggle_action):
 		get_viewport().set_input_as_handled()
-		if visible and _current_category == Category.INVENTORY:
-			close()
-		elif visible and _current_category != Category.INVENTORY:
-			_switch_category(Category.INVENTORY)
-		elif player == null or player.controls_enabled:
+		# Đang mở thì _input đã đóng (Tab lần nữa luôn đóng, như Esc, ở mục nào cũng vậy)
+		if not visible and (player == null or player.controls_enabled):
 			open(Category.INVENTORY)
 		return
+	# Màn đang đóng thì Esc thuộc về menu tạm dừng (PauseMenu), không mở màn Tab
 	if not visible:
-		if event.is_action_pressed(&"ui_cancel"):
-			if player == null or player.controls_enabled:
-				get_viewport().set_input_as_handled()
-				open(Category.SYSTEM)
 		return
 	if event.is_action_pressed(prev_category_action):
 		get_viewport().set_input_as_handled()

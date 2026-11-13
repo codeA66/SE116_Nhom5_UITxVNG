@@ -1,0 +1,123 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/menus/main/backdrop/menu_background.gd" id="1_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/menu_backdrop_palace.png" id="2_palace"]
+[ext_resource type="Shader" path="res://assets/shaders/screen/menu/menu_silhouette.gdshader" id="3_sil"]
+[ext_resource type="Shader" path="res://assets/shaders/screen/menu/menu_light_shaft.gdshader" id="4_shaft"]
+
+[sub_resource type="Gradient" id="SkyGradient"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.012, 0.016, 0.026, 1, 0.03, 0.042, 0.06, 1, 0.02, 0.028, 0.04, 1)
+
+[sub_resource type="GradientTexture2D" id="SkyTexture"]
+gradient = SubResource("SkyGradient")
+fill_from = Vector2(0, 0)
+fill_to = Vector2(0, 1)
+
+[sub_resource type="ShaderMaterial" id="SilhouetteMat"]
+shader = ExtResource("3_sil")
+
+[sub_resource type="Gradient" id="FogGradient"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(0.02, 0.028, 0.04, 0, 0.02, 0.028, 0.04, 0.55, 0.012, 0.016, 0.026, 0.95)
+
+[sub_resource type="GradientTexture2D" id="FogTexture"]
+gradient = SubResource("FogGradient")
+fill_from = Vector2(0, 0)
+fill_to = Vector2(0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaftMat"]
+shader = ExtResource("4_shaft")
+
+[sub_resource type="Gradient" id="DustGradient"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="DustTexture"]
+gradient = SubResource("DustGradient")
+width = 16
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="DustFade"]
+offsets = PackedFloat32Array(0, 0.2, 0.75, 1)
+colors = PackedColorArray(0.85, 0.92, 1, 0, 0.85, 0.92, 1, 0.45, 0.85, 0.92, 1, 0.3, 0.85, 0.92, 1, 0)
+
+[node name="MenuBackground" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_bg")
+
+[node name="Sky" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("SkyTexture")
+expand_mode = 1
+
+[node name="Scenery" type="TextureRect" parent="."]
+modulate = Color(1, 1, 1, 0.9)
+material = SubResource("SilhouetteMat")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -20.0
+offset_right = 40.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_palace")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Fog" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("FogTexture")
+expand_mode = 1
+
+[node name="LightShaft" type="ColorRect" parent="."]
+material = SubResource("ShaftMat")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dust" type="CPUParticles2D" parent="."]
+position = Vector2(640, 380)
+amount = 60
+lifetime = 14.0
+preprocess = 14.0
+texture = SubResource("DustTexture")
+emission_shape = 3
+emission_rect_extents = Vector2(700, 380)
+direction = Vector2(0.25, -1)
+spread = 35.0
+gravity = Vector2(0, -2)
+initial_velocity_min = 5.0
+initial_velocity_max = 16.0
+scale_amount_min = 0.12
+scale_amount_max = 0.4
+color_ramp = SubResource("DustFade")

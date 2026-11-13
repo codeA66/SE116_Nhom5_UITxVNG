@@ -14,6 +14,8 @@ const MIN_REAL_DELTA_SCALE := 0.001
 @export var decay: float = 1.6
 
 var trauma: float = 0.0
+## Hệ số độ rung do người chơi chọn trong Cài đặt (0 = tắt rung); Settings đặt lúc khởi động và khi đổi
+var strength: float = 1.0
 
 
 func _ready() -> void:
@@ -30,6 +32,7 @@ func _process(delta: float) -> void:
 
 ## Cộng dồn nhưng kẹp ≤ 1 để nhiều đòn liên tiếp không rung quá tay
 func add_trauma(amount: float) -> void:
+	amount *= strength
 	if amount <= 0.0:
 		return
 	trauma = minf(trauma + amount, MAX_TRAUMA)
