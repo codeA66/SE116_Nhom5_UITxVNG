@@ -11,6 +11,8 @@ func enter(_previous: StringName) -> void:
 	enemy.set_telegraph(false)
 	enemy.hitbox.deactivate()
 	enemy.hurtbox.set_deferred(&"monitorable", false)
+	# Mũi tên dò mục tiêu bằng truy vấn vật lý (không xét monitorable): gỡ layer để xác không chặn đạn
+	enemy.hurtbox.set_deferred(&"collision_layer", 0)
 	enemy.sensor.set_deferred(&"monitoring", false)
 	if enemy.wind_receiver:
 		enemy.wind_receiver.enabled = false
