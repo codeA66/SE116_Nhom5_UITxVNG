@@ -3,9 +3,8 @@
 [ext_resource type="Script" path="res://ui/menus/main/main_menu.gd" id="1_menu"]
 [ext_resource type="Resource" path="res://resources/ui/main_menu.tres" id="2_data"]
 [ext_resource type="Resource" path="res://resources/world/zones/zone_registry.tres" id="3_registry"]
-[ext_resource type="PackedScene" path="res://ui/menus/main/backdrop/menu_backdrop.tscn" id="4_backdrop"]
 [ext_resource type="Theme" path="res://ui/theme/menu_theme.tres" id="5_theme"]
-[ext_resource type="Shader" path="res://assets/shaders/screen/menu_vignette.gdshader" id="6_vignette"]
+[ext_resource type="Shader" path="res://assets/shaders/screen/menu/menu_vignette.gdshader" id="6_vignette"]
 [ext_resource type="Script" path="res://ui/menus/main/widgets/menu_logo.gd" id="7_logo"]
 [ext_resource type="Script" path="res://ui/menus/main/widgets/ornament_divider.gd" id="8_divider"]
 [ext_resource type="Script" path="res://ui/menus/main/widgets/menu_item.gd" id="9_item"]
@@ -21,6 +20,9 @@
 [ext_resource type="Script" path="res://ui/menus/main/states/confirm_delete_state.gd" id="19_s_confirm"]
 [ext_resource type="Script" path="res://ui/menus/main/states/settings_state.gd" id="20_s_settings"]
 
+[ext_resource type="PackedScene" path="res://ui/menus/settings/settings_panel.tscn" id="settings_panel"]
+[ext_resource type="PackedScene" path="res://ui/menus/main/backdrop/menu_background.tscn" id="menu_background"]
+[ext_resource type="Texture2D" path="res://assets/ui/logo/foxy_head.svg" id="logo_head"]
 [sub_resource type="ShaderMaterial" id="Vignette"]
 shader = ExtResource("6_vignette")
 
@@ -29,7 +31,9 @@ script = ExtResource("1_menu")
 data = ExtResource("2_data")
 registry = ExtResource("3_registry")
 
-[node name="Backdrop" parent="." instance=ExtResource("4_backdrop")]
+[node name="Background" type="CanvasLayer" parent="."]
+
+[node name="MenuBackground" parent="Background" instance=ExtResource("menu_background")]
 
 [node name="UI" type="CanvasLayer" parent="."]
 layer = 10
@@ -60,18 +64,33 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -420.0
-offset_top = 180.0
+offset_top = 110.0
 offset_right = 420.0
-offset_bottom = 380.0
+offset_bottom = 440.0
 grow_horizontal = 2
 mouse_filter = 2
 script = ExtResource("7_logo")
+
+[node name="Icon" type="TextureRect" parent="UI/Root/Logo"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_right = 80.0
+offset_bottom = 160.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = ExtResource("logo_head")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Title" type="Label" parent="UI/Root/Logo"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 150.0
+offset_top = 150.0
+offset_bottom = 300.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 128
 theme_override_constants/shadow_offset_y = 4
@@ -86,9 +105,9 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -260.0
-offset_top = 158.0
+offset_top = 308.0
 offset_right = 260.0
-offset_bottom = 174.0
+offset_bottom = 324.0
 grow_horizontal = 2
 mouse_filter = 2
 script = ExtResource("8_divider")
@@ -146,6 +165,13 @@ offset_right = 170.0
 offset_bottom = 200.0
 grow_horizontal = 2
 theme_override_constants/separation = 10
+
+[node name="Continue" type="Button" parent="UI/Root/HomeScreen/Items"]
+custom_minimum_size = Vector2(340, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Tiếp tục"
+script = ExtResource("9_item")
 
 [node name="Start" type="Button" parent="UI/Root/HomeScreen/Items"]
 custom_minimum_size = Vector2(340, 54)
@@ -294,24 +320,16 @@ grow_horizontal = 2
 mouse_filter = 2
 script = ExtResource("8_divider")
 
-[node name="Note" type="Label" parent="UI/Root/SettingsScreen"]
-modulate = Color(0.58, 0.6, 0.63, 1)
+[node name="Panel" parent="UI/Root/SettingsScreen" instance=ExtResource("settings_panel")]
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -20.0
-offset_right = 300.0
-offset_bottom = 20.0
+offset_left = -380.0
+offset_top = 160.0
+offset_right = 380.0
+offset_bottom = 600.0
 grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 22
-text = "Đang hoàn thiện"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="Back" type="Button" parent="UI/Root/SettingsScreen"]
 custom_minimum_size = Vector2(240, 48)
@@ -434,12 +452,16 @@ script = ExtResource("20_s_settings")
 [node name="Audio" type="Node" parent="."]
 
 [node name="Music" type="AudioStreamPlayer" parent="Audio"]
-bus = &"Master"
+bus = &"Music"
 
 [node name="Move" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="Confirm" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="Back" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="Delete" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
