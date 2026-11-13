@@ -1,6 +1,6 @@
 class_name MenuLogo
 extends Control
-## Logo game: đầu cáo low-poly + chữ tên game + nét trang trí. Màn tiêu đề: to, giữa màn; menu: thu nhỏ lên trên; hồ sơ: ẩn.
+## Logo đổi tỷ lệ giữa màn tiêu đề và menu để nhường chỗ cho các nút.
 
 enum Layout { TITLE, HOME, HIDDEN }
 
@@ -13,7 +13,6 @@ enum Layout { TITLE, HOME, HIDDEN }
 
 var _tween: Tween
 
-@onready var _icon: TextureRect = $Icon
 @onready var _title: Label = $Title
 @onready var _divider: OrnamentDivider = $Divider
 
@@ -22,13 +21,10 @@ func set_text(value: String) -> void:
 	_title.text = value
 
 
-## Lần đầu mở game: đầu cáo hiện trước, rồi chữ, nét kẻ mở ra từ giữa
 func play_reveal() -> void:
-	_icon.modulate.a = 0.0
 	_title.modulate.a = 0.0
 	_divider.reveal = 0.0
 	var tween := create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(_icon, ^"modulate:a", 1.0, reveal_time * 0.8)
 	tween.tween_property(_title, ^"modulate:a", 1.0, reveal_time)
 	tween.parallel().tween_property(_divider, ^"reveal", 1.0, reveal_time * 1.2)
 

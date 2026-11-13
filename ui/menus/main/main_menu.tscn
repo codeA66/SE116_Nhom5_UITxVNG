@@ -21,10 +21,16 @@
 [ext_resource type="Script" path="res://ui/menus/main/states/settings_state.gd" id="20_s_settings"]
 
 [ext_resource type="PackedScene" path="res://ui/menus/settings/settings_panel.tscn" id="settings_panel"]
-[ext_resource type="PackedScene" path="res://ui/menus/main/backdrop/menu_background.tscn" id="menu_background"]
-[ext_resource type="Texture2D" path="res://assets/ui/logo/foxy_head.svg" id="logo_head"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/foxy_wind_dock.png" id="dock_art"]
+[ext_resource type="Shader" path="res://ui/menus/main/backdrop/foxy_wind_dock.gdshader" id="dock_shader"]
+
+[sub_resource type="ShaderMaterial" id="DockMotion"]
+shader = ExtResource("dock_shader")
+
 [sub_resource type="ShaderMaterial" id="Vignette"]
 shader = ExtResource("6_vignette")
+shader_parameter/edge_strength = 0.24
+shader_parameter/base_dim = 0.0
 
 [node name="MainMenu" type="Node"]
 script = ExtResource("1_menu")
@@ -33,7 +39,14 @@ registry = ExtResource("3_registry")
 
 [node name="Background" type="CanvasLayer" parent="."]
 
-[node name="MenuBackground" parent="Background" instance=ExtResource("menu_background")]
+[node name="MenuBackground" type="TextureRect" parent="Background"]
+material = SubResource("DockMotion")
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("dock_art")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="UI" type="CanvasLayer" parent="."]
 layer = 10
@@ -61,36 +74,22 @@ mouse_filter = 2
 [node name="Logo" type="Control" parent="UI/Root"]
 layout_mode = 1
 anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -420.0
+anchor_left = 0.22
+anchor_right = 0.22
+offset_left = -200.0
 offset_top = 110.0
-offset_right = 420.0
+offset_right = 200.0
 offset_bottom = 440.0
 grow_horizontal = 2
 mouse_filter = 2
 script = ExtResource("7_logo")
 
-[node name="Icon" type="TextureRect" parent="UI/Root/Logo"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -80.0
-offset_right = 80.0
-offset_bottom = 160.0
-grow_horizontal = 2
-mouse_filter = 2
-texture = ExtResource("logo_head")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="Title" type="Label" parent="UI/Root/Logo"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 150.0
-offset_bottom = 300.0
+offset_top = 82.0
+offset_bottom = 232.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 128
 theme_override_constants/shadow_offset_y = 4
@@ -104,10 +103,10 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -260.0
-offset_top = 308.0
-offset_right = 260.0
-offset_bottom = 324.0
+offset_left = -165.0
+offset_top = 244.0
+offset_right = 165.0
+offset_bottom = 260.0
 grow_horizontal = 2
 mouse_filter = 2
 script = ExtResource("8_divider")
@@ -126,13 +125,13 @@ script = ExtResource("10_title")
 modulate = Color(0.94, 0.93, 0.89, 1)
 layout_mode = 1
 anchors_preset = 7
-anchor_left = 0.5
+anchor_left = 0.22
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 0.22
 anchor_bottom = 1.0
-offset_left = -300.0
+offset_left = -190.0
 offset_top = -170.0
-offset_right = 300.0
+offset_right = 190.0
 offset_bottom = -130.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -155,12 +154,12 @@ default_focus = NodePath("Items/Start")
 [node name="Items" type="VBoxContainer" parent="UI/Root/HomeScreen"]
 layout_mode = 1
 anchors_preset = 5
-anchor_left = 0.5
+anchor_left = 0.22
 anchor_top = 0.5
-anchor_right = 0.5
+anchor_right = 0.22
 anchor_bottom = 0.5
 offset_left = -170.0
-offset_top = 10.0
+offset_top = -42.0
 offset_right = 170.0
 offset_bottom = 200.0
 grow_horizontal = 2
