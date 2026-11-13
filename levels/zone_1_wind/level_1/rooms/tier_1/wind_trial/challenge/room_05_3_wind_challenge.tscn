@@ -1,137 +1,540 @@
 [gd_scene format=3]
 
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_floor.res" id="room_floor"]
-[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/trial_floor_dim.tres" id="floor_dim"]
-[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/secret_floor_dark.tres" id="floor_dark"]
-[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/secret_wall_dark.tres" id="wall_dark"]
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_base.res" id="room_base"]
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/room_walls.res" id="room_walls"]
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/bridge_deck.res" id="bridge_deck"]
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/bridge_rails.res" id="bridge_rails"]
-[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.gd" id="challenge"]
-[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.tscn" id="gate"]
-[ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="encounter"]
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="guard"]
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="beetle"]
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="caster"]
-[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/werewolf/werewolf.tscn" id="wolf"]
-[ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="charm_pickup"]
-[ext_resource type="Resource" path="res://resources/player/items/charms/challenge_charm.tres" id="charm"]
-[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/charm_altar.glb" id="altar"]
-[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.gd" id="r1"]
 
-[sub_resource type="BoxShape3D" id="FloorShape"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/floor_4m.glb" id="r2"]
+
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/secret_floor_dark.tres" id="r3"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/wind_dais_8m.glb" id="r4"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/lower_arch_foundation_6m.glb" id="r5"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/wall_straight_4m.glb" id="r6"]
+
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/kit/secret_wall_dark.tres" id="r7"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/shrine_wall_niche.glb" id="r8"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/trial_gate_arch.glb" id="r9"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/balustrade_4m.glb" id="r10"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="r11"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="r12"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/bridge_segment_4m.glb" id="r13"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/charm_altar.glb" id="old_altar"]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="old_beetle"]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="old_caster"]
+
+[ext_resource type="Resource" path="res://resources/player/items/charms/challenge_charm.tres" id="old_charm"]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="old_charm_pickup"]
+
+[ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="old_encounter"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.tscn" id="old_gate"]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="old_guard"]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/werewolf/werewolf.tscn" id="old_wolf"]
+
+[sub_resource type="BoxShape3D" id="Shape_FloorBody"]
 size = Vector3(20, 0.48, 20)
 
-[sub_resource type="BoxShape3D" id="BridgeShape"]
+[sub_resource type="BoxShape3D" id="Shape_WestWallBody"]
+size = Vector3(0.69, 4.08, 20)
+
+[sub_resource type="BoxShape3D" id="Shape_EastWallBody"]
+size = Vector3(0.69, 4.08, 20)
+
+[sub_resource type="BoxShape3D" id="Shape_NorthWallWestBody"]
+size = Vector3(6, 4.08, 0.69)
+
+[sub_resource type="BoxShape3D" id="Shape_NorthWallEastBody"]
+size = Vector3(6, 4.08, 0.69)
+
+[sub_resource type="BoxShape3D" id="Shape_EntryPostWest"]
+size = Vector3(0.9, 4.4, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_EntryPostEast"]
+size = Vector3(0.9, 4.4, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_SouthRailBody"]
+size = Vector3(20, 1.12, 0.4)
+
+[sub_resource type="BoxShape3D" id="Shape_BridgeBody"]
 size = Vector3(3, 0.48, 12)
 
-[sub_resource type="BoxShape3D" id="SideWallShape"]
-size = Vector3(0.69, 1.33, 20)
-
-[sub_resource type="BoxShape3D" id="SouthWallShape"]
-size = Vector3(20, 1.33, 0.69)
-
-[sub_resource type="BoxShape3D" id="NorthWallShape"]
-size = Vector3(8, 1.33, 0.69)
-
-[sub_resource type="BoxShape3D" id="BridgeRailShape"]
+[sub_resource type="BoxShape3D" id="Shape_BridgeRailWest"]
 size = Vector3(0.4, 1.12, 12)
 
-[sub_resource type="BoxShape3D" id="EntryTriggerShape"]
-size = Vector3(4, 3.2, 2)
+[sub_resource type="BoxShape3D" id="Shape_BridgeRailEast"]
+size = Vector3(0.4, 1.12, 12)
 
 [sub_resource type="CylinderShape3D" id="AltarShape"]
 height = 1.0
 radius = 0.62
 
+[sub_resource type="BoxShape3D" id="EntryTriggerShape"]
+size = Vector3(4, 3.2, 2)
+
 [node name="Room053WindChallenge" type="Node3D"]
-script = ExtResource("challenge")
-
-[node name="Floor" type="MultiMeshInstance3D" parent="."]
-material_override = ExtResource("floor_dark")
-multimesh = ExtResource("room_floor")
-
-[node name="Base" type="MultiMeshInstance3D" parent="."]
-material_override = ExtResource("wall_dark")
-cast_shadow = 0
-multimesh = ExtResource("room_base")
-
-[node name="Walls" type="MultiMeshInstance3D" parent="."]
-material_override = ExtResource("wall_dark")
-multimesh = ExtResource("room_walls")
-
-[node name="BridgeDeck" type="MultiMeshInstance3D" parent="."]
-material_override = ExtResource("floor_dim")
-multimesh = ExtResource("bridge_deck")
-
-[node name="BridgeRails" type="MultiMeshInstance3D" parent="."]
-multimesh = ExtResource("bridge_rails")
+script = ExtResource("r1")
 
 [node name="FloorBody" type="StaticBody3D" parent="."]
-position = Vector3(10, -0.24, -10)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.24, -10)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FloorBody"]
-shape = SubResource("FloorShape")
+shape = SubResource("Shape_FloorBody")
+
+[node name="Floor" type="Node3D" parent="."]
+
+[node name="F00" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F00/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F01" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F01/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F02" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F02/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F03" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F03/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F04" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F04/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F10" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F10/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F11" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F11/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F12" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F12/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F13" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F13/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F14" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F14/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F20" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F20/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F21" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F21/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F22" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F22/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F23" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F23/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F24" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F24/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F30" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F30/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F31" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F31/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F32" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F32/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F33" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F33/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F34" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F34/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F40" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F40/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F41" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F41/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F42" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F42/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F43" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F43/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F44" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F44/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="AltarDais" parent="." instance=ExtResource("r4")]
+transform = Transform3D(0.55, 0, -0, 0, 1, 0, 0, 0, 0.55, 10, 0, -10)
+
+[node name="Foundation" type="Node3D" parent="."]
+
+[node name="South0" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(1.11111, 0, -0, 0, 0.72, 0, 0, 0, 1, 3.33333, -3.92, -0.65)
+
+[node name="South1" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(1.11111, 0, -0, 0, 0.72, 0, 0, 0, 1, 10, -3.92, -0.65)
+
+[node name="South2" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(1.11111, 0, -0, 0, 0.72, 0, 0, 0, 1, 16.6667, -3.92, -0.65)
+
+[node name="East0" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -0.833333, 0, 0.72, 0, 1, 0, 0, 19.35, -3.92, -2.5)
+
+[node name="East1" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -0.833333, 0, 0.72, 0, 1, 0, 0, 19.35, -3.92, -7.5)
+
+[node name="East2" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -0.833333, 0, 0.72, 0, 1, 0, 0, 19.35, -3.92, -12.5)
+
+[node name="East3" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -0.833333, 0, 0.72, 0, 1, 0, 0, 19.35, -3.92, -17.5)
+
+[node name="West0" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -0.833333, 0, 0.72, 0, 1, 0, 0, 0.65, -3.92, -2.5)
+
+[node name="West1" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -0.833333, 0, 0.72, 0, 1, 0, 0, 0.65, -3.92, -7.5)
+
+[node name="West2" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -0.833333, 0, 0.72, 0, 1, 0, 0, 0.65, -3.92, -12.5)
+
+[node name="West3" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -0.833333, 0, 0.72, 0, 1, 0, 0, 0.65, -3.92, -17.5)
+
+[node name="Walls" type="Node3D" parent="."]
+
+[node name="West0" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.3, 0, -2)
+
+[node name="wall_straight_4m_Static" parent="Walls/West0/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="WestNiche1" parent="Walls" instance=ExtResource("r8")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.3, 0, -6)
+
+[node name="West2" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.3, 0, -10)
+
+[node name="wall_straight_4m_Static" parent="Walls/West2/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="WestNiche3" parent="Walls" instance=ExtResource("r8")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.3, 0, -14)
+
+[node name="West4" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.3, 0, -18)
+
+[node name="wall_straight_4m_Static" parent="Walls/West4/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="WestWallBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -0.3, 2.04, -10)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestWallBody"]
+shape = SubResource("Shape_WestWallBody")
+
+[node name="East0" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20.3, 0, -2)
+
+[node name="wall_straight_4m_Static" parent="Walls/East0/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="EastNiche1" parent="Walls" instance=ExtResource("r8")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20.3, 0, -6)
+
+[node name="East2" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20.3, 0, -10)
+
+[node name="wall_straight_4m_Static" parent="Walls/East2/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="EastNiche3" parent="Walls" instance=ExtResource("r8")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20.3, 0, -14)
+
+[node name="East4" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20.3, 0, -18)
+
+[node name="wall_straight_4m_Static" parent="Walls/East4/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="EastWallBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 20.3, 2.04, -10)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWallBody"]
+shape = SubResource("Shape_EastWallBody")
+
+[node name="NorthW0" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, 0, -20.34)
+
+[node name="wall_straight_4m_Static" parent="Walls/NorthW0/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="NorthW1" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(0.5, 0, -0, 0, 1, 0, 0, 0, 1, 5, 0, -20.34)
+
+[node name="wall_straight_4m_Static" parent="Walls/NorthW1/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="NorthE1" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(0.5, 0, -0, 0, 1, 0, 0, 0, 1, 15, 0, -20.34)
+
+[node name="wall_straight_4m_Static" parent="Walls/NorthE1/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="NorthE0" parent="Walls" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, 0, -20.34)
+
+[node name="wall_straight_4m_Static" parent="Walls/NorthE0/wall_straight_4m"]
+material_override = ExtResource("r7")
+
+[node name="NorthWallWestBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 3, 2.04, -20.34)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallWestBody"]
+shape = SubResource("Shape_NorthWallWestBody")
+
+[node name="NorthWallEastBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 17, 2.04, -20.34)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallEastBody"]
+shape = SubResource("Shape_NorthWallEastBody")
+
+[node name="EntryArch" parent="." instance=ExtResource("r9")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, 0, -20.2)
+
+[node name="EntryPostWest" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6.7, 2.2, -20.2)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryPostWest"]
+shape = SubResource("Shape_EntryPostWest")
+
+[node name="EntryPostEast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 13.3, 2.2, -20.2)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryPostEast"]
+shape = SubResource("Shape_EntryPostEast")
+
+[node name="SouthRail" type="Node3D" parent="."]
+
+[node name="R0" parent="SouthRail" instance=ExtResource("r10")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, 0, -0.2)
+
+[node name="R1" parent="SouthRail" instance=ExtResource("r10")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, 0, -0.2)
+
+[node name="R2" parent="SouthRail" instance=ExtResource("r10")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, 0, -0.2)
+
+[node name="R3" parent="SouthRail" instance=ExtResource("r10")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, 0, -0.2)
+
+[node name="R4" parent="SouthRail" instance=ExtResource("r10")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, 0, -0.2)
+
+[node name="SouthRailBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, 0.56, -0.2)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthRailBody"]
+shape = SubResource("Shape_SouthRailBody")
+
+[node name="PillarSW" parent="." instance=ExtResource("r11")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, -0.2)
+
+[node name="PillarSE" parent="." instance=ExtResource("r11")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 20, 0, -0.2)
+
+[node name="PillarNW" parent="." instance=ExtResource("r11")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, -20)
+
+[node name="PillarNE" parent="." instance=ExtResource("r11")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 20, 0, -20)
+
+[node name="LanternWest6" parent="." instance=ExtResource("r12")]
+transform = Transform3D(0.66, 0, -0, 0, 0.66, 0, 0, 0, 0.66, 0.25, 0, -6)
+
+[node name="LightWest6" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 1.05, 1.5, -6)
+light_color = Color(0.95, 0.71, 0.35, 1)
+light_energy = 0.9
+omni_range = 4.5
+
+[node name="LanternWest14" parent="." instance=ExtResource("r12")]
+transform = Transform3D(0.66, 0, -0, 0, 0.66, 0, 0, 0, 0.66, 0.25, 0, -14)
+
+[node name="LightWest14" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 1.05, 1.5, -14)
+light_color = Color(0.95, 0.71, 0.35, 1)
+light_energy = 0.9
+omni_range = 4.5
+
+[node name="LanternEast6" parent="." instance=ExtResource("r12")]
+transform = Transform3D(0.66, 0, -0, 0, 0.66, 0, 0, 0, 0.66, 19.75, 0, -6)
+
+[node name="LightEast6" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18.95, 1.5, -6)
+light_color = Color(0.95, 0.71, 0.35, 1)
+light_energy = 0.9
+omni_range = 4.5
+
+[node name="LanternEast14" parent="." instance=ExtResource("r12")]
+transform = Transform3D(0.66, 0, -0, 0, 0.66, 0, 0, 0, 0.66, 19.75, 0, -14)
+
+[node name="LightEast14" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18.95, 1.5, -14)
+light_color = Color(0.95, 0.71, 0.35, 1)
+light_energy = 0.9
+omni_range = 4.5
 
 [node name="BridgeBody" type="StaticBody3D" parent="."]
-position = Vector3(10, -0.24, -26)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.24, -26)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BridgeBody"]
-shape = SubResource("BridgeShape")
+shape = SubResource("Shape_BridgeBody")
 
-[node name="WestWall" type="StaticBody3D" parent="."]
-position = Vector3(0.35, 0.665, -10)
-collision_mask = 0
+[node name="Bridge" type="Node3D" parent="."]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="WestWall"]
-shape = SubResource("SideWallShape")
+[node name="Deck0" parent="Bridge" instance=ExtResource("r13")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.43, -22)
 
-[node name="EastWall" type="StaticBody3D" parent="."]
-position = Vector3(19.65, 0.665, -10)
-collision_mask = 0
+[node name="bridge_segment_4m_Static" parent="Bridge/Deck0/bridge_segment_4m"]
+material_override = ExtResource("r3")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
-shape = SubResource("SideWallShape")
+[node name="RailWest0" parent="Bridge" instance=ExtResource("r10")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8.35, 0, -22)
 
-[node name="SouthWall" type="StaticBody3D" parent="."]
-position = Vector3(10, 0.665, -0.35)
-collision_mask = 0
+[node name="RailEast0" parent="Bridge" instance=ExtResource("r10")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11.65, 0, -22)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthWall"]
-shape = SubResource("SouthWallShape")
+[node name="Deck1" parent="Bridge" instance=ExtResource("r13")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.43, -26)
 
-[node name="NorthWallWest" type="StaticBody3D" parent="."]
-position = Vector3(4, 0.665, -19.65)
-collision_mask = 0
+[node name="bridge_segment_4m_Static" parent="Bridge/Deck1/bridge_segment_4m"]
+material_override = ExtResource("r3")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallWest"]
-shape = SubResource("NorthWallShape")
+[node name="RailWest1" parent="Bridge" instance=ExtResource("r10")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8.35, 0, -26)
 
-[node name="NorthWallEast" type="StaticBody3D" parent="."]
-position = Vector3(16, 0.665, -19.65)
-collision_mask = 0
+[node name="RailEast1" parent="Bridge" instance=ExtResource("r10")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11.65, 0, -26)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallEast"]
-shape = SubResource("NorthWallShape")
+[node name="Deck2" parent="Bridge" instance=ExtResource("r13")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.43, -30)
+
+[node name="bridge_segment_4m_Static" parent="Bridge/Deck2/bridge_segment_4m"]
+material_override = ExtResource("r3")
+
+[node name="RailWest2" parent="Bridge" instance=ExtResource("r10")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8.35, 0, -30)
+
+[node name="RailEast2" parent="Bridge" instance=ExtResource("r10")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 11.65, 0, -30)
 
 [node name="BridgeRailWest" type="StaticBody3D" parent="."]
-position = Vector3(8.35, 0.56, -26)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 8.35, 0.56, -26)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BridgeRailWest"]
-shape = SubResource("BridgeRailShape")
+shape = SubResource("Shape_BridgeRailWest")
 
 [node name="BridgeRailEast" type="StaticBody3D" parent="."]
-position = Vector3(11.65, 0.56, -26)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 11.65, 0.56, -26)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BridgeRailEast"]
-shape = SubResource("BridgeRailShape")
+shape = SubResource("Shape_BridgeRailEast")
 
-[node name="EntryGate" parent="." instance=ExtResource("gate")]
+[node name="EntryGate" parent="." instance=ExtResource("old_gate")]
 position = Vector3(10, 0, -19.9)
 starts_open = true
 
@@ -144,26 +547,6 @@ monitorable = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger"]
 shape = SubResource("EntryTriggerShape")
 
-[node name="LanternWest" parent="." instance=ExtResource("lantern")]
-position = Vector3(1.6, 0, -1.6)
-scale = Vector3(0.66, 0.66, 0.66)
-
-[node name="LanternWestLight" type="OmniLight3D" parent="."]
-position = Vector3(1.6, 1.4, -1.9)
-light_color = Color(0.95, 0.71, 0.35, 1)
-light_energy = 1.4
-omni_range = 5.0
-
-[node name="LanternEast" parent="." instance=ExtResource("lantern")]
-position = Vector3(18.4, 0, -1.6)
-scale = Vector3(0.66, 0.66, 0.66)
-
-[node name="LanternEastLight" type="OmniLight3D" parent="."]
-position = Vector3(18.4, 1.4, -1.9)
-light_color = Color(0.95, 0.71, 0.35, 1)
-light_energy = 1.4
-omni_range = 5.0
-
 [node name="Altar" type="StaticBody3D" parent="."]
 position = Vector3(10, 0, -10)
 collision_mask = 0
@@ -172,7 +555,7 @@ collision_mask = 0
 position = Vector3(0, 0.5, 0)
 shape = SubResource("AltarShape")
 
-[node name="Model" parent="Altar" instance=ExtResource("altar")]
+[node name="Model" parent="Altar" instance=ExtResource("old_altar")]
 
 [node name="AltarLight" type="OmniLight3D" parent="Altar"]
 position = Vector3(0, 2.2, 0)
@@ -180,15 +563,15 @@ light_color = Color(0.78, 0.95, 1, 1)
 light_energy = 2.0
 omni_range = 6.5
 
-[node name="RewardCharm" parent="." instance=ExtResource("charm_pickup")]
+[node name="RewardCharm" parent="." instance=ExtResource("old_charm_pickup")]
 position = Vector3(10, 0.45, -10)
 persistent_id = &"level_1.wind_challenge_charm"
-charm = ExtResource("charm")
+charm = ExtResource("old_charm")
 starts_hidden = true
 
 [node name="Waves" type="Node3D" parent="."]
 
-[node name="Wave1" parent="Waves" instance=ExtResource("encounter")]
+[node name="Wave1" parent="Waves" instance=ExtResource("old_encounter")]
 spawn_interval = 0.35
 enemies_visible_before_start = false
 clear_trauma = 0.25
@@ -196,7 +579,7 @@ clear_trauma = 0.25
 [node name="Trigger" parent="Waves/Wave1" index="0"]
 monitoring = false
 
-[node name="Wave2" parent="Waves" instance=ExtResource("encounter")]
+[node name="Wave2" parent="Waves" instance=ExtResource("old_encounter")]
 spawn_interval = 0.5
 enemies_visible_before_start = false
 clear_trauma = 0.25
@@ -204,7 +587,7 @@ clear_trauma = 0.25
 [node name="Trigger" parent="Waves/Wave2" index="0"]
 monitoring = false
 
-[node name="Wave3" parent="Waves" instance=ExtResource("encounter")]
+[node name="Wave3" parent="Waves" instance=ExtResource("old_encounter")]
 spawn_interval = 0.7
 enemies_visible_before_start = false
 clear_trauma = 0.25
@@ -212,34 +595,34 @@ clear_trauma = 0.25
 [node name="Trigger" parent="Waves/Wave3" index="0"]
 monitoring = false
 
-[node name="Guard1" parent="Waves/Wave1/Enemies" instance=ExtResource("guard")]
+[node name="Guard1" parent="Waves/Wave1/Enemies" instance=ExtResource("old_guard")]
 position = Vector3(6, 0, -8)
 
-[node name="Guard2" parent="Waves/Wave1/Enemies" instance=ExtResource("guard")]
+[node name="Guard2" parent="Waves/Wave1/Enemies" instance=ExtResource("old_guard")]
 position = Vector3(10, 0, -6)
 
-[node name="Guard3" parent="Waves/Wave1/Enemies" instance=ExtResource("guard")]
+[node name="Guard3" parent="Waves/Wave1/Enemies" instance=ExtResource("old_guard")]
 position = Vector3(14, 0, -8)
 
-[node name="Guard1" parent="Waves/Wave2/Enemies" instance=ExtResource("guard")]
+[node name="Guard1" parent="Waves/Wave2/Enemies" instance=ExtResource("old_guard")]
 position = Vector3(5, 0, -6)
 
-[node name="Guard2" parent="Waves/Wave2/Enemies" instance=ExtResource("guard")]
+[node name="Guard2" parent="Waves/Wave2/Enemies" instance=ExtResource("old_guard")]
 position = Vector3(15, 0, -6)
 
-[node name="Beetle1" parent="Waves/Wave2/Enemies" instance=ExtResource("beetle")]
+[node name="Beetle1" parent="Waves/Wave2/Enemies" instance=ExtResource("old_beetle")]
 position = Vector3(7, 0, -3)
 
-[node name="Beetle2" parent="Waves/Wave2/Enemies" instance=ExtResource("beetle")]
+[node name="Beetle2" parent="Waves/Wave2/Enemies" instance=ExtResource("old_beetle")]
 position = Vector3(13, 0, -3)
 
-[node name="Caster1" parent="Waves/Wave3/Enemies" instance=ExtResource("caster")]
+[node name="Caster1" parent="Waves/Wave3/Enemies" instance=ExtResource("old_caster")]
 position = Vector3(4, 0, -4)
 
-[node name="Caster2" parent="Waves/Wave3/Enemies" instance=ExtResource("caster")]
+[node name="Caster2" parent="Waves/Wave3/Enemies" instance=ExtResource("old_caster")]
 position = Vector3(16, 0, -4)
 
-[node name="Wolf1" parent="Waves/Wave3/Enemies" instance=ExtResource("wolf")]
+[node name="Wolf1" parent="Waves/Wave3/Enemies" instance=ExtResource("old_wolf")]
 position = Vector3(10, 0, -5)
 
 

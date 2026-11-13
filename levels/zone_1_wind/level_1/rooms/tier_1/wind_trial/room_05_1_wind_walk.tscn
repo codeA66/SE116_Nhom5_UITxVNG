@@ -1,77 +1,141 @@
 [gd_scene format=3]
 
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_floor.res" id="floor"]
-[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/trial_floor_dim.tres" id="floor_dim"]
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_base.res" id="base"]
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/walk_kit/walk_rails.res" id="rails"]
-[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="lantern"]
-[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/floor_4m.glb" id="r1"]
 
-[sub_resource type="BoxShape3D" id="WalkFloorShape"]
-size = Vector3(12, 0.48, 4)
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/trial_floor_dim.tres" id="r2"]
 
-[sub_resource type="BoxShape3D" id="LongRailShape"]
-size = Vector3(12, 1.12, 0.4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/floor_2m.glb" id="r3"]
 
-[sub_resource type="BoxShape3D" id="ShortRailShape"]
-size = Vector3(8, 1.12, 0.4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/lower_arch_foundation_6m.glb" id="r4"]
 
-[sub_resource type="BoxShape3D" id="EndRailShape"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/balustrade_4m.glb" id="r5"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/balustrade_2m.glb" id="r6"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="r7"]
+
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="r8"]
+
+[sub_resource type="BoxShape3D" id="Shape_WalkFloor"]
+size = Vector3(14, 0.48, 4)
+
+[sub_resource type="BoxShape3D" id="Shape_SouthRail"]
+size = Vector3(14, 1.12, 0.4)
+
+[sub_resource type="BoxShape3D" id="Shape_EndRail"]
 size = Vector3(0.4, 1.12, 4)
+
+[sub_resource type="BoxShape3D" id="Shape_NorthRail"]
+size = Vector3(4, 1.12, 0.4)
 
 [node name="Room051WindWalk" type="Node3D"]
 
-[node name="Floor" type="MultiMeshInstance3D" parent="."]
-material_override = ExtResource("floor_dim")
-multimesh = ExtResource("floor")
-
-[node name="Base" type="MultiMeshInstance3D" parent="."]
-cast_shadow = 0
-multimesh = ExtResource("base")
-
-[node name="Rails" type="MultiMeshInstance3D" parent="."]
-multimesh = ExtResource("rails")
-
 [node name="WalkFloor" type="StaticBody3D" parent="."]
-position = Vector3(6, -0.24, 0)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 7, -0.24, 0)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WalkFloor"]
-shape = SubResource("WalkFloorShape")
+shape = SubResource("Shape_WalkFloor")
+
+[node name="Floor" type="Node3D" parent="."]
+
+[node name="F0" parent="Floor" instance=ExtResource("r1")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, 0)
+
+[node name="floor_4m_Static" parent="Floor/F0/floor_4m"]
+material_override = ExtResource("r2")
+
+[node name="F1" parent="Floor" instance=ExtResource("r1")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, 0)
+
+[node name="floor_4m_Static" parent="Floor/F1/floor_4m"]
+material_override = ExtResource("r2")
+
+[node name="F2" parent="Floor" instance=ExtResource("r1")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, 0)
+
+[node name="floor_4m_Static" parent="Floor/F2/floor_4m"]
+material_override = ExtResource("r2")
+
+[node name="F3a" parent="Floor" instance=ExtResource("r3")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 13, -0.32, 1)
+
+[node name="floor_2m_Static" parent="Floor/F3a/floor_2m"]
+material_override = ExtResource("r2")
+
+[node name="F3b" parent="Floor" instance=ExtResource("r3")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 13, -0.32, -1)
+
+[node name="floor_2m_Static" parent="Floor/F3b/floor_2m"]
+material_override = ExtResource("r2")
+
+[node name="Foundation" type="Node3D" parent="."]
+
+[node name="Arch0" parent="Foundation" instance=ExtResource("r4")]
+transform = Transform3D(0.777778, 0, -0, 0, 0.72, 0, 0, 0, 1, 2.33333, -3.92, 1.35)
+
+[node name="Arch1" parent="Foundation" instance=ExtResource("r4")]
+transform = Transform3D(0.777778, 0, -0, 0, 0.72, 0, 0, 0, 1, 7, -3.92, 1.35)
+
+[node name="Arch2" parent="Foundation" instance=ExtResource("r4")]
+transform = Transform3D(0.777778, 0, -0, 0, 0.72, 0, 0, 0, 1, 11.6667, -3.92, 1.35)
+
+[node name="Rails" type="Node3D" parent="."]
+
+[node name="South0" parent="Rails" instance=ExtResource("r5")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, 0, 1.8)
+
+[node name="South1" parent="Rails" instance=ExtResource("r5")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, 0, 1.8)
+
+[node name="South2" parent="Rails" instance=ExtResource("r5")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, 0, 1.8)
+
+[node name="South3" parent="Rails" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 13, 0, 1.8)
+
+[node name="End" parent="Rails" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 0, 0)
+
+[node name="North0" parent="Rails" instance=ExtResource("r5")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, 0, -1.8)
 
 [node name="SouthRail" type="StaticBody3D" parent="."]
-position = Vector3(6, 0.56, 1.8)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 7, 0.56, 1.8)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SouthRail"]
-shape = SubResource("LongRailShape")
-
-[node name="NorthRail" type="StaticBody3D" parent="."]
-position = Vector3(4, 0.56, -1.8)
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthRail"]
-shape = SubResource("ShortRailShape")
+shape = SubResource("Shape_SouthRail")
 
 [node name="EndRail" type="StaticBody3D" parent="."]
-position = Vector3(11.8, 0.56, 0)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 13.8, 0.56, 0)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EndRail"]
-shape = SubResource("EndRailShape")
+shape = SubResource("Shape_EndRail")
 
-[node name="WalkLantern" parent="." instance=ExtResource("lantern")]
-position = Vector3(7.1, 0, 1.25)
-scale = Vector3(0.66, 0.66, 0.66)
+[node name="NorthRail" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, 0.56, -1.8)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthRail"]
+shape = SubResource("Shape_NorthRail")
+
+[node name="WalkLantern" parent="." instance=ExtResource("r7")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 7.5, 0, 1.25)
+
+[node name="WalkLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 7.5, 2.2, 1)
+light_color = Color(1, 0.78, 0.48, 1)
+light_energy = 0.5
+omni_range = 4.0
 
 [node name="LegacyWindTrialEntry" type="Marker3D" parent="."]
-position = Vector3(4.7, 0, 0.6)
-rotation_degrees = Vector3(0, -90, 0)
-script = ExtResource("spawn")
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4.7, 0, 0.6)
+script = ExtResource("r8")
 spawn_id = &"level_1.wind_trial_entry"
 
 [node name="BookArrival" type="Marker3D" parent="."]
-position = Vector3(1.55, 0, 0)
-rotation_degrees = Vector3(0, -90, 0)
-script = ExtResource("spawn")
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1.55, 0, 0)
+script = ExtResource("r8")
 spawn_id = &"level_1.wind_book_arrival"
