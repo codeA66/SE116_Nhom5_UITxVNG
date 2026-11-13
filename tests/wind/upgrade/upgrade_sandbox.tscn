@@ -8,6 +8,7 @@
 [ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="6_wind"]
 [ext_resource type="PackedScene" path="res://objects/combat/training_dummy/training_dummy.tscn" id="8_dummy"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="9_enemy"]
+[ext_resource type="PackedScene" path="res://entities/enemies/wildlife/monkey_grunt/monkey_grunt.tscn" id="12_monkey"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/ability/wind_seal_upgrade.tscn" id="10_item"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
@@ -110,3 +111,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -10)
 
 [node name="EnemyC" parent="." instance=ExtResource("9_enemy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, -11)
+
+[node name="Monkey1" parent="." instance=ExtResource("12_monkey")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -8)
+
+[node name="Monkey2" parent="." instance=ExtResource("12_monkey")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -9.5)
+
+[node name="Monkey3" parent="." instance=ExtResource("12_monkey")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -11)
+
+[node name="Monkey4" parent="." instance=ExtResource("12_monkey")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -12)

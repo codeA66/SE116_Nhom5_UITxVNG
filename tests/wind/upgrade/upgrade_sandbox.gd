@@ -1,5 +1,5 @@
 extends Node
-## Sân thử nhặt Ấn Gió: Foxy có kiếm + Thổi Gió cấp 1, một Ấn Gió nằm trên sân.
+## Sân thử nhặt Ấn Gió: Foxy có kiếm + Thổi Gió cấp 1, một Ấn Gió nằm trên sân; quái lính và 4 con khỉ để thử Lốc xoáy.
 ## Chơi tay: đi tới Ấn Gió, nhấn F -> màn giới thiệu Lốc xoáy (như lúc học sách Gió) -> E thả lốc vào hình nộm / quái.
 ## Tắt tự lưu và đổi thư mục lưu khi mở sân: không ghi vào save thật đang chơi dở.
 

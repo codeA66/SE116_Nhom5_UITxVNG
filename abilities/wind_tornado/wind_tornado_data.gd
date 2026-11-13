@@ -16,9 +16,13 @@ const ID := &"wind_tornado"
 
 @export_group("Pull")
 @export var pull_radius: float = 3.5
-## Gia tốc hút về tâm (m/s²); phải lớn hơn push_decay của vật nhận gió thì mới kéo được
-@export var pull_accel: float = 40.0
-## Trong bán kính này coi như đã ở tâm, thôi hút (không bị kéo qua lại)
+## Tốc độ quái trôi vào tâm khi ở mép vùng hút (m/s); càng gần tâm càng chậm, tới hold_radius thì thôi
+@export var pull_speed: float = 7.0
+## Quái bị cuốn đi theo lốc với tỉ lệ này của tốc độ lốc (1 = bám đúng tốc độ lốc, 0 = chỉ hút về tâm)
+@export_range(0.0, 1.5, 0.05) var carry_ratio: float = 1.0
+## Độ "dính" của lực hút (m/s²): vận tốc quái đổi về vận tốc mục tiêu nhanh tới đâu; phải lớn hơn push_decay
+@export var pull_accel: float = 110.0
+## Trong bán kính này coi như đã ở tâm, thôi kéo vào (không bị kéo qua lại)
 @export var hold_radius: float = 0.6
 
 @export_group("Contact")
