@@ -28,6 +28,8 @@ var _end: float = 0.0
 ## Giữ cách nối fired để mọi scene hiện có tiếp tục dùng được.
 func _ready() -> void:
 	set_process(false)
+	# Vệt lửa nằm trên sàn theo thế giới: không đi / xoay theo Model của người thổi
+	top_level = true
 	_surface.hide()
 	_trail.hide()
 	_build_swept_ribbons()
@@ -111,6 +113,10 @@ func _prepare() -> void:
 
 ## Mỗi gust mới có phạm vi độc lập, không gộp nhầm với tàn lửa của lượt trước.
 func _on_new_gust(_data: WindBlastData) -> void:
+	# Chốt vị trí và hướng gió lúc bắt đầu thổi; vệt lửa của cú thổi này đứng yên tại đó
+	var anchor := get_parent() as Node3D
+	if anchor:
+		global_transform = anchor.global_transform
 	_start = INF
 	_end = 0.0
 

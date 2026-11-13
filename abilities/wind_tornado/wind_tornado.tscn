@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://abilities/wind_tornado/wind_tornado.gd" id="1_tornado"]
+[ext_resource type="PackedScene" path="res://assets/vfx/wind/tornado/wind_tornado_vfx.tscn" id="2_visual"]
+
+[sub_resource type="SphereShape3D" id="TornadoShape"]
+radius = 3.5
+
+[node name="WindTornado" type="Node3D"]
+script = ExtResource("1_tornado")
+
+[node name="Area" type="Area3D" parent="."]
+
+[node name="Shape" type="CollisionShape3D" parent="Area"]
+shape = SubResource("TornadoShape")
+
+[node name="WindTornadoVfx" parent="." instance=ExtResource("2_visual")]
+
+[connection signal="launched" from="." to="WindTornadoVfx" method="play"]
+[connection signal="burst" from="." to="WindTornadoVfx" method="collapse"]

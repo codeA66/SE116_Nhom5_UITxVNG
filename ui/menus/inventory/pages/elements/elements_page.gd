@@ -66,6 +66,7 @@ func _resize_cards(count: int) -> void:
 		card.custom_minimum_size = style.element_card_size
 		bind_tile(card)
 		card.activated.connect(_on_card_activated)
+		card.alt_activated.connect(_on_card_alt)
 		_card_grid.add_child(card)
 		_cards.append(card)
 	while _cards.size() > count:
@@ -102,6 +103,15 @@ func _on_card_activated(tile: MenuTile) -> void:
 		if socket.weapon:
 			socket.grab_focus()
 			break
+
+
+## Thao tác phụ trên thẻ (chuột phải / phím tương tác): nâng cấp kỹ năng nếu đủ vật phẩm
+func _on_card_alt(tile: MenuTile) -> void:
+	var card := tile as ElementCard
+	if not card.owned or not GameState.upgrade_ability(card.element.ability):
+		card.shake()
+		sound_requested.emit(&"error")
+	# Nâng được thì GameState phát ability_level_changed: menu tự refresh, thẻ lóe sáng
 
 
 func _on_socket_activated(tile: MenuTile) -> void:

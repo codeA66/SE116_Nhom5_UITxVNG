@@ -579,19 +579,39 @@ func get_ready_skill() -> SkillData:
 			continue
 		if _skill_buffers.get(skill.id, 0.0) <= 0.0 or _skill_cooldowns.get(skill.id, 0.0) > 0.0:
 			continue
-		if energy.can_spend(skill.energy_cost):
-			return skill
+		var form := get_skill_form(skill)
+		if energy.can_spend(form.energy_cost):
+			return form
 	return null
 
 
+## Dạng đang dùng của kỹ năng theo cấp nâng (Thổi gió cấp 2 = Lốc xoáy); cấp 1 là chính kỹ năng đó
+func get_skill_form(skill: SkillData) -> SkillData:
+	return skill.resolve(GameState.get_ability_level(skill)) as SkillData
+
+
 ## Gọi khi vào state của kỹ năng: tiêu input, tính thời gian khoá, trừ năng lượng
+## id là của kỹ năng gốc hoặc của dạng đã nâng cấp; buffer / hồi chiêu luôn tính theo kỹ năng gốc (cùng một phím)
 func start_skill(id: StringName) -> SkillData:
-	var data := get_ability(id) as SkillData
+	var base := _find_skill(id)
+	var data := get_skill_form(base)
 	energy.spend(data.energy_cost)
-	_skill_buffers[id] = 0.0
-	_skill_cooldowns[id] = data.get_lockout()
-	skill_cooldown_started.emit(id, _skill_cooldowns[id])
+	_skill_buffers[base.id] = 0.0
+	_skill_cooldowns[base.id] = data.get_lockout()
+	skill_cooldown_started.emit(base.id, _skill_cooldowns[base.id])
 	return data
+
+
+## Kỹ năng gốc đã mở khóa ứng với id (id gốc, hoặc id của dạng đang dùng sau nâng cấp)
+func _find_skill(id: StringName) -> SkillData:
+	var direct := get_ability(id) as SkillData
+	if direct:
+		return direct
+	for ability in GameState.get_abilities():
+		var skill := ability as SkillData
+		if skill and get_skill_form(skill).id == id:
+			return skill
+	return null
 
 
 ## Đúng khi kỹ năng gió dùng được ngay (giữ cho code / test cũ gọi theo tên)
@@ -862,8 +882,8 @@ func _report_unaffordable_input() -> void:
 	for ability in GameState.get_abilities():
 		var skill := ability as SkillData
 		if skill and not skill.input_action.is_empty() and Input.is_action_just_pressed(skill.input_action) \
-				and is_skill_available(skill.id) and not energy.can_spend(skill.energy_cost):
-			energy.notify_insufficient(skill.energy_cost)
+				and is_skill_available(skill.id) and not energy.can_spend(get_skill_form(skill).energy_cost):
+			energy.notify_insufficient(get_skill_form(skill).energy_cost)
 
 
 func _start_blink(duration: float) -> void:

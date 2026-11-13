@@ -154,7 +154,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	_sync_facing()
+	# Hướng chốt lúc bắt đầu chém (_on_activated): cáo quay đi thì vệt chém không xoay theo
 	var step := delta
 	var sweep_span := _current_sweep * (echo_lag if _echo_on else 1.0)
 	# Đang quét: bù time_scale để hitstop không làm vệt đứng hình khi mới vẽ một đoạn
