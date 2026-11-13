@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/key/item_pickup.tscn" id="1_item"]
+[ext_resource type="Resource" path="res://resources/player/items/upgrades/wind_seal.tres" id="2_seal"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_skill_upgrade.tres" id="3_tut"]
+
+[node name="WindSealPickup" instance=ExtResource("1_item")]
+item = ExtResource("2_seal")
+tutorial = ExtResource("3_tut")

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3]
+
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"skill_upgrade"
+title = "Nâng cấp kỹ năng"
+category = "Kỹ Năng"
+input_action = &"inventory"
+prompt_template = "Mở túi đồ ({key}), vào trang Nguyên tố để nâng cấp kỹ năng."
+summary = "Ấn thu được từ quái mạnh dùng để nâng cấp kỹ năng."
+sections = Array[Dictionary]([{
+"heading": "Cách nâng cấp",
+"text": "Mở túi đồ, vào trang Nguyên tố, chọn thẻ nguyên tố rồi nhấn chuột phải hoặc F.",
+"warning": false
+}, {
+"heading": "Cần đủ Ấn",
+"text": "Mỗi cấp cần một số Ấn nhất định. Lộ trình nâng cấp ghi rõ số Ấn còn thiếu.",
+"warning": false
+}])
+hint = "[Tab] Túi đồ  •  [H] Sổ Hướng Dẫn"
+order = 10

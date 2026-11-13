@@ -50,6 +50,8 @@
 [ext_resource type="PackedScene" path="res://objects/gates/stone_gate/stone_gate.tscn" id="trial_stone_gate"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_1_wind_walk.tscn" id="trial_walk"]
 
+[ext_resource type="PackedScene" path="res://objects/core/pickups/key/key_drop.tscn" id="bear_seal_drop"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/key/wind_seal_pickup.tscn" id="wind_seal_pickup"]
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_11p2m"]
 render_priority = -1
 shader = ExtResource("3_xudqy")
@@ -159,7 +161,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -56)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -44)
 
 [node name="WindShrine" parent="Rooms/Tier1/Room05InnerGarden" index="4" unique_id=2095574590]
-arrival_spawn_id = &"level_1.wind_book_arrival"
+arrival_spawn_id = &""
 
 [node name="Room051WindWalk" parent="Rooms/Tier1" unique_id=1826966948 instance=ExtResource("trial_walk")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.6, -58)
@@ -252,6 +254,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -202)
 [node name="T2Room26Treasure" parent="Rooms/Tier2" unique_id=142655249 instance=ExtResource("21_1w4y3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38, 0, -204)
 
+[node name="BearSealDrop" parent="Rooms/Tier2/T2Room26Treasure" node_paths=PackedStringArray("encounter") instance=ExtResource("bear_seal_drop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 19.62, -1)
+encounter = NodePath("../BearFight")
+key_scene = ExtResource("wind_seal_pickup")
+key_id = &"level_1.bear_wind_seal"
+
 [node name="T2Room27BossGate" parent="Rooms/Tier2" unique_id=1058173484 instance=ExtResource("22_1stda")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -224)
 
@@ -315,6 +323,10 @@ hide_when_inside = [NodePath("../Rooms/Tier1"), NodePath("../Rooms/Tier2")]
 
 [node name="Shape" parent="Tier3Zone" index="0"]
 shape = SubResource("Tier3ZoneShape")
+
+[node name="WindTrialGateCheckpoint" parent="." instance=ExtResource("tier3_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3.6, -57.2)
+checkpoint_id = &"level_1.wind_trial_gate"
 
 [node name="Tier3EntryCheckpoint" parent="." unique_id=2090428911 instance=ExtResource("tier3_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -263)
