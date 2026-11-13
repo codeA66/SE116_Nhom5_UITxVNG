@@ -124,6 +124,9 @@
 [ext_resource type="PackedScene" path="res://abilities/forge/grapple/ring/grapple_ring.tscn" id="grapple_ring_scene"]
 [ext_resource type="PackedScene" path="res://objects/fire_puzzle/forge_shards/forge_shard.tscn" id="forge_shard_scene"]
 [ext_resource type="PackedScene" path="res://objects/fire_puzzle/forge_shards/shard_counter.tscn" id="shard_counter_scene"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/forge_shards/shard_altar.tscn" id="shard_altar_scene"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/dark_trial/dark_trial.tscn" id="dark_trial_scene"]
+[ext_resource type="Resource" path="res://resources/world/puzzles/dark_trial.tres" id="dark_trial_data"]
 [ext_resource type="Resource" path="res://resources/world/puzzles/forge_shards.tres" id="forge_shards_data"]
 [ext_resource type="Resource" path="res://abilities/forge/fire_cyclone/fire_cyclone.tres" id="forge_skill_0"]
 [ext_resource type="Resource" path="res://abilities/forge/grapple/grapple.tres" id="forge_skill_1"]
@@ -1387,8 +1390,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 316.0, 0.86, 92.0)
 persistent_id = &"level_3.t2_shard_south"
 key_id = &"level_3.t2_shard_south"
 
+[node name="ShardAltar" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_altar_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 4.32, 46.0)
+shards = ExtResource("forge_shards_data")
+
 [node name="ShardCounter" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_counter_scene")]
 shards = ExtResource("forge_shards_data")
+
+[node name="DarkTrial" parent="Tier2Mechanics" node_paths=PackedStringArray("altar", "sun", "bounce_light", "world_environment", "suspend_zones") instance=ExtResource("dark_trial_scene")]
+data = ExtResource("dark_trial_data")
+altar = NodePath("../ForgeShards/ShardAltar")
+sun = NodePath("../../FireLighting/SunLight")
+bounce_light = NodePath("../../FireLighting/LavaBounceLight")
+world_environment = NodePath("../../FireLighting/Environment")
+suspend_zones = [NodePath("../Room07Blackout/DarkZone")]
 
 [node name="GrappleRings" type="Node3D" parent="Tier2Mechanics"]
 

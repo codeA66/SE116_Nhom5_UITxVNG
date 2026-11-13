@@ -30,6 +30,8 @@ const FORGE_INSTALLER_SCRIPT: String = "res://abilities/forge/_base/forge_skill_
 const FORGE_SKILL_DATA_SCRIPT: String = "res://abilities/forge/_base/forge_skill_data.gd"
 const FORGE_SHARD_SCENE: String = "res://objects/fire_puzzle/forge_shards/forge_shard.tscn"
 const SHARD_COUNTER_SCENE: String = "res://objects/fire_puzzle/forge_shards/shard_counter.tscn"
+const SHARD_ALTAR_SCENE: String = "res://objects/fire_puzzle/forge_shards/shard_altar.tscn"
+const DARK_TRIAL_SCENE: String = "res://objects/fire_puzzle/dark_trial/dark_trial.tscn"
 const GRAPPLE_RING_SCENE: String = "res://abilities/forge/grapple/ring/grapple_ring.tscn"
 const WOLF_PACK_SCRIPT: String = "res://entities/enemies/volcano/shadow_wolf/wolf_pack.gd"
 const COLD_ZONE_SCRIPT: String = "res://components/elements/cold/cold_zone.gd"
@@ -1896,8 +1898,11 @@ func _add_forge_skills(text: String) -> String:
 ' % [TIER_2.FORGE_SKILL_FILES[i], i]
 	ext += '[ext_resource type="PackedScene" path="%s" id="forge_shard_scene"]
 [ext_resource type="PackedScene" path="%s" id="shard_counter_scene"]
+[ext_resource type="PackedScene" path="%s" id="shard_altar_scene"]
 [ext_resource type="Resource" path="%s" id="forge_shards_data"]
-' % [FORGE_SHARD_SCENE, SHARD_COUNTER_SCENE, TIER_2.FORGE_SHARD_DATA]
+[ext_resource type="PackedScene" path="%s" id="dark_trial_scene"]
+[ext_resource type="Resource" path="%s" id="dark_trial_data"]
+' % [FORGE_SHARD_SCENE, SHARD_COUNTER_SCENE, SHARD_ALTAR_SCENE, TIER_2.FORGE_SHARD_DATA, DARK_TRIAL_SCENE, TIER_2.DARK_TRIAL_DATA]
 	text = text.insert(text.find("[sub_resource"), ext + "
 ")
 	text += '
@@ -1920,10 +1925,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
 persistent_id = &"%s"
 key_id = &"%s"
 ' % [shard[1], shard[3], shard[1], shard[1], p.x, p.y, p.z, shard[2], shard[2]]
+	var altar: Vector3 = TIER_2.FORGE_SHARD_ALTAR
 	text += '
+[node name="ShardAltar" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_altar_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+shards = ExtResource("forge_shards_data")
+
 [node name="ShardCounter" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_counter_scene")]
 shards = ExtResource("forge_shards_data")
-'
+
+[node name="DarkTrial" parent="Tier2Mechanics" node_paths=PackedStringArray("altar", "sun", "bounce_light", "world_environment", "suspend_zones") instance=ExtResource("dark_trial_scene")]
+data = ExtResource("dark_trial_data")
+altar = NodePath("../ForgeShards/ShardAltar")
+sun = NodePath("../../FireLighting/SunLight")
+bounce_light = NodePath("../../FireLighting/LavaBounceLight")
+world_environment = NodePath("../../FireLighting/Environment")
+suspend_zones = [NodePath("../Room07Blackout/DarkZone")]
+' % [altar.x, altar.y, altar.z]
 	text += '
 [node name="GrappleRings" type="Node3D" parent="Tier2Mechanics"]
 '

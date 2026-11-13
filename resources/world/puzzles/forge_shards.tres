@@ -5,4 +5,7 @@
 [resource]
 script = ExtResource("1")
 shard_flags = Array[StringName]([&"level_3.t2_shard_north", &"level_3.t2_shard_east", &"level_3.t2_shard_south"])
+placed_flags = Array[StringName]([&"level_3.t2_shard_north_placed", &"level_3.t2_shard_east_placed", &"level_3.t2_shard_south_placed"])
+switch_flag = &"level_3.t2_shard_switch"
 label_format = "Mảnh vỡ %d/%d"
+placed_label_format = "Mảnh vỡ %d/%d · đã đặt %d/%d"

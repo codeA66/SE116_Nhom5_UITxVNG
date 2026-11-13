@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="DarkTrialData" format=3 uid="uid://dfxmb3573dsyi"]
+
+[ext_resource type="Script" uid="uid://c8ynbx8v3fbi8" path="res://objects/fire_puzzle/dark_trial/data/dark_trial_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://vxvq7fgaoupj" path="res://objects/fire_puzzle/dark_trial/data/dark_trial_pillar_data.gd" id="2"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_spider/fire_spider.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/shadow_wolf/shadow_wolf.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_caster/fire_caster.tscn" id="5"]
+
+[sub_resource type="Resource" id="North"]
+script = ExtResource("2")
+name = &"NorthPillar"
+position = Vector3(308, 8.32, 12)
+enemy_scene = ExtResource("3")
+active_area_size = Vector3(24, 4, 24)
+active_area_offset = Vector3(0, -0.32, 0)
+
+[sub_resource type="Resource" id="East"]
+script = ExtResource("2")
+name = &"EastPillar"
+position = Vector3(351.5, 4.32, 39.5)
+enemy_scene = ExtResource("4")
+active_area_size = Vector3(28, 4, 28)
+active_area_offset = Vector3(-9.5, -0.32, 10.5)
+
+[sub_resource type="Resource" id="South"]
+script = ExtResource("2")
+name = &"SouthPillar"
+position = Vector3(312, 0.32, 92)
+enemy_scene = ExtResource("5")
+active_area_size = Vector3(24, 4, 24)
+active_area_offset = Vector3(0, -0.32, -4)
+
+[resource]
+script = ExtResource("1")
+pillars = Array[ExtResource("2")]([SubResource("North"), SubResource("East"), SubResource("South")])
+dark_boxes = Array[AABB]([AABB(264, -4, 0, 92, 30, 100)])
+done_flag = &"level_3.t2_dark_trial_done"

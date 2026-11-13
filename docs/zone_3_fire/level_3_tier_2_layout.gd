@@ -232,6 +232,10 @@ const FORGE_SKILL_FILES: Array[String] = [
 ## Bệ đá (DECOR "SkillPedestal*") ở cùng x, z; mảnh cao hơn sàn phòng 0,86 m. [vị trí, tên node, cờ mảnh, cờ trận của khu]
 ## Cờ mảnh phải khớp resources/world/puzzles/forge_shards.tres
 const FORGE_SHARD_DATA: String = "res://resources/world/puzzles/forge_shards.tres"
+## Bệ công tắc (bản 2 giai đoạn 2): lệch bắc tâm Hub 4 m; vòng truyền tống giai đoạn 4 mở ở tâm Hub (278, 50), trước mặt bệ
+const FORGE_SHARD_ALTAR: Vector3 = Vector3(278, 4.32, 46)
+## Thử thách u tối (bản 2 giai đoạn 3): trụ, đồng hồ, vùng tối nằm trong .tres; vùng tối phòng 07 tạm tắt lúc chạy
+const DARK_TRIAL_DATA: String = "res://resources/world/puzzles/dark_trial.tres"
 const FORGE_SHARDS: Array = [
 	[Vector3(312, 8.86, 4), "NorthShard", "level_3.t2_shard_north", "level_3.t2_slime_hall"],
 	[Vector3(348, 4.86, 41), "EastShard", "level_3.t2_shard_east", "level_3.t2_dark_forge_pack"],
