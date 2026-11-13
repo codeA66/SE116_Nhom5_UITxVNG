@@ -5,6 +5,7 @@ extends Control
 ## NOTES: không biết Player/GameState; lớp ghép HUD truyền màu nguyên tố vào.
 const Style = preload("res://resources/ui/hud_style.gd")
 const VESSEL_SHADER: Shader = preload("res://ui/hud/energy/shaders/energy_vessel.gdshader")
+const SLOSH_DURATION: float = 0.52
 @export_group("Binding")
 @export var energy: EnergyComponent
 @export var style: Style = preload("res://resources/ui/hud_style.tres")
@@ -17,7 +18,6 @@ var _target: float = 0.0
 var _age: float = INF
 var _warn_age: float = INF
 var _ready_age: float = INF
-var _clock: float = 0.0
 var _pulse: float = 0.0
 var _warning: float = 0.0
 var _rest: Vector2
@@ -157,7 +157,6 @@ func _on_insufficient(_cost: int) -> void:
 	set_process(true)
 ## CPU chỉ chạy lúc hạ/dâng/flash/cảnh báo; gợn nền rất nhẹ do shader xử lý.
 func _process(delta: float) -> void:
-	_clock += delta
 	_age += delta
 	_warn_age += delta
 	_ready_age += delta
@@ -170,12 +169,15 @@ func _process(delta: float) -> void:
 		if _warning <= 0.0:
 			position = _rest
 			_warn_active = false
-	_material.set_shader_parameter(&"clock",_clock)
-	_material.set_shader_parameter(&"activity",maxf(1.0-fill_t,_pulse))
+	var change: float = _target - _from
+	var slosh: float = sin(_age * 20.0) * exp(-_age * 8.0) if _age < SLOSH_DURATION else 0.0
+	_material.set_shader_parameter(&"tilt",slosh * clampf(change * 0.5,-0.22,0.22))
+	_material.set_shader_parameter(&"activity",maxf((1.0-fill_t)*minf(absf(change)*3.0,1.0),_pulse))
 	_material.set_shader_parameter(&"flash",_pulse)
 	_write_fill()
 	queue_redraw()
-	if fill_t >= 1.0 and _pulse <= 0.0 and not _warn_active: set_process(false)
+	if fill_t >= 1.0 and _pulse <= 0.0 and not _warn_active and (is_zero_approx(change) or _age >= SLOSH_DURATION):
+		set_process(false)
 ## Uniform thay đổi là scalar; không viết lại mesh hoặc tạo texture trong animation.
 func _write_fill() -> void:
 	if _material == null: return

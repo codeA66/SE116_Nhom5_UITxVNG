@@ -51,6 +51,7 @@
 [ext_resource type="Resource" path="res://resources/player/currency/soul_jade.tres" id="56_souljade"]
 [ext_resource type="Script" path="res://entities/player/data/currency_data.gd" id="56_souljade_type"]
 [ext_resource type="Script" path="res://components/utility/restore/restore_component.gd" id="57_restore"]
+[ext_resource type="Script" path="res://ui/hud/energy/energy_warning.gd" id="energy_warning"]
 [ext_resource type="PackedScene" path="res://ui/hud/tutorials/tutorial_popup.tscn" id="58_tutorial_popup"]
 
 [ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="92_burn"]
@@ -168,6 +169,19 @@ script = ExtResource("16_interactor")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Interactor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("SphereShape3D_interact")
+
+[node name="EnergyWarning" type="Label3D" parent="." node_paths=PackedStringArray("energy")]
+visible = false
+position = Vector3(0, 2.35, 0)
+billboard = 1
+no_depth_test = true
+fixed_size = true
+pixel_size = 0.00065
+text = "Không đủ Linh lực"
+font_size = 28
+outline_size = 8
+script = ExtResource("energy_warning")
+energy = NodePath("../EnergyComponent")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
