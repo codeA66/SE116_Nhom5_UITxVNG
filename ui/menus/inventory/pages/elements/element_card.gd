@@ -34,14 +34,14 @@ func get_detail() -> DetailEntry:
 		return entry
 	var ability := element.ability
 	entry.title = ability.get_level_name(level)
-	entry.subtitle = "Nguyên tố %s  ·  Cấp %d / %d" % [element.display_name, level, max_level]
+	entry.subtitle = tr("Nguyên tố %s  ·  Cấp %d / %d") % [tr(element.display_name), level, max_level]
 	entry.accent = element.color
 	entry.art_ability = ability
 	entry.art_texture = element.icon
 	entry.add_section("Kỹ năng", ability.description)
 	if fused_slot >= 0:
 		var holder := GameState.get_weapon_in_slot(fused_slot as WeaponData.Slot)
-		entry.add_section("", "Đang ghép vào %s: kỹ năng này tạm khóa." % (holder.display_name if holder else "vũ khí"), true)
+		entry.add_section("", tr("Đang ghép vào %s: kỹ năng này tạm khóa.") % (tr(holder.display_name) if holder else tr("vũ khí")), true)
 	# Lộ trình nâng cấp ngay sau kỹ năng: thấy ngay không cần cuộn
 	if max_level > 1:
 		var path := UpgradePath.new()
@@ -52,7 +52,7 @@ func get_detail() -> DetailEntry:
 		var fusion := GameState.FUSIONS.get_fusion(slot, element.id)
 		var weapon := GameState.get_weapon_in_slot(slot)
 		if fusion and weapon:
-			entry.add_section("Ghép vào %s" % weapon.display_name, fusion.description)
+			entry.add_section(tr("Ghép vào %s") % tr(weapon.display_name), fusion.description)
 	entry.hint = "Enter: cầm nguyên tố rồi chọn vũ khí để ghép  ·  hoặc kéo thả bằng chuột"
 	return entry
 
@@ -104,7 +104,7 @@ func _draw_content(rect: Rect2) -> void:
 	draw_arc(emblem_center, EMBLEM_RADIUS, 0.0, TAU, 48, Color(element.color, strength), 1.6, true)
 	_draw_emblem(element.icon, emblem_center, EMBLEM_RADIUS * 1.1, Color(element.color, strength), element.display_name)
 	_draw_level_burst(emblem_center)
-	_draw_centered_text(element.display_name, name_at, style.body_font, style.ink if fused_slot < 0 else style.dim)
+	_draw_centered_text(tr(element.display_name), name_at, style.body_font, style.ink if fused_slot < 0 else style.dim)
 	_draw_level_pips(Vector2(rect.get_center().x, rect.end.y - 20.0))
 
 

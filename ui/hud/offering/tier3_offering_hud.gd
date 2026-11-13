@@ -5,6 +5,8 @@ extends PanelContainer
 var _player: Player
 var _bounds: Area3D
 var _always_visible: bool = false
+var _count: int = 0
+var _total: int = 0
 @onready var _counter: Label = $Counter
 
 func _ready() -> void:
@@ -26,7 +28,16 @@ func bind_player(player: Player, bounds: Area3D, always_visible: bool) -> void:
 	_refresh.call_deferred()
 
 func set_count(count: int, total: int) -> void:
-	_counter.text = "Chuối thần đã hiến tế : %d/%d" % [count,total]
+	_count = count
+	_total = total
+	_refresh_text()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_refresh_text()
+
+func _refresh_text() -> void:
+	_counter.text = tr("Chuối thần đã hiến tế : %d/%d") % [_count, _total]
 	reset_size()
 
 func _body_changed(body: Node3D) -> void:

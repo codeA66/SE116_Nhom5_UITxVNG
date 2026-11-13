@@ -355,16 +355,22 @@ func _refresh_header() -> void:
 		_currency_label.visible = false
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_refresh_footer()
+		_refresh_if_open.call_deferred()
+
+
 func _refresh_footer() -> void:
 	if _current_category == Category.INVENTORY:
-		_footer.text = "%s  Đóng      %s / %s  Phân mục      %s / %s  Đổi trang      %s  Xác nhận      %s  Quay lại" % [
+		_footer.text = tr("%s  Đóng      %s / %s  Phân mục      %s / %s  Đổi trang      %s  Xác nhận      %s  Quay lại") % [
 			PageTabs.key_name(toggle_action),
 			PageTabs.key_name(prev_category_action), PageTabs.key_name(next_category_action),
 			PageTabs.key_name(previous_page_action), PageTabs.key_name(next_page_action),
 			PageTabs.key_name(&"ui_accept"), PageTabs.key_name(&"ui_cancel")
 		]
 	else:
-		_footer.text = "%s / %s  Đóng      %s / %s  Phân mục      %s / %s  Đổi trang      %s  Xác nhận      %s  Quay lại" % [
+		_footer.text = tr("%s / %s  Đóng      %s / %s  Phân mục      %s / %s  Đổi trang      %s  Xác nhận      %s  Quay lại") % [
 			PageTabs.key_name(help_action), PageTabs.key_name(&"ui_cancel"),
 			PageTabs.key_name(prev_category_action), PageTabs.key_name(next_category_action),
 			PageTabs.key_name(previous_page_action), PageTabs.key_name(next_page_action),

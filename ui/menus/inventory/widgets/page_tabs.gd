@@ -43,7 +43,7 @@ func configure(style: InventoryStyle, previous_action: StringName, next_action: 
 
 ## titles: tên các trang đang mở được; index: trang đang xem
 func show_pages(titles: PackedStringArray, index: int) -> void:
-	_title.text = titles[index].to_upper() if index >= 0 and index < titles.size() else ""
+	_title.text = tr(titles[index]).to_upper() if index >= 0 and index < titles.size() else ""
 	var many := titles.size() > 1
 	($Previous as Control).modulate.a = 1.0 if many else 0.0
 	($Next as Control).modulate.a = 1.0 if many else 0.0

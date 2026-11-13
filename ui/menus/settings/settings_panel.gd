@@ -131,6 +131,9 @@ func _refresh_rows() -> void:
 		for row in page.get_children():
 			if row is SettingRow:
 				(row as SettingRow).refresh()
+	if is_instance_valid(_last_row) and _last_row.is_visible_in_tree():
+		_description.text = _last_row.description
+		row_focused.emit(_last_row.title, _last_row.description)
 
 
 func _add_row(page: VBoxContainer, row: SettingRow, row_title: String, row_description: String) -> void:
@@ -176,7 +179,7 @@ func _build_controls(page: VBoxContainer) -> void:
 
 
 func _build_language(page: VBoxContainer) -> void:
-	_add_row(page, ChoiceRow.new(&"locale", Settings.DEFAULTS.languages), "Ngôn ngữ", "Hiện game mới có Tiếng Việt.")
+	_add_row(page, ChoiceRow.new(&"locale", Settings.DEFAULTS.languages), "Ngôn ngữ", "Chọn ngôn ngữ hiển thị của trò chơi.")
 
 
 func _on_listening_changed(row: KeybindRow, listening: bool) -> void:
