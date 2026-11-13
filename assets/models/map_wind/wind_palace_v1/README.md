@@ -33,6 +33,13 @@ Hiện có **45 mẫu Art R2**, đã sửa toàn bộ GLB tại đúng đường
 - Xem phòng ghép thử bằng tham số `-- --room`; tự chụp và thoát bằng `-- --room --capture`.
 - Ảnh Godot, ảnh trắng đen, log, audit: `output/wind_palace/qa/`.
 
+## Model thêm cho phòng thử thách gió (5.1–5.3), tháng 11/2026
+
+- `trial_gate_arch.glb`: cổng thử thách 8 m, khoảng trống 5,7 m vừa cửa song sắt `trial_grille`, huy hiệu xoáy gió hai mặt.
+- `wind_dais_8m.glb`: đài tròn khảm xoáy gió, dày 5 cm (chỉ là hình, va chạm dùng sàn), nền tối để quái nổi bật.
+- `shrine_wall_niche.glb`: tường 4 m có hốc 2 m, cùng kích thước `wall_straight_4m`; đặt hình nộm hoặc đèn.
+- Nguồn Blender: `C:/Code/UITxVNG/Foxy_Art_Source/wind_palace_v1/wind_trial_rework_models.blend`. Màu vertex theo palette bên dưới, vật liệu tên `WindPalace_VertexColor` để `palace_import.gd` gán vật liệu chung.
+
 ## Phạm vi 36 model đã có
 
 Kiến trúc: sàn 2m, sàn 4m, sàn viền, sàn vỡ, tường thẳng, tường thấp, góc tường, cửa vòm, cửa sổ vòm, cột vuông, cột tám cạnh, lan can 2m/4m, cầu thang thẳng, chiếu nghỉ, ban công, nhịp cầu, cửa đôi, cổng đường tắt.
