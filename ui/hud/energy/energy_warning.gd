@@ -1,5 +1,6 @@
 extends Label3D
 
+const HUD_THEME: Theme = preload("res://ui/theme/menu_theme.tres")
 const HOLD_TIME: float = 1.0
 const FADE_TIME: float = 0.25
 
@@ -9,6 +10,7 @@ var _fade: Tween
 
 
 func _ready() -> void:
+	font = HUD_THEME.default_font
 	energy.insufficient.connect(_show_warning)
 
 
