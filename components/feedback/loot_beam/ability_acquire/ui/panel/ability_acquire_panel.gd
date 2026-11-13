@@ -182,6 +182,7 @@ func _set_title_reveal(value: float) -> void:
 ## Tách câu hướng dẫn quanh {key}: chữ trước + hình phím + chữ sau. Không có phím thì bỏ câu có {key}
 func _fill_prompt(ability: AbilityData, key_text: String) -> void:
 	var template := ability.acquire_prompt if not ability.acquire_prompt.is_empty() else _data.default_prompt
+	template = tr(template)
 	var index := template.find(KEY_TOKEN)
 	if index < 0:
 		_prompt_before.text = template

@@ -114,7 +114,8 @@ func _show_sections(entry: DetailEntry) -> void:
 		label.visible = true
 		_sections.move_child(label, order)
 		var heading := String(section["heading"])
-		label.text = String(section["text"]) if heading.is_empty() else "%s\n%s" % [heading.to_upper(), section["text"]]
+		var body: String = tr(String(section["text"]))
+		label.text = body if heading.is_empty() else "%s\n%s" % [tr(heading).to_upper(), body]
 		label.add_theme_color_override(&"font_color", _style.warning if section["warning"] else _style.ink)
 	for index in range(label_index, _section_labels.size()):
 		_section_labels[index].visible = false

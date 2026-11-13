@@ -8,6 +8,7 @@ signal cancelled
 ## %d = số ô
 @export var question_format: String = "Xóa hồ sơ %d?"
 @export var warning_text: String = "Hành trình này sẽ mất vĩnh viễn."
+var _slot: int = 0
 
 @onready var _question: Label = $Box/Question
 @onready var _warning: Label = $Box/Warning
@@ -29,8 +30,18 @@ func _ready() -> void:
 
 
 func setup(slot: int, data: MainMenuData) -> void:
-	_question.text = question_format % slot
+	_slot = slot
+	_refresh_question()
 	_warning.text = warning_text
 	_yes.add_theme_color_override(&"font_focus_color", data.danger_color)
 	_yes.add_theme_color_override(&"font_hover_color", data.danger_color)
 	_yes.accent_color = data.danger_color
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and _slot > 0:
+		_refresh_question()
+
+
+func _refresh_question() -> void:
+	_question.text = tr(question_format) % _slot

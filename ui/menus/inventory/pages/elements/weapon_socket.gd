@@ -31,12 +31,12 @@ func get_detail() -> DetailEntry:
 	entry.art_texture = weapon.icon
 	entry.add_section("", weapon.description)
 	if fusion:
-		entry.subtitle = "Đang ghép: %s" % element.display_name
+		entry.subtitle = tr("Đang ghép: %s") % tr(element.display_name)
 		entry.accent = element.color
 		entry.add_section(fusion.display_name, fusion.description)
 		entry.hint = "Enter hoặc chuột phải: tháo  ·  kéo nguyên tố ra để chuyển"
 	elif element:
-		entry.subtitle = "Đang ghép: %s" % element.display_name
+		entry.subtitle = tr("Đang ghép: %s") % tr(element.display_name)
 		entry.add_section("", "Tổ hợp này chưa có hiệu ứng.", true)
 	else:
 		entry.subtitle = "Ổ khảm trống"
@@ -73,8 +73,8 @@ func _draw_content(rect: Rect2) -> void:
 	_draw_emblem(weapon.icon, icon_center, ICON_SIZE, style.ink, weapon.display_name)
 	var font := get_theme_default_font()
 	var text_x := icon_center.x + ICON_SIZE * 0.5 + 16.0
-	draw_string(font, Vector2(text_x, rect.get_center().y - 4.0), weapon.display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, style.body_font + 4, style.ink)
-	var combo_text := fusion.display_name if fusion else ("Chưa ghép" if element == null else element.display_name)
+	draw_string(font, Vector2(text_x, rect.get_center().y - 4.0), tr(weapon.display_name), HORIZONTAL_ALIGNMENT_LEFT, -1, style.body_font + 4, style.ink)
+	var combo_text: String = tr(fusion.display_name) if fusion else tr("Chưa ghép" if element == null else element.display_name)
 	draw_string(font, Vector2(text_x, rect.get_center().y + 20.0), combo_text, HORIZONTAL_ALIGNMENT_LEFT, -1, style.heading_font, element.color if element else style.faint)
 	var socket := _socket_center()
 	draw_circle(socket, SOCKET_RADIUS + 4.0, Color(0.0, 0.0, 0.0, 0.55))

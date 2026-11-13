@@ -128,7 +128,7 @@ func _get_ferry() -> SkyFerry:
 
 ## Dùng tên tiền từ resource để hội thoại khớp tên trên HUD và túi đồ.
 func _format(text: String) -> String:
-	return text.format({
+	return tr(text).format({
 		"price": price,
 		"currency": currency.display_name,
 		"missing": maxi(price - GameState.get_currency(currency.id), 0),

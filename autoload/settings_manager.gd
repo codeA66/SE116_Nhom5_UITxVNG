@@ -142,12 +142,12 @@ func describe_event(event: InputEvent) -> String:
 	if mouse:
 		match mouse.button_index:
 			MOUSE_BUTTON_LEFT:
-				return "Chuột trái"
+				return tr("Chuột trái")
 			MOUSE_BUTTON_RIGHT:
-				return "Chuột phải"
+				return tr("Chuột phải")
 			MOUSE_BUTTON_MIDDLE:
-				return "Chuột giữa"
-		return "Chuột %d" % mouse.button_index
+				return tr("Chuột giữa")
+		return tr("Chuột %d") % mouse.button_index
 	return "?"
 
 

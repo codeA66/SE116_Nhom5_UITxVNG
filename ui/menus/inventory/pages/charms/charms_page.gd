@@ -67,12 +67,12 @@ func refresh() -> void:
 	_notches.show_notches(_last_used if _notches.total == total else used, total)
 	_notches.animate_to(used, style.notch_step_time)
 	_last_used = used
-	_notch_label.text = "Ô KHẮC  %d / %d" % [used, total]
+	_notch_label.text = tr("Ô KHẮC  %d / %d") % [used, total]
 	var owned_count := 0
 	for charm: CharmData in catalog:
 		if GameState.owns_charm(charm.id):
 			owned_count += 1
-	_collection_heading.text = "BỘ SƯU TẬP  %d / %d" % [owned_count, catalog.size()]
+	_collection_heading.text = tr("BỘ SƯU TẬP  %d / %d") % [owned_count, catalog.size()]
 	_empty.visible = catalog.is_empty()
 	_scroll.visible = not catalog.is_empty()
 	_show_status(false)

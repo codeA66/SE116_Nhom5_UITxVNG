@@ -71,9 +71,10 @@ func is_showing() -> bool:
 func prepare(area: AreaData) -> void:
 	if area == null:
 		return
-	var title := area.display_name.to_upper() if style.uppercase_title else area.display_name
+	var translated_title: String = tr(area.display_name)
+	var title: String = translated_title.to_upper() if style.uppercase_title else translated_title
 	_render_glyphs(_title_font, title, [style.title_font_size, style.short_title_font_size])
-	_render_glyphs(_subtitle.get_theme_font(&"font"), area.subtitle, [style.subtitle_font_size])
+	_render_glyphs(_subtitle.get_theme_font(&"font"), tr(area.subtitle), [style.subtitle_font_size])
 
 
 ## Quên các nơi đã hiện trong lượt này (đổi hồ sơ, test)

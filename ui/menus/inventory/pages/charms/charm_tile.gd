@@ -33,7 +33,7 @@ func get_detail() -> DetailEntry:
 	var entry := DetailEntry.new()
 	if mode == Mode.EMPTY_SLOT:
 		entry.title = "Ô trống"
-		entry.subtitle = "Còn %d ô khắc" % (GameState.get_charm_notches() - GameState.get_used_notches())
+		entry.subtitle = tr("Còn %d ô khắc") % (GameState.get_charm_notches() - GameState.get_used_notches())
 		entry.add_section("", "Chọn một bùa trong bộ sưu tập để đeo vào đây.")
 		return entry
 	if not owned:
@@ -42,7 +42,7 @@ func get_detail() -> DetailEntry:
 		entry.add_section("", "Một lá bùa còn nằm đâu đó trên đảo Foxy.")
 		return entry
 	entry.title = charm.display_name
-	entry.subtitle = "Tốn %d ô khắc%s" % [charm.notch_cost, "  ·  Đang đeo" if equipped else ""]
+	entry.subtitle = tr("Tốn %d ô khắc%s") % [charm.notch_cost, tr("  ·  Đang đeo") if equipped else ""]
 	entry.art_texture = charm.icon
 	entry.add_section("Tác dụng", charm.description)
 	entry.lore = charm.lore
@@ -51,7 +51,7 @@ func get_detail() -> DetailEntry:
 		return entry
 	var room := GameState.get_charm_notches() - GameState.get_used_notches()
 	if not equipped and charm.notch_cost > room:
-		entry.add_section("", "Không đủ ô khắc (còn %d, cần %d)." % [room, charm.notch_cost], true)
+		entry.add_section("", tr("Không đủ ô khắc (còn %d, cần %d).") % [room, charm.notch_cost], true)
 	entry.hint = "Enter: tháo bùa" if equipped else "Enter: đeo bùa"
 	return entry
 

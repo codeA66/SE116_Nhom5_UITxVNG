@@ -40,6 +40,17 @@ func _run() -> void:
 	_menu = (load(MENU) as PackedScene).instantiate() as MainMenu
 	get_tree().root.add_child(_menu)
 	await _wait(0.6)
+	await _check_locale_switch()
+	if "--locale-only" in OS.get_cmdline_user_args():
+		await _uc1_title()
+		await _capture_menu_locale("home")
+		await _action(&"ui_down")
+		await _action(&"ui_accept")
+		_check(_state() == &"Settings", "mở Cài đặt để kiểm tra ngôn ngữ")
+		await _capture_menu_locale("settings")
+		print("LOCALE_RESULT fails=%d" % _fails)
+		get_tree().quit(1 if _fails > 0 else 0)
+		return
 	await _uc1_title()
 	await _uc2_settings()
 	await _uc3_profiles()
@@ -51,7 +62,45 @@ func _run() -> void:
 	SaveManager.storage_dir = _real_dir
 	SaveManager.current_slot = _real_slot
 	print("RESULT fails=%d" % _fails)
-	get_tree().quit()
+	get_tree().quit(1 if _fails > 0 else 0)
+
+
+func _check_locale_switch() -> void:
+	Settings.use_config_path(TEST_DIR + "settings.cfg")
+	_check(TranslationServer.get_locale() == "vi", "locale mặc định là vi")
+	var prompt: Label = _menu.get_node("UI/Root/TitleScreen/Prompt") as Label
+	Settings.set_value(&"locale", "en")
+	await get_tree().process_frame
+	_check(prompt.atr(prompt.text) == "Press Any Key", "vi → en: dòng tiêu đề đổi ngay")
+	await _capture_locale("title_en")
+	var config: ConfigFile = ConfigFile.new()
+	_check(config.load(TEST_DIR + "settings.cfg") == OK and config.get_value("language", "locale", "") == "en",
+		"ngôn ngữ được lưu vào settings.cfg")
+	Settings.load_settings()
+	_check(TranslationServer.get_locale() == "en", "đọc lại cấu hình giữ tiếng Anh")
+	Settings.set_value(&"locale", "vi")
+	await get_tree().process_frame
+	_check(prompt.atr(prompt.text) == "Nhấn phím bất kỳ", "en → vi: dòng tiêu đề đổi lại")
+	await _capture_locale("title_vi")
+
+
+func _capture_menu_locale(screen_name: String) -> void:
+	Settings.set_value(&"locale", "en")
+	await _wait(0.35)
+	await _capture_locale(screen_name + "_en")
+	Settings.set_value(&"locale", "vi")
+	await get_tree().process_frame
+	await _capture_locale(screen_name + "_vi")
+
+
+func _capture_locale(label: String) -> void:
+	if not "--capture-locale" in OS.get_cmdline_user_args() or DisplayServer.get_name() == "headless":
+		return
+	await RenderingServer.frame_post_draw
+	var directory: String = "res://output/localization"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(directory))
+	var image: Image = get_viewport().get_texture().get_image()
+	_check(image.save_png("%s/%s_%d.png" % [directory, label, image.get_width()]) == OK, "chụp " + label)
 
 
 func _state() -> StringName:
@@ -70,7 +119,9 @@ func _uc1_title() -> void:
 	Input.parse_input_event(key)
 	await _wait(0.5)
 	_check(_state() == &"Home", "UC1: phím bất kỳ -> menu chính (%s)" % _state())
-	_check(_focused() == _menu.get_node("UI/Root/HomeScreen/Items/Start"), "UC1: chọn sẵn 'Bắt đầu' (%s)" % _focused())
+	_check(_focused() == _menu.get_node("UI/Root/HomeScreen/Items/Continue"), "UC1: hồ sơ có dữ liệu chọn sẵn 'Tiếp tục'")
+	await _action(&"ui_down")
+	_check(_focused() == _menu.get_node("UI/Root/HomeScreen/Items/Start"), "UC1: mũi tên xuống chọn 'Bắt đầu'")
 
 
 func _uc2_settings() -> void:

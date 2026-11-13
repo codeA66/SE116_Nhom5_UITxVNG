@@ -18,7 +18,7 @@ func get_detail() -> DetailEntry:
 	var entry := DetailEntry.new()
 	entry.title = item.display_name
 	var category := CATEGORY_NAMES[item.category] if item.category < CATEGORY_NAMES.size() else ""
-	entry.subtitle = category if not item.owned_flag.is_empty() else "%s  ·  Đang có %d" % [category, count]
+	entry.subtitle = tr(category) if not item.owned_flag.is_empty() else tr("%s  ·  Đang có %d") % [tr(category), count]
 	entry.art_texture = item.icon
 	entry.add_section("", item.description)
 	entry.lore = item.lore

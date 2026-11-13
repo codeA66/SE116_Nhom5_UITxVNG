@@ -77,7 +77,7 @@ func _make_requirements(step: SkillUpgradeData) -> Control:
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		line.add_child(icon)
 		var enough := have >= cost.count
-		var label := _make_label("%s   %d / %d" % [cost.item.display_name, have, cost.count], _style.body_font, _style.success if enough else _style.warning)
+		var label := _make_label("%s   %d / %d" % [tr(cost.item.display_name), have, cost.count], _style.body_font, _style.success if enough else _style.warning)
 		label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		line.add_child(label)
 		box.add_child(line)

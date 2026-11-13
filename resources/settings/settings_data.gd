@@ -37,4 +37,4 @@ extends Resource
 @export_group("Ngôn ngữ")
 @export var locale: String = "vi"
 ## Mã ngôn ngữ -> tên hiện trên màn Cài đặt. Thêm ngôn ngữ = thêm bản dịch (.po / .csv) rồi thêm dòng ở đây
-@export var languages: Dictionary[String, String] = {"vi": "Tiếng Việt"}
+@export var languages: Dictionary[String, String] = {"vi": "Tiếng Việt", "en": "English"}
