@@ -37,6 +37,9 @@
 [ext_resource type="Script" path="res://entities/player/states/action/bow_aim.gd" id="38_bowaim"]
 [ext_resource type="Script" path="res://entities/player/states/action/flame_breath.gd" id="45_flamestate"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/flame_breath/flame_breath_vfx.tscn" id="46_flamevfx"]
+[ext_resource type="Script" path="res://entities/player/states/action/wind_tornado.gd" id="95_tornadostate"]
+[ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="96_pool"]
+[ext_resource type="PackedScene" path="res://abilities/wind_tornado/wind_tornado.tscn" id="97_tornado"]
 [ext_resource type="Script" path="res://components/elements/fire/igniter/igniter_area.gd" id="47_igniter"]
 [ext_resource type="PackedScene" path="res://components/elements/fire/fire_wind/fire_wind.tscn" id="48_firewind"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_sword/fire_sword_vfx.tscn" id="49_firesword"]
@@ -246,6 +249,14 @@ script = ExtResource("38_bowaim")
 
 [node name="FlameBreath" type="Node" parent="StateMachine"]
 script = ExtResource("45_flamestate")
+
+[node name="WindTornado" type="Node" parent="StateMachine"]
+script = ExtResource("95_tornadostate")
+
+[node name="Pool" type="Node" parent="StateMachine/WindTornado"]
+script = ExtResource("96_pool")
+scene = ExtResource("97_tornado")
+initial_size = 1
 
 [node name="CameraShake" type="Node" parent="CameraRig/Camera3D"]
 script = ExtResource("29_shake")

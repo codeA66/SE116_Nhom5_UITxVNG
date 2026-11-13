@@ -32,6 +32,9 @@ const LEVEL_NUMERALS: PackedStringArray = ["", "", "II", "III", "IV", "V"]
 ## Số ô năng lượng mỗi lần dùng (0 = miễn phí, ví dụ Dash)
 @export_range(0, 20) var energy_cost: int = 0
 
+## Dạng của kỹ năng theo cấp, dựng một lần rồi dùng lại (dữ liệu cố định nên không cần làm mới)
+var _forms: Dictionary[int, AbilityData] = {}
+
 
 func get_max_level() -> int:
 	return 1 + upgrades.size()
@@ -41,6 +44,30 @@ func get_max_level() -> int:
 func get_upgrade(level: int) -> SkillUpgradeData:
 	var index := level - 1
 	return upgrades[index] if index >= 0 and index < upgrades.size() else null
+
+
+## Dạng kỹ năng dùng ở một cấp: đi qua từng bậc, bậc có evolves_into thì đổi sang kỹ năng đó,
+## overrides của các bậc sau lần đổi gần nhất được áp lên một bản sao. Cấp 1 trả về chính nó
+func resolve(level: int) -> AbilityData:
+	level = clampi(level, 1, get_max_level())
+	if _forms.has(level):
+		return _forms[level]
+	var form: AbilityData = self
+	var changes: Dictionary[StringName, Variant] = {}
+	for index in level - 1:
+		var step := upgrades[index]
+		if step == null:
+			continue
+		if step.evolves_into:
+			form = step.evolves_into
+			changes.clear()
+		changes.merge(step.overrides, true)
+	if not changes.is_empty():
+		form = form.duplicate()
+		for property: StringName in changes:
+			form.set(property, changes[property])
+	_forms[level] = form
+	return form
 
 
 ## Tên hiển thị ở một cấp: lấy tên đặt riêng của bậc, không có thì tên gốc + số La Mã

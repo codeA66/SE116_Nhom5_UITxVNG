@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WindTornadoData" format=3]
+
+[ext_resource type="Script" path="res://abilities/wind_tornado/wind_tornado_data.gd" id="1_data"]
+[ext_resource type="Texture2D" uid="uid://cio41x1yog8s7" path="res://ui/hud/icons/wind.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_data")
+input_action = &"skill"
+state = &"WindTornado"
+id = &"wind_tornado"
+display_name = "Lốc xoáy"
+icon = ExtResource("2_icon")
+accent_color = Color(0.65098, 0.87843, 0.93725, 1)
+description = "Thả một cơn lốc chạy thẳng về phía trước, hút kẻ địch vào tâm rồi nổ tung hất chúng ra xa."
+energy_cost = 2

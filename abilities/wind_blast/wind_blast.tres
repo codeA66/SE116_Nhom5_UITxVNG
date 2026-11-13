@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://bejn71tj23dei" path="res://resources/player/items/_base/item_cost.gd" id="cost_script"]
 [ext_resource type="Material" path="res://resources/feedback/ability_acquire/effects/wind_gust.tres" id="fx_wind"]
 [ext_resource type="Resource" path="res://resources/player/items/upgrades/wind_seal.tres" id="seal_wind"]
+[ext_resource type="Resource" path="res://abilities/wind_tornado/wind_tornado.tres" id="tornado"]
 [ext_resource type="Script" uid="uid://cqf3owa675hcj" path="res://resources/player/items/_base/skill_upgrade_data.gd" id="up_script"]
 
 [sub_resource type="DPITexture" id="AcquireIllustration"]
@@ -18,8 +19,10 @@ count = 2
 
 [sub_resource type="Resource" id="Upgrade1"]
 script = ExtResource("up_script")
-description = "(Chữ tạm) Luồng gió rộng hơn, đẩy xa hơn."
+display_name = "Lốc xoáy"
+description = "Thổi gió hóa thành cơn lốc chạy thẳng: hút kẻ địch vào tâm rồi nổ tung. Tốn 2 ô năng lượng."
 requirements = Array[ExtResource("cost_script")]([SubResource("Cost1")])
+evolves_into = ExtResource("tornado")
 
 [sub_resource type="Resource" id="Cost2"]
 script = ExtResource("cost_script")
