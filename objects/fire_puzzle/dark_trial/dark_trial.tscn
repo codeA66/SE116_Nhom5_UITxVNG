@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/fire_puzzle/dark_trial/dark_trial.gd" id="1"]
+[ext_resource type="PackedScene" path="res://objects/fire_puzzle/dark_trial/hud/trial_timer.tscn" id="2"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="3"]
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 2.6
+
+[node name="DarkTrial" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[node name="TrialTimer" parent="." instance=ExtResource("2")]
+
+[node name="Pillars" type="Node3D" parent="."]
+
+[node name="StartInteract" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("3")
+prompt_text = "BẮT ĐẦU THỬ THÁCH"
+prompt_offset = Vector3(0, 1.8, 0)
+interaction_priority = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StartInteract"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("Range")

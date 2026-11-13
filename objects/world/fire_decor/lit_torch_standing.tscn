@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/world/fire_decor/decor_flame.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/torch_standing.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://objects/world/cellar/flame_feedback/flame_feedback.tscn" id="3_fb"]
+[ext_resource type="Resource" path="res://resources/feedback/flame/wall_torch_flame.tres" id="4_data"]
+
+[node name="LitTorchStanding" type="Node3D"]
+script = ExtResource("1_script")
+light_energy = 2.0
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="FlameFeedback" parent="." instance=ExtResource("3_fb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+data = ExtResource("4_data")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+light_color = Color(1, 0.6, 0.28, 1)
+shadow_enabled = false
+omni_range = 7.0
+
+[node name="Notifier" type="VisibleOnScreenNotifier3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+aabb = AABB(-7.0, -7.0, -7.0, 14.0, 14.0, 14.0)

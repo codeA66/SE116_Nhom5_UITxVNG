@@ -24,9 +24,15 @@ const MAX_MOTES: int = 16
 @export_group("Editor")
 @export var preview_motion: bool = true
 
-@onready var _book_meshes: Array[MeshInstance3D] = [$Presentation/Model/Wind_Spellbook/Covers, $Presentation/Model/Wind_Spellbook/Pages, $Presentation/Model/Wind_Spellbook/Spine, $Presentation/Model/Wind_Spellbook/Emblem]
-@onready var _emblem: MeshInstance3D = $Presentation/Model/Wind_Spellbook/Emblem
-@onready var _ribbons: MeshInstance3D = $Presentation/Model/Wind_Spellbook/BookWindRibbons
+## Đường dẫn các phần của model sách: map khác đổi model (sách lửa...) chỉ cần đổi các đường dẫn này
+@export_group("Model")
+@export var book_part_paths: Array[NodePath] = [^"Presentation/Model/Wind_Spellbook/Covers", ^"Presentation/Model/Wind_Spellbook/Pages", ^"Presentation/Model/Wind_Spellbook/Spine", ^"Presentation/Model/Wind_Spellbook/Emblem"]
+@export var emblem_path: NodePath = ^"Presentation/Model/Wind_Spellbook/Emblem"
+@export var ribbons_path: NodePath = ^"Presentation/Model/Wind_Spellbook/BookWindRibbons"
+
+@onready var _book_meshes: Array[MeshInstance3D] = _resolve_meshes(book_part_paths)
+@onready var _emblem: MeshInstance3D = get_node(emblem_path) as MeshInstance3D
+@onready var _ribbons: MeshInstance3D = get_node(ribbons_path) as MeshInstance3D
 @onready var _motes: CPUParticles3D = $Motes
 
 
@@ -70,3 +76,14 @@ func _ready() -> void:
 	_motes.visible = mote_count > 0
 	set_process(false)
 	set_physics_process(false)
+
+
+func _resolve_meshes(paths: Array[NodePath]) -> Array[MeshInstance3D]:
+	var meshes: Array[MeshInstance3D] = []
+	for path: NodePath in paths:
+		var mesh_instance: MeshInstance3D = get_node_or_null(path) as MeshInstance3D
+		if mesh_instance == null:
+			push_error("%s: không tìm thấy phần sách %s" % [get_path(), path])
+			continue
+		meshes.append(mesh_instance)
+	return meshes

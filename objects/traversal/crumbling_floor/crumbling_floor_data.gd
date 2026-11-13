@@ -6,6 +6,8 @@ extends Resource
 @export_range(0.05, 5.0, 0.05) var crack_time: float = 0.6
 ## Ô rơi xong bao lâu thì hiện lại (s)
 @export_range(0.1, 30.0, 0.1) var respawn_time: float = 3.0
+## Tắt: rơi hẳn, không hiện lại (cầu một chiều: đi qua rồi không quay lại được)
+@export var respawns: bool = true
 ## Độ rung của ô lúc nứt (m)
 @export_range(0.0, 0.2, 0.005) var shake_amount: float = 0.04
 ## Tốc độ rơi (m/s²) và quãng rơi tối đa trước khi ẩn hẳn (m)

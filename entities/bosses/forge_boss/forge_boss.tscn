@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/boss_1.tscn" id="1_boss"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/forge_boss/forge_boss_data.tres" id="2_data"]
+
+[node name="ForgeBoss" instance=ExtResource("1_boss")]
+editor_description = "Boss tier 2 map Lửa TẠM: dùng lại hành vi + model boss tier 1 (Boss1), nhiều máu và nhanh hơn, to hơn và có quầng lửa cam để phân biệt. Thay khi có model / thiết kế boss thật."
+data = ExtResource("2_data")
+
+[node name="Model" parent="."]
+transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0, 0, 0)
+
+[node name="ForgeGlow" type="OmniLight3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+light_color = Color(1, 0.45, 0.12, 1)
+light_energy = 2.5
+omni_range = 4.5

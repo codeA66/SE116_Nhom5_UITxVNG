@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://abilities/fusion/fire/ember_light/ember_light.gd" id="1_ember"]
+
+[sub_resource type="StandardMaterial3D" id="EmberMat"]
+shading_mode = 0
+albedo_color = Color(1, 0.55, 0.15, 1)
+
+[sub_resource type="SphereMesh" id="EmberMesh"]
+material = SubResource("EmberMat")
+radius = 0.14
+height = 0.22
+radial_segments = 8
+rings = 4
+
+[node name="EmberLight" type="Node3D"]
+visible = false
+script = ExtResource("1_ember")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+light_color = Color(1, 0.55, 0.2, 1)
+light_energy = 2.5
+omni_range = 5.0
+
+[node name="Ember" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+cast_shadow = 0
+mesh = SubResource("EmberMesh")

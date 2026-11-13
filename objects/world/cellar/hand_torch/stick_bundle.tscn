@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://objects/world/cellar/hand_torch/stick_bundle.gd" id="1_bundle"]
 [ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/hand_torch.glb" id="3_stick"]
+[ext_resource type="PackedScene" path="res://components/core/interaction/world_hint/world_hint.tscn" id="4_hint"]
 
 [sub_resource type="SphereShape3D" id="Range"]
 radius = 1.2
@@ -18,6 +19,16 @@ transform = Transform3D(0.94, 0.34, 0, -0.34, 0.94, 0, 0, 0, 1, 0.25, 0, 0.05)
 
 [node name="Stick3" parent="." instance=ExtResource("3_stick")]
 transform = Transform3D(1, 0, 0, 0, 0.94, -0.34, 0, 0.34, 0.94, 0, 0, -0.25)
+
+[node name="Glow" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+light_color = Color(1, 0.75, 0.45, 1)
+light_energy = 0.8
+shadow_enabled = false
+omni_range = 1.8
+
+[node name="Hint" parent="." instance=ExtResource("4_hint")]
+label_offset = Vector3(0, 1.8, 0)
 
 [node name="InteractableComponent" type="Area3D" parent="."]
 collision_layer = 32

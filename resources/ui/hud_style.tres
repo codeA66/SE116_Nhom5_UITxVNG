@@ -70,11 +70,27 @@ atlas = ExtResource("4")
 region = Rect2(176, 0, 88, 88)
 filter_clip = true
 
+[sub_resource type="Resource" id="FireCycloneGlyph"]
+script = ExtResource("2")
+strokes = Array[PackedVector2Array]([PackedVector2Array(-0.8, -0.62, 0.8, -0.62), PackedVector2Array(-0.62, -0.3, 0.6, -0.3), PackedVector2Array(-0.42, 0.02, 0.4, 0.02), PackedVector2Array(-0.24, 0.34, 0.22, 0.34), PackedVector2Array(-0.08, 0.66, 0.06, 0.82)])
+fills = Array[PackedVector2Array]([PackedVector2Array(0.5, -0.95, 0.62, -0.75, 0.42, -0.72)])
+
+[sub_resource type="Resource" id="GrappleGlyph"]
+script = ExtResource("2")
+strokes = Array[PackedVector2Array]([PackedVector2Array(-0.85, 0.85, 0.25, -0.25), PackedVector2Array(0.05, -0.55, 0.25, -0.25, 0.55, -0.05), PackedVector2Array(0.25, -0.25, 0.55, -0.6, 0.78, -0.42, 0.62, -0.18)])
+
+[sub_resource type="Resource" id="SlagShieldGlyph"]
+script = ExtResource("2")
+strokes = Array[PackedVector2Array]([PackedVector2Array(-0.7, -0.8, 0.7, -0.8, 0.7, 0.1, 0, 0.9, -0.7, 0.1, -0.7, -0.8), PackedVector2Array(-0.3, -0.45, 0.05, -0.1, -0.15, 0.2, 0.2, 0.5)])
+
 [resource]
 script = ExtResource("1")
 glyphs = Dictionary[StringName, ExtResource("2")]({
 &"bow": SubResource("Bow"),
 &"energy_fox_cream": SubResource("EnergyFoxCream"),
+&"fire_cyclone": SubResource("FireCycloneGlyph"),
+&"grapple": SubResource("GrappleGlyph"),
+&"slag_shield": SubResource("SlagShieldGlyph"),
 &"energy_fox_head": SubResource("EnergyFoxHead"),
 &"energy_fox_ink": SubResource("EnergyFoxInk"),
 &"energy_shell": SubResource("JadeTailShell"),
@@ -114,12 +130,18 @@ skill_anchors = Dictionary[StringName, Vector2]({
 &"bow": Vector2(1, 0),
 &"flame_breath": Vector2(3, 0),
 &"sword": Vector2(0, 0),
-&"wind_blast": Vector2(2, 0)
+&"wind_blast": Vector2(2, 0),
+&"fire_cyclone": Vector2(4, 0),
+&"grapple": Vector2(5, 0),
+&"slag_shield": Vector2(6, 0)
 })
 skill_icon_scale = 1.04
 skill_icon_colors = Dictionary[StringName, Color]({
 &"bow": Color(0.94, 0.91, 0.8, 1),
 &"flame_breath": Color(1, 0.7, 0.47, 1),
+&"fire_cyclone": Color(1, 0.55, 0.3, 1),
+&"grapple": Color(0.9, 0.75, 0.55, 1),
+&"slag_shield": Color(0.95, 0.6, 0.35, 1),
 &"sword": Color(0.96, 0.86, 0.68, 1),
 &"wind_blast": Color(0.67, 0.88, 0.84, 1)
 })

@@ -11,6 +11,9 @@ signal burned_away
 @export var persistent_id: StringName
 ## Thời gian co / chìm hình khi tan (giây)
 @export_range(0.05, 3.0, 0.05) var vanish_time: float = 0.6
+## true = hình tan do node phản hồi ngoài (BarrierBurnFeedback) lo qua signal burned_away; script này chỉ chờ vanish_time rồi ẩn Visual
+## (giữ nguyên rào để hạt khói còn hiện). Mặc định false = co dẹt như cũ
+@export var vanish_by_feedback: bool = false
 
 var is_burned: bool = false
 
@@ -42,6 +45,10 @@ func _remove(instant: bool) -> void:
 			(child as CollisionShape3D).set_deferred(&"disabled", true)
 	if instant:
 		visible = false
+		return
+	if vanish_by_feedback:
+		burned_away.emit()
+		get_tree().create_timer(vanish_time).timeout.connect(_visual.hide)
 		return
 	var tween: Tween = create_tween()
 	tween.tween_property(_visual, ^"scale", Vector3(1.0, 0.05, 1.0), vanish_time).set_ease(Tween.EASE_IN)

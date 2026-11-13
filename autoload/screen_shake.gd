@@ -17,6 +17,10 @@ var trauma: float = 0.0
 ## Hệ số độ rung do người chơi chọn trong Cài đặt (0 = tắt rung); Settings đặt lúc khởi động và khi đổi
 var strength: float = 1.0
 
+# Rung theo vị trí trong cùng một frame không cộng dồn (nhiều búa đập cùng lúc chỉ tính mức mạnh nhất)
+var _positional_frame: int = -1
+var _positional_added: float = 0.0
+
 
 func _ready() -> void:
 	set_process(false)
@@ -38,3 +42,39 @@ func add_trauma(amount: float) -> void:
 	trauma = minf(trauma + amount, MAX_TRAUMA)
 	set_process(true)
 	trauma_added.emit(amount)
+
+
+## Rung do một nguồn có vị trí (búa, nổ, thủy triều...): trong full_radius (m, mặt phẳng XZ) thì rung đủ amount,
+## xa dần yếu dần, ngoài max_radius thì không rung, nên vật ở phòng khác / ngoài màn hình không làm rung khi đứng yên.
+## Khoảng cách đo tới điểm camera đang nhìn trên mặt sàn ngang với nguồn.
+func add_trauma_at(amount: float, world_pos: Vector3, full_radius: float, max_radius: float) -> void:
+	if amount <= 0.0:
+		return
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	if camera == null:
+		return
+	var focus: Vector3 = _camera_focus(camera, world_pos.y)
+	var dist: float = Vector2(world_pos.x - focus.x, world_pos.z - focus.z).length()
+	var scaled: float = amount
+	if dist > full_radius:
+		var span: float = maxf(max_radius - full_radius, 0.001)
+		scaled = amount * clampf(1.0 - (dist - full_radius) / span, 0.0, 1.0)
+	var frame: int = Engine.get_process_frames()
+	if frame != _positional_frame:
+		_positional_frame = frame
+		_positional_added = 0.0
+	var extra: float = scaled - _positional_added
+	if extra <= 0.0:
+		return
+	_positional_added = scaled
+	add_trauma(extra)
+
+
+## Giao điểm tia nhìn giữa camera với mặt phẳng ngang y = height (camera nhìn chéo xuống nên luôn cắt)
+func _camera_focus(camera: Camera3D, height: float) -> Vector3:
+	var origin: Vector3 = camera.global_position
+	var forward: Vector3 = -camera.global_basis.z
+	if absf(forward.y) < 0.01:
+		return origin
+	var t: float = (height - origin.y) / forward.y
+	return origin + forward * maxf(t, 0.0)

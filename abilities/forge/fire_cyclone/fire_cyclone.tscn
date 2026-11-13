@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://abilities/forge/fire_cyclone/fire_cyclone.gd" id="1_cyclone"]
+[ext_resource type="PackedScene" path="res://abilities/fusion/wind/moves/wind_vortex.tscn" id="2_vortex"]
+
+[node name="FireCyclone" type="Node3D"]
+script = ExtResource("1_cyclone")
+
+[node name="Vortex" parent="." instance=ExtResource("2_vortex")]
+radius = 2.5

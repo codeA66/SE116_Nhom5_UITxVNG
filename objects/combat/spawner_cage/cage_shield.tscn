@@ -4,7 +4,9 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/barricade_burnable_4m.glb" id="2_model"]
 [ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="3_burn"]
 [ext_resource type="Resource" path="res://objects/gates/burnable_barrier/barrier_burn.tres" id="4_data"]
-[ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="5_vfx"]
+[ext_resource type="PackedScene" path="res://objects/world/cellar/flame_feedback/flame_feedback.tscn" id="5_fb"]
+[ext_resource type="Resource" path="res://resources/feedback/flame/shield_flame.tres" id="6_flame"]
+[ext_resource type="Script" path="res://objects/gates/burnable_barrier/barrier_burn_feedback.gd" id="7_fx"]
 
 [sub_resource type="BoxShape3D" id="Side"]
 size = Vector3(4.4, 3.2, 0.5)
@@ -16,6 +18,7 @@ size = Vector3(5.4, 3.2, 5.4)
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("1_barrier")
+vanish_by_feedback = true
 
 [node name="NorthShape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1.0000, 0, 0.0000, 0, 1, 0, -0.0000, 0, 1.0000, 0, 1.6, -2.2)
@@ -54,5 +57,35 @@ data = ExtResource("4_data")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 shape = SubResource("BurnZone")
 
-[node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("5_vfx")]
+[node name="Flames" type="Node3D" parent="."]
+
+[node name="North" parent="Flames" instance=ExtResource("5_fb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -2.2)
+data = ExtResource("6_flame")
+
+[node name="South" parent="Flames" instance=ExtResource("5_fb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 2.2)
+data = ExtResource("6_flame")
+
+[node name="West" parent="Flames" instance=ExtResource("5_fb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.9, 0)
+data = ExtResource("6_flame")
+
+[node name="East" parent="Flames" instance=ExtResource("5_fb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.9, 0)
+data = ExtResource("6_flame")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+visible = false
+light_color = Color(1, 0.55, 0.22, 1)
+shadow_enabled = false
+omni_range = 6.0
+
+[node name="BurnFeedback" type="Node" parent="." node_paths=PackedStringArray("barrier", "burnable", "visual", "flames_root", "light")]
+script = ExtResource("7_fx")
+barrier = NodePath("..")
 burnable = NodePath("../BurnableComponent")
+visual = NodePath("../Visual")
+flames_root = NodePath("../Flames")
+light = NodePath("../Light")

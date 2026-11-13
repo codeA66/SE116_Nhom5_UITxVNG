@@ -1,0 +1,584 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="1_cai56"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_4m.glb" id="2_olq0a"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_edge_4m.glb" id="3_fjvg7"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="4_7765w"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_moj7i"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="6_kn3hy"]
+[ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_torch_standing.tscn" id="7_opgs2"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oexv0"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8m4vn"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_l0fch"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hxtbq"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_txvde"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dyx1c"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4y3a2"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ajy0t"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0vgwr"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_igk8k"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_awnsp"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_awtw6"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_b2ckb"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pbnpj"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sixq5"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fd6es"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_10pth"]
+size = Vector3(4, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i3ee0"]
+size = Vector3(4, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wgxwx"]
+size = Vector3(4, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_w7hn1"]
+size = Vector3(4, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4tegv"]
+size = Vector3(4, 1.25, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nkc7q"]
+size = Vector3(4, 1.25, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i14pc"]
+size = Vector3(4, 1.25, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pp63i"]
+size = Vector3(0.7, 4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_edcpw"]
+size = Vector3(0.7, 4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_16uov"]
+size = Vector3(0.7, 4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5bi2s"]
+size = Vector3(0.7, 4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7shk6"]
+size = Vector3(0.7, 1.25, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vcoeo"]
+size = Vector3(0.7, 1.25, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3hbny"]
+size = Vector3(0.7, 1.25, 4)
+
+[node name="T2T4Chain" type="Node3D" unique_id=279816722]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 208, 20, 8)
+
+[node name="Floor" type="Node3D" parent="." unique_id=1642179846]
+
+[node name="floor_4m2" type="Node3D" parent="Floor" unique_id=682245819 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -6)
+
+[node name="floor_4m3" type="Node3D" parent="Floor" unique_id=1707399824 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2)
+
+[node name="floor_4m4" type="Node3D" parent="Floor" unique_id=849222564 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 2)
+
+[node name="floor_4m5" type="Node3D" parent="Floor" unique_id=1198221295 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 6)
+
+[node name="floor_4m6" type="Node3D" parent="Floor" unique_id=1855748416 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -6)
+
+[node name="floor_4m7" type="Node3D" parent="Floor" unique_id=968456280 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
+
+[node name="floor_4m8" type="Node3D" parent="Floor" unique_id=852560766 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 2)
+
+[node name="floor_4m9" type="Node3D" parent="Floor" unique_id=346944272 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 6)
+
+[node name="floor_4m10" type="Node3D" parent="Floor" unique_id=1087097616 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -6)
+
+[node name="floor_4m11" type="Node3D" parent="Floor" unique_id=2096189794 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
+
+[node name="floor_4m12" type="Node3D" parent="Floor" unique_id=908361122 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
+
+[node name="floor_4m13" type="Node3D" parent="Floor" unique_id=585480523 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 6)
+
+[node name="floor_4m14" type="Node3D" parent="Floor" unique_id=2042778928 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -6)
+
+[node name="floor_4m15" type="Node3D" parent="Floor" unique_id=115185183 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
+
+[node name="floor_4m16" type="Node3D" parent="Floor" unique_id=1939475107 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
+
+[node name="floor_4m17" type="Node3D" parent="Floor" unique_id=671953038 instance=ExtResource("1_cai56")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 6)
+
+[node name="Foundation" type="Node3D" parent="." unique_id=714418505]
+
+[node name="foundation_4m2" type="Node3D" parent="Foundation" unique_id=1245376489 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -4, -6)
+
+[node name="foundation_4m3" type="Node3D" parent="Foundation" unique_id=660579942 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -8, -6)
+
+[node name="foundation_4m4" type="Node3D" parent="Foundation" unique_id=1384655994 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -12, -6)
+
+[node name="foundation_4m5" type="Node3D" parent="Foundation" unique_id=2034970603 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -16, -6)
+
+[node name="foundation_4m6" type="Node3D" parent="Foundation" unique_id=1643024774 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -20, -6)
+
+[node name="foundation_4m7" type="Node3D" parent="Foundation" unique_id=1784706250 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -24, -6)
+
+[node name="foundation_edge_4m2" type="Node3D" parent="Foundation" unique_id=1682716388 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -28, -6)
+
+[node name="foundation_4m8" type="Node3D" parent="Foundation" unique_id=885893180 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -4, -2)
+
+[node name="foundation_4m9" type="Node3D" parent="Foundation" unique_id=1299057146 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -8, -2)
+
+[node name="foundation_4m10" type="Node3D" parent="Foundation" unique_id=1451443166 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -12, -2)
+
+[node name="foundation_4m11" type="Node3D" parent="Foundation" unique_id=227193981 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -16, -2)
+
+[node name="foundation_4m12" type="Node3D" parent="Foundation" unique_id=2103503623 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -20, -2)
+
+[node name="foundation_4m13" type="Node3D" parent="Foundation" unique_id=118167812 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -24, -2)
+
+[node name="foundation_edge_4m3" type="Node3D" parent="Foundation" unique_id=1016838978 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -28, -2)
+
+[node name="foundation_4m14" type="Node3D" parent="Foundation" unique_id=805363813 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -4, 2)
+
+[node name="foundation_4m15" type="Node3D" parent="Foundation" unique_id=1628427651 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -8, 2)
+
+[node name="foundation_4m16" type="Node3D" parent="Foundation" unique_id=1053996385 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -12, 2)
+
+[node name="foundation_4m17" type="Node3D" parent="Foundation" unique_id=924163993 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -16, 2)
+
+[node name="foundation_4m18" type="Node3D" parent="Foundation" unique_id=91593591 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -20, 2)
+
+[node name="foundation_4m19" type="Node3D" parent="Foundation" unique_id=1025068110 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -24, 2)
+
+[node name="foundation_edge_4m4" type="Node3D" parent="Foundation" unique_id=1283486210 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -28, 2)
+
+[node name="foundation_4m20" type="Node3D" parent="Foundation" unique_id=390871242 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -4, 6)
+
+[node name="foundation_4m21" type="Node3D" parent="Foundation" unique_id=403467992 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -8, 6)
+
+[node name="foundation_4m22" type="Node3D" parent="Foundation" unique_id=1476353912 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -12, 6)
+
+[node name="foundation_4m23" type="Node3D" parent="Foundation" unique_id=330689831 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -16, 6)
+
+[node name="foundation_4m24" type="Node3D" parent="Foundation" unique_id=1102707672 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -20, 6)
+
+[node name="foundation_4m25" type="Node3D" parent="Foundation" unique_id=138452489 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -24, 6)
+
+[node name="foundation_edge_4m5" type="Node3D" parent="Foundation" unique_id=506256495 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -28, 6)
+
+[node name="foundation_4m26" type="Node3D" parent="Foundation" unique_id=784381293 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -4, -6)
+
+[node name="foundation_4m27" type="Node3D" parent="Foundation" unique_id=6839380 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -8, -6)
+
+[node name="foundation_4m28" type="Node3D" parent="Foundation" unique_id=1798237246 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -12, -6)
+
+[node name="foundation_4m29" type="Node3D" parent="Foundation" unique_id=391579801 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -16, -6)
+
+[node name="foundation_4m30" type="Node3D" parent="Foundation" unique_id=11381711 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -20, -6)
+
+[node name="foundation_4m31" type="Node3D" parent="Foundation" unique_id=1216431798 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -24, -6)
+
+[node name="foundation_edge_4m6" type="Node3D" parent="Foundation" unique_id=1211339491 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -28, -6)
+
+[node name="foundation_4m32" type="Node3D" parent="Foundation" unique_id=614821179 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -4, 6)
+
+[node name="foundation_4m33" type="Node3D" parent="Foundation" unique_id=801796806 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -8, 6)
+
+[node name="foundation_4m34" type="Node3D" parent="Foundation" unique_id=1375093231 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -12, 6)
+
+[node name="foundation_4m35" type="Node3D" parent="Foundation" unique_id=2040762179 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -16, 6)
+
+[node name="foundation_4m36" type="Node3D" parent="Foundation" unique_id=1813182284 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -20, 6)
+
+[node name="foundation_4m37" type="Node3D" parent="Foundation" unique_id=551618201 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -24, 6)
+
+[node name="foundation_edge_4m7" type="Node3D" parent="Foundation" unique_id=1269806991 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -28, 6)
+
+[node name="foundation_4m38" type="Node3D" parent="Foundation" unique_id=26754029 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -4, -6)
+
+[node name="foundation_4m39" type="Node3D" parent="Foundation" unique_id=154796322 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -8, -6)
+
+[node name="foundation_4m40" type="Node3D" parent="Foundation" unique_id=2119561444 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -12, -6)
+
+[node name="foundation_4m41" type="Node3D" parent="Foundation" unique_id=1809664220 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -16, -6)
+
+[node name="foundation_4m42" type="Node3D" parent="Foundation" unique_id=1551723357 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -20, -6)
+
+[node name="foundation_4m43" type="Node3D" parent="Foundation" unique_id=563213216 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -24, -6)
+
+[node name="foundation_edge_4m8" type="Node3D" parent="Foundation" unique_id=674683079 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -28, -6)
+
+[node name="foundation_4m44" type="Node3D" parent="Foundation" unique_id=1297403766 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -4, 6)
+
+[node name="foundation_4m45" type="Node3D" parent="Foundation" unique_id=2101085347 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -8, 6)
+
+[node name="foundation_4m46" type="Node3D" parent="Foundation" unique_id=386075198 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -12, 6)
+
+[node name="foundation_4m47" type="Node3D" parent="Foundation" unique_id=1031002105 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -16, 6)
+
+[node name="foundation_4m48" type="Node3D" parent="Foundation" unique_id=1701957370 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -20, 6)
+
+[node name="foundation_4m49" type="Node3D" parent="Foundation" unique_id=2133996785 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -24, 6)
+
+[node name="foundation_edge_4m9" type="Node3D" parent="Foundation" unique_id=625912502 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -28, 6)
+
+[node name="foundation_4m50" type="Node3D" parent="Foundation" unique_id=559865877 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -4, -6)
+
+[node name="foundation_4m51" type="Node3D" parent="Foundation" unique_id=815342412 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -8, -6)
+
+[node name="foundation_4m52" type="Node3D" parent="Foundation" unique_id=1300398320 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -12, -6)
+
+[node name="foundation_4m53" type="Node3D" parent="Foundation" unique_id=1709513717 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -16, -6)
+
+[node name="foundation_4m54" type="Node3D" parent="Foundation" unique_id=999430588 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -20, -6)
+
+[node name="foundation_4m55" type="Node3D" parent="Foundation" unique_id=1756542721 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -24, -6)
+
+[node name="foundation_edge_4m10" type="Node3D" parent="Foundation" unique_id=1071958789 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -28, -6)
+
+[node name="foundation_4m56" type="Node3D" parent="Foundation" unique_id=1367854622 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -4, -2)
+
+[node name="foundation_4m57" type="Node3D" parent="Foundation" unique_id=1667391571 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -8, -2)
+
+[node name="foundation_4m58" type="Node3D" parent="Foundation" unique_id=1889229884 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -12, -2)
+
+[node name="foundation_4m59" type="Node3D" parent="Foundation" unique_id=224270613 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -16, -2)
+
+[node name="foundation_4m60" type="Node3D" parent="Foundation" unique_id=1469607701 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -20, -2)
+
+[node name="foundation_4m61" type="Node3D" parent="Foundation" unique_id=1393354896 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -24, -2)
+
+[node name="foundation_edge_4m11" type="Node3D" parent="Foundation" unique_id=1212034101 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -28, -2)
+
+[node name="foundation_4m62" type="Node3D" parent="Foundation" unique_id=1126474683 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -4, 2)
+
+[node name="foundation_4m63" type="Node3D" parent="Foundation" unique_id=890417250 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -8, 2)
+
+[node name="foundation_4m64" type="Node3D" parent="Foundation" unique_id=743455178 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -12, 2)
+
+[node name="foundation_4m65" type="Node3D" parent="Foundation" unique_id=1665513485 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -16, 2)
+
+[node name="foundation_4m66" type="Node3D" parent="Foundation" unique_id=1202600096 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -20, 2)
+
+[node name="foundation_4m67" type="Node3D" parent="Foundation" unique_id=1866733525 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -24, 2)
+
+[node name="foundation_edge_4m12" type="Node3D" parent="Foundation" unique_id=543088398 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -28, 2)
+
+[node name="foundation_4m68" type="Node3D" parent="Foundation" unique_id=1869831546 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -4, 6)
+
+[node name="foundation_4m69" type="Node3D" parent="Foundation" unique_id=847391539 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -8, 6)
+
+[node name="foundation_4m70" type="Node3D" parent="Foundation" unique_id=1909811580 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -12, 6)
+
+[node name="foundation_4m71" type="Node3D" parent="Foundation" unique_id=300735327 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -16, 6)
+
+[node name="foundation_4m72" type="Node3D" parent="Foundation" unique_id=954527837 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -20, 6)
+
+[node name="foundation_4m73" type="Node3D" parent="Foundation" unique_id=1062359036 instance=ExtResource("2_olq0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -24, 6)
+
+[node name="foundation_edge_4m13" type="Node3D" parent="Foundation" unique_id=932269248 instance=ExtResource("3_fjvg7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -28, 6)
+
+[node name="Walls" type="Node3D" parent="." unique_id=818665913]
+
+[node name="wall_4m2" type="Node3D" parent="Walls" unique_id=432477547 instance=ExtResource("4_7765w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, -7.65)
+
+[node name="wall_4m3" type="Node3D" parent="Walls" unique_id=1101738083 instance=ExtResource("4_7765w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.32, -7.65)
+
+[node name="wall_4m4" type="Node3D" parent="Walls" unique_id=999826250 instance=ExtResource("4_7765w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.32, -7.65)
+
+[node name="wall_4m5" type="Node3D" parent="Walls" unique_id=481463186 instance=ExtResource("4_7765w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.32, -7.65)
+
+[node name="wall_low_4m2" type="Node3D" parent="Walls" unique_id=1898569689 instance=ExtResource("5_moj7i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, 7.65)
+
+[node name="wall_low_4m3" type="Node3D" parent="Walls" unique_id=1081818377 instance=ExtResource("5_moj7i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.32, 7.65)
+
+[node name="wall_low_4m4" type="Node3D" parent="Walls" unique_id=603992848 instance=ExtResource("5_moj7i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.32, 7.65)
+
+[node name="wall_4m6" type="Node3D" parent="Walls" unique_id=426314462 instance=ExtResource("4_7765w")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -7.65, 0.32, -6)
+
+[node name="wall_4m7" type="Node3D" parent="Walls" unique_id=851054041 instance=ExtResource("4_7765w")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -7.65, 0.32, -2)
+
+[node name="wall_4m8" type="Node3D" parent="Walls" unique_id=1578263908 instance=ExtResource("4_7765w")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -7.65, 0.32, 2)
+
+[node name="wall_4m9" type="Node3D" parent="Walls" unique_id=1337541367 instance=ExtResource("4_7765w")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -7.65, 0.32, 6)
+
+[node name="wall_low_4m5" type="Node3D" parent="Walls" unique_id=489512652 instance=ExtResource("5_moj7i")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.65, 0.32, -6)
+
+[node name="wall_low_4m6" type="Node3D" parent="Walls" unique_id=1080560606 instance=ExtResource("5_moj7i")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.65, 0.32, 2)
+
+[node name="wall_low_4m7" type="Node3D" parent="Walls" unique_id=20967683 instance=ExtResource("5_moj7i")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.65, 0.32, 6)
+
+[node name="wall_pillar2" type="Node3D" parent="Walls" unique_id=890736463 instance=ExtResource("6_kn3hy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.65, 0.32, -7.65)
+
+[node name="Decor" type="Node3D" parent="." unique_id=2118559451]
+
+[node name="torch_standing2" type="Node3D" parent="Decor" unique_id=1067920535 instance=ExtResource("7_opgs2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, -6)
+
+[node name="torch_standing3" type="Node3D" parent="Decor" unique_id=1406227654 instance=ExtResource("7_opgs2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.32, -6)
+
+[node name="Collision" type="StaticBody3D" parent="." unique_id=1581344836]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collision" unique_id=2049843930]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.16, -6)
+shape = SubResource("BoxShape3D_oexv0")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Collision" unique_id=1120199596]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.16, -2)
+shape = SubResource("BoxShape3D_8m4vn")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="Collision" unique_id=1351406785]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.16, 2)
+shape = SubResource("BoxShape3D_l0fch")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="Collision" unique_id=851706282]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.16, 6)
+shape = SubResource("BoxShape3D_hxtbq")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="Collision" unique_id=1715717117]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.16, -6)
+shape = SubResource("BoxShape3D_txvde")
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="Collision" unique_id=1491632674]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.16, -2)
+shape = SubResource("BoxShape3D_dyx1c")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="Collision" unique_id=32213870]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.16, 2)
+shape = SubResource("BoxShape3D_4y3a2")
+
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="Collision" unique_id=731791892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.16, 6)
+shape = SubResource("BoxShape3D_ajy0t")
+
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="Collision" unique_id=1842342362]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.16, -6)
+shape = SubResource("BoxShape3D_0vgwr")
+
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="Collision" unique_id=1881019322]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.16, -2)
+shape = SubResource("BoxShape3D_igk8k")
+
+[node name="CollisionShape3D11" type="CollisionShape3D" parent="Collision" unique_id=1683097840]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.16, 2)
+shape = SubResource("BoxShape3D_awnsp")
+
+[node name="CollisionShape3D12" type="CollisionShape3D" parent="Collision" unique_id=506573125]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.16, 6)
+shape = SubResource("BoxShape3D_awtw6")
+
+[node name="CollisionShape3D13" type="CollisionShape3D" parent="Collision" unique_id=649723945]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.16, -6)
+shape = SubResource("BoxShape3D_b2ckb")
+
+[node name="CollisionShape3D14" type="CollisionShape3D" parent="Collision" unique_id=1860475452]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.16, -2)
+shape = SubResource("BoxShape3D_pbnpj")
+
+[node name="CollisionShape3D15" type="CollisionShape3D" parent="Collision" unique_id=1716291259]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.16, 2)
+shape = SubResource("BoxShape3D_sixq5")
+
+[node name="CollisionShape3D16" type="CollisionShape3D" parent="Collision" unique_id=2038974057]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.16, 6)
+shape = SubResource("BoxShape3D_fd6es")
+
+[node name="CollisionShape3D17" type="CollisionShape3D" parent="Collision" unique_id=1312558713]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.32, -7.65)
+shape = SubResource("BoxShape3D_10pth")
+
+[node name="CollisionShape3D18" type="CollisionShape3D" parent="Collision" unique_id=1129233587]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2.32, -7.65)
+shape = SubResource("BoxShape3D_i3ee0")
+
+[node name="CollisionShape3D19" type="CollisionShape3D" parent="Collision" unique_id=1415869351]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.32, -7.65)
+shape = SubResource("BoxShape3D_wgxwx")
+
+[node name="CollisionShape3D20" type="CollisionShape3D" parent="Collision" unique_id=2017816876]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.32, -7.65)
+shape = SubResource("BoxShape3D_w7hn1")
+
+[node name="CollisionShape3D21" type="CollisionShape3D" parent="Collision" unique_id=1431847865]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.945, 7.65)
+shape = SubResource("BoxShape3D_4tegv")
+
+[node name="CollisionShape3D22" type="CollisionShape3D" parent="Collision" unique_id=546199037]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.945, 7.65)
+shape = SubResource("BoxShape3D_nkc7q")
+
+[node name="CollisionShape3D23" type="CollisionShape3D" parent="Collision" unique_id=1564967571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.945, 7.65)
+shape = SubResource("BoxShape3D_i14pc")
+
+[node name="CollisionShape3D24" type="CollisionShape3D" parent="Collision" unique_id=1018429862]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.65, 2.32, -6)
+shape = SubResource("BoxShape3D_pp63i")
+
+[node name="CollisionShape3D25" type="CollisionShape3D" parent="Collision" unique_id=661703119]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.65, 2.32, -2)
+shape = SubResource("BoxShape3D_edcpw")
+
+[node name="CollisionShape3D26" type="CollisionShape3D" parent="Collision" unique_id=1800221238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.65, 2.32, 2)
+shape = SubResource("BoxShape3D_16uov")
+
+[node name="CollisionShape3D27" type="CollisionShape3D" parent="Collision" unique_id=873402972]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.65, 2.32, 6)
+shape = SubResource("BoxShape3D_5bi2s")
+
+[node name="CollisionShape3D28" type="CollisionShape3D" parent="Collision" unique_id=675082357]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 0.945, -6)
+shape = SubResource("BoxShape3D_7shk6")
+
+[node name="CollisionShape3D29" type="CollisionShape3D" parent="Collision" unique_id=1026293880]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 0.945, 2)
+shape = SubResource("BoxShape3D_vcoeo")
+
+[node name="CollisionShape3D30" type="CollisionShape3D" parent="Collision" unique_id=597383197]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 0.945, 6)
+shape = SubResource("BoxShape3D_3hbny")

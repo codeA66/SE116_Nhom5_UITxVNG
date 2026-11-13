@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SlagShieldData" format=3]
+
+[ext_resource type="Script" path="res://abilities/forge/slag_shield/slag_shield_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://abilities/forge/slag_shield/slag_shield_state.gd" id="2_state"]
+
+[resource]
+script = ExtResource("1_data")
+state_script = ExtResource("2_state")
+input_action = &"skill_shield"
+state = &"SlagShield"
+id = &"slag_shield"
+display_name = "Khiên xỉ"
+accent_color = Color(0.95, 0.5, 0.2, 1)
+description = "(Thử nghiệm) Giữ phím để dựng khiên xỉ: chặn đòn phía trước, dội ngược cầu lửa."
+acquire_verb = "Đã rèn"
+acquire_prompt = "Giữ {key} để dựng Khiên xỉ."
+energy_cost = 1
+cancels_attack = true

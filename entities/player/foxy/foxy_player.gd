@@ -52,7 +52,7 @@ const ACTION_BLEND: float = 0.05
 	Player.ANIM_PICK_UP: &"PickUp",
 	Player.ANIM_HURT: &"Hurt",
 	Player.ANIM_DEATH: &"Death",
-	&"Rig_Medium_MovementAdvanced/Dodge_Forward": &"Dash",
+	&"Rig_Medium_MovementAdvanced/Dodge_Forward": &"Dodge_Roll",
 	&"Rig_Medium_CombatMelee/Melee_1H_Attack_Slice_Horizontal": &"Attack_1",
 	&"Attack_Backhand": &"Attack_2",
 	&"Attack_Finisher": &"Attack_3",
@@ -61,8 +61,19 @@ const ACTION_BLEND: float = 0.05
 @export var loop_clips: Array[StringName] = [&"Idle", &"Idle_Sword", &"Run", &"Run_Sword", &"Fall"]
 ## Mốc vung kiếm trong clip Foxy (hitbox và vệt chém bám theo các mốc này)
 @export var animation_markers: AnimationMarkerSet = preload("res://resources/player/foxy_animation_markers.tres")
-@export var dash_clip: StringName = &"Dash"
+@export var dash_clip: StringName = &"Dodge_Roll"
 @export var land_clip: StringName = &"Land"
+
+@export_group("Dodge Roll")
+## Dash của Foxy là cú lộn (như bản test gốc): clip Dodge_Roll + lộn 360° quanh bụng.
+## Thời gian cú lộn (giây); 0 = dùng nguyên duration trong DashData
+@export var roll_duration: float = 0.4
+## Tốc độ lao khi lộn (m/s); 0 = dùng nguyên speed trong DashData
+@export var roll_speed: float = 9.0
+## Bật vòng lộn 360° bằng code (clip Dodge_Roll chỉ có tư thế cuộn người)
+@export var roll_flip: bool = true
+## Khoảng lộn, tính theo tỉ lệ thời gian cú lộn (bản gốc: frame 5 -> 14 trên 18)
+@export var roll_flip_window: Vector2 = Vector2(5.0 / 18.0, 14.0 / 18.0)
 
 @export_group("Landing")
 @export var landing_duration: float = 0.2
@@ -89,6 +100,13 @@ var _sword_mesh: Node3D
 var _face: MeshInstance3D
 var _blink_shape: int = -1
 var _face_blink_timer: float = 0.0
+var _foxy_root: Node3D
+var _foxy_rest: Transform3D
+var _roll_pivot: Vector3 = Vector3.ZERO
+var _roll_time: float = -1.0
+var _roll_length: float = 0.0
+var _roll_source: DashData
+var _roll_data: DashData
 
 ## Không có thì kiếm luôn ở tay như trước
 @onready var _holster: WeaponHolsterComponent = get_node_or_null(^"WeaponHolster")
@@ -103,6 +121,7 @@ func _ready() -> void:
 	if _face:
 		_blink_shape = _face.find_blend_shape_by_name(BLINK_SHAPE)
 	_install_animations(imported)
+	_setup_roll(imported)
 	_sword_mesh = model.find_child(String(sword_node_name), true, false) as Node3D
 	_face_blink_timer = randf_range(face_blink_interval.x, face_blink_interval.y)
 	if _holster:
@@ -116,9 +135,10 @@ func get_weapon() -> WeaponData:
 
 
 func get_ability(id: StringName) -> AbilityData:
-	if preview_dash and id == DashData.ID:
-		return preview_dash_data
-	return super(id)
+	var ability: AbilityData = preview_dash_data if preview_dash and id == DashData.ID else super(id)
+	if id == DashData.ID and ability is DashData:
+		return _roll_dash(ability as DashData)
+	return ability
 
 
 func has_ability(id: StringName) -> bool:
@@ -146,6 +166,7 @@ func play_action(anim_name: StringName, speed: float = 1.0, blend: float = -1.0)
 		var dash := get_ability(DashData.ID) as DashData
 		if dash:
 			speed = _clip_length(clip) / maxf(dash.duration, 0.01)
+			_start_roll(dash.duration)
 	_anim.play(clip, ACTION_BLEND if blend < 0.0 else blend, speed)
 	_anim.seek(0.0, true)
 
@@ -188,6 +209,58 @@ func _pre_state_update(delta: float) -> void:
 	_was_grounded = grounded
 	_previous_vertical_speed = velocity.y
 	_update_blink(delta)
+	_update_roll(delta)
+
+
+## Bản sao DashData với thời gian / tốc độ của cú lộn; không sửa file dash.tres dùng chung
+func _roll_dash(source: DashData) -> DashData:
+	if roll_duration <= 0.0 and roll_speed <= 0.0:
+		return source
+	if _roll_source != source or _roll_data == null:
+		_roll_source = source
+		_roll_data = source.duplicate() as DashData
+	if roll_duration > 0.0:
+		_roll_data.duration = roll_duration
+	if roll_speed > 0.0:
+		_roll_data.speed = roll_speed
+	return _roll_data
+
+
+func _setup_roll(imported: AnimationPlayer) -> void:
+	_foxy_root = imported.get_node(imported.root_node) as Node3D
+	if _foxy_root == null:
+		return
+	_foxy_rest = _foxy_root.transform
+	# Lộn quanh giữa thân (bụng), không quanh chân
+	var bounds := AABB()
+	var first := true
+	for node in _foxy_root.find_children("*", "MeshInstance3D", true, false):
+		var mesh_instance := node as MeshInstance3D
+		var box := _foxy_root.global_transform.affine_inverse() * mesh_instance.global_transform * mesh_instance.get_aabb()
+		bounds = box if first else bounds.merge(box)
+		first = false
+	_roll_pivot = Vector3(0.0, bounds.get_center().y, 0.0) if not first else Vector3(0.0, 0.4, 0.0)
+
+
+func _start_roll(length: float) -> void:
+	_roll_time = 0.0 if roll_flip else -1.0
+	_roll_length = maxf(length, 0.01)
+
+
+func _update_roll(delta: float) -> void:
+	if _roll_time < 0.0 or _foxy_root == null:
+		return
+	var state := state_machine.current_state
+	_roll_time += delta
+	if _roll_time >= _roll_length or state == null or state.name != PlayerState.DASH:
+		_roll_time = -1.0
+		_foxy_root.transform = _foxy_rest
+		return
+	var t := _roll_time / _roll_length
+	var u := clampf((t - roll_flip_window.x) / maxf(roll_flip_window.y - roll_flip_window.x, 0.01), 0.0, 1.0)
+	var spin := Basis(Vector3.RIGHT, TAU * u * u * (3.0 - 2.0 * u))
+	var pivot := _foxy_rest * _roll_pivot
+	_foxy_root.transform = Transform3D(spin, pivot - spin * pivot) * _foxy_rest
 
 
 func _attach_weapon_model(_data: WeaponData) -> void:

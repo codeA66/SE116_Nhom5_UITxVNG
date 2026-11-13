@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/hazards/lava_tide/lava_tide.gd" id="1_tide"]
+[ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="2_lava"]
+[ext_resource type="PackedScene" path="res://objects/core/kill_zone/kill_zone.tscn" id="3_kill"]
+
+[sub_resource type="PlaneMesh" id="LavaPlane"]
+size = Vector2(28, 24)
+
+[node name="LavaTide" type="Node3D"]
+script = ExtResource("1_tide")
+
+[node name="PhaseTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="Surface" type="Node3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Surface"]
+cast_shadow = 0
+mesh = SubResource("LavaPlane")
+surface_material_override/0 = ExtResource("2_lava")
+
+[node name="KillZone" parent="Surface" instance=ExtResource("3_kill")]
+lethal = true

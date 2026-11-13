@@ -7,6 +7,39 @@ extends SceneTree
 const KIT: String = "res://assets/models/map_fire/fire_kit/"
 const INFERNO: String = "res://assets/models/map_fire/inferno_kit/"
 const OUT: String = "res://levels/zone_3_fire/level_3/"
+# Phòng chia theo tier như zone 1: rooms/tier_1, rooms/tier_2 (scene) và nhóm Rooms/Tier1, Rooms/Tier2 (trong level_3.tscn)
+const TIER_1_DIR: String = "rooms/tier_1/"
+const TIER_2_DIR: String = "rooms/tier_2/"
+## Bố cục tier 2 ("Lò Rèn Lòng Núi"): chỉ dữ liệu, dựng bằng cùng các hàm của tier 1
+const TIER_2 = preload("res://docs/zone_3_fire/level_3_tier_2_layout.gd")
+const FLAMMABLE_SCENES: Dictionary = {
+	"vines": "res://objects/fire_puzzle/flammables/dry_vines/dry_vines.tscn",
+	"crate": "res://objects/fire_puzzle/flammables/wooden_crate/wooden_crate.tscn",
+	"oil": "res://objects/fire_puzzle/flammables/oil_barrel/oil_barrel.tscn",
+	"bridge": "res://objects/fire_puzzle/flammables/rope_bridge/rope_bridge.tscn",
+}
+const FLAMMABLE_RESET_SCRIPT: String = "res://objects/fire_puzzle/flammables/_base/flammable_reset.gd"
+const CRACKED_WALL_SCENE: String = "res://objects/fire_puzzle/cracked_wall/cracked_wall.tscn"
+const CRUMBLING_FLOOR_SCENE: String = "res://objects/traversal/crumbling_floor/crumbling_floor.tscn"
+const CRUMBLING_ONE_WAY_DATA: String = "res://resources/world/puzzles/crumbling_floor_one_way.tres"
+const TRAINING_DUMMY_SCENE: String = "res://objects/combat/training_dummy/wooden_training_dummy.tscn"
+const WISP_FLAME_SCENE: String = "res://objects/fire_puzzle/wisp_flame/wisp_flame.tscn"
+const WISP_GROUP_SCRIPT: String = "res://objects/fire_puzzle/wisp_flame/wisp_group.gd"
+const WAVE_SPAWNER_SCRIPT: String = "res://objects/fire_puzzle/wave_spawner/wave_spawner.gd"
+const FORGE_INSTALLER_SCRIPT: String = "res://abilities/forge/_base/forge_skill_installer.gd"
+const FORGE_SKILL_DATA_SCRIPT: String = "res://abilities/forge/_base/forge_skill_data.gd"
+const FORGE_SHARD_SCENE: String = "res://objects/fire_puzzle/forge_shards/forge_shard.tscn"
+const SHARD_COUNTER_SCENE: String = "res://objects/fire_puzzle/forge_shards/shard_counter.tscn"
+const SHARD_ALTAR_SCENE: String = "res://objects/fire_puzzle/forge_shards/shard_altar.tscn"
+const DARK_TRIAL_SCENE: String = "res://objects/fire_puzzle/dark_trial/dark_trial.tscn"
+const GRAPPLE_RING_SCENE: String = "res://abilities/forge/grapple/ring/grapple_ring.tscn"
+const WOLF_PACK_SCRIPT: String = "res://entities/enemies/volcano/shadow_wolf/wolf_pack.gd"
+const COLD_ZONE_SCRIPT: String = "res://components/elements/cold/cold_zone.gd"
+const WARM_ZONE_SCRIPT: String = "res://components/elements/cold/warm_zone.gd"
+const AREA_TITLE_SCENE: String = "res://levels/_base/area_title_trigger/area_title_trigger.tscn"
+const TIER_1_AREA_TITLE: String = "res://resources/world/zones/areas/fire/tier_1.tres"
+## Vùng tier 1 (TierZone ẩn hình tier 2 khi player ở trong): x0, z0, x1, z1, y dưới, y trên
+const TIER_1_ZONE: Array = [-4, -4, 184, 108, -4.0, 20.0]
 const T: float = 0.32  # độ dày sàn: mặt đi lại = y phòng + T
 const GROUND_Y: float = -8.0  # đáy vực: nền đá tối, chỗ có dung nham thì phủ mặt dung nham
 const GROUND_COLOR: Color = Color(0.06, 0.035, 0.04)
@@ -83,7 +116,8 @@ const LAVA_AREAS: Array = [
 	[66, 56, 90, 66],  # dòng dung nham / vực thẳm cạnh đường xuống phòng kho báu phía nam
 	[92, 64, 108, 84],  # hố dưới phòng dung nham đã nứt
 ]
-const MAP_BOUNDS: Array = [-4, -4, 180, 108]
+# Biển dung nham / vực phủ cả tier 1 (x -4..180) lẫn tier 2 (x 196..360)
+const MAP_BOUNDS: Array = [-4, -4, 372, 108]
 # Hộp vùng phòng (RoomFocus): dưới sàn / trên sàn (m). Dưới 7 m để không chứa biển dung nham (sàn thấp nhất y 0, biển y -7,6)
 const ROOM_ZONE_BELOW: float = 3.0
 const ROOM_ZONE_ABOVE: float = 9.0
@@ -95,7 +129,13 @@ const BRIDGE_END: Vector2 = Vector2(56, 54)  # tâm sân cuối cầu, nằm tr�
 # lan can chạy theo chu vi, chỉ hở đúng chỗ các đường nhập vào (thay cho sân 8 x 8 cũ làm lan can so le)
 const PLAZA: Array = [52, 48, 64, 60]
 const BRIDGE_Y: float = 4.0
+## Mặt cầu (ô xoay 45°) chìm dưới sân / sàn phòng bấy nhiêu mét để hoa văn ô chéo không lộ qua sàn ô thẳng (z-fight). 2 cm là quá ít
+const DECK_SINK: float = 0.08
 const FENCE_MODULE: float = 2.0  # chiều dài model fence_2m
+## Lan can = thanh không cột (fence_rail_2m, dựng bằng Blender từ fence_2m) + cột riêng (fence_post). Hai cột gần nhau hơn mức
+## này (m) trên mặt bằng thì dính vào nhau (cột rộng 0,5 m): chỉ giữ một. Cột cách tầng quá POST_MAX_DY (m) thì không tính
+const POST_CLEARANCE: float = 1.3
+const POST_MAX_DY: float = 1.2
 # Bẫy trên cầu: vừa chạm mặt cầu là vòng cảnh báo hiện dưới chân rồi lửa phụt (0,9 s cảnh báo của LavaGeyser),
 # sau đó cứ BRIDGE_FOLLOW_INTERVAL giây lại phun vào chỗ player đang đứng: phải chạy liên tục
 const LINGER_TRAP_SCENE: String = "res://objects/combat/hazards/lava_geyser/linger_lava_trap.tscn"
@@ -143,9 +183,7 @@ const DARK_ZONE_BOXES: Array[AABB] = [
 ]
 # Lửa trại giữa phòng 5 và bó gậy (mặt sàn +4 = 4,32)
 const CAMPFIRE_SCENE: String = "res://objects/world/cellar/hand_torch/campfire.tscn"
-const STICK_BUNDLE_SCENE: String = "res://objects/world/cellar/hand_torch/stick_bundle.tscn"
 const CAMPFIRE_POS: Vector3 = Vector3(59.5, 4.32, 37.5)
-const STICK_BUNDLE_POS: Vector3 = Vector3(61.5, 4.32, 40.5)
 # Cửa khóa phòng 2 (cửa đông + cửa bắc), mở khi thắp hết đuốc phòng 3 (số thứ tự trong CELLAR_TORCHES, đếm từ 1)
 const CELLAR_GATE_SCENE: String = "res://objects/gates/stone_gate/fire_cellar_gate.tscn"
 # Cổng khóa đường tới phòng 2: hai cửa phòng 2 + cửa tây phòng 3. Mở khi dọn xong trận ở phòng 3
@@ -166,6 +204,17 @@ const ROOM2_BOSS_SCALE: float = 1.4
 ## Mini-boss tạm: enemy_1 với dữ liệu riêng (nhiều máu, không khựng) tới khi có quái map Lửa
 const ROOM2_BOSS_DATA: String = "res://resources/enemies/enemy_1/enemy_1_fire_miniboss.tres"
 const ROOM2_BOSS_FLAG: String = "level_3.room2_miniboss"
+## Cổng khóa đầu lối tây cần chìa: hạ mini-boss phòng 2 thì rơi chìa (KeyDrop), cắm vào ổ KeyLock giữa lối 8 m thì hai cổng chìm
+const WEST_KEY_FLAG: String = "level_3.west_key"
+const WEST_KEY_LOCK_FLAG: String = "level_3.west_gate_unlocked"
+const WEST_KEY_LOCK_POS: Vector3 = Vector3(62.85, 4.32, 52.0)
+## Quay mặt ổ (lỗ khóa ở +Z cục bộ) về phía tây, nơi người chơi tới
+const WEST_KEY_LOCK_YAW: float = -90.0
+## Chìa nằm sẵn ở đây (cạnh bệ thờ) nếu đã hạ mini-boss mà chưa nhặt khi nạp lại màn
+const WEST_KEY_REST_POS: Vector3 = Vector3(28.5, 0.32, 32.0)
+const KEY_LOCK_SCENE: String = "res://objects/gates/stone_gate/key_lock.tscn"
+const KEY_DROP_SCENE: String = "res://objects/core/pickups/key/key_drop.tscn"
+const KEY_PICKUP_SCENE: String = "res://objects/gates/red_key_door/red_key_pickup.tscn"
 # Phòng 8 (x 100..128, z 4..24, sàn +8): 4 lồng sinh quái bọc rào gỗ, phải Phun lửa đốt rào rồi mới chém được lồng.
 # Phá đủ 4 lồng + hạ hết quái thì cổng cửa tây (sang phòng 9) chìm xuống
 const CAGE_SHIELD_SCENE: String = "res://objects/combat/spawner_cage/cage_shield.tscn"
@@ -286,33 +335,57 @@ const CAMERA_DISTANCE: float = 32.0
 const CAMERA_FOV: float = 30.0
 
 var _cache: Dictionary = {}
+## Cột lan can chờ chọn (cột khép cuối đoạn, cột đầu module) của scene đang dựng, xem _flush_fence_caps
+var _fence_caps: Array[Dictionary] = []
+var _fence_starts: Array[Dictionary] = []
 
 
 func _init() -> void:
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT + "rooms"))
-	for file: String in DirAccess.get_files_at(OUT + "rooms"):
-		if file.ends_with(".tscn"):
-			DirAccess.remove_absolute(ProjectSettings.globalize_path(OUT + "rooms/" + file))
-	var room_paths: Array[String] = []
+	for dir: String in ["rooms/", TIER_1_DIR, TIER_2_DIR]:
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT + dir))
+		for file: String in DirAccess.get_files_at(OUT + dir):
+			if file.ends_with(".tscn"):
+				DirAccess.remove_absolute(ProjectSettings.globalize_path(OUT + dir + file))
+	# Tier 1: phòng, cầu gạch Nether, mái hầm, đường nối
+	var tier_1: Array[String] = []
 	for room: Dictionary in ROOMS:
-		var path: String = OUT + "rooms/" + str(room.id) + ".tscn"
+		var path: String = OUT + TIER_1_DIR + str(room.id) + ".tscn"
 		_save(_build_room(room), path)
-		room_paths.append(path)
-	var bridge_path: String = OUT + "rooms/nether_bridge.tscn"
+		tier_1.append(path)
+	var bridge_path: String = OUT + TIER_1_DIR + "nether_bridge.tscn"
 	_save(_build_grand_bridge(), bridge_path)
-	room_paths.append(bridge_path)
-	var cover_path: String = OUT + "rooms/cellar_cover.tscn"
+	tier_1.append(bridge_path)
+	var cover_path: String = OUT + TIER_1_DIR + "cellar_cover.tscn"
 	_save(_build_cellar_cover(), cover_path)
-	room_paths.append(cover_path)
-	var conn_path: String = OUT + "rooms/connectors.tscn"
-	_save(_build_connectors(), conn_path)
-	_save(_build_level(room_paths, conn_path), OUT + "level_3.tscn")
+	tier_1.append(cover_path)
+	var conn_1: String = OUT + TIER_1_DIR + "connectors.tscn"
+	_save(_build_connectors(CONNECTORS), conn_1)
+	tier_1.append(conn_1)
+	# Tier 2: phòng + đường nối, cùng hàm dựng
+	var tier_2: Array[String] = []
+	for room: Dictionary in TIER_2.ROOMS:
+		var path: String = OUT + TIER_2_DIR + str(room.id) + ".tscn"
+		_save(_build_room(room), path)
+		tier_2.append(path)
+	var conn_2: String = OUT + TIER_2_DIR + "connectors.tscn"
+	_save(_build_connectors(TIER_2.CONNECTORS), conn_2)
+	tier_2.append(conn_2)
+	_save(_build_level({"Tier1": tier_1, "Tier2": tier_2}), OUT + "level_3.tscn")
 	_attach_zone_root(OUT + "level_3.tscn")
 	print("BUILD OK")
 	quit()
 
 
+## Mọi phòng của mọi tier (dò ô đi được, vùng phòng RoomFocus)
+func _all_rooms() -> Array[Dictionary]:
+	var all: Array[Dictionary] = []
+	all.append_array(ROOMS)
+	all.append_array(TIER_2.ROOMS)
+	return all
+
+
 func _save(root: Node, path: String) -> void:
+	_flush_fence_caps()
 	var packed: PackedScene = PackedScene.new()
 	if packed.pack(root) != OK:
 		push_error("pack failed " + path)
@@ -399,6 +472,21 @@ func _build_room(room: Dictionary) -> Node3D:
 	var holes: Array[Vector2] = []
 	if room.id == "room_12_drained_lava":
 		holes = [Vector2(98, 70), Vector2(102, 70), Vector2(98, 74), Vector2(102, 74)]
+	# Ô bỏ trống khai trong bảng phòng (tier 2): rơi xuống vực. "keep": chỉ giữ các ô này, còn lại bỏ trống
+	for h: Array in room.get("holes", []):
+		holes.append(Vector2(float(h[0]), float(h[1])))
+	if room.has("keep"):
+		var keep: Array[Vector2] = []
+		for k: Array in room.keep:
+			keep.append(Vector2(float(k[0]), float(k[1])))
+		var kx: float = room.r[0] + 2.0
+		while kx < room.r[2]:
+			var kz: float = room.r[1] + 2.0
+			while kz < room.r[3]:
+				if not (Vector2(kx, kz) in keep):
+					holes.append(Vector2(kx, kz))
+				kz += 4.0
+			kx += 4.0
 	var grate: Array[Vector2] = []
 	# Hub: hình sàn do FinalTrial dựng (đổi sang lưới dung nham lúc thử thách cuối); ở đây chỉ giữ va chạm
 	var floor_visual: bool = room.id != "room_07_hub"
@@ -460,6 +548,10 @@ func _build_room(room: Dictionary) -> Node3D:
 
 func _decorate(room: Dictionary, g: Node3D, root: Node3D, cx: float, cz: float) -> void:
 	var o: Vector3 = Vector3(-cx, T, -cz)
+	# Phòng tier 2: vật / mốc lấy từ bảng DECOR (dữ liệu), không cần thêm nhánh match
+	for item: Array in TIER_2.DECOR.get(str(room.id), []):
+		var file: String = str(item[0]).replace("kit:", KIT).replace("inferno:", INFERNO) + ".glb"
+		_place(g, root, file, o + (item[1] as Vector3), float(item[2]), str(item[3]))
 	match str(room.id):
 		"room_01_spawn":
 			# Cổng tím ở mép tây, player xuất hiện trước cổng, quay mặt về phía đông
@@ -550,7 +642,7 @@ func _spawn_point(g: Node3D, root: Node3D, pos: Vector3, yaw: float) -> void:
 	spawn.rotation_degrees.y = yaw
 
 
-func _build_connectors() -> Node3D:
+func _build_connectors(paths: Array) -> Node3D:
 	var root: Node3D = Node3D.new()
 	root.name = "Connectors"
 	var body: StaticBody3D = _body(root, root)
@@ -558,7 +650,7 @@ func _build_connectors() -> Node3D:
 	# Lượt 1: trải mọi đường thành ô; lượt 2 mới đặt model, để biết ô nào là ngã ba (có đường khác nhập từ hông)
 	var all_paths: Array = []
 	var occupied: Dictionary = {}
-	for points: Array in CONNECTORS:
+	for points: Array in paths:
 		var cells: Array[Dictionary] = _path_cells(points)
 		all_paths.append(cells)
 		for c: Dictionary in cells:
@@ -576,6 +668,10 @@ func _build_connectors() -> Node3D:
 			# Cầu chỉ rộng 3 m: ô có đường khác chạm vào từ hông phải là sàn vuông 4 m, nếu không hở khe 0,5 m
 			var side: Vector3 = Vector3(-d_in.z, 0.0, d_in.x) * 4.0
 			var junction: bool = occupied.has(Vector2i(roundi(p.x + side.x), roundi(p.z + side.z))) or occupied.has(Vector2i(roundi(p.x - side.x), roundi(p.z - side.z)))
+			# Ô giáp cửa phòng ở hông (không thẳng hướng đường) cũng phải là sàn vuông 4 m: cầu 3 m chừa khe 0,5 m giữa ô và sàn phòng,
+			# Player lọt vào khe và kẹt (lỗi trước cửa tây phòng 5)
+			if not junction and c.kind != "stair":
+				junction = _walkable(p.x + side.x, p.z + side.z, p.y) or _walkable(p.x - side.x, p.z - side.z, p.y)
 			if c.kind == "stair":
 				var rise: Vector3 = d_in if c.dy > 0.0 else -d_in
 				var base_y: float = p.y if c.dy > 0.0 else p.y + c.dy
@@ -693,10 +789,43 @@ func _fence_line(g: Node3D, owner_node: Node, center: Vector3, basis: Basis, len
 	var m: float = length / float(n)
 	for i: int in range(n):
 		var x: float = -length * 0.5 + m * (float(i) + 0.5)
-		var part: Node3D = _place(g, owner_node, KIT + "fence_2m.glb", Vector3.ZERO)
+		var part: Node3D = _place(g, owner_node, KIT + "fence_rail_2m.glb", Vector3.ZERO)
 		part.transform = Transform3D(basis * Basis.from_scale(Vector3(m / FENCE_MODULE, 1.0, 1.0)), center + basis * Vector3(x, 0, 0))
-	var cap: Node3D = _place(g, owner_node, KIT + "fence_post.glb", Vector3.ZERO)
-	cap.transform = Transform3D(basis, center + basis * Vector3(length * 0.5, 0, 0))
+		# Cột ở đầu module (x cục bộ = -1): ứng viên, chọn ở _flush_fence_caps
+		_fence_starts.append({"g": g, "owner": owner_node, "xf": Transform3D(part.transform.basis.orthonormalized(), part.transform * Vector3(-1.0, 0.0, 0.0))})
+	# Cột khép đặt trễ (cuối scene): chỉ đặt nếu không có cột nào sẵn ở sát đó, tránh hai cột đè nhau ở chỗ hai đoạn lan can gặp nhau
+	_fence_caps.append({"g": g, "owner": owner_node, "xf": Transform3D(basis, center + basis * Vector3(length * 0.5, 0, 0))})
+
+
+## Chọn và đặt cột lan can của scene vừa dựng (gọi trước khi lưu scene): cột khép cuối đoạn được ưu tiên (đầu đoạn lan can),
+## rồi cột đầu module; cột nào cách cột đã chọn dưới POST_CLEARANCE thì bỏ. Thanh lan can vẫn liền nên bỏ cột không hở
+func _flush_fence_caps() -> void:
+	var kept: Array[Vector3] = []
+	for pending: Array in [_fence_caps, _fence_starts]:
+		for c: Dictionary in pending:
+			var at: Vector3 = _to_root(c.g as Node3D) * (c.xf as Transform3D).origin
+			var blocked: bool = false
+			for post: Vector3 in kept:
+				if Vector2(post.x - at.x, post.z - at.z).length() < POST_CLEARANCE and absf(post.y - at.y) < POST_MAX_DY:
+					blocked = true
+					break
+			if blocked:
+				continue
+			var node: Node3D = _place(c.g as Node3D, c.owner as Node, KIT + "fence_post.glb", Vector3.ZERO)
+			node.transform = c.xf as Transform3D
+			kept.append(at)
+	_fence_caps.clear()
+	_fence_starts.clear()
+
+
+## Biến đổi từ hệ cục bộ của node tới hệ gốc scene đang dựng (node chưa vào cây nên cộng dồn tay)
+func _to_root(node: Node3D) -> Transform3D:
+	var xf: Transform3D = Transform3D.IDENTITY
+	var cur: Node = node
+	while cur is Node3D and cur.get_parent() != null:
+		xf = (cur as Node3D).transform * xf
+		cur = cur.get_parent()
+	return xf
 
 
 ## Một dải hàng rào liền từ a tới b (x, z) ở cao độ cầu, hộp va chạm cùng hướng
@@ -708,7 +837,9 @@ func _rail_segment(g: Node3D, owner_node: Node, body: StaticBody3D, a: Vector2, 
 	var basis: Basis = Basis(Vector3.UP, atan2(-d.y, d.x))  # trục X cục bộ của model chạy theo a → b
 	var c: Vector2 = (a + b) * 0.5
 	var center: Vector3 = Vector3(c.x, BRIDGE_Y + T, c.y)
-	_fence_line(g, owner_node, center, basis, length)
+	# Đoạn quá ngắn (< 0,3 m) chỉ còn hộp va chạm: model rào và cột của nó dính vào cột đoạn kế bên
+	if length >= 0.3:
+		_fence_line(g, owner_node, center, basis, length)
 	# Hộp va chạm dài thêm 0,7 m để hai dải gặp nhau ở góc chồng khít, không hở khe
 	_box(body, owner_node, center + Vector3(0, 0.625, 0), Vector3(length + 0.7, 1.25, 0.7), basis)
 
@@ -716,7 +847,7 @@ func _rail_segment(g: Node3D, owner_node: Node, body: StaticBody3D, a: Vector2, 
 ## Ô (x, z) nằm trên phòng, sân hoặc mặt cầu gạch Nether
 ## y: cao độ ô cần so (NAN = không so); phòng lệch quá 1,5 m so với ô thì không tính là đi tiếp được
 func _walkable(x: float, z: float, y: float = NAN) -> bool:
-	for room: Dictionary in ROOMS:
+	for room: Dictionary in _all_rooms():
 		var rr: Array = room.r
 		if not is_nan(y) and absf(float(room.y) - y) > 1.5:
 			continue
@@ -764,8 +895,8 @@ func _build_grand_bridge() -> Node3D:
 	var half_w: float = BRIDGE_WIDTH * 0.5
 	for k: int in range(-half, half + 1):
 		for col: float in [-2.0, 2.0]:
-			# Thấp hơn sân một chút: phần mặt cầu chồng dưới sân không bị nhấp nháy
-			_place(deck, root, KIT + "floor_4m.glb", Vector3(col, -0.02, k * 4.0))
+			# Thấp hơn sân DECK_SINK: phần mặt cầu chồng dưới sân không bị nhấp nháy
+			_place(deck, root, KIT + "floor_4m.glb", Vector3(col, -DECK_SINK, k * 4.0))
 	_box(body, root, Vector3(mid.x, BRIDGE_Y + T * 0.5 - 0.02, mid.y), Vector3(BRIDGE_WIDTH, T, rows * 4.0), basis)
 	# Lan can và cột lửa dọc hai bên mặt cầu
 	var rail_x: float = half_w - 0.4
@@ -966,9 +1097,30 @@ func _roof_pt(v: Vector3, ridge_along_x: bool) -> Vector3:
 
 
 ## Trải chuỗi điểm thành các ô 4 m: phẳng hoặc bậc thang (mỗi ô lên/xuống 2 m)
-func _path_cells(points: Array) -> Array[Dictionary]:
+func _path_cells(points_in: Array) -> Array[Dictionary]:
 	var cells: Array[Dictionary] = []
+	# Phần tử đầu "S": ô đầu tiên đã là cầu thang (khe 8 m giữa hai phòng lệch 4 m: hai ô cầu thang, không có ô phẳng)
+	var stair_start: bool = points_in[0] is String
+	var points: Array = points_in.slice(1) if stair_start else points_in
 	var start: Vector3 = points[0]
+	if stair_start:
+		var first_to: Vector3 = points[1]
+		var first_flat: Vector3 = Vector3(first_to.x - start.x, 0, first_to.z - start.z)
+		var first_n: int = int(round(first_flat.length() / 4.0))
+		var first_dir: Vector3 = first_flat.normalized()
+		var first_dy: float = (first_to.y - start.y) / float(first_n + 1)
+		cells.append({"p": start, "kind": "stair", "dir": first_dir, "dy": first_dy})
+		# Các ô sau cùng cao độ bắt đầu từ ô đầu: dịch điểm xuất phát lên một ô cầu thang
+		for k: int in range(1, first_n + 1):
+			var sp: Vector3 = start + first_dir * 4.0 * k
+			cells.append({"p": Vector3(sp.x, start.y + first_dy * k, sp.z), "kind": "stair", "dir": first_dir, "dy": first_dy})
+		if points.size() > 2:
+			# Đoạn tiếp theo (nếu có) đi tiếp từ điểm cuối như đường thường
+			var rest: Array = [first_to]
+			rest.append_array(points.slice(2))
+			var tail: Array[Dictionary] = _path_cells(rest)
+			cells.append_array(tail.slice(1))
+		return cells
 	cells.append({"p": start, "kind": "flat", "dir": Vector3.ZERO})
 	for i: int in range(1, points.size()):
 		var a: Vector3 = points[i - 1]
@@ -988,7 +1140,8 @@ func _path_cells(points: Array) -> Array[Dictionary]:
 	return cells
 
 
-func _build_level(room_paths: Array[String], conn_path: String) -> Node3D:
+## tiers: tên nhóm (Tier1, Tier2) → đường dẫn các scene phòng / đường nối của tier đó; mỗi tier một nhóm dưới Rooms
+func _build_level(tiers: Dictionary) -> Node3D:
 	var root: Node3D = Node3D.new()
 	root.name = "Level3"
 	var lighting: Node = (load(OUT + "lighting/fire_lighting.tscn") as PackedScene).instantiate()
@@ -1031,13 +1184,12 @@ func _build_level(room_paths: Array[String], conn_path: String) -> Node3D:
 	kill.set("size", Vector3(bx1 - bx0 + 80.0, 2.0, bz1 - bz0 + 80.0))
 	kill.set("lethal", true)
 	var rooms: Node3D = _group(root, root, "Rooms")
-	for path: String in room_paths:
-		var inst: Node = (load(path) as PackedScene).instantiate()
-		rooms.add_child(inst)
-		inst.owner = root
-	var conn: Node = (load(conn_path) as PackedScene).instantiate()
-	root.add_child(conn)
-	conn.owner = root
+	for tier_name: String in tiers:
+		var tier_group: Node3D = _group(rooms, root, tier_name)
+		for path: String in tiers[tier_name]:
+			var inst: Node = (load(path) as PackedScene).instantiate()
+			tier_group.add_child(inst)
+			inst.owner = root
 	return root
 
 
@@ -1142,20 +1294,15 @@ bounce_light = NodePath("../FireLighting/LavaBounceLight")
 world_environment = NodePath("../FireLighting/Environment")
 use_carried_light = false
 ' % ", ".join(aabbs)
-	# Lửa trại lớn giữa phòng 5 và bó gậy: cầm gậy lại gần lửa trại thì thành đuốc soi đường trong hầm
+	# Lửa trại lớn giữa phòng 5: cháy rồi thì lại gần bấm tương tác nhận gậy đã đốt, thành đuốc soi đường trong hầm
 	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="campfire_scene"]
-[ext_resource type="PackedScene" path="%s" id="stick_bundle_scene"]
 
-' % [CAMPFIRE_SCENE, STICK_BUNDLE_SCENE])
+' % [CAMPFIRE_SCENE])
 	text += '
 [node name="Room5Campfire" parent="." instance=ExtResource("campfire_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
 persistent_id = &"level_3.room5_campfire_lit"
 ' % [CAMPFIRE_POS.x, CAMPFIRE_POS.y, CAMPFIRE_POS.z]
-	text += '
-[node name="Room5StickBundle" parent="." instance=ExtResource("stick_bundle_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
-' % [STICK_BUNDLE_POS.x, STICK_BUNDLE_POS.y, STICK_BUNDLE_POS.z]
 	text += '
 [node name="CellarTorches" type="Node3D" parent="."]
 '
@@ -1257,17 +1404,35 @@ data = ExtResource("room2_boss_data")
 [node name="Room2ClearedSource" type="Node" parent="Room2"]
 script = ExtResource("flag_source_script")
 flag = &"%s"
-' % [ap.x, ap.y, ap.z, ROOM2_BOSS_FLAG, ROOM2_ALTAR_TRIGGER.x, ROOM2_ALTAR_TRIGGER.y, ROOM2_ALTAR_TRIGGER.z, bs, bs, bs, bo.x, bo.y, bo.z, ROOM2_BOSS_FLAG]
+
+[node name="WestKeyDrop" parent="Room2" node_paths=PackedStringArray("encounter") instance=ExtResource("key_drop_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+encounter = NodePath("../Room2BossEncounter")
+key_scene = ExtResource("red_key_pickup_scene")
+key_id = &"%s"
+' % [ap.x, ap.y, ap.z, ROOM2_BOSS_FLAG, ROOM2_ALTAR_TRIGGER.x, ROOM2_ALTAR_TRIGGER.y, ROOM2_ALTAR_TRIGGER.z, bs, bs, bs, bo.x, bo.y, bo.z, ROOM2_BOSS_FLAG, WEST_KEY_REST_POS.x, WEST_KEY_REST_POS.y, WEST_KEY_REST_POS.z, WEST_KEY_FLAG]
+	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="key_lock_scene"]
+[ext_resource type="PackedScene" path="%s" id="key_drop_scene"]
+[ext_resource type="PackedScene" path="%s" id="red_key_pickup_scene"]
+
+' % [KEY_LOCK_SCENE, KEY_DROP_SCENE, KEY_PICKUP_SCENE])
+	var lock_basis: Basis = Basis(Vector3.UP, deg_to_rad(WEST_KEY_LOCK_YAW))
 	text += '
 [node name="WestGates" type="Node3D" parent="."]
-'
+
+[node name="WestKeyLock" parent="WestGates" instance=ExtResource("key_lock_scene")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+key_id = &"%s"
+persistent_id = &"%s"
+locked_text = "Cần chìa khóa để mở cổng."
+' % [lock_basis.x.x, lock_basis.y.x, lock_basis.z.x, lock_basis.x.y, lock_basis.y.y, lock_basis.z.y, lock_basis.x.z, lock_basis.y.z, lock_basis.z.z, WEST_KEY_LOCK_POS.x, WEST_KEY_LOCK_POS.y, WEST_KEY_LOCK_POS.z, WEST_KEY_FLAG, WEST_KEY_LOCK_FLAG]
 	for wg: Dictionary in WEST_GATES:
 		var wp: Vector3 = wg.p
 		var wb: Basis = Basis(Vector3.UP, deg_to_rad(float(wg.yaw)))
 		text += '
 [node name="%s" parent="WestGates" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
 transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-sources = [NodePath("../../Room2/Room2ClearedSource")]
+sources = [NodePath("../WestKeyLock")]
 persistent_id = &"level_3.%s"
 ' % [wg.name, wb.x.x, wb.y.x, wb.z.x, wb.x.y, wb.y.y, wb.z.y, wb.x.z, wb.y.z, wb.z.z, wp.x, wp.y, wp.z, String(wg.name).to_snake_case()]
 	# Phòng 8: 4 lồng bọc rào gỗ (Shield là con của lồng), cổng cửa tây lấy cả 4 lồng làm nguồn (cần đủ cả 4)
@@ -1468,9 +1633,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
 script = ExtResource("flag_reveal_script")
 flag = &"%s"
 
-[node name="ExitPortal" parent="Room10ExitReveal" instance=ExtResource("vortex_visual_scene")]
+[node name="ExitPortal" parent="Room10ExitReveal" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
 transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-' % [bf.x, bf.y, bf.z, BOSS_FLAG, bso.x, bso.y, bso.z, BOSS_FLAG, epb.x.x, epb.y.x, epb.z.x, epb.x.y, epb.y.y, epb.z.y, epb.x.z, epb.y.z, epb.z.z, epp.x, epp.y, epp.z]
+target = NodePath("../../Tier2Links/%s")
+required_flag = &"%s"
+' % [bf.x, bf.y, bf.z, BOSS_FLAG, bso.x, bso.y, bso.z, BOSS_FLAG, epb.x.x, epb.y.x, epb.z.x, epb.x.y, epb.y.y, epb.z.y, epb.x.z, epb.y.z, epb.z.z, epp.x, epp.y, epp.z, TIER_2.ARRIVAL_PORTAL.name, BOSS_FLAG]
 	# Thử thách cuối + cổng phòng boss
 	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="final_trial_scene"]
 [ext_resource type="PackedScene" path="%s" id="trial_seal_scene"]
@@ -1538,9 +1705,457 @@ weapons = Array[ExtResource("kit_weapon_data")]([ExtResource("kit_sword"), ExtRe
 abilities = Array[ExtResource("kit_ability_data")]([ExtResource("kit_wind")])
 held_weapon = ExtResource("kit_sword")
 '''
+	text = _add_tier_2_mechanics(text)
+	# Nối tier gắn sau cùng: có [connection] phải nằm sau mọi [node]
+	text = _add_tier_links(text)
 	var file: FileAccess = FileAccess.open(abs_path, FileAccess.WRITE)
 	file.store_string(text)
 	file.close()
+
+
+## Cơ chế tier 2 (dữ liệu trong level_3_tier_2_layout.gd): đồ cháy phòng 04, phòng tối om 07, ma trơi 09, Hang băng, sách kỹ năng.
+## Script phụ thuộc autoload (GameState, ScreenShake) nên gắn bằng text như các vật tier 1
+func _add_tier_2_mechanics(text: String) -> String:
+	text += '
+[node name="Tier2Mechanics" type="Node3D" parent="."]
+'
+	text = _add_room4_flammables(text)
+	text = _add_room7_blackout(text)
+	text = _add_room9_wisps(text)
+	text = _add_ice_cave(text)
+	text = _add_forge_skills(text)
+	text = _add_tier_2_fights(text)
+	var w: Dictionary = TIER_2.CRACKED_WALL
+	var wp: Vector3 = w.p
+	var wb: Basis = Basis(Vector3.UP, deg_to_rad(float(w.yaw)))
+	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="cracked_wall_scene"]
+' % CRACKED_WALL_SCENE)
+	text += '
+[node name="%s" parent="Tier2Mechanics" instance=ExtResource("cracked_wall_scene")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+persistent_id = &"%s"
+' % [w.name, wb.x.x, wb.y.x, wb.z.x, wb.x.y, wb.y.y, wb.z.y, wb.x.z, wb.y.z, wb.z.z, wp.x, wp.y, wp.z, w.id]
+	return text
+
+
+## Phòng 09: nhóm ma trơi (WispGroup) + sinh quái theo đợt (WaveSpawner) dừng khi dập hết, rương hiện theo cờ
+func _add_room9_wisps(text: String) -> String:
+	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="wisp_flame_scene"]
+[ext_resource type="Script" path="%s" id="wisp_group_script"]
+[ext_resource type="Script" path="%s" id="wave_spawner_script"]
+[ext_resource type="PackedScene" path="%s" id="wave_enemy_scene"]
+[ext_resource type="PackedScene" path="%s" id="t2_chest_scene"]
+
+' % [WISP_FLAME_SCENE, WISP_GROUP_SCRIPT, WAVE_SPAWNER_SCRIPT, TIER_2.WAVE_ENEMY_SCENE, TREASURE_CHEST_SCENE])
+	var c: Vector3 = TIER_2.WISP_CENTER
+	text += '
+[node name="Room09Wisps" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="WispGroup" type="Node3D" parent="Tier2Mechanics/Room09Wisps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+script = ExtResource("wisp_group_script")
+persistent_id = &"%s"
+' % [c.x, c.y, c.z, TIER_2.WISP_FLAG]
+	var wi: int = 0
+	for w: Array in TIER_2.WISPS:
+		wi += 1
+		var r: Vector2 = w[0]
+		text += '
+[node name="Wisp%d" parent="Tier2Mechanics/Room09Wisps/WispGroup" instance=ExtResource("wisp_flame_scene")]
+radius = Vector2(%s, %s)
+speed = %s
+phase = %s
+' % [wi, r.x, r.y, w[1], w[2]]
+	text += '
+[node name="WaveSpawner" type="Node3D" parent="Tier2Mechanics/Room09Wisps" node_paths=PackedStringArray("zone", "stop_source")]
+script = ExtResource("wave_spawner_script")
+enemy_scene = ExtResource("wave_enemy_scene")
+zone = NodePath("../../../%s")
+stop_source = NodePath("../WispGroup")
+per_wave = %d
+' % [TIER_2.WISP_ZONE, TIER_2.WAVE_PER_WAVE]
+	var si: int = 0
+	for p: Vector3 in TIER_2.WAVE_POINTS:
+		si += 1
+		text += '
+[node name="Point%d" type="Marker3D" parent="Tier2Mechanics/Room09Wisps/WaveSpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+' % [si, p.x, p.y, p.z]
+	var cp: Vector3 = TIER_2.WISP_CHEST
+	text += '
+[node name="ChestReveal" type="Node3D" parent="Tier2Mechanics/Room09Wisps"]
+script = ExtResource("flag_reveal_script")
+flag = &"%s"
+
+[node name="Chest" parent="Tier2Mechanics/Room09Wisps/ChestReveal" instance=ExtResource("t2_chest_scene")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, %s, %s, %s)
+persistent_id = &"level_3.t2_wisp_chest"
+' % [TIER_2.WISP_FLAG, cp.x, cp.y, cp.z]
+	return text
+
+
+## Đợt 4: các trận quái (Encounter), Slime Mẹ tầng 4 + boss (BossFight), cổng đá mở theo cờ (cổng tháp, cổng tầng)
+func _add_tier_2_fights(text: String) -> String:
+	var ext: String = '[ext_resource type="Script" path="%s" id="wolf_pack_script"]
+[ext_resource type="PackedScene" path="%s" id="%s"]
+[ext_resource type="PackedScene" path="%s" id="%s"]
+' % [WOLF_PACK_SCRIPT, TIER_2.TOWER_MOTHER.scene, TIER_2.TOWER_MOTHER.scene_id, TIER_2.BOSS.scene, TIER_2.BOSS.scene_id]
+	for kind: String in TIER_2.ENEMY_SCENES:
+		ext += '[ext_resource type="PackedScene" path="%s" id="t2_enemy_%s"]
+' % [TIER_2.ENEMY_SCENES[kind], kind]
+	text = text.insert(text.find("[sub_resource"), ext + "\n")
+	text += '
+[node name="Tier2Fights" type="Node3D" parent="."]
+'
+	for enc: Dictionary in TIER_2.ENCOUNTERS:
+		var ep: Vector3 = enc.p
+		var tr: Vector3 = enc.trigger
+		var path: String = "Tier2Fights/" + str(enc.name)
+		text += '
+[node name="%s" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+persistent_id = &"%s"
+trigger_size = Vector3(%s, %s, %s)
+' % [enc.name, ep.x, ep.y, ep.z, enc.id, tr.x, tr.y, tr.z]
+		var has_wolves: bool = false
+		for e: Array in enc.enemies:
+			has_wolves = has_wolves or str(e[0]) == "wolf"
+		if has_wolves:
+			text += '
+[node name="Pack" type="Node" parent="%s"]
+script = ExtResource("wolf_pack_script")
+' % path
+		var counts: Dictionary = {}
+		for e: Array in enc.enemies:
+			var kind: String = e[0]
+			counts[kind] = int(counts.get(kind, 0)) + 1
+			var lp: Vector3 = (e[1] as Vector3) - ep
+			var pack_line: String = ' node_paths=PackedStringArray("pack")' if kind == "wolf" else ""
+			text += '
+[node name="%s%d" parent="%s/Enemies"%s instance=ExtResource("t2_enemy_%s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+' % [kind.capitalize(), counts[kind], path, pack_line, kind, lp.x, lp.y, lp.z]
+			if kind == "wolf":
+				text += 'pack = NodePath("../../Pack")\n'
+	for fight: Dictionary in [TIER_2.TOWER_MOTHER, TIER_2.BOSS]:
+		var fp: Vector3 = fight.p
+		var ftr: Vector3 = fight.trigger
+		var so: Vector3 = (fight.spawn as Vector3) - fp
+		text += '
+[node name="%s" parent="Tier2Fights" instance=ExtResource("boss_fight_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+boss_scene = ExtResource("%s")
+persistent_id = &"%s"
+trigger_size = Vector3(%s, %s, %s)
+
+[node name="Spawn" parent="Tier2Fights/%s"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+' % [fight.name, fp.x, fp.y, fp.z, fight.scene_id, fight.id, ftr.x, ftr.y, ftr.z, fight.name, so.x, so.y, so.z]
+	var tp: Dictionary = TIER_2.TIER_3_PORTAL
+	var tpp: Vector3 = tp.p
+	var tpb: Basis = Basis(Vector3.UP, deg_to_rad(float(tp.yaw)))
+	text += '
+[node name="Tier3PortalReveal" type="Node3D" parent="Tier2Fights"]
+script = ExtResource("flag_reveal_script")
+flag = &"%s"
+
+[node name="%s" parent="Tier2Fights/Tier3PortalReveal" instance=ExtResource("vortex_visual_scene")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+' % [TIER_2.BOSS.id, tp.name, tpb.x.x, tpb.y.x, tpb.z.x, tpb.x.y, tpb.y.y, tpb.z.y, tpb.x.z, tpb.y.z, tpb.z.z, tpp.x, tpp.y, tpp.z]
+	for gate: Dictionary in TIER_2.T2_FLAG_GATES:
+		var gp: Vector3 = gate.p
+		var gb: Basis = Basis(Vector3.UP, deg_to_rad(float(gate.yaw)))
+		# Một cờ ("flag") hoặc nhiều cờ ("flags"): mỗi cờ một FlagSource, cổng mở khi tất cả bật
+		var flags: Array = gate.get("flags", [gate.get("flag", "")])
+		var source_paths: Array[String] = []
+		for fi: int in flags.size():
+			var source_name: String = "%sSource" % gate.name if flags.size() == 1 else "%sSource%d" % [gate.name, fi + 1]
+			source_paths.append('NodePath("../%s")' % source_name)
+			text += '
+[node name="%s" type="Node" parent="Tier2Fights"]
+script = ExtResource("flag_source_script")
+flag = &"%s"
+' % [source_name, flags[fi]]
+		text += '
+[node name="%s" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+sources = [%s]
+persistent_id = &"%s"
+' % [gate.name, gb.x.x, gb.y.x, gb.z.x, gb.x.y, gb.y.y, gb.z.y, gb.x.z, gb.y.z, gb.z.z, gp.x, gp.y, gp.z, ", ".join(source_paths), gate.id]
+	return text
+
+
+## Bộ gắn state kỹ năng lò rèn vào player (không sửa player.tscn), mảnh vỡ ba khu (bản 2), vòng móc
+func _add_forge_skills(text: String) -> String:
+	var ext: String = '[ext_resource type="Script" path="%s" id="forge_installer_script"]
+[ext_resource type="Script" path="%s" id="forge_skill_data_script"]
+[ext_resource type="PackedScene" path="%s" id="grapple_ring_scene"]
+' % [FORGE_INSTALLER_SCRIPT, FORGE_SKILL_DATA_SCRIPT, GRAPPLE_RING_SCENE]
+	var ids: Array[String] = []
+	for i: int in TIER_2.FORGE_SKILL_FILES.size():
+		ids.append('ExtResource("forge_skill_%d")' % i)
+		ext += '[ext_resource type="Resource" path="%s" id="forge_skill_%d"]
+' % [TIER_2.FORGE_SKILL_FILES[i], i]
+	ext += '[ext_resource type="PackedScene" path="%s" id="forge_shard_scene"]
+[ext_resource type="PackedScene" path="%s" id="shard_counter_scene"]
+[ext_resource type="PackedScene" path="%s" id="shard_altar_scene"]
+[ext_resource type="Resource" path="%s" id="forge_shards_data"]
+[ext_resource type="PackedScene" path="%s" id="dark_trial_scene"]
+[ext_resource type="Resource" path="%s" id="dark_trial_data"]
+' % [FORGE_SHARD_SCENE, SHARD_COUNTER_SCENE, SHARD_ALTAR_SCENE, TIER_2.FORGE_SHARD_DATA, DARK_TRIAL_SCENE, TIER_2.DARK_TRIAL_DATA]
+	text = text.insert(text.find("[sub_resource"), ext + "
+")
+	text += '
+[node name="ForgeSkillInstaller" type="Node" parent="."]
+script = ExtResource("forge_installer_script")
+skills = Array[ExtResource("forge_skill_data_script")]([%s])
+
+[node name="ForgeShards" type="Node3D" parent="Tier2Mechanics"]
+' % ", ".join(ids)
+	# Bản 2: mỗi khu một mảnh vỡ (KeyPickup), FlagReveal giấu mảnh tới khi hạ xong trận của khu
+	for shard: Array in TIER_2.FORGE_SHARDS:
+		var p: Vector3 = shard[0]
+		text += '
+[node name="%sReveal" type="Node3D" parent="Tier2Mechanics/ForgeShards"]
+script = ExtResource("flag_reveal_script")
+flag = &"%s"
+
+[node name="%s" parent="Tier2Mechanics/ForgeShards/%sReveal" instance=ExtResource("forge_shard_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+persistent_id = &"%s"
+key_id = &"%s"
+' % [shard[1], shard[3], shard[1], shard[1], p.x, p.y, p.z, shard[2], shard[2]]
+	var altar: Vector3 = TIER_2.FORGE_SHARD_ALTAR
+	text += '
+[node name="ShardAltar" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_altar_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+shards = ExtResource("forge_shards_data")
+
+[node name="ShardCounter" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_counter_scene")]
+shards = ExtResource("forge_shards_data")
+
+[node name="DarkTrial" parent="Tier2Mechanics" node_paths=PackedStringArray("altar", "sun", "bounce_light", "world_environment", "suspend_zones") instance=ExtResource("dark_trial_scene")]
+data = ExtResource("dark_trial_data")
+altar = NodePath("../ForgeShards/ShardAltar")
+sun = NodePath("../../FireLighting/SunLight")
+bounce_light = NodePath("../../FireLighting/LavaBounceLight")
+world_environment = NodePath("../../FireLighting/Environment")
+suspend_zones = [NodePath("../Room07Blackout/DarkZone")]
+' % [altar.x, altar.y, altar.z]
+	text += '
+[node name="GrappleRings" type="Node3D" parent="Tier2Mechanics"]
+'
+	for ring: Array in TIER_2.GRAPPLE_RINGS:
+		var r: Vector3 = ring[1]
+		text += '
+[node name="%s" parent="Tier2Mechanics/GrappleRings" instance=ExtResource("grapple_ring_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+' % [ring[0], r.x, r.y, r.z]
+	return text
+
+
+## Hang băng: vùng lạnh (ColdZone) + chỗ ấm quanh lửa trại (WarmZone) + rương thưởng
+func _add_ice_cave(text: String) -> String:
+	text = text.insert(text.find("[sub_resource"), '[ext_resource type="Script" path="%s" id="cold_zone_script"]
+[ext_resource type="Script" path="%s" id="warm_zone_script"]
+
+' % [COLD_ZONE_SCRIPT, WARM_ZONE_SCRIPT])
+	var box: AABB = TIER_2.ICE_COLD_BOX
+	var c: Vector3 = box.get_center()
+	text = text.insert(text.find("[node "), '[sub_resource type="BoxShape3D" id="IceColdShape"]
+size = Vector3(%s, %s, %s)
+
+[sub_resource type="SphereShape3D" id="IceWarmShape"]
+radius = %s
+
+' % [box.size.x, box.size.y, box.size.z, TIER_2.ICE_WARM_RADIUS])
+	var w: Vector3 = TIER_2.ICE_WARM
+	var ch: Vector3 = TIER_2.ICE_CHEST
+	text += '
+[node name="IceCave" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="WarmZone" type="Area3D" parent="Tier2Mechanics/IceCave"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("warm_zone_script")
+
+[node name="Shape" type="CollisionShape3D" parent="Tier2Mechanics/IceCave/WarmZone"]
+shape = SubResource("IceWarmShape")
+
+[node name="ColdZone" type="Area3D" parent="Tier2Mechanics/IceCave" node_paths=PackedStringArray("warm_zones")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("cold_zone_script")
+warm_zones = [NodePath("../WarmZone")]
+
+[node name="Shape" type="CollisionShape3D" parent="Tier2Mechanics/IceCave/ColdZone"]
+shape = SubResource("IceColdShape")
+
+[node name="Chest" parent="Tier2Mechanics/IceCave" instance=ExtResource("t2_chest_scene")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, %s, %s, %s)
+persistent_id = &"level_3.t2_ice_chest"
+' % [w.x, w.y + 1.0, w.z, c.x, c.y, c.z, ch.x, ch.y, ch.z]
+	return text
+
+
+## Phòng 07 (tối om): vùng tối riêng (tối hẳn), hình nộm nạp năng lượng, đường ô sàn sụp một chiều, cổng xoáy về Hub
+func _add_room7_blackout(text: String) -> String:
+	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="crumbling_floor_scene"]
+[ext_resource type="Resource" path="%s" id="crumbling_one_way"]
+[ext_resource type="PackedScene" path="%s" id="training_dummy_scene"]
+
+' % [CRUMBLING_FLOOR_SCENE, CRUMBLING_ONE_WAY_DATA, TRAINING_DUMMY_SCENE])
+	var box: AABB = TIER_2.BLACKOUT_DARK_BOX
+	var dp: Vector3 = TIER_2.BLACKOUT_DUMMY
+	text += '
+[node name="Room07Blackout" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="DarkZone" parent="Tier2Mechanics/Room07Blackout" node_paths=PackedStringArray("sun", "bounce_light", "world_environment") instance=ExtResource("dark_zone_scene")]
+boxes = Array[AABB]([AABB(%s, %s, %s, %s, %s, %s)])
+sun = NodePath("../../../FireLighting/SunLight")
+bounce_light = NodePath("../../../FireLighting/LavaBounceLight")
+world_environment = NodePath("../../../FireLighting/Environment")
+dark_ambient_ratio = 0.03
+use_carried_light = false
+
+[node name="TrainingDummy" parent="Tier2Mechanics/Room07Blackout" instance=ExtResource("training_dummy_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+
+[node name="Path" type="Node3D" parent="Tier2Mechanics/Room07Blackout"]
+' % [box.position.x, box.position.y, box.position.z, box.size.x, box.size.y, box.size.z, dp.x, dp.y, dp.z]
+	# Ô 2 x 2 m mỗi 2 m dọc đường gãy; gốc CrumblingFloor là mặt trên của ô nên đặt đúng ở mặt sàn
+	var path: Array[Vector2] = TIER_2.BLACKOUT_PATH
+	var ti: int = 0
+	var cells: Array[Vector2] = [path[0]]
+	for i: int in range(1, path.size()):
+		var a: Vector2 = path[i - 1]
+		var b: Vector2 = path[i]
+		var steps: int = roundi(a.distance_to(b) / 2.0)
+		for k: int in range(1, steps + 1):
+			cells.append(a.lerp(b, float(k) / float(steps)))
+	for c: Vector2 in cells:
+		ti += 1
+		text += '
+[node name="Tile%02d" parent="Tier2Mechanics/Room07Blackout/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+' % [ti, c.x, TIER_2.BLACKOUT_Y, c.y]
+	text += '
+[node name="Portals" type="Node3D" parent="Tier2Mechanics/Room07Blackout"]
+'
+	for wp: Dictionary in TIER_2.BLACKOUT_PORTALS:
+		var wpp: Vector3 = wp.p
+		var wpb: Basis = Basis(Vector3.UP, deg_to_rad(float(wp.yaw)))
+		text += '
+[node name="%s" parent="Tier2Mechanics/Room07Blackout/Portals" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+target = NodePath("../%s")
+required_flag = &"%s"
+' % [wp.name, wpb.x.x, wpb.y.x, wpb.z.x, wpb.x.y, wpb.y.y, wpb.z.y, wpb.x.z, wpb.y.z, wpb.z.z, wpp.x, wpp.y, wpp.z, wp.target, TIER_2.BLACKOUT_PORTAL_FLAG]
+	return text
+
+
+## Phòng 04: các vật dễ cháy + FlammableReset (dựng lại khi player rời phòng)
+func _add_room4_flammables(text: String) -> String:
+	var ext: String = '[ext_resource type="Script" path="%s" id="flammable_reset_script"]
+' % FLAMMABLE_RESET_SCRIPT
+	for kind: String in FLAMMABLE_SCENES:
+		ext += '[ext_resource type="PackedScene" path="%s" id="flammable_%s"]
+' % [FLAMMABLE_SCENES[kind], kind]
+	text = text.insert(text.find("[sub_resource"), ext + "
+")
+	text += '
+[node name="Room04Flammables" type="Node3D" parent="Tier2Mechanics"]
+
+[node name="Room04Reset" type="Node" parent="Tier2Mechanics" node_paths=PackedStringArray("zone", "targets_root")]
+script = ExtResource("flammable_reset_script")
+zone = NodePath("../../%s")
+targets_root = NodePath("../Room04Flammables")
+' % TIER_2.ROOM4_ZONE
+	for f: Array in TIER_2.ROOM4_FLAMMABLES:
+		var fp: Vector3 = f[2]
+		var fb: Basis = Basis(Vector3.UP, deg_to_rad(float(f[3])))
+		text += '
+[node name="%s" parent="Tier2Mechanics/Room04Flammables" instance=ExtResource("flammable_%s")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+' % [f[1], f[0], fb.x.x, fb.y.x, fb.z.x, fb.x.y, fb.y.y, fb.z.y, fb.x.z, fb.y.z, fb.z.z, fp.x, fp.y, fp.z]
+		if str(f[4]) != "":
+			text += 'persistent_id = &"%s"
+' % f[4]
+	return text
+
+
+## Nối tier: cổng đáp tier 2 (đi hai chiều với cổng ra phòng boss 10, mở khi hạ boss tier 1), checkpoint cổng đáp,
+## mỗi tier một TierZone ẩn hình tier kia (như zone 1) và hiện tên khu khi bước vào. Script phụ thuộc autoload nên gắn bằng text
+func _add_tier_links(text: String) -> String:
+	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="area_title_scene"]
+[ext_resource type="Resource" path="%s" id="tier_1_area"]
+[ext_resource type="Resource" path="%s" id="tier_2_area"]
+
+' % [AREA_TITLE_SCENE, TIER_1_AREA_TITLE, TIER_2.AREA_TITLE])
+	var ap: Dictionary = TIER_2.ARRIVAL_PORTAL
+	var app: Vector3 = ap.p
+	var apb: Basis = Basis(Vector3.UP, deg_to_rad(float(ap.yaw)))
+	var kp: Vector3 = TIER_2.ARRIVAL_CHECKPOINT
+	text += '
+[node name="Tier2Links" type="Node3D" parent="."]
+
+[node name="%s" parent="Tier2Links" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+target = NodePath("../../Room10ExitReveal/ExitPortal")
+required_flag = &"%s"
+
+[node name="ArrivalCheckpoint" parent="Tier2Links" instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+checkpoint_id = &"%s"
+' % [ap.name, apb.x.x, apb.y.x, apb.z.x, apb.x.y, apb.y.y, apb.z.y, apb.x.z, apb.y.z, apb.z.z, app.x, app.y, app.z, BOSS_FLAG, kp.x, kp.y, kp.z, TIER_2.ARRIVAL_CHECKPOINT_ID]
+	for cp: Dictionary in TIER_2.TOWER_CHECKPOINTS:
+		var cpp: Vector3 = cp.p
+		var cpb: Basis = Basis(Vector3.UP, deg_to_rad(float(cp.yaw)))
+		text += '
+[node name="%s" parent="Tier2Links" instance=ExtResource("fire_checkpoint_scene")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+checkpoint_id = &"%s"
+' % [cp.name, cpb.x.x, cpb.y.x, cpb.z.x, cpb.x.y, cpb.y.y, cpb.z.y, cpb.x.z, cpb.y.z, cpb.z.z, cpp.x, cpp.y, cpp.z, cp.id]
+	var subs: String = ""
+	var links: String = ""
+	# [tên vùng, biên, nhóm bị ẩn khi ở trong, tên AreaTitle, id AreaData]
+	var zones: Array = [["Tier1Zone", TIER_1_ZONE, "Rooms/Tier2", "Tier1", "tier_1_area"], ["Tier2Zone", TIER_2.TIER_ZONE, "Rooms/Tier1", "Tier2", "tier_2_area"]]
+	text += '
+[node name="AreaTitles" type="Node" parent="."]
+'
+	for z: Array in zones:
+		var b: Array = z[1]
+		var size: Vector3 = Vector3(float(b[2]) - float(b[0]), float(b[5]) - float(b[4]), float(b[3]) - float(b[1]))
+		var c: Vector3 = Vector3((float(b[0]) + float(b[2])) * 0.5, (float(b[4]) + float(b[5])) * 0.5, (float(b[1]) + float(b[3])) * 0.5)
+		subs += '[sub_resource type="BoxShape3D" id="%sShape"]
+size = Vector3(%s, %s, %s)
+
+' % [z[0], size.x, size.y, size.z]
+		text += '
+[node name="%s" type="Area3D" parent="." node_paths=PackedStringArray("hide_when_inside")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("tier_zone_script")
+hide_when_inside = [NodePath("../%s")]
+
+[node name="Shape" type="CollisionShape3D" parent="%s"]
+shape = SubResource("%sShape")
+
+[node name="%s" parent="AreaTitles" instance=ExtResource("area_title_scene")]
+area = ExtResource("%s")
+' % [z[0], c.x, c.y, c.z, z[2], z[0], z[0], z[3], z[4]]
+		links += '[connection signal="player_entered" from="%s" to="AreaTitles/%s" method="announce"]\n' % [z[0], z[3]]
+	# Bộ đếm mảnh vỡ chỉ hiện trong tier 2
+	links += '[connection signal="player_entered" from="Tier2Zone" to="Tier2Mechanics/ForgeShards/ShardCounter" method="show_counter"]\n'
+	links += '[connection signal="player_exited" from="Tier2Zone" to="Tier2Mechanics/ForgeShards/ShardCounter" method="hide_counter"]\n'
+	text = text.insert(text.find("[node "), subs)
+	return text + "\n" + links
 
 
 ## Nhìn phòng (RoomFocus + một TierZone mỗi phòng, nhận player và quái): phòng khác tối, quái ngoài phòng ẩn, hạ tường phía camera.
@@ -1557,7 +2172,7 @@ func _add_room_focus(text: String) -> String:
 script = ExtResource("room_focus_script")
 rooms_root = NodePath("../Rooms")
 '
-	for room: Dictionary in ROOMS:
+	for room: Dictionary in _all_rooms():
 		var r: Array = room.r
 		var size: Vector3 = Vector3(float(r[2]) - float(r[0]), ROOM_ZONE_BELOW + ROOM_ZONE_ABOVE, float(r[3]) - float(r[1]))
 		var c: Vector2 = room.get("place", Vector2((float(r[0]) + float(r[2])) * 0.5, (float(r[1]) + float(r[3])) * 0.5))

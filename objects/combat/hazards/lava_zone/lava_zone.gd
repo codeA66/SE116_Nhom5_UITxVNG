@@ -20,7 +20,11 @@ extends Area3D
 ## Kỹ năng / vật phẩm giúp miễn nhiễm (đọc qua body.has_ability). Để trống = ai cũng bị đốt
 @export var immunity_ability: StringName = &"lava_boots"
 
+## Hiệu ứng dung nham bắn lên khi có thứ bước vào (không bắn với body miễn nhiễm). Để trống = không hiệu ứng
+@export var splash_scene: PackedScene = preload("res://objects/combat/hazards/lava_zone/lava_splash.tscn")
+
 var _inside: Array[Node3D] = []
+var _splash: SplashPoolComponent
 
 @onready var _shape: CollisionShape3D = $CollisionShape3D
 @onready var _timer: Timer = $RefreshTimer
@@ -32,6 +36,9 @@ func _ready() -> void:
 		return
 	monitorable = false
 	_timer.wait_time = refresh_interval
+	_splash = SplashPoolComponent.new()
+	_splash.splash_scene = splash_scene
+	add_child(_splash)
 	_timer.timeout.connect(_refresh)
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
@@ -47,6 +54,7 @@ func _on_body_entered(body: Node3D) -> void:
 	_inside.append(body)
 	if _is_immune(body):
 		return
+	_splash.play(body.global_position)
 	var hurtbox: HurtboxComponent = _find(body, &"HurtboxComponent") as HurtboxComponent
 	if hurtbox and enter_damage > 0:
 		var info: DamageInfo = DamageInfo.new(enter_damage, DamageInfo.Type.FIRE, Vector3.ZERO, self)

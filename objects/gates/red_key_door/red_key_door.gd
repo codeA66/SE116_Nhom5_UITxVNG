@@ -8,9 +8,13 @@ signal denied
 
 ## Model chìa đứng dọc theo trục Y: lật 90° quanh X cho thân chìa chĩa thẳng vào cửa,
 ## rồi xoay 90° quanh thân để răng chìa dựng đứng, khớp khe ổ khóa dọc lúc cắm vào
+const DIALOG_SCENE: PackedScene = preload("res://ui/dialog/dialog_box.tscn")
 const KEY_LAY_BASIS := Basis(Vector3.RIGHT, PI * 0.5) * Basis(Vector3.UP, PI * 0.5)
 
 @export var key_id: StringName
+## Câu báo khi bấm tương tác mà chưa có chìa (map Lửa đặt câu này). Để trống = không báo gì, giữ hành vi cũ
+## của các map khác (chỉ chớp đèn khóa); hộp thoại chỉ được tạo khi có câu
+@export_multiline var locked_text: String = ""
 @export var persistent_id: StringName
 @export_range(0.1, 3.0, 0.05) var insert_time: float = 0.7
 @export_range(0.2, 5.0, 0.1) var dissolve_time: float = 1.8
@@ -33,6 +37,9 @@ const KEY_LAY_BASIS := Basis(Vector3.RIGHT, PI * 0.5) * Basis(Vector3.UP, PI * 0
 var is_open: bool = false
 var _dissolve: ShaderMaterial
 var _deny_tween: Tween
+# Người vừa bấm tương tác: hộp thoại cần biết để khóa điều khiển người đó lúc đang đọc
+var _last_interactor: Player
+var _dialog: DialogBox
 
 @onready var state_machine: StateMachine = $StateMachine
 @onready var interaction: InteractableComponent = $InteractableComponent
@@ -62,11 +69,20 @@ func was_opened() -> bool:
 
 func deny() -> void:
 	denied.emit()
+	if not locked_text.is_empty():
+		_get_dialog().say(locked_text, _last_interactor)
 	if _deny_tween:
 		_deny_tween.kill()
 	_deny_tween = create_tween()
 	_deny_tween.tween_property(lock_light, "light_energy", 2.0, 0.08)
 	_deny_tween.tween_property(lock_light, "light_energy", 0.6, 0.25)
+
+## Tạo hộp thoại ở lần báo đầu: cửa không đặt locked_text thì không tốn node nào
+func _get_dialog() -> DialogBox:
+	if _dialog == null:
+		_dialog = DIALOG_SCENE.instantiate() as DialogBox
+		add_child(_dialog)
+	return _dialog
 
 func begin_insert() -> void:
 	interaction.enabled = false
@@ -113,4 +129,5 @@ func finish_open(remember: bool) -> void:
 
 func _on_interacted(interactor: Node3D) -> void:
 	if interactor is Player:
+		_last_interactor = interactor as Player
 		(state_machine.current_state as RedKeyDoorState).interact()

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://objects/combat/spawner_cage/spawner_cage.gd" id="1_cage"]
 [ext_resource type="Script" path="res://components/combat/health/health_component.gd" id="2_health"]
 [ext_resource type="Script" path="res://components/combat/hurtbox/hurtbox_component.gd" id="3_hurt"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/spawner_cage.glb" id="4_model"]
 
 [sub_resource type="CylinderShape3D" id="Body"]
 height = 2.4
@@ -16,37 +17,6 @@ radius = 1.15
 resource_local_to_scene = true
 size = Vector3(14, 4, 18)
 
-[sub_resource type="StandardMaterial3D" id="Iron"]
-albedo_color = Color(0.16, 0.12, 0.11, 1)
-roughness = 0.8
-
-[sub_resource type="StandardMaterial3D" id="Core"]
-albedo_color = Color(1, 0.3, 0.08, 1)
-emission_enabled = true
-emission = Color(1, 0.3, 0.05, 1)
-emission_energy_multiplier = 3.0
-
-[sub_resource type="CylinderMesh" id="Plate"]
-material = SubResource("Iron")
-top_radius = 1.1
-bottom_radius = 1.2
-height = 0.3
-radial_segments = 8
-
-[sub_resource type="CylinderMesh" id="Bar"]
-material = SubResource("Iron")
-top_radius = 0.07
-bottom_radius = 0.07
-height = 1.9
-radial_segments = 6
-
-[sub_resource type="SphereMesh" id="CoreMesh"]
-material = SubResource("Core")
-radius = 0.45
-height = 0.9
-radial_segments = 12
-rings = 6
-
 [node name="SpawnerCage" type="StaticBody3D"]
 collision_layer = 1
 collision_mask = 0
@@ -58,56 +28,13 @@ shape = SubResource("Body")
 
 [node name="Visual" type="Node3D" parent="."]
 
-[node name="Base" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
-mesh = SubResource("Plate")
-
-[node name="Top" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
-mesh = SubResource("Plate")
-
-[node name="Core" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-mesh = SubResource("CoreMesh")
-cast_shadow = 0
+[node name="Model" parent="Visual" instance=ExtResource("4_model")]
 
 [node name="CoreLight" type="OmniLight3D" parent="Visual"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
 light_color = Color(1, 0.35, 0.1, 1)
 light_energy = 1.5
 omni_range = 5.0
-
-[node name="Bar0" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.900, 1.2, 0.000)
-mesh = SubResource("Bar")
-
-[node name="Bar1" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.636, 1.2, 0.636)
-mesh = SubResource("Bar")
-
-[node name="Bar2" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000, 1.2, 0.900)
-mesh = SubResource("Bar")
-
-[node name="Bar3" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.636, 1.2, 0.636)
-mesh = SubResource("Bar")
-
-[node name="Bar4" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.900, 1.2, 0.000)
-mesh = SubResource("Bar")
-
-[node name="Bar5" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.636, 1.2, -0.636)
-mesh = SubResource("Bar")
-
-[node name="Bar6" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000, 1.2, -0.900)
-mesh = SubResource("Bar")
-
-[node name="Bar7" type="MeshInstance3D" parent="Visual"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.636, 1.2, -0.636)
-mesh = SubResource("Bar")
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("2_health")

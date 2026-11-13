@@ -1,14 +1,14 @@
-[gd_resource type="Resource" script_class="ItemData" format=3]
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://byrn5ndyc1nrg"]
 
-[ext_resource type="Script" path="res://resources/player/items/_base/item_data.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/items/wind_key.svg" id="2_icon"]
+[ext_resource type="Script" uid="uid://cnl28do8a2awr" path="res://resources/player/items/_base/item_data.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://c4s6nnmvrawsa" path="res://assets/ui/icons/items/wind_key.svg" id="2_icon"]
 
 [resource]
 script = ExtResource("1")
 id = &"hub_wind_key"
 display_name = "Chìa Khóa Gió"
-icon = ExtResource("2_icon")
 category = 1
+icon = ExtResource("2_icon")
 description = "Mở cổng dẫn tới Khu Gió ở khu trung tâm."
 lore = "Chiếc chìa nhẹ bẫng, chuôi khắc hình lông vũ."
 owned_flag = &"hub.wind_key"

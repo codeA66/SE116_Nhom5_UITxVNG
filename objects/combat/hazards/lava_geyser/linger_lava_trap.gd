@@ -17,6 +17,10 @@ signal geyser_triggered(at: Vector3)
 @export_range(0.1, 10.0, 0.05) var linger_time: float = 1.0
 ## > 0: phun theo nhịp vào chỗ player (lần đầu ngay khi bước vào), không chờ đứng yên
 @export_range(0.0, 10.0, 0.05) var follow_interval: float = 0.0
+## Chế độ follow: trễ trước lần phun đầu sau khi bước vào (giây). 0 = phun ngay
+@export_range(0.0, 10.0, 0.05) var first_delay: float = 0.0
+## Ghi đè thời gian cảnh báo của các mạch trong bẫy này (giây). 0 = giữ mặc định của geyser_scene
+@export_range(0.0, 5.0, 0.05) var geyser_warning_time: float = 0.0
 ## Số mạch tạo sẵn, đủ cho các lượt chồng nhau
 @export_range(1, 8) var pool_size: int = 3
 ## Độ cao mặt sàn (tọa độ thế giới) nơi mạch phụt lên
@@ -36,6 +40,8 @@ func _ready() -> void:
 	for i: int in range(pool_size):
 		var g: LavaGeyser = geyser_scene.instantiate() as LavaGeyser
 		g.auto_cycle = false
+		if geyser_warning_time > 0.0:
+			g.warning_time = geyser_warning_time
 		g.name = "Geyser%d" % (i + 1)
 		add_child(g)
 		_pool.append(g)
@@ -78,7 +84,8 @@ func _on_body_entered(body: Node3D) -> void:
 	if body is CharacterBody3D:
 		_player = body as CharacterBody3D
 		_anchor = Vector2(body.global_position.x, body.global_position.z)
-		_timer = 0.0
+		# Chế độ follow đếm ngược tới lần phun: first_delay cho người chơi kịp nhìn thấy bẫy
+		_timer = first_delay if follow_interval > 0.0 else 0.0
 		set_physics_process(true)
 
 

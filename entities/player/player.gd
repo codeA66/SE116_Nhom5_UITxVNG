@@ -97,6 +97,8 @@ var _flash_tween: Tween
 var _attack_blocked_by_ui: bool = false
 ## Mỗi cơ chế giữ khóa riêng; thả vật không vô tình gỡ khóa của UI hay cơ chế khác.
 var _combat_locks: Dictionary[Node, bool] = {}
+## Mỗi cơ chế giữ khóa dash riêng (dính tơ nhện...); thả vật không vô tình gỡ khóa của cơ chế khác.
+var _dash_locks: Dictionary[Node, bool] = {}
 ## Model cung đang gắn ở BowHold (tạo một lần, ẩn khi không nhắm) và scene đã dùng để tạo nó
 var _bow_model: Node3D
 var _bow_model_scene: PackedScene
@@ -346,6 +348,30 @@ func combat_locked() -> bool:
 	return not _combat_locks.is_empty()
 
 
+## Khóa dash (dính tơ nhện...); vẫn đi, nhảy, đánh và dùng kỹ năng. Xóa luôn lệnh dash đang chờ trong buffer.
+## source tự được gỡ khóa khi rời cây (nguồn bị xóa thì không kẹt khóa mãi)
+func set_dash_locked(source: Node, locked: bool) -> void:
+	if locked:
+		_dash_locks[source] = true
+		var release := _release_dash_lock.bind(source)
+		if not source.tree_exiting.is_connected(release):
+			source.tree_exiting.connect(release, CONNECT_ONE_SHOT)
+		_dash_buffer_timer = 0.0
+	else:
+		_release_dash_lock(source)
+
+
+func dash_locked() -> bool:
+	return not _dash_locks.is_empty()
+
+
+func _release_dash_lock(source: Node) -> void:
+	_dash_locks.erase(source)
+	var release := _release_dash_lock.bind(source)
+	if is_instance_valid(source) and source.tree_exiting.is_connected(release):
+		source.tree_exiting.disconnect(release)
+
+
 func _release_combat_lock(source: Node) -> void:
 	_combat_locks.erase(source)
 	var release := _release_combat_lock.bind(source)
@@ -552,7 +578,7 @@ func get_ability(id: StringName) -> AbilityData:
 ## Đúng khi đã mở khóa dash, có lệnh dash trong buffer, hết cooldown và còn lượt dash trên không
 func can_dash() -> bool:
 	var dash := get_ability(DashData.ID) as DashData
-	if dash == null or _dash_buffer_timer <= 0.0 or _dash_cooldown_timer > 0.0:
+	if dash == null or _dash_buffer_timer <= 0.0 or _dash_cooldown_timer > 0.0 or not _dash_locks.is_empty():
 		return false
 	return is_on_floor() or _air_dashes_used < dash.air_dashes
 

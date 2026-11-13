@@ -1,0 +1,58 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/fire_puzzle/wisp_flame/wisp_flame.gd" id="1_wisp"]
+[ext_resource type="Script" path="res://components/combat/hurtbox/hurtbox_component.gd" id="2_hurtbox"]
+
+[sub_resource type="StandardMaterial3D" id="CoreMat"]
+shading_mode = 0
+albedo_color = Color(1, 0.75, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="HaloMat"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(1, 0.4, 0.08, 0.45)
+
+[sub_resource type="SphereMesh" id="CoreMesh"]
+material = SubResource("CoreMat")
+radius = 0.25
+height = 0.5
+radial_segments = 10
+rings = 5
+
+[sub_resource type="SphereMesh" id="HaloMesh"]
+material = SubResource("HaloMat")
+radius = 0.5
+height = 1.0
+radial_segments = 10
+rings = 5
+
+[sub_resource type="SphereShape3D" id="HitShape"]
+radius = 0.7
+
+[node name="WispFlame" type="Node3D"]
+script = ExtResource("1_wisp")
+
+[node name="Flame" type="Node3D" parent="."]
+
+[node name="Core" type="MeshInstance3D" parent="Flame"]
+cast_shadow = 0
+mesh = SubResource("CoreMesh")
+
+[node name="Halo" type="MeshInstance3D" parent="Flame"]
+cast_shadow = 0
+mesh = SubResource("HaloMesh")
+
+[node name="Light" type="OmniLight3D" parent="Flame"]
+light_color = Color(1, 0.5, 0.15, 1)
+light_energy = 1.4
+omni_range = 4.0
+
+[node name="HurtboxComponent" type="Area3D" parent="Flame"]
+editor_description = "Lớp hurtbox quái để tên / đòn tìm thấy; không có máu, chỉ nghe signal hurt."
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+script = ExtResource("2_hurtbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Flame/HurtboxComponent"]
+shape = SubResource("HitShape")

@@ -1,7 +1,7 @@
 extends Node
 ## Cầu gạch Nether (lửa đuổi + quái canh) và boss tạm phòng 10 (va chạm, input và node thật):
 ## 1. Quái canh đứng sẵn trên cầu; bước lên cầu thì chúng thức dậy.
-## 2. Vừa chạm mặt cầu: vòng cảnh báo hiện ngay dưới chân (không chờ đứng yên), rồi lửa phụt (cột lửa shader mới);
+## 2. Chạm mặt cầu: chờ first_delay rồi vòng cảnh báo hiện dưới chân (không chờ đứng yên), rồi lửa phụt (cột lửa shader mới);
 ##    đứng yên thì trúng lửa mất máu; vẫn tiếp tục phun theo nhịp vào chỗ đang đứng.
 ## 3. Phòng 10: chưa vào thì chưa có boss, cổng ra ẩn. Bước vào: boss xuất hiện, nhắm player.
 ## 4. Hạ boss: lưu cờ, cổng ra (cổng xoáy có bệ) hiện lên.
@@ -39,15 +39,21 @@ func _run() -> void:
 	var on_bridge: Vector3 = Vector3(40, 4.4, 70)
 	_player.teleport(on_bridge)
 	var hp0: int = _player.health.current_health
+	# Nhịp đọc từ chính bẫy: chỉnh thông số trong scene thì test không phải sửa
+	var first_delay: float = float(trap.get(&"first_delay"))
+	var interval: float = float(trap.get(&"follow_interval"))
+	var warning: float = float((trap.get_node("Geyser1") as LavaGeyser).warning_time)
 	await _frames(6)
-	_check(fired.size() == 1 and Vector2(fired[0].x - on_bridge.x, fired[0].z - on_bridge.z).length() < 0.6, "vừa chạm cầu: cảnh báo ngay dưới chân (sau %d khung)" % 6)
+	_check(fired.is_empty() if first_delay > 0.1 else fired.size() == 1, "vừa chạm cầu: chờ %.2f s mới phun lần đầu (đã phun %d lần)" % [first_delay, fired.size()])
 	_check(guards.is_running(), "bước lên cầu: quái canh thức dậy")
+	await _seconds(first_delay)
+	_check(fired.size() == 1 and Vector2(fired[0].x - on_bridge.x, fired[0].z - on_bridge.z).length() < 0.6, "sau %.2f s: cảnh báo ngay dưới chân" % first_delay)
 	await _capture("bridge_warning.png")
-	await _seconds(1.1)
+	await _seconds(warning + 0.3)
 	await _capture("bridge_flame.png")
 	_check(_player.health.current_health < hp0, "đứng yên: trúng lửa, mất máu (%d → %d)" % [hp0, _player.health.current_health])
-	await _seconds(1.6)
-	_check(fired.size() >= 2, "vẫn phun tiếp theo nhịp vào chỗ đang đứng (%d lần)" % fired.size())
+	await _seconds(interval - warning)
+	_check(fired.size() >= 2, "vẫn phun tiếp theo nhịp %.2f s vào chỗ đang đứng (%d lần)" % [interval, fired.size()])
 	for e: Node in guard_list:
 		if is_instance_valid(e) and not (e as Enemy).is_dead():
 			(e as Enemy).health.take_damage(9999)
@@ -73,7 +79,8 @@ func _run() -> void:
 	await _frames(10)
 	_check(fight.is_defeated and GameState.has_flag(fight.persistent_id), "hạ boss: lưu cờ (%.1f s)" % t)
 	var exit_portal: Node3D = exit_reveal.get_node_or_null("ExitPortal") as Node3D
-	_check(exit_portal != null and exit_portal.get_node_or_null("Pedestal") != null, "cổng ra phòng 10 hiện lên (có bệ đỡ)")
+	# Cổng ra là WarpPortal sang tier 2: bệ đỡ nằm trong hình cổng xoáy
+	_check(exit_portal is WarpPortal and exit_portal.get_node_or_null("VortexPortalVisual/Pedestal") != null, "cổng ra phòng 10 hiện lên (cổng xoáy sang tier 2, có bệ đỡ)")
 	_player.teleport(Vector3(166, 4.4, 50))
 	await _frames(30)
 	await _capture("room10_exit.png")

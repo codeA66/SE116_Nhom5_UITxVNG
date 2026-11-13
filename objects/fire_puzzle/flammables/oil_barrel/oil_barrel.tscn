@@ -1,0 +1,70 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="burn_comp"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="burn_vfx"]
+[ext_resource type="Script" path="res://objects/fire_puzzle/flammables/_base/flammable.gd" id="flammable"]
+[ext_resource type="Script" path="res://objects/fire_puzzle/flammables/oil_barrel/oil_barrel.gd" id="barrel_script"]
+[ext_resource type="Resource" path="res://objects/fire_puzzle/flammables/oil_barrel/oil_barrel_burn.tres" id="burn_data"]
+[ext_resource type="Resource" path="res://objects/fire_puzzle/flammables/oil_barrel/oil_barrel_explosion.tres" id="boom_attack"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/barrel.glb" id="model"]
+[ext_resource type="Script" path="res://components/combat/damage_area/explosion_component.gd" id="boom"]
+
+[sub_resource type="StandardMaterial3D" id="OilBand"]
+albedo_color = Color(0.85, 0.2, 0.05, 1)
+emission_enabled = true
+emission = Color(0.9, 0.25, 0.05, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="CylinderMesh" id="Band"]
+material = SubResource("OilBand")
+top_radius = 0.47
+bottom_radius = 0.47
+height = 0.12
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderShape3D" id="Body"]
+height = 1.2
+radius = 0.45
+
+[sub_resource type="CylinderShape3D" id="BurnZone"]
+height = 1.4
+radius = 0.8
+
+[node name="OilBarrel" type="StaticBody3D"]
+editor_description = "Thùng dầu: bắt lửa 1,2 s thì nổ (sát thương lửa quanh 3 m, châm vật dễ cháy, phá tường nứt)."
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("barrel_script")
+spread_radius = 0.0
+body_radius = 0.45
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("Body")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Model" parent="Visual" instance=ExtResource("model")]
+
+[node name="Band" type="MeshInstance3D" parent="Visual"]
+editor_description = "Vạch đỏ: phân biệt thùng dầu (nổ) với thùng gỗ thường."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+cast_shadow = 0
+mesh = SubResource("Band")
+
+[node name="ExplosionComponent" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+script = ExtResource("boom")
+attack = ExtResource("boom_attack")
+radius = 3.0
+
+[node name="BurnableComponent" parent="." instance=ExtResource("burn_comp")]
+data = ExtResource("burn_data")
+
+[node name="Zone" type="CollisionShape3D" parent="BurnableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("BurnZone")
+
+[node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("burn_vfx")]
+burnable = NodePath("../BurnableComponent")

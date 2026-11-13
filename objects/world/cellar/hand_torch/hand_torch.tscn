@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" path="res://objects/world/cellar/hand_torch/hand_torch.gd" id="1_torch"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/hand_torch.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://objects/world/cellar/flame_feedback/flame_feedback.tscn" id="3_feedback"]
+[ext_resource type="Resource" path="res://resources/feedback/flame/hand_torch_flame.tres" id="4_flame_data"]
+[ext_resource type="PackedScene" path="res://components/core/interaction/world_hint/world_hint.tscn" id="5_hint"]
 
 [sub_resource type="SphereShape3D" id="IgniteShape"]
 radius = 0.9
@@ -15,7 +18,7 @@ transform = Transform3D(1, 0, 0, 0, 0.966, -0.259, 0, 0.259, 0.966, 0, 0, 0)
 
 [node name="Light" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0.3)
-shadow_enabled = false
+shadow_enabled = true
 omni_range = 8.0
 
 [node name="IgniteArea" type="Area3D" parent="."]
@@ -30,3 +33,12 @@ shape = SubResource("IgniteShape")
 
 [node name="BurnTimer" type="Timer" parent="."]
 one_shot = true
+
+[node name="FlameFeedback" parent="." instance=ExtResource("3_feedback")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0.3)
+data = ExtResource("4_flame_data")
+
+[node name="BurnOutHint" parent="." instance=ExtResource("5_hint")]
+collision_mask = 0
+monitoring = false
+label_offset = Vector3(0, 1.3, 0)
