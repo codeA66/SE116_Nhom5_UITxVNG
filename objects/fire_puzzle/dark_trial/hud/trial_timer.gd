@@ -49,6 +49,8 @@ func is_warning() -> bool:
 
 func set_time(seconds: float, warning_time: float) -> void:
 	var whole: int = ceili(maxf(seconds, 0.0))
+	# Chia nguyên cố ý: số phút tròn của tổng giây
+	@warning_ignore("integer_division")
 	_label.text = "%d:%02d" % [whole / 60, whole % 60]
 	_set_warning(seconds <= warning_time)
 

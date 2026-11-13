@@ -62,11 +62,11 @@ func refresh() -> void:
 	var message: String = text
 	if text_provider.is_valid():
 		message = String(text_provider.call(_actor)) if _player_inside and is_instance_valid(_actor) else ""
-	var show: bool = _player_inside and not message.is_empty() \
+	var should_show: bool = _player_inside and not message.is_empty() \
 			and (not visible_check.is_valid() or bool(visible_check.call()))
-	if show:
+	if should_show:
 		_label.text = message
-	_fade_to(1.0 if show else 0.0)
+	_fade_to(1.0 if should_show else 0.0)
 
 
 func _make_label() -> Label3D:
