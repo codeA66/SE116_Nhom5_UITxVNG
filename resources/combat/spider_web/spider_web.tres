@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WebData" format=3]
+
+[ext_resource type="Script" path="res://objects/combat/spider_web/web_data.gd" id="1_web"]
+
+[resource]
+script = ExtResource("1_web")
+speed_scale = 0.3
+lock_dash = true
+hits_to_break = 4
+vanish_time = 0.35
+radius = 1.0
+max_patches = 6
+bolt_speed = 9.0
+bolt_lifetime = 1.6
+bolt_radius = 0.3

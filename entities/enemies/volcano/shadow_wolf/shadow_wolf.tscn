@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_enemy"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/shadow_wolf/shadow_wolf.gd" id="2_wolf"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/shadow_wolf/shadow_wolf.tres" id="3_data"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/shadow_wolf/shadow_wolf.glb" id="4_model"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/shadow_wolf/shadow_wolf_animations.tres" id="5_anims"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/shadow_wolf/states/wolf_stalk.gd" id="6_stalk"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/shadow_wolf/states/wolf_pounce.gd" id="7_pounce"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/shadow_wolf/states/wolf_bite.gd" id="8_bite"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/shadow_wolf/states/wolf_flee.gd" id="9_flee"]
+
+[sub_resource type="BoxShape3D" id="HurtShape"]
+size = Vector3(0.7, 0.9, 1.6)
+
+[node name="ShadowWolf" instance=ExtResource("1_enemy")]
+script = ExtResource("2_wolf")
+data = ExtResource("3_data")
+chase_state = &"WolfStalk"
+attack_state = &"WolfBite"
+
+[node name="AnimationPlayer" parent="."]
+libraries = {
+&"": ExtResource("5_anims")
+}
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="ShadowWolfModel" parent="Model/Visual" instance=ExtResource("4_model")]
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0.1)
+shape = SubResource("HurtShape")
+
+[node name="WolfStalk" type="Node" parent="StateMachine"]
+script = ExtResource("6_stalk")
+
+[node name="WolfPounce" type="Node" parent="StateMachine"]
+script = ExtResource("7_pounce")
+
+[node name="WolfBite" type="Node" parent="StateMachine"]
+script = ExtResource("8_bite")
+
+[node name="WolfFlee" type="Node" parent="StateMachine"]
+script = ExtResource("9_flee")
