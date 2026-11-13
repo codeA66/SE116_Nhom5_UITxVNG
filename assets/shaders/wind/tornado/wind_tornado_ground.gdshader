@@ -3,8 +3,8 @@ render_mode unshaded, cull_disabled, depth_draw_never, blend_mix, shadows_disabl
 
 // Mặt đất dưới lốc: vòng đứt nét đúng bán kính hút, các nhánh xoắn trôi vào tâm (cho thấy đang hút),
 // và lúc nổ: vòng sóng xung kích nở tới bán kính nổ, vệt gió bắn ra ngoài, đĩa sáng ở tâm.
-uniform vec4 core_color : source_color = vec4(0.953, 0.988, 1.0, 1.0);
-uniform vec4 rim_color : source_color = vec4(0.30, 0.62, 0.73, 1.0);
+uniform vec4 core_color : source_color = vec4(0.85, 0.87, 0.9, 1.0);
+uniform vec4 rim_color : source_color = vec4(0.2, 0.22, 0.26, 1.0);
 uniform float time = 0.0;
 // Nửa cạnh của mặt phẳng (m): script đặt bằng scale của node
 uniform float extent = 4.0;
