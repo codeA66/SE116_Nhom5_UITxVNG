@@ -41,15 +41,18 @@ func _run() -> void:
 		_finish()
 		return
 
-	# UC01: đi bộ qua 5.1 vào 5.2, cửa khóa sau lưng.
-	var checkpoint_before: StringName = GameState.get_checkpoint_spawn_id()
+	# UC01: đi bộ qua 5.1 vào 5.2, cửa khóa sau lưng. Học Gió xong không còn dịch chuyển: đoạn đi bộ phòng 5 -> phòng 9 -> 5.1
+	# dài, test đặt Foxy ở đầu lối 5.1 (điểm BookArrival cũ) rồi đi tiếp như người chơi
+	var walk_start := SpawnPoint.find_in(_level, &"level_1.wind_book_arrival")
+	_player.teleport(walk_start.global_position, walk_start.get_facing())
+	await _frames(10)
 	_check(not _exit_gate.is_open and _old_stair_blocked() and not _secret_wall.is_broken and not _secret_wall.can_break(),
 		"TC01 lối lên phòng 6 bị chặn, tường giả chưa phá được trước trận")
 	_check(_walk_gate.is_open, "TC02 học Gió xong thì cầu thang từ phòng 9 lên 5.1 mở")
 	_check(not _path_is_clear(Vector3(6, 6.25, -62), Vector3(6, 6.25, -66)), "TC03 cầu thang cũ chặn đường đi tắt")
 	await _move_until(&"move_right", func() -> bool: return _player.global_position.x >= 33.85)
-	_check(GameState.get_checkpoint_spawn_id() == checkpoint_before and _trial.current_wave == 0 and _player.global_position.y < 4.0,
-		"TC04 đi bộ qua 5.1 trên mặt đất, không đổi checkpoint, chưa có quái")
+	_check(GameState.get_checkpoint_spawn_id() == &"level_1.wind_trial_gate" and _trial.current_wave == 0 and _player.global_position.y < 4.0,
+		"TC04 đi bộ qua 5.1 trên mặt đất, lưu checkpoint ở cửa 5.2 (%s), chưa có quái" % GameState.get_checkpoint_spawn_id())
 	await _move_until(&"move_forward", func() -> bool: return _trial.current_wave == 1)
 	await _frames(3)
 	_check(_trial.current_wave == 1 and _enemy_count(_first) == 1, "TC05 vượt ngưỡng 5.2, xuất hiện đúng một Bọ")
@@ -110,7 +113,7 @@ func _run() -> void:
 	await _move_until(&"move_left", func() -> bool: return _player.global_position.x < 23.8)
 	_check(_player.global_position.x < 24.5 and is_equal_approx(snappedf(_player.global_position.y, 0.1), 5.4),
 		"TC14 đi thật lên dốc, qua cửa và sang sàn phòng 6")
-	_check(GameState.get_checkpoint_spawn_id() == checkpoint_before, "TC15 vào phòng 6 không đổi checkpoint")
+	_check(GameState.get_checkpoint_spawn_id() == &"level_1.wind_trial_gate", "TC15 vào phòng 6 không đổi checkpoint (vẫn là checkpoint cửa 5.2)")
 
 	# UC03: hồ sơ cũ vẫn nạp được hai vị trí checkpoint đã bỏ.
 	var legacy_entry := SpawnPoint.find_in(_level, LEGACY_ENTRY)
@@ -245,15 +248,17 @@ func _collect_book() -> bool:
 	await _press(&"interact")
 	await _until(func() -> bool: return GameState.has_ability(WIND.id), 500)
 	_check(GameState.has_ability(WIND.id), "TC00 nhấn F học được kỹ năng gió")
-	var arrival := SpawnPoint.find_in(_level, shrine.arrival_spawn_id)
-	for frame: int in 600:
-		if _player.global_position.distance_to(arrival.global_position) < 0.35 and _player.controls_enabled:
+	# Học xong không dịch chuyển nữa: Foxy đứng tại chỗ, được trả điều khiển, cổng đá lên 5.1 mở để tự đi
+	for frame: int in 900:
+		if _player.controls_enabled and frame > 60:
 			break
 		if is_instance_valid(fx) and frame % 12 == 0:
 			fx.close_reveal()
 		await get_tree().physics_frame
-	return _check(_player.global_position.distance_to(arrival.global_position) < 0.35 and arrival.name == &"BookArrival",
-		"TC00 nghi thức tự dịch chuyển Foxy vào phòng 5.1")
+	await _frames(120)
+	_check(_player.controls_enabled and _player.global_position.distance_to(landing) < 1.0,
+		"TC00 học xong không bị dịch chuyển, được trả điều khiển (dời %.2f m)" % _player.global_position.distance_to(landing))
+	return _check(_walk_gate.is_open, "TC00 học Gió xong cổng đá lên 5.1 mở để tự đi bộ")
 
 
 ## Đứng phía nam con Bọ, ngoài tầm chui đất nhưng trong tầm bắn, tính theo vị trí thật của Bọ trong sân
