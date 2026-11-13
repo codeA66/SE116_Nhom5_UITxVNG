@@ -4,7 +4,7 @@ extends RefCounted
 ## nên Hurtbox không cần biết sát thương đến từ đâu.
 
 ## Loại sát thương. Thêm nguyên tố mới (gió, lửa...) chỉ cần thêm một giá trị ở đây
-enum Type { PHYSICAL, FIRE }
+enum Type { PHYSICAL, FIRE, WIND }
 
 var amount: int
 var type: Type

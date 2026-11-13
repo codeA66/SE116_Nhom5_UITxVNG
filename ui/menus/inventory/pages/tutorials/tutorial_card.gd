@@ -42,6 +42,6 @@ func _draw_content(rect: Rect2) -> void:
 	var cat_color := style.ornament if is_active else style.faint
 	
 	# Vẽ Title
-	draw_string(font, Vector2(text_x, rect.position.y + 24.0), tutorial.title, HORIZONTAL_ALIGNMENT_LEFT, text_max_w, title_size, title_color)
+	draw_string(font, Vector2(text_x, rect.position.y + 24.0), tr(tutorial.title), HORIZONTAL_ALIGNMENT_LEFT, text_max_w, title_size, title_color)
 	# Vẽ Phân loại
 	draw_string(font, Vector2(text_x, rect.position.y + 42.0), tutorial.category.to_upper(), HORIZONTAL_ALIGNMENT_LEFT, text_max_w, cat_size, cat_color)

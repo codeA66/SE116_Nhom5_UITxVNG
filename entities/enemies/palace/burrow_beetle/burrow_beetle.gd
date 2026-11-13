@@ -4,7 +4,8 @@ extends Enemy
 
 signal seed_fired(seed: StoneSeed)
 
-@export var burrow_distance: float = 5.0
+## Foxy vào gần hơn mức này thì Bọ chui xuống; để nhỏ cho người chơi kịp đánh bằng kỹ năng khi Bọ còn trên mặt đất
+@export var burrow_distance: float = 3.0
 @export var rise_distance: float = 6.5
 ## Khung 14 của clip Attack, tính từ khung 1 ở 30 fps.
 @export var shot_time: float = 0.433333

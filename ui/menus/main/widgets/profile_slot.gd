@@ -7,6 +7,9 @@ signal chosen(slot: int)
 signal delete_requested(slot: int)
 
 var slot: int = 1
+var _progress: PlayerProgress
+var _data: MainMenuData
+var _registry: ZoneRegistry
 
 @onready var _main: MenuItem = $Main
 @onready var _number: Label = $Main/Row/Number
@@ -23,6 +26,9 @@ func _ready() -> void:
 
 ## progress = null: ô trống
 func setup(slot_number: int, progress: PlayerProgress, data: MainMenuData, registry: ZoneRegistry) -> void:
+	_progress = progress
+	_data = data
+	_registry = registry
 	slot = slot_number
 	_number.text = str(slot_number)
 	_delete.text = data.delete_text
@@ -36,23 +42,35 @@ func setup(slot_number: int, progress: PlayerProgress, data: MainMenuData, regis
 	_delete.modulate.a = 1.0 if has_data else 0.0
 	_pips.visible = has_data
 	_detail.visible = has_data
+	_refresh_text()
 	if not has_data:
-		_name.text = data.empty_slot_text
 		_name.modulate = data.dim_color
 		return
 	_name.modulate = Color.WHITE
-	_name.text = registry.get_location_name(progress.checkpoint_zone)
-	var parts: PackedStringArray = []
-	if data.shown_currency:
-		parts.append("%d %s" % [progress.currencies.get(data.shown_currency.id, 0), data.shown_currency.display_name])
-	parts.append("%d kỹ năng" % progress.abilities.size())
-	_detail.text = "   ·   ".join(parts)
 	var colors: Array[Color] = []
 	var lit: Array[bool] = []
 	for zone in registry.element_zones:
 		colors.append(zone.color)
 		lit.append(zone.is_cleared_in(progress))
 	_pips.setup(colors, lit)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and _data != null:
+		_refresh_text()
+
+
+func _refresh_text() -> void:
+	if _progress == null:
+		_name.text = _data.empty_slot_text
+		return
+	_name.text = _registry.get_location_name(_progress.checkpoint_zone)
+	var parts: PackedStringArray = []
+	if _data.shown_currency:
+		parts.append("%d %s" % [_progress.currencies.get(_data.shown_currency.id, 0), tr(_data.shown_currency.display_name)])
+	var count: int = _progress.abilities.size()
+	parts.append(tr_n("%d kỹ năng", "%d kỹ năng", count) % count)
+	_detail.text = "   ·   ".join(parts)
 
 
 func get_main_button() -> MenuItem:

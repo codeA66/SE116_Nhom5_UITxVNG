@@ -73,6 +73,23 @@ func delete_slot(slot: int) -> void:
 	slot_deleted.emit(slot)
 
 
+## Ô cho nút "Tiếp tục" của menu chính: ô dùng lần cuối nếu còn dữ liệu, không thì ô có file lưu mới nhất; 0 = không có ô nào
+func get_continue_slot() -> int:
+	var last := _read_last_slot()
+	if slot_has_save(last):
+		return last
+	var best := 0
+	var best_time := -1
+	for slot in range(1, SLOT_COUNT + 1):
+		if not slot_has_save(slot):
+			continue
+		var time := FileAccess.get_modified_time(get_slot_path(slot))
+		if time > best_time:
+			best_time = time
+			best = slot
+	return best
+
+
 func has_save() -> bool:
 	return slot_has_save(current_slot)
 

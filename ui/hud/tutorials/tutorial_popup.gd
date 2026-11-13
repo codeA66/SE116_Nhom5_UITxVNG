@@ -94,7 +94,18 @@ func _show_next() -> void:
 	_setup_art(_current)
 	
 	# 2. Tiêu đề và phân loại
-	_verb.text = _current.category.to_upper() if not _current.category.is_empty() else "HƯỚNG DẪN"
+	_refresh_localized_text()
+	_run_intro()
+	popup_opened.emit(_current)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and _current != null:
+		_refresh_localized_text()
+
+
+func _refresh_localized_text() -> void:
+	_verb.text = tr(_current.category).to_upper() if not _current.category.is_empty() else "HƯỚNG DẪN"
 	_title.text = _current.title
 	
 	# 3. Phím bấm và câu nhắc (dựng động theo template và InputMap)
@@ -107,9 +118,6 @@ func _show_next() -> void:
 	_description.text = desc_text
 	_description.visible = not desc_text.is_empty()
 	
-	# 5. Hiệu ứng hiển thị
-	_run_intro()
-	popup_opened.emit(_current)
 
 
 func _setup_art(data: TutorialData) -> void:
@@ -132,6 +140,7 @@ func _setup_art(data: TutorialData) -> void:
 
 func _setup_prompt(data: TutorialData) -> void:
 	for child in _prompt.get_children():
+		_prompt.remove_child(child)
 		child.queue_free()
 	
 	var template := data.prompt_template
@@ -143,7 +152,7 @@ func _setup_prompt(data: TutorialData) -> void:
 			var parts := PackedStringArray()
 			for i in all_actions.size():
 				parts.append("{key%d}" % (i + 1))
-			template = "Nhấn " + " ".join(parts) + " để thực hiện."
+			template = tr("Nhấn %s để thực hiện.") % " ".join(parts)
 		elif data.art_ability is SkillData:
 			template = "Nhấn {key1} để thực hiện."
 		else:
@@ -151,6 +160,7 @@ func _setup_prompt(data: TutorialData) -> void:
 			return
 	
 	var regex := _get_regex()
+	template = tr(template)
 	var matches := regex.search_all(template)
 	if matches.is_empty():
 		var lbl := _create_prompt_label(template)

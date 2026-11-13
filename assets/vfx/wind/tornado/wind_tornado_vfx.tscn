@@ -1,0 +1,81 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/wind/tornado/wind_tornado_vfx.gd" id="1_visual"]
+[ext_resource type="Shader" path="res://assets/shaders/wind/tornado/wind_tornado_ribbon.gdshader" id="2_ribbon"]
+[ext_resource type="Shader" path="res://assets/shaders/wind/tornado/wind_tornado_ground.gdshader" id="3_ground"]
+[ext_resource type="Shader" path="res://assets/shaders/wind/tornado/wind_tornado_flash.gdshader" id="4_flash"]
+
+[sub_resource type="ShaderMaterial" id="StrandMat"]
+resource_local_to_scene = true
+render_priority = 2
+shader = ExtResource("2_ribbon")
+shader_parameter/scroll = 1.4
+shader_parameter/dash_count = 2.0
+shader_parameter/dash_fill = 0.62
+
+[sub_resource type="ShaderMaterial" id="RingMat"]
+resource_local_to_scene = true
+render_priority = 3
+shader = ExtResource("2_ribbon")
+shader_parameter/scroll = 0.0
+shader_parameter/dash_count = 1.0
+shader_parameter/dash_fill = 0.9
+shader_parameter/end_fade = 0.04
+
+[sub_resource type="ShaderMaterial" id="DebrisMat"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("2_ribbon")
+shader_parameter/scroll = 0.0
+shader_parameter/dash_count = 1.0
+shader_parameter/dash_fill = 0.95
+shader_parameter/end_fade = 0.02
+
+[sub_resource type="ShaderMaterial" id="GroundMat"]
+resource_local_to_scene = true
+shader = ExtResource("3_ground")
+
+[sub_resource type="ShaderMaterial" id="FlashMat"]
+resource_local_to_scene = true
+render_priority = 4
+shader = ExtResource("4_flash")
+
+[sub_resource type="PlaneMesh" id="GroundPlane"]
+size = Vector2(2, 2)
+
+[sub_resource type="QuadMesh" id="FlashQuad"]
+size = Vector2(2, 2)
+
+[node name="WindTornadoVfx" type="Node3D"]
+visible = false
+script = ExtResource("1_visual")
+
+[node name="Funnel" type="Node3D" parent="."]
+
+[node name="Strands" type="MeshInstance3D" parent="Funnel"]
+cast_shadow = 0
+material_override = SubResource("StrandMat")
+
+[node name="Rings" type="MeshInstance3D" parent="Funnel"]
+cast_shadow = 0
+material_override = SubResource("RingMat")
+
+[node name="Debris" type="MeshInstance3D" parent="Funnel"]
+cast_shadow = 0
+material_override = SubResource("DebrisMat")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+cast_shadow = 0
+material_override = SubResource("GroundMat")
+mesh = SubResource("GroundPlane")
+
+[node name="Flash" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+material_override = SubResource("FlashMat")
+mesh = SubResource("FlashQuad")
+
+[node name="LoopAudio" type="AudioStreamPlayer3D" parent="."]
+
+[node name="BurstAudio" type="AudioStreamPlayer3D" parent="."]

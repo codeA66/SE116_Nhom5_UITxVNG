@@ -1,6 +1,6 @@
 class_name MenuLogo
 extends Control
-## Logo game (chữ tạm cho tới khi có ảnh logo). Màn tiêu đề: to, giữa màn; menu: thu nhỏ lên trên; hồ sơ: ẩn.
+## Logo đổi tỷ lệ giữa màn tiêu đề và menu để nhường chỗ cho các nút.
 
 enum Layout { TITLE, HOME, HIDDEN }
 
@@ -21,7 +21,6 @@ func set_text(value: String) -> void:
 	_title.text = value
 
 
-## Lần đầu mở game: chữ hiện dần, nét kẻ mở ra từ giữa
 func play_reveal() -> void:
 	_title.modulate.a = 0.0
 	_divider.reveal = 0.0

@@ -10,6 +10,8 @@ extends Resource
 @export var requirements: Array[ItemCost] = []
 ## Thuộc tính của dữ liệu kỹ năng được đổi ở cấp mới: tên thuộc tính -> giá trị (ví dụ "reach": 7.0)
 @export var overrides: Dictionary[StringName, Variant] = {}
+## Từ cấp này kỹ năng đổi hẳn sang dạng mới (ví dụ Thổi gió -> Lốc xoáy): phím cũ, chiêu mới. Trống = chỉ đổi thông số
+@export var evolves_into: AbilityData
 
 
 func is_affordable(progress: PlayerProgress) -> bool:

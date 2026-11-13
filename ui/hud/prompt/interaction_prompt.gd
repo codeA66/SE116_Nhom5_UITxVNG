@@ -23,6 +23,11 @@ func _ready() -> void:
 	hide()
 	set_process(false)
 	if interactor != null: interactor.focus_changed.connect(_on_focus_changed)
+	Settings.bindings_changed.connect(_refresh_text)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_refresh_text.call_deferred()
 ## Dùng cùng Resource, không dùng font/menu state hoặc sửa widget menu.
 func apply_style() -> void:
 	theme = style.theme
@@ -70,14 +75,19 @@ func _on_focus_changed(target: InteractableComponent) -> void:
 	_target = target
 	if is_instance_valid(target):
 		_camera = get_viewport().get_camera_3d()
-		_action_label.text = target.prompt_text.to_upper()
-		_key_label.text = _get_key_text()
-		reset_size()
+		_refresh_text()
 	elif get_tree().paused:
 		# Game đang dừng (trình diễn nhận kỹ năng...) thì _process không chạy để mờ dần: ẩn ngay
 		_alpha = 0.0
 		hide()
 	set_process(is_instance_valid(target) or _alpha>0.0)
+
+func _refresh_text() -> void:
+	if not is_instance_valid(_target):
+		return
+	_action_label.text = tr(_target.prompt_text).to_upper()
+	_key_label.text = _get_key_text()
+	reset_size()
 ## Không gán cứng phím để người chơi đổi binding vẫn có prompt đúng.
 func _get_key_text() -> String:
 	for event: InputEvent in InputMap.action_get_events(action):

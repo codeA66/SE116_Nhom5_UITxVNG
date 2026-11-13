@@ -162,13 +162,15 @@ func _show_line(index: int) -> void:
 
 
 func _set_speaker(speaker: String) -> void:
-	_name.text = speaker.to_upper()
+	_speaker_source = speaker
+	_name.text = tr(speaker).to_upper()
 	_name.modulate.a = 0.0 if speaker.is_empty() else 1.0
 
 
 func _start_typing(text: String) -> void:
 	_stop_arrow()
-	_text.text = text
+	_line_source = text
+	_text.text = tr(text)
 	_revealed_count = 0
 	_char_timer = 0.0
 	if style.chars_per_second <= 0.0 or text.is_empty():
@@ -176,6 +178,22 @@ func _start_typing(text: String) -> void:
 		return
 	_text.visible_characters = 0
 	set_process(true)
+
+
+var _speaker_source: String = ""
+var _line_source: String = ""
+
+
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_TRANSLATION_CHANGED or not is_node_ready() or not _open:
+		return
+	_name.text = tr(_speaker_source).to_upper()
+	_text.text = tr(_line_source)
+	if _is_typing():
+		_revealed_count = mini(_revealed_count, _text.get_total_character_count())
+		_text.visible_characters = _revealed_count
+	if _choices.visible:
+		_refresh_choice_marks()
 
 
 func _is_typing() -> bool:
@@ -245,7 +263,7 @@ func _refresh_choice_marks() -> void:
 	for index in _options.size():
 		var button := _choice_buttons[index]
 		var marker := "%s  " % style.choice_marker if button.has_focus() else ""
-		button.text = marker + _options[index]
+		button.text = marker + tr(_options[index])
 
 
 func _choose(index: int) -> void:

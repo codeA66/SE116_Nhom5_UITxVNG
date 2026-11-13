@@ -86,4 +86,4 @@ func _say(lines: Array[DialogueLine], story: Dialogue = null) -> void:
 func _format(text: String) -> String:
 	var name_text := currency.display_name if currency else ""
 	var have := GameState.get_currency(currency.id) if currency else 0
-	return text.format({"price": price, "currency": name_text, "have": have})
+	return tr(text).format({"price": price, "currency": name_text, "have": have})

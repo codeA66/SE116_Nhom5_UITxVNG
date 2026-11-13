@@ -22,7 +22,6 @@ var _spent: bool = true
 var _floor_query: PhysicsRayQueryParameters3D
 
 @onready var _shape: CollisionShape3D = $CollisionShape3D
-@onready var _visual: Node3D = $Visual
 
 
 func _ready() -> void:

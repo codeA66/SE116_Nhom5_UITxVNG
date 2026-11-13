@@ -70,6 +70,11 @@ func _gui_input(event: InputEvent) -> void:
 		activated.emit(self)
 		accept_event()
 		return
+	# Phím tương tác = thao tác phụ của ô (như chuột phải), cho người chơi bàn phím / tay cầm
+	if event.is_action_pressed(&"interact"):
+		alt_activated.emit(self)
+		accept_event()
+		return
 	var click := event as InputEventMouseButton
 	if click and click.pressed and click.button_index == MOUSE_BUTTON_RIGHT:
 		alt_activated.emit(self)

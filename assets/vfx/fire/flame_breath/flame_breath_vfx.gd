@@ -94,6 +94,8 @@ var _hitbox_shape: BoxShape3D
 ## ĐẠT: dựng mesh thân lửa, gom pool, nối signal. Thiếu hitbox/follow thì VFX im lặng (không lỗi).
 func _ready() -> void:
 	set_process(false)
+	# Miệng lửa đặt bằng toạ độ thế giới trong _align: tách khỏi Player để lúc tắt dần không bị kéo theo cáo
+	_nozzle.top_level = true
 	_heat.hide()
 	_body.hide()
 	_ground.hide()
@@ -136,7 +138,9 @@ func _ready() -> void:
 ## ĐẠT: chỉ chạy khi đang có lửa (vung tay -> phun -> tắt dần), xong thì tự set_process(false).
 ## Ba pha: _ignition (quầng nóng ở miệng) -> _active (đang phun) -> _fade (tắt dần).
 func _process(delta: float) -> void:
-	_align()
+	# Chỉ bám theo cáo lúc vung tay và đang phun; pha tắt dần (kể cả bị dash ngắt) thì lửa đứng yên tại chỗ
+	if _ignition > 0.0 or _active > 0.0:
+		_align()
 	_clock += delta
 	_body_mat.set_shader_parameter(&"clock", _clock)
 	_ground_mat.set_shader_parameter(&"clock", _clock)

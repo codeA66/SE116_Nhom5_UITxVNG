@@ -60,7 +60,7 @@ func _run() -> void:
 		return
 
 	# UC02: phản đạn, nạp lại năng lượng và hạ đủ hai đợt.
-	await _reflect(_first.get_node(^"Enemies/BurrowBeetle1") as BurrowBeetle, Vector3(34, 3.65, -62.25))
+	await _reflect(_first.get_node(^"Enemies/BurrowBeetle1") as BurrowBeetle)
 	_check(_trial.current_wave == 1 and not _exit_gate.is_open, "TC07 hạ Bọ đầu vẫn khóa cửa")
 	await _frames(60)
 	_check(_trial.current_wave == 1 and _enemy_count(_second) == 0, "TC08 có khoảng nghỉ giữa hai đợt")
@@ -84,16 +84,18 @@ func _run() -> void:
 	_check(shot_frames.size() == 2 and shot_frames[1] - shot_frames[0] >= 30, "TC10 hai phát đầu cách nhau ít nhất nửa giây")
 
 	_player.energy.set_current(0)
-	_player.teleport(Vector3(40, 3.65, -63.9), Vector3.BACK)
+	# Hình nộm hồi năng lượng đứng trong hốc tường tây: đứng trước mặt nó rồi chém
+	var dummy := _trial.get_node(^"EnergyDummy") as Node3D
+	_player.teleport(dummy.global_position + Vector3(1.6, 0.05, 0), Vector3.LEFT)
 	await _frames(10)
-	_aim_at(Vector3(40, 3.6, -62.25))
+	_aim_at(dummy.global_position)
 	await _press(&"attack")
 	await _frames(55)
 	_check(_player.energy.current > 0, "TC11 chém hình nộm nạp lại gió từ 0")
 	_player.energy.set_current(3)
-	await _reflect(left, Vector3(34, 3.65, -62.25))
+	await _reflect(left)
 	_check(not _exit_gate.is_open and _old_stair_blocked(), "TC12 còn một Bọ thì cửa vẫn khóa")
-	await _reflect(right, Vector3(38.2, 3.65, -63.2))
+	await _reflect(right)
 	_check(_trial.is_active() and _exit_gate.is_open and _old_stair_blocked(), "TC13 hạ Bọ cuối mở dốc lên phòng 6, cầu thang cũ vẫn chặn (một lối duy nhất)")
 	await _frames(30)
 	_check(_secret_wall.can_break() and not _secret_wall.is_broken, "TC13 thắng 5.2 thì tường giả mới phá được (chưa tự vỡ)")
@@ -254,11 +256,13 @@ func _collect_book() -> bool:
 		"TC00 nghi thức tự dịch chuyển Foxy vào phòng 5.1")
 
 
-func _reflect(beetle: BurrowBeetle, position_: Vector3) -> void:
+## Đứng phía nam con Bọ, ngoài tầm chui đất nhưng trong tầm bắn, tính theo vị trí thật của Bọ trong sân
+func _reflect(beetle: BurrowBeetle) -> void:
 	if not is_instance_valid(beetle):
 		_check(false, "Thiếu Bọ để kiểm tra phản đạn")
 		return
 	var target: Vector3 = beetle.global_position
+	var position_: Vector3 = target + Vector3(0, 0.05, beetle.rise_distance + 0.5)
 	var direction: Vector3 = target - position_
 	direction.y = 0.0
 	_player.teleport(position_, direction.normalized())

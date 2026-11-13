@@ -32,15 +32,18 @@ func _verify() -> void:
 		muzzle_offset.y = 0.0
 		_shot_alignment = muzzle_offset.normalized().dot(_beetle.direction_to_target())
 	)
-	player.teleport(Vector3(0.0, 0.05, 4.6), Vector3.FORWARD)
+	# Khoảng cách tính theo thông số của Bọ: đổi burrow_distance / rise_distance thì test vẫn đúng
+	var inside := _beetle.burrow_distance - 0.4
+	var between := (_beetle.burrow_distance + _beetle.rise_distance) * 0.5
+	player.teleport(Vector3(0.0, 0.05, inside), Vector3.FORWARD)
 	await get_tree().create_timer(1.75).timeout
-	_check(_beetle.state_machine.current_state.name == &"Burrow" and anim.assigned_animation == &"Hidden", "Foxy cách 4,6 m: bọ chui xuống")
+	_check(_beetle.state_machine.current_state.name == &"Burrow" and anim.assigned_animation == &"Hidden", "Foxy cách %.1f m (trong tầm chui %.1f m): bọ chui xuống" % [inside, _beetle.burrow_distance])
 	_check(_beetle.hurtbox.invulnerable and _shots == 0, "Bọ nấp không bắn và không nhận sát thương")
-	player.teleport(Vector3(0.0, 0.05, 5.8), Vector3.FORWARD)
+	player.teleport(Vector3(0.0, 0.05, between), Vector3.FORWARD)
 	await get_tree().physics_frame
 	await get_tree().physics_frame
-	_check(_beetle.state_machine.current_state.name == &"Burrow", "Foxy cách 5,8 m: bọ vẫn nấp")
-	player.teleport(Vector3(0.0, 0.05, 7.5), Vector3.FORWARD)
+	_check(_beetle.state_machine.current_state.name == &"Burrow", "Foxy cách %.1f m (giữa tầm chui và tầm trồi): bọ vẫn nấp" % between)
+	player.teleport(Vector3(0.0, 0.05, _beetle.rise_distance + 1.0), Vector3.FORWARD)
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	_check(anim.assigned_animation == &"Rise", "Foxy lùi ra: bọ phát hoạt ảnh trồi lên")

@@ -1,183 +1,591 @@
 [gd_scene format=3]
 
-[ext_resource type="Material" path="res://assets/materials/ruin_stone_dark.tres" id="stone"]
-[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/paving_stone.tres" id="paving_stone"]
-[ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/arena_paving.res" id="floor"]
-[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.gd" id="trial"]
-[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.tscn" id="gate"]
-[ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="encounter"]
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="beetle"]
-[ext_resource type="PackedScene" path="res://objects/combat/training_dummy/wooden_training_dummy.tscn" id="dummy"]
-[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="pillar"]
-[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/secret_wall/secret_wall.tscn" id="secret_wall"]
-[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/rubble_cluster.glb" id="rubble"]
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.gd" id="r1"]
 
-[sub_resource type="BoxShape3D" id="ArenaFloorShape"]
-size = Vector3(20, 0.48, 20)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/floor_4m.glb" id="r2"]
 
-[sub_resource type="BoxMesh" id="ArenaFloorMesh"]
-material = ExtResource("stone")
-size = Vector3(20, 2.4, 20)
+[ext_resource type="Material" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/paving/trial_floor_dim.tres" id="r3"]
 
-[sub_resource type="BoxShape3D" id="WestSouthWallShape"]
-size = Vector3(0.4, 7.4, 12)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/wind_dais_8m.glb" id="r4"]
 
-[sub_resource type="BoxMesh" id="WestSouthWallMesh"]
-material = ExtResource("stone")
-size = Vector3(0.4, 1.45, 12)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/lower_arch_foundation_6m.glb" id="r5"]
 
-[sub_resource type="BoxShape3D" id="WestNorthWallShape"]
-size = Vector3(0.4, 7.4, 4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/wall_straight_4m.glb" id="r6"]
 
-[sub_resource type="BoxMesh" id="WestNorthWallMesh"]
-material = ExtResource("stone")
-size = Vector3(0.4, 1.45, 4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/banner_hanging.glb" id="r7"]
 
-[sub_resource type="BoxShape3D" id="EastWallShape"]
-size = Vector3(0.4, 7.4, 20)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/shrine_wall_niche.glb" id="r8"]
 
-[sub_resource type="BoxMesh" id="EastWallMesh"]
-material = ExtResource("stone")
-size = Vector3(0.4, 1.45, 20)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/wall_low_4m.glb" id="r9"]
 
-[sub_resource type="BoxShape3D" id="NorthWallShape"]
-size = Vector3(20, 7.4, 0.4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/trial_gate_arch.glb" id="r10"]
 
-[sub_resource type="BoxMesh" id="NorthWallMesh"]
-material = ExtResource("stone")
-size = Vector3(20, 1.45, 0.4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/stair_straight_3m.glb" id="r11"]
 
-[sub_resource type="BoxShape3D" id="EntryLeftWallShape"]
-size = Vector3(4, 1.6, 0.4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/floor_2m.glb" id="r12"]
 
-[sub_resource type="BoxMesh" id="EntryLeftWallMesh"]
-material = ExtResource("stone")
-size = Vector3(4, 1.45, 0.4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="r13"]
 
-[sub_resource type="BoxShape3D" id="EntryRightWallShape"]
-size = Vector3(6, 1.6, 0.4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/wall_window_open_6m.glb" id="r14"]
 
-[sub_resource type="BoxMesh" id="EntryRightWallMesh"]
-material = ExtResource("stone")
-size = Vector3(6, 1.45, 0.4)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_octagonal_4m.glb" id="r15"]
 
-[sub_resource type="BoxShape3D" id="EntryFarWallShape"]
-size = Vector3(2, 1.6, 0.4)
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.tscn" id="r16"]
 
-[sub_resource type="BoxMesh" id="EntryFarWallMesh"]
-material = ExtResource("stone")
-size = Vector3(2, 1.45, 0.4)
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/secret_wall/secret_wall.tscn" id="r17"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/rubble_cluster.glb" id="r18"]
+
+[ext_resource type="PackedScene" path="res://objects/combat/training_dummy/wooden_training_dummy.tscn" id="r19"]
+
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_burrow_beetle.tres" id="r20"]
+
+[ext_resource type="PackedScene" path="res://objects/core/triggers/tutorial_trigger/tutorial_trigger.tscn" id="r21"]
+
+[ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="r22"]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="r23"]
+
+[sub_resource type="BoxShape3D" id="Shape_ArenaFloor"]
+size = Vector3(24, 0.48, 24)
+
+[sub_resource type="BoxShape3D" id="Shape_NorthWallBody"]
+size = Vector3(24, 4.08, 0.69)
+
+[sub_resource type="BoxShape3D" id="Shape_WestWallSouthBody"]
+size = Vector3(0.69, 4.08, 10)
+
+[sub_resource type="BoxShape3D" id="Shape_WestWallNorthBody"]
+size = Vector3(0.69, 4.08, 6)
+
+[sub_resource type="BoxShape3D" id="Shape_ExitPostNorth"]
+size = Vector3(1, 4.4, 0.9)
+
+[sub_resource type="BoxShape3D" id="Shape_ExitPostSouth"]
+size = Vector3(1, 4.4, 0.9)
+
+[sub_resource type="BoxShape3D" id="Shape_ParapetNorthBody"]
+size = Vector3(4.5, 1.8, 0.83)
+
+[sub_resource type="BoxShape3D" id="Shape_ParapetSouthBody"]
+size = Vector3(4.5, 1.8, 0.83)
 
 [sub_resource type="ConvexPolygonShape3D" id="RampShape"]
-points = PackedVector3Array(0, -0.25, -1.85, 0, 1.8, -1.85, 0, -0.25, 1.85, 0, 1.8, 1.85, 6, -0.25, -1.85, 6, 0, -1.85, 6, -0.25, 1.85, 6, 0, 1.85)
+points = PackedVector3Array(0, -0.25, -1.7, 0, 1.8, -1.7, 0, -0.25, 1.7, 0, 1.8, 1.7, 4.5, -0.25, -1.7, 4.5, 0, -1.7, 4.5, -0.25, 1.7, 4.5, 0, 1.7)
 
-[sub_resource type="BoxMesh" id="RampMesh"]
-material = ExtResource("stone")
-size = Vector3(6.26418, 0.18, 3.7)
+[sub_resource type="BoxShape3D" id="Shape_ThresholdBody"]
+size = Vector3(1.4, 0.48, 5.6)
+
+[sub_resource type="BoxShape3D" id="Shape_EastWallBody"]
+size = Vector3(0.86, 5.1, 24)
+
+[sub_resource type="BoxShape3D" id="Shape_SouthLowWestBody"]
+size = Vector3(2, 1.33, 0.69)
+
+[sub_resource type="BoxShape3D" id="Shape_SouthLowMidBody"]
+size = Vector3(4, 1.33, 0.69)
+
+[sub_resource type="BoxShape3D" id="Shape_SouthLowEastBody"]
+size = Vector3(6, 1.33, 0.69)
+
+[sub_resource type="BoxShape3D" id="Shape_EntryPostWest"]
+size = Vector3(0.9, 4.4, 1)
+
+[sub_resource type="BoxShape3D" id="Shape_EntryPostEast"]
+size = Vector3(0.9, 4.4, 1)
 
 [sub_resource type="BoxShape3D" id="EntryTriggerShape"]
 size = Vector3(3.95, 7.2, 1.7)
 
 [node name="Room052WindTrial" type="Node3D"]
-script = ExtResource("trial")
+script = ExtResource("r1")
 
 [node name="ArenaFloor" type="StaticBody3D" parent="."]
-position = Vector3(10, -0.24, -10)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 12, -0.24, -12)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaFloor"]
-shape = SubResource("ArenaFloorShape")
+shape = SubResource("Shape_ArenaFloor")
 
-[node name="Stone" type="MeshInstance3D" parent="ArenaFloor"]
-position = Vector3(0, -1.02, 0)
-mesh = SubResource("ArenaFloorMesh")
+[node name="Floor" type="Node3D" parent="."]
 
-[node name="Paving" type="MultiMeshInstance3D" parent="."]
-material_override = ExtResource("paving_stone")
-multimesh = ExtResource("floor")
+[node name="F00" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -2)
 
-[node name="WestSouthWall" type="StaticBody3D" parent="."]
-position = Vector3(0.2, 3.7, -6)
+[node name="floor_4m_Static" parent="Floor/F00/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F01" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F01/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F02" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F02/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F03" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F03/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F04" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F04/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F05" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, -0.32, -22)
+
+[node name="floor_4m_Static" parent="Floor/F05/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F10" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F10/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F11" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F11/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F12" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F12/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F13" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F13/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F14" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F14/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F15" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, -0.32, -22)
+
+[node name="floor_4m_Static" parent="Floor/F15/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F20" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F20/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F21" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F21/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F22" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F22/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F23" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F23/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F24" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F24/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F25" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, -0.32, -22)
+
+[node name="floor_4m_Static" parent="Floor/F25/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F30" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F30/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F31" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F31/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F32" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F32/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F33" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F33/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F34" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F34/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F35" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, -0.32, -22)
+
+[node name="floor_4m_Static" parent="Floor/F35/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F40" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F40/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F41" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F41/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F42" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F42/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F43" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F43/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F44" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F44/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F45" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, -0.32, -22)
+
+[node name="floor_4m_Static" parent="Floor/F45/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F50" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, -0.32, -2)
+
+[node name="floor_4m_Static" parent="Floor/F50/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F51" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, -0.32, -6)
+
+[node name="floor_4m_Static" parent="Floor/F51/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F52" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, -0.32, -10)
+
+[node name="floor_4m_Static" parent="Floor/F52/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F53" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, -0.32, -14)
+
+[node name="floor_4m_Static" parent="Floor/F53/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F54" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, -0.32, -18)
+
+[node name="floor_4m_Static" parent="Floor/F54/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="F55" parent="Floor" instance=ExtResource("r2")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, -0.32, -22)
+
+[node name="floor_4m_Static" parent="Floor/F55/floor_4m"]
+material_override = ExtResource("r3")
+
+[node name="WindDais" parent="." instance=ExtResource("r4")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 12, 0, -12)
+
+[node name="Foundation" type="Node3D" parent="."]
+
+[node name="East0" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -1, 0, 0.72, 0, 1, 0, 0, 23.35, -3.92, -3)
+
+[node name="East1" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -1, 0, 0.72, 0, 1, 0, 0, 23.35, -3.92, -9)
+
+[node name="East2" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -1, 0, 0.72, 0, 1, 0, 0, 23.35, -3.92, -15)
+
+[node name="East3" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0, 0, -1, 0, 0.72, 0, 1, 0, 0, 23.35, -3.92, -21)
+
+[node name="South0" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0.888889, 0, -0, 0, 0.72, 0, 0, 0, 1, 10.6667, -3.92, -0.65)
+
+[node name="South1" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0.888889, 0, -0, 0, 0.72, 0, 0, 0, 1, 16, -3.92, -0.65)
+
+[node name="South2" parent="Foundation" instance=ExtResource("r5")]
+transform = Transform3D(0.888889, 0, -0, 0, 0.72, 0, 0, 0, 1, 21.3333, -3.92, -0.65)
+
+[node name="NorthWall" type="Node3D" parent="."]
+
+[node name="W0" parent="NorthWall" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2, 0, -24.34)
+
+[node name="W1" parent="NorthWall" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, 0, -24.34)
+
+[node name="W2" parent="NorthWall" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10, 0, -24.34)
+
+[node name="W3" parent="NorthWall" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 14, 0, -24.34)
+
+[node name="W4" parent="NorthWall" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 18, 0, -24.34)
+
+[node name="W5" parent="NorthWall" instance=ExtResource("r6")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 22, 0, -24.34)
+
+[node name="BannerWest" parent="NorthWall" instance=ExtResource("r7")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 8, 1, -23.86)
+
+[node name="BannerEast" parent="NorthWall" instance=ExtResource("r7")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 16, 1, -23.86)
+
+[node name="NorthWallBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 12, 2.04, -24.34)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="WestSouthWall"]
-shape = SubResource("WestSouthWallShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallBody"]
+shape = SubResource("Shape_NorthWallBody")
 
-[node name="Stone" type="MeshInstance3D" parent="WestSouthWall"]
-position = Vector3(0, -2.975, 0)
-mesh = SubResource("WestSouthWallMesh")
+[node name="WestWall" type="Node3D" parent="."]
 
-[node name="WestNorthWall" type="StaticBody3D" parent="."]
-position = Vector3(0.2, 3.7, -18)
+[node name="W0" parent="WestWall" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.34, 0, -2)
+
+[node name="Niche" parent="WestWall" instance=ExtResource("r8")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.34, 0, -6)
+
+[node name="W1" parent="WestWall" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, -0.5, 0, 1, 0, 1, 0, 0, -0.34, 0, -9)
+
+[node name="W2" parent="WestWall" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, -0.5, 0, 1, 0, 1, 0, 0, -0.34, 0, -19)
+
+[node name="W3" parent="WestWall" instance=ExtResource("r6")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.34, 0, -22)
+
+[node name="UnderGate" parent="WestWall" instance=ExtResource("r9")]
+transform = Transform3D(0, 0, -2, 0, 1.35338, 0, 1, 0, 0, -0.34, 0, -14)
+
+[node name="WestWallSouthBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -0.34, 2.04, -5)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="WestNorthWall"]
-shape = SubResource("WestNorthWallShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestWallSouthBody"]
+shape = SubResource("Shape_WestWallSouthBody")
 
-[node name="Stone" type="MeshInstance3D" parent="WestNorthWall"]
-position = Vector3(0, -2.975, 0)
-mesh = SubResource("WestNorthWallMesh")
-
-[node name="EastWall" type="StaticBody3D" parent="."]
-position = Vector3(19.8, 3.7, -10)
+[node name="WestWallNorthBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -0.34, 2.04, -21)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
-shape = SubResource("EastWallShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestWallNorthBody"]
+shape = SubResource("Shape_WestWallNorthBody")
 
-[node name="Stone" type="MeshInstance3D" parent="EastWall"]
-position = Vector3(0, -2.975, 0)
-mesh = SubResource("EastWallMesh")
+[node name="ExitArch" parent="." instance=ExtResource("r10")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.34, 1.8, -14)
 
-[node name="NorthWall" type="StaticBody3D" parent="."]
-position = Vector3(10, 3.7, -19.8)
+[node name="ExitPostNorth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -0.34, 4, -17.3)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWall"]
-shape = SubResource("NorthWallShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExitPostNorth"]
+shape = SubResource("Shape_ExitPostNorth")
 
-[node name="Stone" type="MeshInstance3D" parent="NorthWall"]
-position = Vector3(0, -2.975, 0)
-mesh = SubResource("NorthWallMesh")
-
-[node name="EntryLeftWall" type="StaticBody3D" parent="."]
-position = Vector3(2, 3.7, -0.2)
+[node name="ExitPostSouth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -0.34, 4, -10.7)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryLeftWall"]
-position = Vector3(0, -2.9, 0)
-shape = SubResource("EntryLeftWallShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ExitPostSouth"]
+shape = SubResource("Shape_ExitPostSouth")
 
-[node name="Stone" type="MeshInstance3D" parent="EntryLeftWall"]
-position = Vector3(0, -2.975, 0)
-mesh = SubResource("EntryLeftWallMesh")
+[node name="ExitStair" parent="." instance=ExtResource("r11")]
+transform = Transform3D(0, 0, 1, 0, 0.9, 0, -1.125, 0, 0, 2.25, 0, -14)
 
-[node name="EntryRightWall" type="StaticBody3D" parent="."]
-position = Vector3(11, 3.7, -0.2)
+[node name="stair_straight_3m_Static" parent="ExitStair/stair_straight_3m"]
+material_override = ExtResource("r3")
+
+[node name="Threshold" parent="." instance=ExtResource("r12")]
+transform = Transform3D(0.7, 0, -0, 0, 1, 0, 0, 0, 2.8, -0.7, 1.48, -14)
+
+[node name="floor_2m_Static" parent="Threshold/floor_2m"]
+material_override = ExtResource("r3")
+
+[node name="ParapetNorth" parent="." instance=ExtResource("r9")]
+transform = Transform3D(0, 0, -1.125, 0, 1.35338, 0, 1.2, 0, 0, 2.25, 0, -16.45)
+
+[node name="ParapetNorthBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2.25, 0.9, -16.45)
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryRightWall"]
-position = Vector3(0, -2.9, 0)
-shape = SubResource("EntryRightWallShape")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ParapetNorthBody"]
+shape = SubResource("Shape_ParapetNorthBody")
 
-[node name="Stone" type="MeshInstance3D" parent="EntryRightWall"]
-position = Vector3(0, -2.975, 0)
-mesh = SubResource("EntryRightWallMesh")
+[node name="ParapetSouth" parent="." instance=ExtResource("r9")]
+transform = Transform3D(0, 0, -1.125, 0, 1.35338, 0, 1.2, 0, 0, 2.25, 0, -11.55)
+
+[node name="ParapetSouthBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2.25, 0.9, -11.55)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ParapetSouthBody"]
+shape = SubResource("Shape_ParapetSouthBody")
 
 [node name="ExitRamp" type="StaticBody3D" parent="."]
-position = Vector3(0, 0, -14)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, -14)
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ExitRamp"]
 shape = SubResource("RampShape")
 
-[node name="Stone" type="MeshInstance3D" parent="ExitRamp"]
-position = Vector3(2.9741, 0.8138, 0)
-rotation_degrees = Vector3(0, 0, -16.6992)
-mesh = SubResource("RampMesh")
+[node name="ThresholdBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -0.7, 1.56, -14)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ThresholdBody"]
+shape = SubResource("Shape_ThresholdBody")
+
+[node name="ExitLanternNorth" parent="." instance=ExtResource("r13")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 5.2, 0, -17.4)
+
+[node name="ExitLanternSouth" parent="." instance=ExtResource("r13")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 5.2, 0, -10.6)
+
+[node name="ExitLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 1.2, 4.6, -14)
+light_color = Color(1, 0.8, 0.55, 1)
+light_energy = 0.6
+omni_range = 4.5
+
+[node name="EastWall" type="Node3D" parent="."]
+
+[node name="Window0" parent="EastWall" instance=ExtResource("r14")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23.57, 0, -3)
+
+[node name="Window1" parent="EastWall" instance=ExtResource("r14")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23.57, 0, -9)
+
+[node name="Window2" parent="EastWall" instance=ExtResource("r14")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23.57, 0, -15)
+
+[node name="Window3" parent="EastWall" instance=ExtResource("r14")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23.57, 0, -21)
+
+[node name="EastWallBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 23.57, 2.55, -12)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWallBody"]
+shape = SubResource("Shape_EastWallBody")
+
+[node name="SouthWall" type="Node3D" parent="."]
+
+[node name="LowWest" parent="SouthWall" instance=ExtResource("r9")]
+transform = Transform3D(0.5, 0, -0, 0, 1, 0, 0, 0, 1, 1, 0, -0.1)
+
+[node name="LowMid" parent="SouthWall" instance=ExtResource("r9")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 12, 0, -0.1)
+
+[node name="LowEast" parent="SouthWall" instance=ExtResource("r9")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 20, 0, -0.1)
+
+[node name="LowCorner" parent="SouthWall" instance=ExtResource("r9")]
+transform = Transform3D(0.5, 0, -0, 0, 1, 0, 0, 0, 1, 23, 0, -0.1)
+
+[node name="EntryArch" parent="SouthWall" instance=ExtResource("r10")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, 0, -0.1)
+
+[node name="SouthLowWestBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 1, 0.665, -0.1)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthLowWestBody"]
+shape = SubResource("Shape_SouthLowWestBody")
+
+[node name="SouthLowMidBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 12, 0.665, -0.1)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthLowMidBody"]
+shape = SubResource("Shape_SouthLowMidBody")
+
+[node name="SouthLowEastBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 21, 0.665, -0.1)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthLowEastBody"]
+shape = SubResource("Shape_SouthLowEastBody")
+
+[node name="EntryPostWest" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2.7, 2.2, -0.1)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryPostWest"]
+shape = SubResource("Shape_EntryPostWest")
+
+[node name="EntryPostEast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 9.3, 2.2, -0.1)
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryPostEast"]
+shape = SubResource("Shape_EntryPostEast")
+
+[node name="EntryLanternWest" parent="." instance=ExtResource("r13")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 1.6, 0, -1.4)
+
+[node name="EntryLanternEast" parent="." instance=ExtResource("r13")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 10.4, 0, -1.4)
+
+[node name="PillarSW" parent="." instance=ExtResource("r15")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, -0.1)
+
+[node name="PillarSE" parent="." instance=ExtResource("r15")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 24, 0, -0.1)
+
+[node name="PillarNW" parent="." instance=ExtResource("r15")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 0, 0, -24)
+
+[node name="PillarNE" parent="." instance=ExtResource("r15")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 24, 0, -24)
 
 [node name="EntryTrigger" type="Area3D" parent="."]
-position = Vector3(6, 3.6, -2.05)
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, 3.6, -2.05)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
@@ -185,54 +593,32 @@ monitorable = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EntryTrigger"]
 shape = SubResource("EntryTriggerShape")
 
-[node name="EntryGate" parent="." instance=ExtResource("gate")]
-position = Vector3(6, 0, -0.1)
+[node name="EntryGate" parent="." instance=ExtResource("r16")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, 0, -0.1)
 starts_open = true
 
-[node name="EntryFarWall" type="StaticBody3D" parent="."]
-position = Vector3(19, 3.7, -0.2)
-collision_mask = 0
+[node name="ExitGate" parent="." instance=ExtResource("r16")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.34, 1.8, -14)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="EntryFarWall"]
-position = Vector3(0, -2.9, 0)
-shape = SubResource("EntryFarWallShape")
-
-[node name="Stone" type="MeshInstance3D" parent="EntryFarWall"]
-position = Vector3(0, -2.975, 0)
-mesh = SubResource("EntryFarWallMesh")
-
-[node name="SecretWall" parent="." node_paths=PackedStringArray("sources") instance=ExtResource("secret_wall")]
-position = Vector3(16, 0, -0.2)
+[node name="SecretWall" parent="." node_paths=PackedStringArray("sources") instance=ExtResource("r17")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 16, 0, -0.2)
 persistent_id = &"level_1.wind_secret_wall"
 sources = [NodePath("..")]
 
-[node name="SecretRubble" parent="." instance=ExtResource("rubble")]
-transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, 13.4, 0, -0.85)
+[node name="SecretRubble" parent="." instance=ExtResource("r18")]
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 13.4, 0, -0.85)
 
-[node name="ExitGate" parent="." instance=ExtResource("gate")]
-position = Vector3(0.35, 1.7, -14)
-rotation_degrees = Vector3(0, 90, 0)
+[node name="EnergyDummy" parent="." instance=ExtResource("r19")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 3, 0, -6)
 
-[node name="EnergyDummy" parent="." instance=ExtResource("dummy")]
-position = Vector3(12, 0, -2.25)
-rotation_degrees = Vector3(0, -20, 0)
+[node name="NicheLantern" parent="." instance=ExtResource("r13")]
+transform = Transform3D(0.66, 0, -0, 0, 0.66, 0, 0, 0, 0.66, 0.3, 0, -6)
 
-[node name="RechargeLabel" type="Label3D" parent="EnergyDummy"]
-position = Vector3(0, 2.4, 0)
-billboard = 1
-pixel_size = 0.01
-text = "Đánh để hồi mana"
-font_size = 36
+[node name="BeetleTutorialTrigger" parent="." instance=ExtResource("r21")]
+transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, 1.5, -3.2)
+tutorial = ExtResource("r20")
 
-[node name="FarPierLeft" parent="." instance=ExtResource("pillar")]
-position = Vector3(0.3, 0, -19.7)
-scale = Vector3(0.8, 0.7, 0.8)
-
-[node name="FarPierRight" parent="." instance=ExtResource("pillar")]
-position = Vector3(19.7, 0, -19.7)
-scale = Vector3(0.8, 0.7, 0.8)
-
-[node name="FirstWave" parent="." instance=ExtResource("encounter")]
+[node name="FirstWave" parent="." instance=ExtResource("r22")]
 spawn_interval = 0.0
 enemies_visible_before_start = false
 aggro_on_start = false
@@ -241,11 +627,10 @@ clear_trauma = 0.0
 [node name="Trigger" parent="FirstWave" index="0"]
 monitoring = false
 
-[node name="BurrowBeetle1" parent="FirstWave/Enemies" instance=ExtResource("beetle")]
-position = Vector3(6, 0, -10.4)
-rotation_degrees = Vector3(0, 180, 0)
+[node name="BurrowBeetle1" parent="FirstWave/Enemies" instance=ExtResource("r23")]
+transform = Transform3D(-1, 0, -0, 0, 1, 0, 0, 0, -1, 12, 0, -11.5)
 
-[node name="SecondWave" parent="." instance=ExtResource("encounter")]
+[node name="SecondWave" parent="." instance=ExtResource("r22")]
 spawn_interval = 0.9
 enemies_visible_before_start = false
 aggro_on_start = false
@@ -254,14 +639,11 @@ clear_trauma = 0.0
 [node name="Trigger" parent="SecondWave" index="0"]
 monitoring = false
 
-[node name="BurrowBeetle1" parent="SecondWave/Enemies" instance=ExtResource("beetle")]
-position = Vector3(6.4, 0, -8.8)
-rotation_degrees = Vector3(0, 180, 0)
+[node name="BurrowBeetle1" parent="SecondWave/Enemies" instance=ExtResource("r23")]
+transform = Transform3D(-1, 0, -0, 0, 1, 0, 0, 0, -1, 8.5, 0, -13)
 
-[node name="BurrowBeetle2" parent="SecondWave/Enemies" instance=ExtResource("beetle")]
-position = Vector3(11.4, 0, -9.7)
-rotation_degrees = Vector3(0, 180, 0)
-
+[node name="BurrowBeetle2" parent="SecondWave/Enemies" instance=ExtResource("r23")]
+transform = Transform3D(-1, 0, -0, 0, 1, 0, 0, 0, -1, 15.5, 0, -10.5)
 
 [editable path="FirstWave"]
 

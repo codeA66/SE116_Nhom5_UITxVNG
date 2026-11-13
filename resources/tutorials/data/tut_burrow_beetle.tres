@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3]
+
+[ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"burrow_beetle"
+title = "Bọ Đất"
+category = "Kẻ Địch"
+input_action = &"skill"
+prompt_template = "Đạn đá bay tới thì nhấn {key} để thổi ngược lại."
+summary = "Mai đá chặn mọi đòn. Chỉ viên đá của chính nó bị thổi ngược mới hạ được Bọ."
+sections = Array[Dictionary]([{
+"heading": "Phản đạn",
+"text": "Chờ Bọ nhả đạn đá, Thổi Gió đúng lúc để viên đá bay ngược vào nó.",
+"warning": false
+}, {
+"heading": "Đừng lại quá gần",
+"text": "Đứng sát quá Bọ sẽ chui xuống đất. Giữ khoảng cách để nó trồi lên bắn.",
+"warning": true
+}, {
+"heading": "Hết gió?",
+"text": "Chém hình nộm trong sân để hồi năng lượng.",
+"warning": false
+}])
+hint = "[E] Thổi Gió  •  [H] Sổ Hướng Dẫn"
+order = 9

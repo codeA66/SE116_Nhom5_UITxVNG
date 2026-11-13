@@ -16,11 +16,21 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _build_visual(visual_root: Node3D) -> void:
-	_interactable.prompt_text = "Nhặt %s" % weapon.display_name
+	_update_prompt()
 	if weapon.model_scene:
 		var model := weapon.model_scene.instantiate() as Node3D
 		model.scale = Vector3.ONE * weapon.model_scale
 		visual_root.add_child(model)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and not Engine.is_editor_hint() and is_node_ready():
+		_update_prompt()
+
+
+func _update_prompt() -> void:
+	if weapon != null and is_instance_valid(_interactable):
+		_interactable.prompt_text = tr("Nhặt %s") % tr(weapon.display_name)
 
 
 func _can_be_picked_by(interactor: Node3D) -> bool:

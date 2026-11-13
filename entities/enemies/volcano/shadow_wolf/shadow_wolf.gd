@@ -5,7 +5,10 @@ extends Enemy
 ## Sợ lửa: nhận thêm sát thương lửa, trúng lửa thì hiện rõ và bỏ chạy (WolfFlee); player cầm đuốc cháy
 ## hoặc đang bốc cháy thì không dám vồ / cắn. Script này là API mỏng cho các state.
 
+# Phát từ state WolfPounce (class khác) nên Godot tưởng không dùng
+@warning_ignore("unused_signal")
 signal pounce_started
+@warning_ignore("unused_signal")
 signal pounce_landed(hit: bool)
 signal feared
 
