@@ -68,34 +68,29 @@ func _test_unlock_once() -> void:
 
 
 func _test_popup() -> void:
-	print("\nTest 3: TutorialPopup hiển thị và đóng")
+	print("\nTest 3: Gợi ý Di chuyển → Lướt")
 	var popup: TutorialPopup = POPUP_SCENE.instantiate()
 	add_child(popup)
-	await get_tree().process_frame
-	
-	_assert(not popup.visible, "Popup ban đầu ẩn")
-	
-	# Mở khóa dash để kích hoạt popup
+	var opened: Array[TutorialData] = []
+	popup.popup_opened.connect(func(tutorial: TutorialData) -> void: opened.append(tutorial))
+	popup.show_tutorial(TUTORIAL_DATA)
 	GameState.unlock_tutorial(TUTORIAL_DASH)
-	await get_tree().process_frame
-	
-	_assert(popup.visible, "Popup hiện lên khi có tutorial mới")
+
+	_assert(popup.visible and opened == [TUTORIAL_DATA], "Hiện Di chuyển trước")
 	var key_node: Control = popup.get_first_key_glyph()
-	_assert(key_node != null and key_node.get(&"text") == "Shift", "Tự động lấy đúng phím [Shift] từ InputMap action dash")
-	var art_box: Control = popup.get_node(^"%ArtBox")
-	_assert(not art_box.visible, "ArtBox tự ẩn khi tutorial không có hình ảnh để dồn chữ lên")
-	
-	popup.dismiss()
+	_assert(key_node != null and key_node.get(&"text") == "W", "Hiện đúng phím đầu từ Input Map")
+	popup._on_state_changed(&"Idle", &"Jump")
 	await get_tree().create_timer(0.3).timeout
-	_assert(not popup.visible, "Popup đóng lại sau khi dismiss")
-	
-	# Test nhiều phím trong prompt_template (WASD + H)
-	_assert(TUTORIAL_DATA.get_key_at(0) == "W", "Key 1 là W")
-	_assert(TUTORIAL_DATA.get_key_at(1) == "A", "Key 2 là A")
-	_assert(TUTORIAL_DATA.get_key_at(2) == "S", "Key 3 là S")
-	_assert(TUTORIAL_DATA.get_key_at(3) == "D", "Key 4 là D")
-	_assert(TUTORIAL_DATA.get_key_at(4) == "H", "Key 5 là H")
-	
+	_assert(opened.size() == 1, "Nhảy không bỏ qua gợi ý Di chuyển")
+
+	popup._on_state_changed(&"Idle", &"Run")
+	await get_tree().create_timer(0.3).timeout
+	_assert(opened == [TUTORIAL_DATA, TUTORIAL_DASH], "Đã di chuyển thì hiện Lướt")
+	key_node = popup.get_first_key_glyph()
+	_assert(key_node != null and key_node.get(&"text") == "Shift", "Hiện đúng phím Lướt")
+	popup._on_state_changed(&"Run", &"Dash")
+	await get_tree().create_timer(0.3).timeout
+	_assert(not popup.visible, "Lướt xong thì gợi ý tự ẩn")
 	popup.queue_free()
 
 
@@ -131,7 +126,7 @@ func _test_hub_and_trigger() -> void:
 	_assert(trigger != null, "Tìm thấy IntroTutorialTrigger trong Hub")
 	_assert(trigger.tutorial != null and trigger.tutorial.id == &"movement", "Trigger gán đúng tutorial movement")
 	_assert(trigger.tutorials.size() == 2, "Trigger chứa chuỗi 2 tutorial (movement & dash)")
-	_assert(trigger.delay_after_cutscene == 4.0, "delay_after_cutscene là 4.0 giây theo cấu hình")
+	_assert(is_zero_approx(trigger.delay_after_cutscene), "Hiện gợi ý ngay sau cutscene")
 	_assert(trigger.wait_for_cutscene != null, "Trigger liên kết đúng với IntroCutscene")
 	hub.queue_free()
 

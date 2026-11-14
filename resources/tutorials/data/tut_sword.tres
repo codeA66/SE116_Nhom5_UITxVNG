@@ -8,7 +8,7 @@ id = &"sword"
 title = "Kiếm Thép (Cận Chiến)"
 category = "Chiến Đấu"
 input_actions = Array[StringName]([&"attack"])
-prompt_template = "Nhấn {key1} để chém kiếm liên hoàn."
+prompt_template = "{key} Chém"
 summary = "Vũ khí cận chiến sắc bén, chém chuỗi combo 3 đòn bất kỳ lúc nào bằng chuột trái và có thể dung hợp nguyên tố."
 sections = Array[Dictionary]([{
 "heading": "Đòn đánh combo 3 nhát",
@@ -21,3 +21,5 @@ sections = Array[Dictionary]([{
 }])
 lore = "Thanh kiếm rèn từ thép cổ đền thờ, nhẹ và bén ngót trong tay chú Cáo."
 order = 3
+wait_for_action = true
+completion_state = &"Attack"
