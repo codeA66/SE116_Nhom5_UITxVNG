@@ -52,6 +52,8 @@
 
 [ext_resource type="PackedScene" path="res://objects/core/pickups/key/key_drop.tscn" id="bear_seal_drop"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/ability/wind_seal_upgrade.tscn" id="wind_seal_pickup"]
+[ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint_hint/checkpoint_hint.tscn" id="checkpoint_hint"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_11p2m"]
 render_priority = -1
 shader = ExtResource("3_xudqy")
@@ -150,6 +152,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18)
 
 [node name="Room02Foyer" parent="Rooms/Tier1" unique_id=646146326 instance=ExtResource("8_kxfex")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -2)
+
+[node name="CheckpointHint" parent="Rooms/Tier1/Room02Foyer/Checkpoint" instance=ExtResource("checkpoint_hint")]
 
 [node name="Room03BannerCorridor" parent="Rooms/Tier1" unique_id=964583276 instance=ExtResource("9_ujoiv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, -2)
@@ -374,6 +378,7 @@ area = ExtResource("area_tier_3")
 [editable path="Rooms/Tier1/Room06TowerBase"]
 [editable path="Rooms/Tier1/Room06TowerBase/TowerFight"]
 [editable path="Rooms/Tier1/Room09GrandStair"]
+[editable path="Rooms/Tier1/Room02Foyer"]
 [editable path="Rooms/Tier2/T2Room26Treasure"]
 [editable path="SecretZone"]
 [editable path="Tier2Zone"]

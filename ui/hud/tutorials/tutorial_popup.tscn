@@ -2,9 +2,31 @@
 
 [ext_resource type="Script" path="res://ui/hud/tutorials/tutorial_popup.gd" id="1_popup"]
 [ext_resource type="Theme" path="res://ui/theme/menu_theme.tres" id="2_theme"]
+
+[sub_resource type="Shader" id="FocusShader"]
+code = "shader_type canvas_item;
+uniform vec2 focus_center = vec2(0.0);
+uniform vec2 focus_radius = vec2(0.1);
+void fragment() {
+	vec2 p = (UV - focus_center) / max(focus_radius, vec2(0.001));
+	COLOR = vec4(0.024, 0.035, 0.046, COLOR.a * smoothstep(0.72, 1.18, length(p)));
+}"
+
+[sub_resource type="ShaderMaterial" id="FocusMaterial"]
+resource_local_to_scene = true
+shader = SubResource("FocusShader")
+
 [node name="TutorialPopup" type="CanvasLayer"]
 layer = 10
 script = ExtResource("1_popup")
+
+[node name="EnergyFocus" type="ColorRect" parent="."]
+visible = false
+material = SubResource("FocusMaterial")
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
 
 [node name="Root" type="CenterContainer" parent="."]
 anchor_top = 0.73

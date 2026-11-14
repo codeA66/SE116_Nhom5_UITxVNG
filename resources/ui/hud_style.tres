@@ -107,15 +107,17 @@ texture_overrides = Dictionary[StringName, Texture2D]({
 &"wind_blast": SubResource("WindArt")
 })
 margin = Vector2(21, 17)
-health_offset = Vector2(111, 0)
-currency_offset = Vector2(111, 27)
-skills_offset = Vector2(111, 57)
+health_offset = Vector2(124, 0)
+currency_offset = Vector2(124, 27)
+skills_offset = Vector2(124, 57)
 layout_gap = 5.0
 health_icon_size = Vector2(26, 26)
 health_spacing = 5
-energy_size = Vector2(104, 114)
+energy_size = Vector2(116, 127)
 energy_diameter = 68.0
 energy_rim = 5.0
+energy_drop_time = 0.32
+energy_fill_time = 0.38
 energy_shell_color = Color(0.53, 0.28, 0.17, 1)
 energy_shell_accent = Color(0.84, 0.57, 0.34, 1)
 energy_label = ""

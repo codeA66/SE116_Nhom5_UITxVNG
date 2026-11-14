@@ -32,15 +32,25 @@ static var _token_regex: RegEx
 @export var display_duration: float = 6.0
 @export var entrance_offset: float = 6.0
 
+@export_group("Hướng dẫn Linh lực")
+@export_range(0.0, 1.0) var focus_opacity: float = 0.24
+@export var focus_preview_time: float = 2.8
+@export var focus_spend_time: float = 0.95
+
 var _queue: Array[TutorialData] = []
 var _current: TutorialData
 var _closing: bool = false
 var _tween: Tween
 var _first_key_glyph: Control
+var _energy_bar: EnergyBar
+var _focus_tween: Tween
+var _spend_shown: bool = false
 
 @onready var _root: Control = $Root
 @onready var _prompt: HBoxContainer = %Prompt
 @onready var _timeout: Timer = $Timeout
+@onready var _focus: ColorRect = $EnergyFocus
+@onready var _focus_material: ShaderMaterial = _focus.material as ShaderMaterial
 
 
 func _ready() -> void:
@@ -68,6 +78,7 @@ func dismiss() -> void:
 		return
 	_closing = true
 	_timeout.stop()
+	_hide_energy_focus()
 	_tween.kill()
 	_tween = create_tween()
 	_tween.tween_property(_root, "modulate:a", 0.0, fade_duration)
@@ -81,6 +92,7 @@ func _bind_player() -> void:
 	var player: Player = ancestor as Player
 	if player == null:
 		return
+	_energy_bar = get_node_or_null(^"../EnergyBar") as EnergyBar
 	player.state_machine.state_changed.connect(_on_state_changed)
 	player.bow_cooldown_started.connect(_on_bow_shot)
 	player.skill_cooldown_started.connect(_on_skill_used)
@@ -93,12 +105,15 @@ func _on_state_changed(_previous: StringName, current: StringName) -> void:
 
 func _on_bow_shot(_duration: float) -> void:
 	if _current != null and _current.complete_on_bow_shot:
-		dismiss()
+		_show_energy_spend()
 
 
 func _on_skill_used(skill_id: StringName, _duration: float) -> void:
 	if _current != null and _current.completion_skill == skill_id:
-		dismiss()
+		if skill_id == &"wind_blast":
+			_show_energy_spend()
+		else:
+			dismiss()
 
 
 func _show_next() -> void:
@@ -106,6 +121,7 @@ func _show_next() -> void:
 		hide()
 		return
 	_current = _queue.pop_front()
+	_spend_shown = false
 	_setup_prompt(_current)
 	_root.modulate.a = 0.0
 	offset = Vector2(0.0, entrance_offset)
@@ -115,6 +131,8 @@ func _show_next() -> void:
 	_tween.parallel().tween_property(self, "offset", Vector2.ZERO, fade_duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if not _current.wait_for_action:
 		_timeout.start(display_duration)
+	if _current.completion_skill == &"wind_blast":
+		_show_energy_focus(focus_preview_time, _hide_energy_focus)
 	popup_opened.emit(_current)
 
 
@@ -125,6 +143,46 @@ func _finish_current() -> void:
 	popup_closed.emit(finished)
 	if _current == null:
 		_show_next()
+
+
+func _show_energy_spend() -> void:
+	if _spend_shown or _closing:
+		return
+	_spend_shown = true
+	if not is_instance_valid(_energy_bar):
+		dismiss()
+		return
+	_show_energy_focus(focus_spend_time, dismiss)
+
+
+func _show_energy_focus(hold_time: float, on_finished: Callable) -> void:
+	if not is_instance_valid(_energy_bar) or _focus.size.x <= 0.0 or _focus.size.y <= 0.0:
+		return
+	if _focus_tween != null:
+		_focus_tween.kill()
+	var bar_to_focus: Transform2D = _focus.get_global_transform_with_canvas().affine_inverse() * _energy_bar.get_global_transform_with_canvas()
+	var rect: Rect2 = bar_to_focus * Rect2(Vector2.ZERO, _energy_bar.size)
+	var radius: Vector2 = rect.size * 0.82
+	_focus_material.set_shader_parameter(&"focus_center", rect.get_center() / _focus.size)
+	_focus_material.set_shader_parameter(&"focus_radius", radius / _focus.size)
+	_focus.show()
+	_energy_bar.set_tutorial_attention(true)
+	_focus_tween = create_tween()
+	_focus_tween.tween_property(_focus, ^"color:a", focus_opacity, fade_duration)
+	_focus_tween.tween_interval(hold_time)
+	_focus_tween.tween_callback(on_finished)
+
+
+func _hide_energy_focus() -> void:
+	if not _focus.visible:
+		return
+	if _focus_tween != null:
+		_focus_tween.kill()
+	if is_instance_valid(_energy_bar):
+		_energy_bar.set_tutorial_attention(false)
+	_focus_tween = create_tween()
+	_focus_tween.tween_property(_focus, ^"color:a", 0.0, fade_duration)
+	_focus_tween.tween_callback(_focus.hide)
 
 
 static func _get_regex() -> RegEx:
