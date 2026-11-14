@@ -36,6 +36,11 @@ const KEY_LAY_BASIS := Basis(Vector3.RIGHT, PI * 0.5) * Basis(Vector3.UP, PI * 0
 
 var is_open: bool = false
 var _dissolve: ShaderMaterial
+var _left_panel: BoxShape3D
+var _right_panel: BoxShape3D
+var _right_barrier: CollisionShape3D
+var _barrier_center: Vector3
+var _barrier_width: float
 var _deny_tween: Tween
 # Người vừa bấm tương tác: hộp thoại cần biết để khóa điều khiển người đó lúc đang đọc
 var _last_interactor: Player
@@ -49,8 +54,10 @@ var _dialog: DialogBox
 @onready var lock_light: OmniLight3D = $LockLight
 
 func _ready() -> void:
+	_prepare_barrier()
 	if dissolve_material:
 		_dissolve = dissolve_material.duplicate() as ShaderMaterial
+		_dissolve.set_shader_parameter(&"panel_half_width", _barrier_width * 0.5)
 		door_panels.material_override = _dissolve
 	if key_material:
 		for mesh: MeshInstance3D in key_visual.find_children("*", "MeshInstance3D", true, false):
@@ -110,9 +117,8 @@ func begin_dissolve() -> void:
 func update_dissolve(progress: float) -> void:
 	if _dissolve:
 		_dissolve.set_shader_parameter(&"dissolve", progress)
+		_update_barrier(progress)
 	lock_light.light_energy = lerpf(2.2, 0.0, progress)
-	if progress >= 0.85:
-		barrier.set_deferred(&"disabled", true)
 
 func finish_open(remember: bool) -> void:
 	is_open = true
@@ -120,12 +126,45 @@ func finish_open(remember: bool) -> void:
 	key_visual.visible = false
 	door_panels.visible = false
 	barrier.set_deferred(&"disabled", true)
+	_right_barrier.set_deferred(&"disabled", true)
 	lock_light.light_energy = 0.0
 	set_physics_process(false)
 	if remember:
 		if not persistent_id.is_empty():
 			GameState.set_flag(persistent_id)
 		opened.emit()
+
+
+func _prepare_barrier() -> void:
+	var slab: BoxShape3D = barrier.shape as BoxShape3D
+	_barrier_center = barrier.position
+	_barrier_width = slab.size.x
+	_left_panel = slab.duplicate() as BoxShape3D
+	_right_panel = slab.duplicate() as BoxShape3D
+	barrier.shape = _left_panel
+	_right_barrier = CollisionShape3D.new()
+	_right_barrier.name = "RightBarrier"
+	_right_barrier.shape = _right_panel
+	_right_barrier.disabled = barrier.disabled
+	barrier.get_parent().add_child(_right_barrier)
+	_update_barrier(0.0)
+	if is_open:
+		_right_barrier.set_deferred(&"disabled", true)
+
+
+func _update_barrier(progress: float) -> void:
+	# Hai nửa lùi cùng mép tan để phần cửa còn nhìn thấy vẫn chắn đường.
+	var width: float = _barrier_width * (1.0 - progress) * 0.5
+	if width <= 0.001:
+		barrier.set_deferred(&"disabled", true)
+		_right_barrier.set_deferred(&"disabled", true)
+		return
+	_left_panel.size.x = width
+	_right_panel.size.x = width
+	var offset: Vector3 = Vector3.RIGHT * (_barrier_width - width) * 0.5
+	barrier.position = _barrier_center - offset
+	_right_barrier.position = _barrier_center + offset
+
 
 func _on_interacted(interactor: Node3D) -> void:
 	if interactor is Player:
