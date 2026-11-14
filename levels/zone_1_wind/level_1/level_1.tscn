@@ -260,6 +260,9 @@ encounter = NodePath("../BearFight")
 key_scene = ExtResource("wind_seal_pickup")
 key_id = &"level_1.bear_wind_seal"
 
+[node name="BearFightExitWarp" parent="Rooms/Tier2/T2Room26Treasure"]
+unlock_flag = &"level_1.bear_wind_seal"
+
 [node name="T2Room27BossGate" parent="Rooms/Tier2" unique_id=1058173484 instance=ExtResource("22_1stda")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -224)
 
@@ -371,6 +374,7 @@ area = ExtResource("area_tier_3")
 [editable path="Rooms/Tier1/Room06TowerBase"]
 [editable path="Rooms/Tier1/Room06TowerBase/TowerFight"]
 [editable path="Rooms/Tier1/Room09GrandStair"]
+[editable path="Rooms/Tier2/T2Room26Treasure"]
 [editable path="SecretZone"]
 [editable path="Tier2Zone"]
 [editable path="Tier1Zone"]
