@@ -1,0 +1,206 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/transition/loading_screen.gd" id="1"]
+
+[sub_resource type="Shader" id="ArtMotion"]
+code = "shader_type canvas_item;
+uniform bool fire = false;
+uniform float camera_drift = 0.0;
+
+float patch(vec2 uv, vec2 center, vec2 radius) {
+	vec2 p = (uv - center) / radius;
+	return 1.0 - smoothstep(0.15, 1.0, dot(p, p));
+}
+
+void fragment() {
+	vec2 uv = UV;
+	vec2 sample_uv = uv;
+	float glow = 0.0;
+	float veil = 0.0;
+	if (fire) {
+		// Giữ biến dạng sát ngọn lửa để viền kiến trúc đứng yên.
+		float flame = patch(uv, vec2(0.779, 0.620), vec2(0.058, 0.092));
+		sample_uv.x += flame * 0.004 * sin(uv.y * 88.0 + TIME * 8.0);
+		sample_uv.y += flame * 0.010 * sin(uv.x * 48.0 + TIME * 7.0);
+		glow = flame * (0.055 + 0.035 * sin(TIME * 8.2) + 0.02 * sin(TIME * 13.8));
+	} else {
+		// Chân cầu dịch rõ hơn dãy núi xa để giữ phối cảnh khi máy quay trôi.
+		float depth = smoothstep(0.37, 0.92, uv.y);
+		float edge = smoothstep(0.0, 0.10, uv.x) * (1.0 - smoothstep(0.90, 1.0, uv.x));
+		sample_uv.x -= camera_drift * mix(0.006, 0.023, depth) * edge;
+		float cloud = patch(uv, vec2(0.76, 0.72), vec2(0.30, 0.21));
+		veil = 0.085 * cloud * smoothstep(-0.3, 0.95, sin(uv.x * 20.0 - TIME * 1.4 + uv.y * 9.0));
+	}
+	vec3 art = texture(TEXTURE, sample_uv).rgb;
+	art += glow * vec3(1.0, 0.48, 0.13);
+	art = mix(art, vec3(0.76, 0.86, 0.84), veil);
+	COLOR = vec4(art, COLOR.a);
+}"
+
+[sub_resource type="ShaderMaterial" id="Material"]
+shader = SubResource("ArtMotion")
+
+[sub_resource type="Shader" id="Wheels"]
+code = "shader_type canvas_item;
+uniform float angle = 0.0;
+
+vec2 rotate_spokes(vec2 uv, vec2 center, vec2 ratio) {
+	vec2 p = (uv - center) * ratio;
+	if (dot(p, p) > 0.078 * 0.078) {
+		return uv;
+	}
+	float c = cos(angle);
+	float s = sin(angle);
+	return center + vec2(c * p.x + s * p.y, -s * p.x + c * p.y) / ratio;
+}
+
+void fragment() {
+	vec2 ratio = vec2(TEXTURE_PIXEL_SIZE.y / TEXTURE_PIXEL_SIZE.x, 1.0);
+	vec2 uv = rotate_spokes(UV, vec2(0.37, 0.873), ratio);
+	uv = rotate_spokes(uv, vec2(0.73, 0.873), ratio);
+	COLOR = texture(TEXTURE, uv) * vec4(1.0, 1.0, 1.0, COLOR.a / max(texture(TEXTURE, UV).a, 0.001));
+}"
+
+[sub_resource type="ShaderMaterial" id="WheelMaterial"]
+shader = SubResource("Wheels")
+
+[sub_resource type="Shader" id="RiderWind"]
+code = "shader_type canvas_item;
+uniform float frame_origin = 0.0;
+varying vec4 tint;
+void vertex() {
+	tint = COLOR;
+}
+void fragment() {
+	vec2 local = vec2((UV.x - frame_origin) * 4.0, UV.y);
+	vec2 p = (local - vec2(0.24, 0.245)) / vec2(0.21, 0.082);
+	float scarf = 1.0 - smoothstep(0.05, 1.0, dot(p, p));
+	vec2 sample_uv = UV;
+	sample_uv.y += scarf * 0.021 * sin(TIME * 6.0 - local.x * 20.0);
+	COLOR = texture(TEXTURE, sample_uv) * tint;
+}"
+
+[sub_resource type="ShaderMaterial" id="RiderMaterial"]
+shader = SubResource("RiderWind")
+
+[sub_resource type="Shader" id="Mist"]
+code = "shader_type canvas_item;
+uniform float travel_phase = 0.0;
+uniform float drift_speed = 0.24;
+
+void fragment() {
+	// Lớp sương gần lướt nhanh hơn cầu và che cú nối của vòng lặp.
+	vec2 uv = UV;
+	float x = uv.x + TIME * drift_speed;
+	float crest = 0.78 + 0.058 * sin(x * 13.0) + 0.034 * sin(x * 27.0 + 2.1);
+	float bank = smoothstep(crest - 0.10, crest + 0.14, uv.y);
+	float veil = smoothstep(0.79, 0.97, travel_phase);
+	float crossing = smoothstep(0.24, 0.90, uv.x) * exp(-12.0 * abs(uv.y - 0.43));
+	COLOR = vec4(vec3(0.94, 0.91, 0.81), COLOR.a * min(0.76, 0.38 * bank + 0.63 * crossing * veil));
+}"
+
+[sub_resource type="ShaderMaterial" id="MistMaterial"]
+shader = SubResource("Mist")
+
+[sub_resource type="Gradient" id="ParticleShape"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="ParticleTexture"]
+gradient = SubResource("ParticleShape")
+width = 18
+height = 4
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="ParticleFade"]
+offsets = PackedFloat32Array(0, 0.16, 0.65, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.72, 1, 1, 1, 0.72, 1, 1, 1, 0)
+
+[sub_resource type="StyleBoxFlat" id="ProgressTrack"]
+bg_color = Color(0.07, 0.055, 0.07, 0.82)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_left = 2
+corner_radius_bottom_right = 2
+
+[sub_resource type="StyleBoxFlat" id="ProgressFill"]
+bg_color = Color(1, 1, 1, 0.85)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_left = 2
+corner_radius_bottom_right = 2
+
+[node name="LoadingScreen" type="CanvasLayer"]
+process_mode = 3
+layer = 129
+visible = false
+script = ExtResource("1")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Art" type="TextureRect" parent="Root"]
+material = SubResource("Material")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Particles" type="CPUParticles2D" parent="Root"]
+emitting = false
+amount = 30
+lifetime = 3.2
+preprocess = 1.8
+randomness = 0.55
+texture = SubResource("ParticleTexture")
+emission_shape = 3
+scale_amount_min = 0.35
+scale_amount_max = 1.15
+color_ramp = SubResource("ParticleFade")
+
+[node name="Traveler" type="Sprite2D" parent="Root"]
+material = SubResource("WheelMaterial")
+
+[node name="WindMist" type="ColorRect" parent="Root"]
+visible = false
+material = SubResource("MistMaterial")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+metadata/rider_material = SubResource("RiderMaterial")
+
+[node name="Progress" type="ProgressBar" parent="Root"]
+layout_mode = 1
+anchor_left = 0.70
+anchor_right = 0.94
+anchor_top = 0.91
+anchor_bottom = 0.91
+offset_bottom = 4.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("ProgressTrack")
+theme_override_styles/fill = SubResource("ProgressFill")
+max_value = 1.0
+step = 0.0
+show_percentage = false
+
+[node name="Marker" type="ColorRect" parent="Root/Progress"]
+layout_mode = 0
+offset_top = -2.0
+offset_right = 8.0
+offset_bottom = 6.0
+pivot_offset = Vector2(4, 4)
+rotation = 0.785398
+mouse_filter = 2

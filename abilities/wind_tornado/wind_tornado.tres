@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://abilities/wind_tornado/wind_tornado_data.gd" id="1_data"]
 [ext_resource type="Texture2D" uid="uid://cio41x1yog8s7" path="res://ui/hud/icons/wind.svg" id="2_icon"]
+[ext_resource type="Material" path="res://resources/feedback/ability_acquire/effects/wind_gust.tres" id="3_fx"]
 
 [resource]
 script = ExtResource("1_data")
@@ -13,4 +14,10 @@ icon = ExtResource("2_icon")
 accent_color = Color(0.65098, 0.87843, 0.93725, 1)
 description = "Thả một cơn lốc chạy thẳng về phía trước, hút kẻ địch vào tâm rồi nổ tung hất chúng ra xa."
 energy_cost = 2
+acquire_verb = "Đã nâng cấp"
+acquire_prompt = "Nhấn {key} để thả lốc xoáy."
+illustration_animation = &"Attack_1"
+illustration_time = 0.22
+illustration_effect = ExtResource("3_fx")
 travel_speed = 15.0
+burst_push_speed = 9.0

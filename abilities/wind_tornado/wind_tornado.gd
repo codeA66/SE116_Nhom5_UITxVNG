@@ -114,8 +114,16 @@ func _affect_receivers(delta: float) -> void:
 		var distance := offset.length()
 		var is_enemy := receiver.owner is Enemy
 		# Chỉ hút quái: vật giải đố (thuyền, đạn, đá) không bị kéo lệch khỏi chỗ của nó
-		if is_enemy and distance <= _data.pull_radius and distance > _data.hold_radius:
-			receiver.push(offset / distance * _data.pull_accel * delta)
+		if is_enemy and distance <= _data.pull_radius:
+			# Kéo vận tốc quái về mục tiêu (chạy theo lốc + trôi vào tâm) thay vì cộng dồn gia tốc:
+			# cộng dồn làm quái quay vòng quanh tâm, tăng tốc mãi rồi văng rất xa khi lốc tan
+			var inward := 0.0
+			if distance > _data.hold_radius:
+				inward = _data.pull_speed * clampf((distance - _data.hold_radius) / maxf(_data.pull_radius - _data.hold_radius, 0.01), 0.2, 1.0)
+			var target := _direction * _data.travel_speed * _data.carry_ratio
+			if distance > 0.001:
+				target += offset / distance * inward
+			receiver.steer_push(target, _data.pull_accel, delta)
 		if distance <= _data.contact_radius and not receiver in _touched:
 			_touched.append(receiver)
 			if not is_enemy:
@@ -130,6 +138,9 @@ func _explode() -> void:
 	for receiver in _receivers:
 		if not is_instance_valid(receiver):
 			continue
+		# Quái đang bị lốc giữ: bỏ đà bị cuốn trước khi hất, kể cả con đã trôi ra ngoài tầm nổ
+		if receiver.owner is Enemy:
+			receiver.clear_push()
 		var offset := receiver.global_position - center
 		offset.y = 0.0
 		var distance := offset.length()
@@ -168,3 +179,6 @@ func _on_receiver_exited(area: Area3D) -> void:
 	var receiver := area as WindReceiverComponent
 	if receiver:
 		_receivers.erase(receiver)
+		# Quái thoát khỏi lốc giữa đường thì mất đà gió luôn, không trôi tiếp theo tốc độ lốc
+		if _alive and receiver.owner is Enemy:
+			receiver.clear_push()

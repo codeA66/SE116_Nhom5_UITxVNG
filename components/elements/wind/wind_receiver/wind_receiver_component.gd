@@ -45,6 +45,19 @@ func is_being_pushed() -> bool:
 	return not _push_velocity.is_zero_approx()
 
 
+## Kéo đà trôi dần về một vận tốc mục tiêu (rate: m/s²). Khác push(): có trần tốc độ, vật bị giữ trong lốc / dòng
+## không bị dồn đà mãi thành văng xa
+func steer_push(target: Vector3, rate: float, delta: float) -> void:
+	if not enabled or _push_immune:
+		return
+	_push_velocity = _push_velocity.move_toward(target * wind_multiplier, rate * delta)
+
+
+## Bỏ hết đà trôi còn lại (cú hất mới thay hẳn đà cũ, ví dụ lốc nổ không cộng dồn với đà bị cuốn trước đó)
+func clear_push() -> void:
+	_push_velocity = Vector3.ZERO
+
+
 func set_push_immunity(immune: bool) -> void:
 	_push_immune = immune
 	if immune: _push_velocity = Vector3.ZERO
