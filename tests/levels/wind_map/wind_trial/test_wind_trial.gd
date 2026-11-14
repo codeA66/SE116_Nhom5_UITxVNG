@@ -87,14 +87,14 @@ func _run() -> void:
 	_check(shot_frames.size() == 2 and shot_frames[1] - shot_frames[0] >= 30, "TC10 hai phát đầu cách nhau ít nhất nửa giây")
 
 	_player.energy.set_current(0)
-	# Hình nộm hồi năng lượng đứng trong hốc tường tây: đứng trước mặt nó rồi chém
-	var dummy := _trial.get_node(^"EnergyDummy") as Node3D
+	# Cụm thùng gỗ hồi năng lượng trong hốc tường tây: đứng trước thùng đầu rồi chém
+	var dummy := _trial.get_node(^"EnergyCrate1") as Node3D
 	_player.teleport(dummy.global_position + Vector3(1.6, 0.05, 0), Vector3.LEFT)
 	await _frames(10)
 	_aim_at(dummy.global_position)
 	await _press(&"attack")
 	await _frames(55)
-	_check(_player.energy.current > 0, "TC11 chém hình nộm nạp lại gió từ 0")
+	_check(_player.energy.current > 0, "TC11 chém thùng gỗ nạp lại gió từ 0")
 	_player.energy.set_current(3)
 	await _reflect(left)
 	_check(not _exit_gate.is_open and _old_stair_blocked(), "TC12 còn một Bọ thì cửa vẫn khóa")
