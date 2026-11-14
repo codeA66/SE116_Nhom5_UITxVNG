@@ -8,6 +8,8 @@ uniform int dirt_layout : hint_range(0, 5) = 0;
 uniform vec2 room_origin = vec2(0.0);
 uniform vec2 map_offset = vec2(0.0);
 uniform vec2 room_half_size = vec2(16.0);
+uniform bool offering_hatches = false;
+uniform vec2 hatch_centers[5];
 varying vec3 world_position;
 varying vec3 world_normal;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
@@ -41,6 +43,12 @@ float dirt_mask(vec2 p) {
 }
 void vertex() { world_position = VERTEX; world_normal = NORMAL; }
 void fragment() {
+ if (offering_hatches) {
+  for (int i = 0; i < 5; i++) {
+   vec2 gap = abs(world_position.xz - hatch_centers[i]);
+   if (gap.x < 0.84 && gap.y < 0.84) discard;
+  }
+ }
  vec2 p = world_position.xz-map_offset;
  vec2 cell = floor(p / 1.9);
  float variation = hash(cell);

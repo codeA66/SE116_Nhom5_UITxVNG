@@ -47,7 +47,11 @@ func is_being_pushed() -> bool:
 
 func set_push_immunity(immune: bool) -> void:
 	_push_immune = immune
-	if immune: _push_velocity = Vector3.ZERO
+	if immune: clear_push()
+
+
+func clear_push() -> void:
+	_push_velocity = Vector3.ZERO
 
 
 ## Gọi từ cú thổi: cộng vận tốc trôi, đi chung đường với gió vùng nên không xuyên tường

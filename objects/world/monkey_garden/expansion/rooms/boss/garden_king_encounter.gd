@@ -4,6 +4,10 @@ signal cleared
 signal intro_requested
 signal approached(player: Player)
 signal guard_registered(guard: Enemy)
+const CUT := preload("res://levels/zone_1_wind/level_1/rooms/tier_3/test_runtime/tier3_camera_cut.gd")
+const FINISHER_SCALE := 0.4
+const FINISHER_TRAVEL := 0.16
+const FINISHER_HOLD := 1.22
 @export var guards: Array[Enemy] = []
 @export var encounter_flag: StringName = &"level_1.monkey_king_defeated"
 @export var introduction: CameraCutscene
@@ -41,7 +45,9 @@ func _setup() -> void:
 		if not is_instance_valid(guard) or guard.is_dead(): continue
 		guard.set_dormant(true); guard.process_mode = Node.PROCESS_MODE_DISABLED
 		_track_guard(guard)
-	if is_instance_valid(leader): leader.summoner.summoned.connect(_on_summoned)
+	if is_instance_valid(leader):
+		leader.summoner.summoned.connect(_on_summoned)
+		leader.hurtbox.hurt.connect(_on_leader_hurt)
 
 func _track_guard(guard: Enemy) -> void:
 	if not is_instance_valid(guard) or guard in _tracked or guard.is_dead(): return
@@ -106,6 +112,24 @@ func _died(enemy: Enemy) -> void:
 		# Chết theo dây chuyền ngoài callback physics, vẫn đi qua Health/FSM và hủy ngòi nổ bình thường.
 		_defeat_followers.call_deferred()
 	elif _alive<=0: _complete()
+
+func _on_leader_hurt(info: DamageInfo, damage_taken: int) -> void:
+	# Hurtbox phát sau khi Health đã chuyển boss vào Dead.
+	var attacker := info.source as Player
+	if not started or damage_taken <= 0 or not leader.is_dead() or not is_instance_valid(attacker):
+		return
+	_play_finisher.call_deferred(attacker, leader.global_position + Vector3.UP * 1.25)
+
+func _play_finisher(attacker: Player, focus: Vector3) -> void:
+	if not is_instance_valid(attacker) or attacker.health.is_dead() or SceneManager.is_busy():
+		return
+	var camera := CUT.new()
+	add_child(camera)
+	HitStop.begin_cinematic(camera, FINISHER_SCALE)
+	await camera.start(attacker, focus, Vector3(2.6, 4.8, 8.0), 9.0, FINISHER_TRAVEL).finished
+	await get_tree().create_timer(FINISHER_HOLD, false).timeout
+	HitStop.end_cinematic(camera)
+	await camera.finish()
 
 func _defeat_followers() -> void:
 	for guard: Enemy in guards:

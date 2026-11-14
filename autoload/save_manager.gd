@@ -16,12 +16,14 @@ const SLOT_FILE_FORMAT := "save_%d.json"
 const META_FILE := "save_meta.cfg"
 ## File save trước khi có nhiều ô: tự chuyển sang ô 1 lần đầu chạy bản mới
 const LEGACY_PATH := "user://savegame.json"
+const PHYSICS_DRAIN := preload("res://ui/transition/scene_physics_drain.gd")
 ## Tăng khi đổi định dạng file, kèm xử lý chuyển đổi trong from_dict
 const SAVE_VERSION := 6
 
 var current_slot: int = 1
 ## Thư mục chứa các file hồ sơ. Test đổi sang thư mục riêng để không bao giờ đụng save thật của người chơi
 var storage_dir: String = "user://"
+var _resetting: bool = false
 
 
 func _ready() -> void:
@@ -34,7 +36,7 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Phím xóa save chỉ có trong bản debug, bản export không bị ảnh hưởng
-	if OS.is_debug_build() and event.is_action_pressed(&"debug_reset_save"):
+	if OS.is_debug_build() and event.is_action_pressed(&"debug_reset_save") and not event.is_echo():
 		reset_game()
 
 
@@ -114,9 +116,23 @@ func delete_save() -> void:
 
 ## Xóa save, về tiến trình trống và tải lại scene hiện tại
 func reset_game() -> void:
+	var tree := get_tree()
+	var scene := tree.current_scene
+	if _resetting or SceneManager.is_busy() or scene == null:
+		return
+	_resetting = true
+	var physics_drain := PHYSICS_DRAIN.new()
+	await physics_drain.prepare(scene)
 	delete_save()
 	GameState.replace_progress(PlayerProgress.new())
-	get_tree().reload_current_scene()
+	var error := tree.reload_current_scene()
+	if error == OK:
+		physics_drain.clear()
+		await tree.scene_changed
+	else:
+		await physics_drain.restore()
+		push_error("SaveManager: không tải lại được scene (%s)" % error)
+	_resetting = false
 
 
 ## Tiến trình -> từ điển ghi file JSON (public để test kiểm định dạng mà không ghi file thật)

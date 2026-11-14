@@ -1,10 +1,11 @@
 class_name BananaBomber
 extends MonkeyGrunt
-## Ngòi nổ truy đuổi; E đặt lại đồng hồ và chuyển sang state hất rồi mới nổ.
+## Ngòi nổ bắt đầu khi áp sát; E chuyển sang đếm theo cú hất rồi mới nổ.
 signal armed
 signal exploded
 const BLAST: PackedScene = preload("res://assets/vfx/enemies/monkey/banana_blast/banana_blast.tscn")
-@export_range(0.1, 15.0, 0.1) var fuse_time: float = 2.0
+@export_range(0.05, 15.0, 0.05) var fuse_time: float = 0.5
+@export_range(0.1, 8.0, 0.1) var fuse_trigger_radius: float = 1.8
 @export_range(0.1, 3.0, 0.05) var speed_multiplier: float = 1.3
 @export_range(0.0, 0.5, 0.01) var wind_detonation_delay: float = 0.05
 @export var blast_radius: float = 3.2
@@ -13,6 +14,7 @@ var is_armed: bool = false
 var fuse_elapsed: float = 0.0
 var is_wind_launched: bool = false
 var wind_launch_direction: Vector3
+var _proximity_fuse_started: bool = false
 var _wind_fuse_duration: float = 0.0
 var _exploding: bool = false
 var detonated: bool = false
@@ -71,8 +73,18 @@ func _on_target_entered(body: Node3D) -> void:
 func _pre_state_update(delta: float) -> void:
 	super(delta)
 	if not is_armed or is_dead() or _exploding: return
+	if is_wind_launched:
+		fuse_elapsed += delta
+		return
+	if not _proximity_fuse_started:
+		var player := target as Player
+		if not is_instance_valid(player) or player.health.is_dead():
+			return
+		if global_position.distance_squared_to(player.global_position) > fuse_trigger_radius * fuse_trigger_radius:
+			return
+		_proximity_fuse_started = true
 	fuse_elapsed += delta
-	if not is_wind_launched and fuse_elapsed >= maxf(fuse_time, 0.1):
+	if fuse_elapsed >= maxf(fuse_time, 0.05):
 		_exploding = true
 		_detonate_if_pending.call_deferred()
 
@@ -82,7 +94,7 @@ func _process(delta: float) -> void:
 	_banana.global_rotation = Vector3(0, model.rotation.y, 0)
 	if not is_armed or is_dead(): return
 	var duration: float = _wind_fuse_duration if is_wind_launched else fuse_time
-	var progress: float = clampf(fuse_elapsed / maxf(duration,0.1),0,1)
+	var progress: float = clampf(fuse_elapsed / maxf(duration,0.05),0,1)
 	_blink_phase += delta * lerpf(2.0,20.0,progress*progress) * TAU
 	var amount: float = smoothstep(-0.2,0.2,sin(_blink_phase))
 	_bomb_material.vertex_color_use_as_albedo = false
