@@ -1,143 +1,326 @@
 class_name CharmsPage
 extends MenuPage
-## Trang Bùa (luôn hiện): hàng "đang đeo" + hạt ô khắc ở trên, lưới "bộ sưu tập" mọi bùa của game ở dưới
-## (bùa chưa tìm thấy là bóng tối "?"). Enter để đeo / tháo, chỉ khi đứng ở khu đổi bùa (CharmStation).
-## Đeo / tháo: bùa bay giữa lưới và hàng đang đeo, hạt ô khắc sáng / tắt lần lượt. Bị từ chối: ô rung + dòng trạng thái đỏ.
-## Thêm bùa = thêm .tres vào ItemCatalog.charms, không sửa trang này.
+## Cập nhật ô theo tiến trình để đổi con trỏ, ngôn ngữ hay khu vực không dựng lại lưới.
 
 var _grid_tiles: Array[CharmTile] = []
 var _equipped_tiles: Array[CharmTile] = []
+var _spare_tiles: Array[CharmTile] = []
 var _ghost: CharmTile
+var _flight_target: CharmTile
+var _flight_tween: Tween
+var _flight_id: int = 0
 var _status_tween: Tween
-var _last_used: int = 0
+var _tiles_dirty: bool = true
+var _status_dirty: bool = true
+var _instant_notches: bool = true
+var _owned_count: int = 0
+var _room: int = 0
+var _denial: String = ""
 
-@onready var _equipped_heading: Label = $Layout/EquippedHeading
-@onready var _equipped_row: HBoxContainer = $Layout/Equipped
-@onready var _notches: NotchRow = $Layout/Notches
-@onready var _notch_label: Label = $Layout/NotchLabel
+@onready var _layout: VBoxContainer = $Layout
+@onready var _loadout: VBoxContainer = $Layout/Loadout
+@onready var _equipped_heading: Label = $Layout/Loadout/Heading
+@onready var _equipped_scroll: ScrollContainer = $Layout/Loadout/Scroll
+@onready var _equipped_margin: MarginContainer = $Layout/Loadout/Scroll/Margin
+@onready var _equipped_row: HBoxContainer = $Layout/Loadout/Scroll/Margin/Equipped
+@onready var _capacity: HBoxContainer = $Layout/Loadout/Capacity
+@onready var _notches: NotchRow = $Layout/Loadout/Capacity/Notches
+@onready var _notch_label: Label = $Layout/Loadout/Capacity/NotchLabel
 @onready var _collection_heading: Label = $Layout/CollectionHeading
-@onready var _grid: GridContainer = $Layout/Scroll/Margin/Grid
-@onready var _scroll: ScrollContainer = $Layout/Scroll
-@onready var _empty: Label = $Layout/Empty
-@onready var _status: Label = $Layout/Status
-@onready var _rule: OrnamentDivider = $Layout/Rule
+@onready var _grid: GridContainer = $Layout/Collection/Scroll/Margin/Grid
+@onready var _scroll: ScrollContainer = $Layout/Collection/Scroll
+@onready var _grid_margin: MarginContainer = $Layout/Collection/Scroll/Margin
+@onready var _empty: Label = $Layout/Collection/Empty
+@onready var _status: Label = $Layout/Loadout/Status
+@onready var _rule: HSeparator = $Layout/Rule
+
+
+func _ready() -> void:
+	GameState.charms_changed.connect(_mark_tiles_dirty)
+	GameState.progress_replaced.connect(_mark_progress_replaced)
+	GameState.charm_station_changed.connect(_mark_station_changed)
+	_scroll.resized.connect(_update_columns)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_status_dirty = true
+		_denial = ""
 
 
 func setup_style(menu_style: InventoryStyle) -> void:
 	super(menu_style)
-	_notches.color = style.ink
-	_notches.empty_color = Color(style.dim, 0.6)
+	_notches.configure(style)
 	for heading: Label in [_equipped_heading, _collection_heading, _notch_label]:
 		heading.add_theme_font_size_override(&"font_size", style.heading_font)
 		heading.add_theme_color_override(&"font_color", style.dim)
-	_empty.add_theme_font_size_override(&"font_size", style.body_font)
-	_empty.add_theme_color_override(&"font_color", style.faint)
-	_status.add_theme_font_size_override(&"font_size", style.body_font)
-	_rule.color = style.ornament
+	for label: Label in [_empty, _status]:
+		label.add_theme_font_size_override(&"font_size", style.body_font)
+		label.add_theme_color_override(&"font_color", style.dim)
+	_status.custom_minimum_size.y = _status.get_theme_default_font().get_height(style.body_font)
+	for container: Container in [_layout, _loadout, _capacity, _equipped_row]:
+		container.add_theme_constant_override(&"separation", style.charm_section_gap)
+	for margin: MarginContainer in [_equipped_margin, _grid_margin]:
+		for side: StringName in [&"margin_top", &"margin_bottom", &"margin_left", &"margin_right"]:
+			margin.add_theme_constant_override(side, style.charm_grid_inset)
+	_grid.add_theme_constant_override(&"h_separation", style.charm_tile_gap)
+	_grid.add_theme_constant_override(&"v_separation", style.charm_tile_gap)
 	_grid.columns = maxi(style.charm_columns, 1)
-	# Bóng bùa bay giữa lưới và hàng đang đeo: dựng một lần, dùng lại
+	var line: StyleBoxLine = StyleBoxLine.new()
+	line.color = Color(style.ornament, 0.28)
+	_rule.add_theme_stylebox_override(&"separator", line)
 	_ghost = CharmTile.new()
+	_ghost.setup_style(style)
+	_ghost.top_level = true
+	_ghost.z_index = 4
+	_ghost.hide()
+	add_child(_ghost)
 	_ghost.focus_mode = Control.FOCUS_NONE
 	_ghost.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_ghost.top_level = true
-	_ghost.visible = false
-	_ghost.setup_style(style)
-	add_child(_ghost)
 
 
-## Trang Bùa luôn hiện (kể cả chưa có bùa nào) để người chơi biết có hệ thống này
-func is_available() -> bool:
-	return true
+func get_body_panel_style() -> StyleBox:
+	return style.charm_panel
+
+
+func get_body_column_gap() -> int:
+	return style.charm_column_gap
+
+
+func get_custom_detail_width() -> float:
+	return style.charm_detail_width
+
+
+func configure_detail(panel: DetailPanel) -> void:
+	panel.set_art_layout(style.charm_art_size, style.charm_title_lines)
 
 
 func refresh() -> void:
+	if _tiles_dirty:
+		_tiles_dirty = false
+		_sync_tiles()
+		_status_dirty = true
+	if not _status_dirty:
+		return
+	_status_dirty = false
+	_notch_label.text = tr(style.charm_capacity_text) % [GameState.get_used_notches(), _notches.total]
+	_collection_heading.text = tr(style.charm_collection_text) % [_owned_count, _grid_tiles.size()]
+	if is_instance_valid(_last_focus) and _last_focus.has_focus():
+		_on_tile_focused(_last_focus)
+	else:
+		_update_preview(null)
+		if is_visible_in_tree():
+			focus_default()
+
+
+func focus_default() -> void:
+	if is_instance_valid(_last_focus) and _last_focus.is_visible_in_tree():
+		_last_focus.grab_focus()
+		return
+	for tile: CharmTile in _grid_tiles:
+		if tile.owned:
+			tile.grab_focus()
+			return
+	if not _grid_tiles.is_empty():
+		_grid_tiles[0].grab_focus()
+	elif not _equipped_tiles.is_empty():
+		_equipped_tiles[0].grab_focus()
+	else:
+		detail_changed.emit(null)
+
+
+func handle_cancel() -> bool:
+	_cancel_flight()
+	_clear_denial()
+	return false
+
+
+func _mark_tiles_dirty() -> void:
+	_tiles_dirty = true
+
+
+func _mark_progress_replaced() -> void:
+	_instant_notches = true
+	_mark_tiles_dirty()
+	_cancel_flight()
+	_clear_denial()
+
+
+func _mark_station_changed(_inside: bool) -> void:
+	_status_dirty = true
+	_clear_denial()
+
+
+func _sync_tiles() -> void:
 	var catalog: Array[CharmData] = []
 	for charm: CharmData in GameState.ITEMS.charms:
 		if charm:
 			catalog.append(charm)
-	var equipped: Array[CharmData] = []
-	for id: StringName in GameState.progress.equipped_charms:
-		var charm := GameState.ITEMS.get_charm(id)
-		if charm:
-			equipped.append(charm)
-	var used := GameState.get_used_notches()
-	var total := GameState.get_charm_notches()
-	_refresh_equipped(equipped, used < total)
-	_refresh_grid(catalog)
-	_notches.show_notches(_last_used if _notches.total == total else used, total)
-	_notches.animate_to(used, style.notch_step_time)
-	_last_used = used
-	_notch_label.text = tr("Ô KHẮC  %d / %d") % [used, total]
-	var owned_count := 0
-	for charm: CharmData in catalog:
-		if GameState.owns_charm(charm.id):
-			owned_count += 1
-	_collection_heading.text = tr("BỘ SƯU TẬP  %d / %d") % [owned_count, catalog.size()]
+	var used: int = GameState.get_used_notches()
+	var total: int = GameState.get_charm_notches()
+	_room = maxi(total - used, 0)
+	_refresh_equipped()
+	_resize(_grid_tiles, catalog.size(), _grid, style.charm_tile_size)
+	_owned_count = 0
+	for index: int in range(catalog.size()):
+		var charm: CharmData = catalog[index]
+		var owned: bool = GameState.owns_charm(charm.id)
+		_grid_tiles[index].setup(charm, CharmTile.Mode.COLLECTION, owned, GameState.is_charm_equipped(charm.id))
+		if owned:
+			_owned_count += 1
 	_empty.visible = catalog.is_empty()
 	_scroll.visible = not catalog.is_empty()
-	_show_status(false)
-	if is_instance_valid(_last_focus) and _last_focus.has_focus():
-		detail_changed.emit(_last_focus.get_detail())
+	_notches.set_capacity(used, total, not _instant_notches and is_visible_in_tree())
+	_instant_notches = false
 
 
-func _refresh_equipped(equipped: Array[CharmData], has_room: bool) -> void:
-	var count := equipped.size() + (1 if has_room or equipped.is_empty() else 0)
+func _refresh_equipped() -> void:
+	var equipped: Array[CharmData] = []
+	for id: StringName in GameState.progress.equipped_charms:
+		var charm: CharmData = GameState.ITEMS.get_charm(id)
+		if charm:
+			equipped.append(charm)
+	var count: int = equipped.size() + int(_room > 0 or equipped.is_empty())
 	_resize(_equipped_tiles, count, _equipped_row, style.equipped_tile_size)
-	for index in count:
+	for index: int in range(count):
 		if index < equipped.size():
 			_equipped_tiles[index].setup(equipped[index], CharmTile.Mode.EQUIPPED, true, true)
 		else:
 			_equipped_tiles[index].setup(null, CharmTile.Mode.EMPTY_SLOT, false, false)
 
 
-func _refresh_grid(catalog: Array[CharmData]) -> void:
-	_resize(_grid_tiles, catalog.size(), _grid, style.charm_tile_size)
-	for index in catalog.size():
-		var charm := catalog[index]
-		_grid_tiles[index].setup(charm, CharmTile.Mode.COLLECTION, GameState.owns_charm(charm.id), GameState.is_charm_equipped(charm.id))
-
-
+## Giữ ô đã tạo để đeo và tháo nhiều lần không phân bổ lại node.
 func _resize(tiles: Array[CharmTile], count: int, parent: Container, tile_size: Vector2) -> void:
-	while tiles.size() < count:
-		var tile := CharmTile.new()
-		tile.custom_minimum_size = tile_size
-		bind_tile(tile)
-		tile.activated.connect(_on_tile_activated)
-		parent.add_child(tile)
-		tiles.append(tile)
 	while tiles.size() > count:
-		var removed: CharmTile = tiles.pop_back()
-		if _last_focus == removed:
+		var tile: CharmTile = tiles.pop_back()
+		if _last_focus == tile:
 			_last_focus = null
-		removed.queue_free()
+		tile.hide()
+		_spare_tiles.append(tile)
+	while tiles.size() < count:
+		var tile: CharmTile
+		if _spare_tiles.is_empty():
+			tile = CharmTile.new()
+			bind_tile(tile)
+			tile.activated.connect(_on_tile_activated)
+			tile.navigation_requested.connect(_navigate)
+			parent.add_child(tile)
+		else:
+			tile = _spare_tiles.pop_back()
+			if tile.get_parent() != parent:
+				tile.reparent(parent, false)
+			parent.move_child(tile, -1)
+		tile.custom_minimum_size = tile_size
+		tile.modulate.a = 1.0
+		tile.show()
+		tiles.append(tile)
+
+
+func _update_columns() -> void:
+	if not style or _scroll.size.x <= 0.0:
+		return
+	var gap: float = float(style.charm_tile_gap)
+	var inner_width: float = _scroll.size.x - 2.0 * style.charm_grid_inset - _scroll.get_v_scroll_bar().get_combined_minimum_size().x
+	_grid.columns = clampi(floori((inner_width + gap) / maxf(style.charm_tile_size.x + gap, 1.0)),
+		1, maxi(style.charm_columns, 1))
+
+
+func _navigate(tile: CharmTile, direction: Vector2i) -> void:
+	var in_grid: bool = tile.mode == CharmTile.Mode.COLLECTION
+	var tiles: Array[CharmTile] = _grid_tiles if in_grid else _equipped_tiles
+	var index: int = tiles.find(tile)
+	if index < 0:
+		return
+	var column: int = index % _grid.columns if in_grid else index
+	if direction.y == 0:
+		var next: int = index + direction.x
+		var next_column: int = column + direction.x
+		if next >= 0 and next < tiles.size() and (not in_grid or (next_column >= 0 and next_column < _grid.columns)):
+			tiles[next].grab_focus()
+	elif in_grid:
+		if direction.y < 0 and index < _grid.columns:
+			_focus_column(_equipped_tiles, _equipped_tiles.size(), tile)
+		else:
+			var row_start: int = index - column + direction.y * _grid.columns
+			if row_start >= 0 and row_start < tiles.size():
+				tiles[mini(row_start + column, tiles.size() - 1)].grab_focus()
+	elif direction.y > 0:
+		_focus_column(_grid_tiles, mini(_grid.columns, _grid_tiles.size()), tile)
+
+
+func _focus_column(tiles: Array[CharmTile], count: int, from: CharmTile) -> void:
+	var target: CharmTile
+	var best: float = INF
+	var center: float = from.get_global_rect().get_center().x
+	for index: int in range(count):
+		var distance: float = absf(tiles[index].get_global_rect().get_center().x - center)
+		if distance < best:
+			target = tiles[index]
+			best = distance
+	if target:
+		target.grab_focus()
+
+
+func _on_tile_focused(tile: MenuTile) -> void:
+	if _last_focus != tile:
+		_clear_denial()
+	_update_preview(tile as CharmTile)
+	super(tile)
+
+
+func _update_preview(tile: CharmTile) -> void:
+	var cost: int = 0
+	if tile and tile.owned and not tile.equipped and tile.charm:
+		cost = tile.charm.notch_cost
+	_notches.set_preview(cost)
+	_show_status(cost)
+
+
+func _show_status(cost: int) -> void:
+	var content: String = _denial
+	var tint: Color = style.warning
+	if content.is_empty():
+		if not GameState.can_change_charms():
+			content = tr(style.charm_station_text)
+			tint = style.dim
+		elif cost > _room:
+			content = tr(style.charm_refusal_text) % [_room, cost]
+			tint = style.charm_preview_color
+	_status.text = content
+	_status.add_theme_color_override(&"font_color", tint)
 
 
 func _on_tile_activated(tile: MenuTile) -> void:
-	var charm_tile := tile as CharmTile
-	if charm_tile.mode == CharmTile.Mode.EMPTY_SLOT or not charm_tile.owned:
+	var selected: CharmTile = tile as CharmTile
+	if not selected or not selected.owned or selected.charm == null:
 		return
-	var charm := charm_tile.charm
-	var unequipping := charm_tile.equipped
-	var from := charm_tile.get_global_rect()
+	var charm: CharmData = selected.charm
 	if not GameState.can_change_charms():
-		_deny(charm_tile, "Chỉ đổi bùa được khi đứng ở khu đổi bùa.")
+		_deny(selected, tr(style.charm_station_text))
 		return
-	var ok := GameState.unequip_charm(charm.id) if unequipping else GameState.equip_charm(charm.id)
-	if not ok:
-		var room := GameState.get_charm_notches() - GameState.get_used_notches()
-		_deny(charm_tile, "Không đủ ô khắc (còn %d, cần %d)." % [room, charm.notch_cost])
+	_cancel_flight()
+	_clear_denial()
+	var from: Rect2 = selected.get_global_rect()
+	var unequipping: bool = selected.equipped
+	var accepted: bool = GameState.unequip_charm(charm.id) if unequipping else GameState.equip_charm(charm.id)
+	if not accepted:
+		_deny(selected, tr(style.charm_refusal_text) % [_room, charm.notch_cost])
 		return
 	sound_requested.emit(&"confirm")
-	# GameState đã báo đổi bùa -> màn Tab gọi refresh() ngay trong lệnh trên; đợi xếp lại bố cục rồi mới biết chỗ đáp
+	var ticket: int = _flight_id
+	# Chờ Container sắp ô đích để bóng bùa đáp đúng vị trí.
 	await get_tree().process_frame
-	var target := _find_tile(_grid_tiles if unequipping else _equipped_tiles, charm.id)
-	if target:
-		_fly(charm, from, target)
+	if not is_visible_in_tree() or ticket != _flight_id:
+		return
+	var target: CharmTile = _find_tile(_grid_tiles if unequipping else _equipped_tiles, charm.id)
+	if target == null:
+		return
 	if unequipping:
-		# Tháo từ hàng đang đeo: con trỏ về ô của bùa đó trong lưới
-		var grid_tile := _find_tile(_grid_tiles, charm.id)
-		if grid_tile and not grid_tile.has_focus():
-			grid_tile.grab_focus()
+		target.grab_focus()
+		_scroll.ensure_control_visible(target)
+	else:
+		_equipped_scroll.ensure_control_visible(target)
+	_fly(charm, from, target)
 
 
 func _find_tile(tiles: Array[CharmTile], id: StringName) -> CharmTile:
@@ -147,44 +330,59 @@ func _find_tile(tiles: Array[CharmTile], id: StringName) -> CharmTile:
 	return null
 
 
-## Bóng bùa bay từ ô cũ tới ô mới; ô đích ẩn tới khi bóng đáp rồi lóe sáng
 func _fly(charm: CharmData, from: Rect2, target: CharmTile) -> void:
-	var to := target.get_global_rect()
+	var to: Rect2 = target.get_global_rect()
 	_ghost.setup(charm, CharmTile.Mode.EQUIPPED, true, true)
 	_ghost.global_position = from.position
 	_ghost.size = from.size
-	_ghost.visible = true
+	_ghost.show()
+	_flight_target = target
 	target.modulate.a = 0.0
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(_ghost, "global_position", to.position, style.charm_fly_time).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(_ghost, "size", to.size, style.charm_fly_time)
-	tween.chain().tween_callback(_land.bind(target))
+	_flight_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	_flight_tween.tween_property(_ghost, "global_position", to.position, style.charm_fly_time)
+	_flight_tween.tween_property(_ghost, "size", to.size, style.charm_fly_time)
+	_flight_tween.chain().tween_callback(_land)
 
 
-func _land(target: CharmTile) -> void:
-	_ghost.visible = false
-	if is_instance_valid(target):
-		target.modulate.a = 1.0
-		target.flash()
+func _land() -> void:
+	_ghost.hide()
+	if is_instance_valid(_flight_target):
+		_flight_target.modulate.a = 1.0
+		_flight_target.flash()
+	_flight_target = null
+
+
+func _cancel_flight() -> void:
+	_flight_id += 1
+	if _flight_tween:
+		_flight_tween.kill()
+	if is_instance_valid(_flight_target):
+		_flight_target.modulate.a = 1.0
+	_flight_target = null
+	if _ghost:
+		_ghost.hide()
 
 
 func _deny(tile: CharmTile, reason: String) -> void:
+	_clear_denial()
+	_denial = reason
 	tile.shake()
+	_notches.pulse_refusal()
 	sound_requested.emit(&"error")
-	_status.text = reason
-	_show_status(true)
+	_update_preview(tile)
+	_status_tween = create_tween()
+	_status_tween.tween_interval(style.charm_refusal_hold)
+	_status_tween.tween_callback(_restore_status)
 
 
-## Dòng trạng thái: bình thường nói đang ở khu đổi bùa hay không; bị từ chối thì đỏ một lúc rồi về như cũ
-func _show_status(denied: bool) -> void:
-	if _status_tween and _status_tween.is_valid():
+func _restore_status() -> void:
+	_status_tween = null
+	_denial = ""
+	_update_preview(_last_focus as CharmTile)
+
+
+func _clear_denial() -> void:
+	if _status_tween:
 		_status_tween.kill()
-	if denied:
-		_status.add_theme_color_override(&"font_color", style.warning)
-		_status_tween = create_tween()
-		_status_tween.tween_interval(style.level_flash_time * 2.0)
-		_status_tween.tween_callback(_show_status.bind(false))
-		return
-	var allowed := GameState.can_change_charms()
-	_status.text = "Đang ở khu đổi bùa: Enter để đeo / tháo." if allowed else "Chỉ đổi bùa được khi đứng ở khu đổi bùa."
-	_status.add_theme_color_override(&"font_color", style.ink if allowed else style.dim)
+		_status_tween = null
+	_denial = ""

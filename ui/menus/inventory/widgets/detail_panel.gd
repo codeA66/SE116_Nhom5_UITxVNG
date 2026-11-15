@@ -11,6 +11,7 @@ var _style: InventoryStyle
 var _section_labels: Array[Label] = []
 ## Khối riêng của ô đang hiện (xóa khi đổi ô)
 var _spawned_blocks: Array[Control] = []
+var _default_icon_size: Vector2
 
 
 @onready var _art_box: Control = $ArtBox
@@ -28,6 +29,7 @@ var _spawned_blocks: Array[Control] = []
 
 func configure(style: InventoryStyle) -> void:
 	_style = style
+	_default_icon_size = _art_icon.custom_minimum_size
 	custom_minimum_size.x = style.detail_width
 	_art_box.custom_minimum_size.y = style.detail_art_height
 	# Hình cáo cỡ vừa ô hình của bảng: chép dữ liệu bảng nhận kỹ năng, chỉ đổi cỡ
@@ -46,9 +48,21 @@ func configure(style: InventoryStyle) -> void:
 	show_entry(null)
 
 
+## Giới hạn riêng trang có nhiều chữ để vùng mô tả luôn còn chỗ cuộn.
+func set_art_layout(art_size: Vector2, title_lines: int) -> void:
+	var compact: bool = art_size != Vector2.ZERO
+	_art_box.custom_minimum_size.y = art_size.x if compact else _style.detail_art_height
+	_art_icon.custom_minimum_size = Vector2.ONE * art_size.y if compact else _default_icon_size
+	_title.max_lines_visible = title_lines
+	_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS if compact else TextServer.OVERRUN_NO_TRIMMING
+	_title.mouse_filter = Control.MOUSE_FILTER_PASS if compact else Control.MOUSE_FILTER_IGNORE
+	_hint.add_theme_color_override(&"font_color", _style.charm_preview_color if compact else _style.dim)
+
+
 func show_entry(entry: DetailEntry) -> void:
 	var empty := entry == null
 	_title.text = "" if empty else entry.title
+	_title.tooltip_text = _title.text if _title.max_lines_visible > 0 else ""
 	_subtitle.text = "" if empty else entry.subtitle
 	_subtitle.visible = not _subtitle.text.is_empty()
 	_rule.visible = not empty

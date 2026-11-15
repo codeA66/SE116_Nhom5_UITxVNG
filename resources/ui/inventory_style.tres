@@ -2,5 +2,41 @@
 
 [ext_resource type="Script" path="res://ui/menus/inventory/inventory_style.gd" id="1"]
 
+[sub_resource type="StyleBoxFlat" id="CharmPanel"]
+content_margin_left = 30.0
+content_margin_top = 22.0
+content_margin_right = 30.0
+content_margin_bottom = 20.0
+bg_color = Color(0.045, 0.061, 0.076, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.63, 0.54, 0.39, 0.65)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+shadow_color = Color(0, 0, 0, 0.34)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+
 [resource]
 script = ExtResource("1")
+charm_tile_size = Vector2(68, 68)
+equipped_tile_size = Vector2(70, 70)
+charm_columns = 7
+charm_panel = SubResource("CharmPanel")
+charm_capacity_text = "Ô KHẮC  %d / %d"
+charm_collection_text = "BỘ SƯU TẬP  %d / %d"
+charm_empty_slot_text = "Ô trống"
+charm_empty_slot_description = "Chọn một bùa trong bộ sưu tập để đeo vào đây."
+charm_hidden_text = "Bùa chưa tìm thấy"
+charm_hidden_description = "Một lá bùa còn nằm đâu đó trên đảo Foxy."
+charm_cost_text = "Tốn %d ô khắc"
+charm_effect_text = "Tác dụng"
+charm_station_text = "Chỉ đổi bùa được khi đứng ở khu đổi bùa."
+charm_refusal_text = "Không đủ ô khắc (còn %d, cần %d)."
+charm_equip_text = "%s  Đeo bùa"
+charm_remove_text = "%s  Tháo bùa"
+charm_equipped_text = "Đang đeo"
