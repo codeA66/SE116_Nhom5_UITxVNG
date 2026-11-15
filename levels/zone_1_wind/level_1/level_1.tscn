@@ -29,6 +29,7 @@
 [ext_resource type="Environment" uid="uid://djoxdkrdij57e" path="res://levels/zone_1_wind/level_1/lighting/wind_palace_dd_environment.tres" id="27_go2tw"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient/ambient_wind.tscn" id="28_riknd"]
 [ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_1.tres" id="area_tier_1"]
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/lighting/room_dimmer.gd" id="room_dimmer"]
 [ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_2.tres" id="area_tier_2"]
 [ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_3.tres" id="area_tier_3"]
 [ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="area_title_trigger"]
@@ -210,6 +211,22 @@ shape = SubResource("BoxShape3D_1stda")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.8, 5.4, -0.9)
 script = ExtResource("trial_legacy_spawn")
 spawn_id = &"level_1.wind_trial_exit"
+
+[node name="RoomDimmer" type="Node" parent="Rooms/Tier1/Room051WindWalk"]
+script = ExtResource("room_dimmer")
+brightness = 0.6
+
+[node name="RoomDimmer" type="Node" parent="Rooms/Tier1/Room052WindTrial"]
+script = ExtResource("room_dimmer")
+brightness = 0.6
+
+[node name="RoomDimmer" type="Node" parent="Rooms/Tier1/Room053WindChallenge"]
+script = ExtResource("room_dimmer")
+brightness = 0.6
+
+[node name="RoomDimmer" type="Node" parent="Rooms/Tier1/Room06TowerBase"]
+script = ExtResource("room_dimmer")
+brightness = 0.6
 
 [node name="Room07SailStorage" parent="Rooms/Tier1" unique_id=1035599555 instance=ExtResource("13_hja6v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -76)
