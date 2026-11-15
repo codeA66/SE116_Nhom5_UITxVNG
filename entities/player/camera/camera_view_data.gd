@@ -4,7 +4,7 @@ extends Resource
 ## khu không gán thì giữ góc mặc định trong player.tscn.
 
 ## Khoảng cách từ camera tới điểm bám (m)
-@export_range(5.0, 200.0, 0.5) var distance: float = 32.0
+@export_range(5.0, 200.0, 0.5) var distance: float = 38.0
 ## Góc cúi xuống so với mặt ngang (độ): nhỏ = nhìn xa hơn, thấy chân trời
 @export_range(5.0, 89.0, 0.5) var pitch_degrees: float = 50.0
 @export_range(10.0, 120.0, 0.5) var fov: float = 30.0
