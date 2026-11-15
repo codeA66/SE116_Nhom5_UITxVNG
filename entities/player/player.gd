@@ -19,6 +19,8 @@ signal fusion_bow_released(element_id: StringName)
 ## Cất cung (sau khi bắn hoặc huỷ kéo) khi cung đang ghép element_id: VFX tắt hẳn
 signal fusion_bow_aim_ended(element_id: StringName)
 
+## Chỉ số cộng thêm vào máu tối đa (StatBonusEffect.stat)
+const MAX_HEALTH_STAT := &"max_health"
 const ANIM_IDLE := &"Rig_Medium_General/Idle_A"
 const ANIM_RUN := &"Rig_Medium_MovementBasic/Running_A"
 const ANIM_JUMP := &"Rig_Medium_MovementBasic/Jump_Start"
@@ -107,15 +109,20 @@ var _projectile_pools: Dictionary[PackedScene, ObjectPool] = {}
 var _projectile_fusions: Dictionary[ArrowProjectile, FusionData] = {}
 var _fusion_pools: Dictionary[FusionEffect, Dictionary] = {}
 var _combat_prepared: bool = false
+## Máu tối đa gốc trong scene, chưa tính bùa
+var _base_max_health: int = 0
 var _fusion_table: FusionTable
 var _fusion_warmup_sources: Array[Node] = []
 var _fusion_warmup_prepared: bool = false
 
 @onready var energy: EnergyComponent = $EnergyComponent
+## Hệ số chỉ số từ bùa / buff (tốc độ chém...); nơi dùng tự đọc lúc cần
+@onready var stats: StatModifiers = $StatModifiers
 @onready var hitbox: HitboxComponent = $Model/Hitbox
 @onready var wind_blast: WindBlastArea = $Model/WindBlastArea
 @onready var interactor: InteractorComponent = $Interactor
 @onready var health: HealthComponent = $HealthComponent
+@onready var _charms: CharmHolder = $CharmHolder
 @onready var _hurtbox: HurtboxComponent = $HurtboxComponent
 @onready var _camera_rig: CameraRig = $CameraRig
 @onready var _camera: Camera3D = $CameraRig/Camera3D
@@ -134,6 +141,10 @@ func _ready() -> void:
 	# Vào scene mới: gắn lại vũ khí đã có trong tiến trình
 	_attach_weapon_model(GameState.get_weapon())
 	_last_safe_position = global_position
+	# Áp bùa trước khi khôi phục máu cũ: máu giữ qua khu vượt mức gốc (bùa thêm máu) không bị kẹp mất
+	_base_max_health = health.max_health
+	stats.changed.connect(_on_stat_changed)
+	_charms.refresh()
 	# Máu được giữ qua các lần chuyển khu (player là object mới mỗi khu)
 	var kept_health := GameState.get_player_health()
 	if kept_health > 0:
@@ -888,6 +899,14 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 func _on_died() -> void:
 	_stop_blink()
 	state_machine.transition_to(PlayerState.DEAD)
+
+
+func _on_stat_changed(stat: StringName) -> void:
+	if stat == MAX_HEALTH_STAT:
+		# Đeo bùa thêm máu: ô mới đổ đầy luôn; tháo thì kẹp về mức gốc
+		var new_max := _base_max_health + roundi(stats.get_bonus(MAX_HEALTH_STAT))
+		if new_max != health.max_health:
+			health.set_max_health(new_max, new_max > health.max_health)
 
 
 func _on_health_changed(current: int, _max_value: int) -> void:
