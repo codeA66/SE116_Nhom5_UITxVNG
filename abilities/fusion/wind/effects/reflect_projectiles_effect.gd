@@ -1,7 +1,7 @@
 class_name ReflectProjectilesEffect
 extends FusionEffect
-## Nhát chém đánh bật đạn của quái (quả cầu hồn...) như cú thổi gió: trong lúc hitbox bật, đạn nào nằm trong
-## vùng trước mặt thì bị đẩy theo hướng chém, đạn tự đổi phe. Chỉ tác động vật có is_reflected() (đạn phản được),
+## Nhát chém đánh bật đạn của quái (quả cầu hồn, chuối...) như cú thổi gió: trong lúc hitbox bật, đạn nào nằm trong
+## vùng trước mặt thì bị đẩy theo hướng chém, đạn tự đổi phe.
 ## không đẩy đá / thuyền / quái. Vùng dò là Area3D tạm, tự xoá khi hết khoảng bật.
 
 ## Vùng dò trước mặt: rộng x cao x sâu (m), tâm cách người chém `forward` m
@@ -28,7 +28,7 @@ func on_melee_active(user: Player, _attack: AttackData, _index: int, _combo_size
 	area.global_transform = Transform3D(Basis.looking_at(direction, Vector3.UP), user.global_position + Vector3.UP * height + direction * forward)
 	area.area_entered.connect(func(other: Area3D) -> void:
 		var receiver := other as WindReceiverComponent
-		if receiver and receiver.get_parent() and receiver.get_parent().has_method(&"is_reflected"):
+		if receiver and (receiver is BananaWindReceiver or (receiver.get_parent() != null and receiver.get_parent().has_method(&"is_reflected"))):
 			receiver.push(direction * push_speed))
 	# Hết khoảng bật của nhát chém thì bỏ vùng dò (tối thiểu vài frame để kịp dò đạn đang nằm sẵn trong vùng)
 	user.get_tree().create_timer(maxf(active_time, 0.08), false, true).timeout.connect(area.queue_free)

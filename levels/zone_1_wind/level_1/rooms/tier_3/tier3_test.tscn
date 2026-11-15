@@ -7184,7 +7184,7 @@ collision_layer = 0
 collision_mask = 2
 monitorable = false
 script = ExtResource("8_fdlx0")
-guards = [NodePath("../KingRetinue/MonkeyKing"), NodePath("../KingRetinue/KingGuard_1"), NodePath("../KingRetinue/KingGuard_2"), NodePath("../KingRetinue/KingRoofGuard_3"), NodePath("../KingRetinue/KingRoofGuard_4"), NodePath("../KingRetinue/KingRoofGuard_5"), NodePath("../KingRetinue/KingGuard_6"), NodePath("../KingRetinue/KingGuard_7"), NodePath("../KingRetinue/KingRoofGuard_8"), NodePath("../KingRetinue/KingRoofGuard_9"), NodePath("../KingRetinue/KingRoofGuard_10"), NodePath("../KingRetinue/KingRoofGuard_11"), NodePath("../KingRetinue/KingRoofGuard_12"), NodePath("../KingRetinue/KingRoofGuard_13"), NodePath("../KingRetinue/KingRoofGuard_14"), NodePath("../KingRetinue/KingRoofGuard_15"), NodePath("../KingRetinue/KingRoofGuard_16")]
+guards = [NodePath("../KingRetinue/MonkeyKing"), NodePath("../KingRetinue/KingGuard_1"), NodePath("../KingRetinue/KingGuard_2"), NodePath("../KingRetinue/KingRoofGuard_4"), NodePath("../KingRetinue/KingGuard_6"), NodePath("../KingRetinue/KingGuard_7"), NodePath("../KingRetinue/KingRoofGuard_9"), NodePath("../KingRetinue/KingRoofGuard_11"), NodePath("../KingRetinue/KingRoofGuard_12"), NodePath("../KingRetinue/KingRoofGuard_14"), NodePath("../KingRetinue/KingRoofGuard_15")]
 introduction = NodePath("../KingIntroduction")
 leader = NodePath("../KingRetinue/MonkeyKing")
 interface_layer = NodePath("../../../TestSetup/Interface")
@@ -7225,18 +7225,6 @@ hit_flash_material = SubResource("StandardMaterial3D_flash")
 hit_flash_time = 0.06
 telegraph_material = SubResource("StandardMaterial3D_telegraph")
 
-[node name="KingPavilion_3" parent="Rooms/BossRoom/KingRetinue" unique_id=833613179 instance=ExtResource("18_lme57")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, -10)
-
-[node name="BannerHammock" parent="Rooms/BossRoom/KingRetinue/KingPavilion_3" unique_id=1595184861 instance=ExtResource("19_2piki")]
-
-[node name="KingRoofGuard_3" parent="Rooms/BossRoom/KingRetinue" unique_id=1333369397 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 4.03, -10)
-excluded_platforms = [NodePath("../KingPavilion_3"), NodePath("../KingPavilion_3/BannerHammock")]
-hit_flash_material = SubResource("StandardMaterial3D_flash")
-hit_flash_time = 0.06
-telegraph_material = SubResource("StandardMaterial3D_telegraph")
-
 [node name="KingPavilion_4" parent="Rooms/BossRoom/KingRetinue" unique_id=1230718880 instance=ExtResource("18_lme57")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 0)
 
@@ -7245,18 +7233,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 0)
 [node name="KingRoofGuard_4" parent="Rooms/BossRoom/KingRetinue" unique_id=1418805613 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 4.03, 0)
 excluded_platforms = [NodePath("../KingPavilion_4"), NodePath("../KingPavilion_4/BannerHammock")]
-hit_flash_material = SubResource("StandardMaterial3D_flash")
-hit_flash_time = 0.06
-telegraph_material = SubResource("StandardMaterial3D_telegraph")
-
-[node name="KingPavilion_5" parent="Rooms/BossRoom/KingRetinue" unique_id=919238697 instance=ExtResource("18_lme57")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, 10)
-
-[node name="BannerHammock" parent="Rooms/BossRoom/KingRetinue/KingPavilion_5" unique_id=2129593545 instance=ExtResource("19_2piki")]
-
-[node name="KingRoofGuard_5" parent="Rooms/BossRoom/KingRetinue" unique_id=1482645436 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 4.03, 10)
-excluded_platforms = [NodePath("../KingPavilion_5"), NodePath("../KingPavilion_5/BannerHammock")]
 hit_flash_material = SubResource("StandardMaterial3D_flash")
 hit_flash_time = 0.06
 telegraph_material = SubResource("StandardMaterial3D_telegraph")
@@ -7273,18 +7249,6 @@ hit_flash_material = SubResource("StandardMaterial3D_flash")
 hit_flash_time = 0.06
 telegraph_material = SubResource("StandardMaterial3D_telegraph")
 
-[node name="KingPavilion_8" parent="Rooms/BossRoom/KingRetinue" unique_id=2111110513 instance=ExtResource("18_lme57")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, -10)
-
-[node name="BannerHammock" parent="Rooms/BossRoom/KingRetinue/KingPavilion_8" unique_id=536327532 instance=ExtResource("19_2piki")]
-
-[node name="KingRoofGuard_8" parent="Rooms/BossRoom/KingRetinue" unique_id=1394427134 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 4.03, -10)
-excluded_platforms = [NodePath("../KingPavilion_8"), NodePath("../KingPavilion_8/BannerHammock")]
-hit_flash_material = SubResource("StandardMaterial3D_flash")
-hit_flash_time = 0.06
-telegraph_material = SubResource("StandardMaterial3D_telegraph")
-
 [node name="KingPavilion_9" parent="Rooms/BossRoom/KingRetinue" unique_id=1163682160 instance=ExtResource("18_lme57")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 0)
 
@@ -7297,23 +7261,11 @@ hit_flash_material = SubResource("StandardMaterial3D_flash")
 hit_flash_time = 0.06
 telegraph_material = SubResource("StandardMaterial3D_telegraph")
 
-[node name="KingPavilion_10" parent="Rooms/BossRoom/KingRetinue" unique_id=1756533730 instance=ExtResource("18_lme57")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 10)
-
-[node name="BannerHammock" parent="Rooms/BossRoom/KingRetinue/KingPavilion_10" unique_id=300615550 instance=ExtResource("19_2piki")]
-
-[node name="KingRoofGuard_10" parent="Rooms/BossRoom/KingRetinue" unique_id=1578616792 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 4.03, 10)
-excluded_platforms = [NodePath("../KingPavilion_10"), NodePath("../KingPavilion_10/BannerHammock")]
-hit_flash_material = SubResource("StandardMaterial3D_flash")
-hit_flash_time = 0.06
-telegraph_material = SubResource("StandardMaterial3D_telegraph")
-
 [node name="KingPavilion_11" parent="Rooms/BossRoom/KingRetinue" unique_id=1919433665 instance=ExtResource("18_lme57")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, -10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 0, 0)
 
 [node name="KingRoofGuard_11" parent="Rooms/BossRoom/KingRetinue" unique_id=1290990115 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 4.03, -10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 4.03, 0)
 excluded_platforms = [NodePath("../KingPavilion_11")]
 hit_flash_material = SubResource("StandardMaterial3D_flash")
 hit_flash_time = 0.06
@@ -7329,21 +7281,11 @@ hit_flash_material = SubResource("StandardMaterial3D_flash")
 hit_flash_time = 0.06
 telegraph_material = SubResource("StandardMaterial3D_telegraph")
 
-[node name="KingPavilion_13" parent="Rooms/BossRoom/KingRetinue" unique_id=1155241 instance=ExtResource("18_lme57")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, 10)
-
-[node name="KingRoofGuard_13" parent="Rooms/BossRoom/KingRetinue" unique_id=540924886 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 4.03, 10)
-excluded_platforms = [NodePath("../KingPavilion_13")]
-hit_flash_material = SubResource("StandardMaterial3D_flash")
-hit_flash_time = 0.06
-telegraph_material = SubResource("StandardMaterial3D_telegraph")
-
 [node name="KingPavilion_14" parent="Rooms/BossRoom/KingRetinue" unique_id=1484896038 instance=ExtResource("18_lme57")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, -10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 0, 0)
 
 [node name="KingRoofGuard_14" parent="Rooms/BossRoom/KingRetinue" unique_id=1452134075 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 4.03, -10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 4.03, 0)
 excluded_platforms = [NodePath("../KingPavilion_14")]
 hit_flash_material = SubResource("StandardMaterial3D_flash")
 hit_flash_time = 0.06
@@ -7355,16 +7297,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 0)
 [node name="KingRoofGuard_15" parent="Rooms/BossRoom/KingRetinue" unique_id=1454182868 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 4.03, 0)
 excluded_platforms = [NodePath("../KingPavilion_15")]
-hit_flash_material = SubResource("StandardMaterial3D_flash")
-hit_flash_time = 0.06
-telegraph_material = SubResource("StandardMaterial3D_telegraph")
-
-[node name="KingPavilion_16" parent="Rooms/BossRoom/KingRetinue" unique_id=47265192 instance=ExtResource("18_lme57")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 0, 10)
-
-[node name="KingRoofGuard_16" parent="Rooms/BossRoom/KingRetinue" unique_id=458765084 node_paths=PackedStringArray("excluded_platforms") instance=ExtResource("20_76xih")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 4.03, 10)
-excluded_platforms = [NodePath("../KingPavilion_16")]
 hit_flash_material = SubResource("StandardMaterial3D_flash")
 hit_flash_time = 0.06
 telegraph_material = SubResource("StandardMaterial3D_telegraph")
@@ -8582,30 +8514,6 @@ instructions = "Bạn đã thu thập được 1 trái chuối thần từ việ
 Hãy đặt trái chuối đó lên bàn tế ở phòng trước mặt, rồi thu thập đủ 4 trái chuối thần còn lại từ 4 phòng xung quanh để gặp Vua Khỉ."
 title = "TRÁI CHUỐI THẦN ĐẦU TIÊN"
 initially_enabled = false
-
-[node name="TerritoryTotem4" type="StaticBody3D" parent="Rooms/EntryGarden/Decoration" unique_id=60172517]
-editor_description = "Cọc lãnh thổ, mặt nạ không máu me | Model + collider đi cùng root. Kéo/copy cả node này. Nguồn: res://assets/models/map_wind/tier_3_monkey_garden/monkey_props/lair/territory_totem.glb | Collider tối giản: khối nguyên thủy, không dùng trimesh."
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -18.6876, 0, -11.334442)
-collision_mask = 0
-metadata/garden_asset = "territory_totem"
-metadata/simple_collision = true
-
-[node name="Model" type="Node3D" parent="Rooms/EntryGarden/Decoration/TerritoryTotem4" unique_id=1631723523]
-
-[node name="Body_territory_totem_001" type="MeshInstance3D" parent="Rooms/EntryGarden/Decoration/TerritoryTotem4/Model" unique_id=1226398688]
-cast_shadow = 0
-mesh = SubResource("ArrayMesh_cr2ue")
-
-[node name="Collision" type="CollisionShape3D" parent="Rooms/EntryGarden/Decoration/TerritoryTotem4" unique_id=272119904]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.100183, 0.058147848)
-shape = SubResource("CylinderShape3D_gvr2g")
-
-[node name="TotemGuide" type="Node3D" parent="Rooms/EntryGarden/Decoration/TerritoryTotem4" unique_id=1342001456]
-script = ExtResource("7_j4dkc")
-instructions = "Dùng súng bắn hết mục tiêu để hoàn thành
-
-Hết đạn thì nhấn nút reset ở bên trái"
-title = "THỬ THÁCH CHÍNH XÁC"
 
 [node name="golden_crown" parent="Rooms/EntryGarden/Decoration" unique_id=1714022031 instance=ExtResource("22_5aeon")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.7064905, 0, -11.162401)
@@ -10599,12 +10507,6 @@ prompt_offset = Vector3(0, 1.8, 0)
 [node name="@CollisionShape3D@73" type="CollisionShape3D" parent="Rooms/RuneCourtyard/BananaRicochetRange/Reset/InteractableComponent" unique_id=736282275]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 shape = SubResource("SphereShape3D_hvnl5")
-
-[node name="Score" type="Label3D" parent="Rooms/RuneCourtyard/BananaRicochetRange" unique_id=172858090]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 2.2, 12)
-pixel_size = 0.008
-billboard = 1
-font_size = 48
 
 [node name="RoomBounds" type="Area3D" parent="Rooms/RuneCourtyard/BananaRicochetRange" unique_id=2131293310]
 collision_layer = 0

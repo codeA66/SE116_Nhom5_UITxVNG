@@ -3,6 +3,7 @@ extends ZoneRoot
 
 const CARRY := preload("res://components/core/interaction/carry/carry_component.gd")
 const SWORD := preload("res://resources/combat/weapons/sword.tres")
+const OFFERING_REVEAL := preload("res://levels/zone_1_wind/level_1/rooms/tier_3/test_runtime/offering_reveal.gd")
 
 @export var overview_camera: Camera3D
 @export var offering_pedestals: Array[OfferingPedestal] = []
@@ -16,6 +17,7 @@ const SWORD := preload("res://resources/combat/weapons/sword.tres")
 var _player: Player
 var _player_camera: Camera3D
 var _overview: bool = false
+var _offering_reveal: OFFERING_REVEAL
 
 @onready var _offering_hud: Tier3OfferingHud = $TestSetup/Interface/OfferingHud
 
@@ -49,6 +51,9 @@ func _ready() -> void:
 	boss_gate.unlock_started.connect(_begin_reveal)
 	boss_veil.visible = not boss_gate.is_open
 	boss_decoration.show()
+	_offering_reveal = OFFERING_REVEAL.new()
+	$OfferingPuzzle.add_child(_offering_reveal)
+	_offering_reveal.setup(offering_pedestals, $Rooms/OfferingHall/World/Floors, $Bananas, not standalone_test, boss_gate.is_open)
 	_restore_boss_access.call_deferred()
 	if standalone_test: await super._ready()
 	_player_camera = get_viewport().get_camera_3d()
@@ -78,6 +83,8 @@ func _input(event: InputEvent) -> void:
 	if not event is InputEventKey or not event.is_pressed() or event.is_echo():
 		return
 	if (event as InputEventKey).physical_keycode != KEY_F2 or _player_camera == null:
+		return
+	if not _overview and (not is_instance_valid(_player) or not _player.controls_enabled):
 		return
 	_overview = not _overview
 	if _overview:
@@ -114,6 +121,7 @@ func _restore_boss_access() -> void:
 	# Save cũ đã ở trong boss nhưng chưa có cờ mở cổng vẫn phải hồi sinh nhìn thấy phòng.
 	var inside_checkpoint: bool = GameState.get_checkpoint_spawn_id() == &"level_1.tier3_boss_gate" and GameState.get_checkpoint_zone() == host.scene_file_path
 	if not boss_gate.is_open and not inside_checkpoint: return
+	_offering_reveal.restore_floor()
 	var items: Array[OfferingBanana] = []
 	for child: Node in $Bananas.get_children():
 		if child is OfferingBanana: items.append(child)

@@ -6,6 +6,8 @@ var _scene: WeakRef
 var _mode: Node.ProcessMode
 var _areas: Array[Area3D] = []
 var _states: Array[Vector2i] = []
+var _processing: Array[Node] = []
+var _process_modes: Array[Node.ProcessMode] = []
 
 func prepare(scene: Node) -> void:
 	if not is_instance_valid(scene): return
@@ -14,6 +16,13 @@ func prepare(scene: Node) -> void:
 	for area: Area3D in scene.find_children("*","Area3D",true,false):
 		_areas.append(area); _states.append(Vector2i(int(area.monitoring),int(area.monitorable)))
 	scene.process_mode = Node.PROCESS_MODE_DISABLED
+	# Node đặt Process Mode riêng vẫn có thể chạy dù gốc scene đã tắt.
+	for node in scene.find_children("*", "", true, false):
+		if not node.can_process():
+			continue
+		_processing.append(node)
+		_process_modes.append(node.process_mode)
+		node.process_mode = Node.PROCESS_MODE_DISABLED
 	for area: Area3D in _areas:
 		if not is_instance_valid(area): continue
 		area.set_deferred("monitoring",false)
@@ -34,8 +43,13 @@ func restore() -> void:
 		# Cờ monitoring deferred phải trở lại trước khi logic được phép đọc overlap.
 		await tree.physics_frame
 		await tree.physics_frame
+		for index in _processing.size():
+			var node := _processing[index]
+			if is_instance_valid(node): node.process_mode = _process_modes[index]
 		if is_instance_valid(scene): scene.process_mode = _mode
 	clear()
 
 func clear() -> void:
 	_scene = null; _areas.clear(); _states.clear()
+	_processing.clear()
+	_process_modes.clear()
