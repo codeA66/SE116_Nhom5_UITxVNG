@@ -147,55 +147,51 @@ func _test_new_tutorials_and_skill_acquire() -> void:
 
 
 func _test_category_hierarchy_and_navigation() -> void:
-	print("\nTest 7: Phân cấp menu: Túi Đồ (Tab / Q) vs Hệ Thống (H / E)")
+	print("\nTest 7: Màn Tab (Bùa, Vật phẩm, Nguyên tố; Q / E) và Sổ tay riêng (H)")
 	var menu: InventoryMenu = MENU_SCENE.instantiate()
 	add_child(menu)
 	await get_tree().process_frame
-	
-	# 1. Mở mặc định vào Túi Đồ
-	menu.open(InventoryMenu.Category.INVENTORY)
+
+	# 1. Tab: một tầng trang, không có Sổ tay / Cài đặt / Thoát
+	menu.open(InventoryMenu.Mode.TAB)
 	await get_tree().process_frame
-	_assert(menu.visible, "Menu mở ra ở Túi Đồ")
-	_assert(menu._current_category == InventoryMenu.Category.INVENTORY, "Category hiện tại là INVENTORY")
-	_assert(menu._currency_label.visible, "Tiền Soul Jade hiển thị khi ở Túi Đồ")
-	
-	# Kiểm tra các trang con của Túi Đồ
-	var inv_pages := menu._inventory_pages
-	_assert(inv_pages.size() == 3, "Túi Đồ có đúng 3 trang con (Elements, Items, Charms)")
-	for p: MenuPage in inv_pages:
-		_assert(not (p is TutorialsPage), "TutorialsPage KHÔNG nằm trong Túi Đồ")
-	
-	# 2. Chuyển sang Hệ Thống bằng E (+1)
-	menu._change_category(1)
-	await get_tree().process_frame
-	_assert(menu._current_category == InventoryMenu.Category.SYSTEM, "Chuyển thành công sang category SYSTEM")
-	_assert(not menu._currency_label.visible, "Tiền Soul Jade ẩn khi ở Hệ Thống")
-	
-	# Kiểm tra các trang con của Hệ Thống
-	var sys_pages := menu._system_pages
-	_assert(sys_pages.size() == 3, "Hệ Thống có 3 trang con (Tutorials, Settings, Quit)")
-	_assert(sys_pages[0] is TutorialsPage, "Trang đầu tiên của Hệ Thống là TutorialsPage")
-	
-	# Đổi trang trong Hệ Thống
+	_assert(menu.visible, "Menu mở ra ở màn Tab")
+	_assert(menu._mode == InventoryMenu.Mode.TAB, "Đang ở màn Tab")
+	_assert(menu._currency_label.visible, "Tiền Soul Jade hiển thị ở màn Tab")
+	var tab_pages := menu._tab_pages
+	_assert(tab_pages.size() == 3, "Màn Tab có đúng 3 trang")
+	_assert(tab_pages.size() == 3 and tab_pages[0] is CharmsPage and tab_pages[1] is ItemsPage and tab_pages[2] is ElementsPage,
+		"Thứ tự trang: Bùa, Vật phẩm, Nguyên tố")
+	for p: MenuPage in tab_pages:
+		_assert(not (p is TutorialsPage), "Sổ tay KHÔNG nằm trong vòng trang Tab")
+
+	# 2. Đổi trang trong Tab (E)
+	var before := menu.get_current_page()
 	menu._change_page(1)
 	await get_tree().process_frame
-	_assert(menu.get_current_page() is SettingsPage, "Đổi trang tiếp theo trong Hệ Thống ra SettingsPage")
-	
-	# 3. Phím H mở thẳng vào TutorialsPage
+	_assert(menu.get_current_page() != before and menu._mode == InventoryMenu.Mode.TAB, "E đổi sang trang khác, vẫn ở màn Tab")
+
+	# 3. H khi đang mở Tab: chuyển sang Sổ tay
 	menu.open_to_page_type(TutorialsPage)
 	await get_tree().process_frame
-	_assert(menu._current_category == InventoryMenu.Category.SYSTEM, "Nhảy đúng sang category SYSTEM")
-	_assert(menu.get_current_page() is TutorialsPage, "Trang đang xem là TutorialsPage")
-	
-	# 4. Chuyển ngược lại Túi Đồ bằng Q (-1)
-	menu._change_category(-1)
+	_assert(menu._mode == InventoryMenu.Mode.HELP, "Chuyển sang Sổ tay")
+	_assert(menu.get_current_page() is TutorialsPage, "Trang đang xem là Sổ tay")
+	_assert(not menu._currency_label.visible, "Tiền Soul Jade ẩn ở Sổ tay")
+	_assert(menu._help_pages.size() == 1, "Sổ tay chỉ có trang hướng dẫn (không còn Cài đặt / Thoát)")
+	menu._change_page(1)
 	await get_tree().process_frame
-	_assert(menu._current_category == InventoryMenu.Category.INVENTORY, "Chuyển ngược lại thành công sang INVENTORY")
-	_assert(menu._currency_label.visible, "Tiền Soul Jade hiện lại")
-	
+	_assert(menu.get_current_page() is TutorialsPage, "Q / E ở Sổ tay không nhảy sang trang khác")
+
 	menu.close()
 	await get_tree().create_timer(0.25).timeout
 	_assert(not menu.visible, "Menu đóng thành công")
+
+	# 4. Mở lại bằng Tab: về màn Tab, không kẹt ở Sổ tay
+	menu.open(InventoryMenu.Mode.TAB)
+	await get_tree().process_frame
+	_assert(menu._mode == InventoryMenu.Mode.TAB and not (menu.get_current_page() is TutorialsPage), "Tab mở lại màn đồ, không phải Sổ tay")
+	menu.close()
+	await get_tree().create_timer(0.25).timeout
 	menu.queue_free()
 
 
