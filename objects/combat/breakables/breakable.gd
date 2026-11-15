@@ -277,12 +277,12 @@ func _landing_pose(index: int) -> Transform3D:
 	var yaw: float = Vector3.FORWARD.signed_angle_to(out, Vector3.UP)
 	var turn: float = deg_to_rad(data.debris_landing_turn)
 	yaw += randf_range(-turn, turn)
-	var basis: Basis = Basis(Vector3.UP, yaw) * Basis(Quaternion(bounds.get_shortest_axis(), Vector3.UP))
-	basis = basis.scaled_local(home.basis.get_scale())
+	var piece_basis: Basis = Basis(Vector3.UP, yaw) * Basis(Quaternion(bounds.get_shortest_axis(), Vector3.UP))
+	piece_basis = piece_basis.scaled_local(home.basis.get_scale())
 	var landed: Vector3 = home.origin + out * data.debris_reach
 	# Đặt đáy AABB đã xoay lên đúng mặt sàn, kể cả pivot nằm giữa ván.
-	landed.y = -(Transform3D(basis, Vector3.ZERO) * bounds).position.y
-	return Transform3D(basis, landed)
+	landed.y = -(Transform3D(piece_basis, Vector3.ZERO) * bounds).position.y
+	return Transform3D(piece_basis, landed)
 
 
 func _move_chunk(progress: float, chunk: Node3D, start: Transform3D, finish: Transform3D, lift: float) -> void:
