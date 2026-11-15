@@ -63,10 +63,6 @@ func set_push_immunity(immune: bool) -> void:
 	if immune: clear_push()
 
 
-func clear_push() -> void:
-	_push_velocity = Vector3.ZERO
-
-
 ## Gọi từ cú thổi: cộng vận tốc trôi, đi chung đường với gió vùng nên không xuyên tường
 func push(impulse: Vector3) -> void:
 	if not enabled or _push_immune:
