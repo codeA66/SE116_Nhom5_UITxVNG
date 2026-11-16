@@ -5,6 +5,8 @@ extends BossState
 @export var windup_time: float = 0.8
 @export var impact_time: float = 1.75
 @export var aoe_radius: float = 3.5
+@export var vertical_launch_speed: float = 6.0
+@export var fallback_distance: float = 5.0
 
 var _timer: float = 0.0
 var _slammed: bool = false
@@ -18,8 +20,8 @@ func enter(_previous: StringName) -> void:
 	_slammed = false
 	
 	var anim_speed: float = boss.get_current_anim_speed()
-	_effective_windup = windup_time / anim_speed
-	_effective_impact = impact_time / anim_speed
+	_effective_windup = maxf(windup_time, 0.0) / anim_speed
+	_effective_impact = maxf(impact_time, maxf(windup_time, 0.0) + 0.01) / anim_speed
 	
 	boss.play_action(&"Jump Attack", anim_speed)
 	boss.start_jump_slam_cooldown()
@@ -27,7 +29,7 @@ func enter(_previous: StringName) -> void:
 	if is_instance_valid(boss.target_player):
 		_jump_target = boss.target_player.global_position
 	else:
-		_jump_target = boss.global_position + boss.get_facing_direction() * 5.0
+		_jump_target = boss.global_position + boss.get_facing_direction() * maxf(fallback_distance, 0.0)
 	
 	# Bật vòng tròn chỉ thị cảnh báo AOE màu đỏ tại điểm rơi dự kiến
 	boss.show_jump_indicator(_jump_target, aoe_radius, _effective_impact)
@@ -47,7 +49,7 @@ func physics_update(delta: float) -> void:
 		boss.move_toward_direction(Vector3.ZERO, delta)
 		if is_instance_valid(boss.target_player):
 			_jump_target = boss.target_player.global_position
-			boss.show_jump_indicator(_jump_target, aoe_radius, _effective_impact)
+			boss.update_jump_indicator(_jump_target)
 			var to_player: Vector3 = _jump_target - boss.global_position
 			to_player.y = 0.0
 			boss.face_direction(to_player.normalized(), delta)
@@ -65,7 +67,7 @@ func physics_update(delta: float) -> void:
 		boss.velocity.z = horizontal_vel.z
 		# Nhảy vòng cung: nửa đầu bay lên, nửa sau lao xuống sàn
 		var progress: float = clampf(elapsed_flight / flight_total, 0.0, 1.0)
-		boss.velocity.y = (1.0 - 2.0 * progress) * 6.0
+		boss.velocity.y = (1.0 - 2.0 * progress) * maxf(vertical_launch_speed, 0.0)
 		boss.face_direction(to_target.normalized(), delta)
 		return
 	
@@ -75,18 +77,7 @@ func physics_update(delta: float) -> void:
 		boss.velocity = Vector3.ZERO
 		boss.hide_jump_indicator()
 		
-		# Snap Boss xuống chạm mặt sàn đấu nếu còn trên không
-		var space_state := boss.get_world_3d().direct_space_state
-		var query := PhysicsRayQueryParameters3D.create(
-			boss.global_position + Vector3.UP * 1.0,
-			boss.global_position + Vector3.DOWN * 10.0,
-			1
-		)
-		var hit := space_state.intersect_ray(query)
-		if not hit.is_empty():
-			boss.global_position.y = (hit["position"] as Vector3).y
-			
-		boss.trigger_ground_slam()
+		boss.trigger_ground_slam(true)
 	
 	# Pha 4: Chờ phục hồi sau cú dậm
 	boss.apply_gravity(delta)

@@ -20,9 +20,9 @@ func enter(_previous: StringName) -> void:
 	_attack_type = 1 if randf() > 0.5 else 2
 	
 	var anim_speed: float = boss.get_current_anim_speed()
-	_effective_telegraph = telegraph_duration / anim_speed
-	_effective_start = active_start / anim_speed
-	_effective_end = active_end / anim_speed
+	_effective_telegraph = maxf(telegraph_duration, 0.0) / anim_speed
+	_effective_start = maxf(active_start, 0.0) / anim_speed
+	_effective_end = maxf(active_end, maxf(active_start, 0.0) + 0.01) / anim_speed
 	
 	var anim_name: StringName = &"Normal_Attack_1" if _attack_type == 1 else &"Normal_Attack_2"
 	boss.play_action(anim_name, anim_speed)
@@ -49,7 +49,7 @@ func physics_update(delta: float) -> void:
 	if _timer >= _effective_start and _timer <= _effective_end:
 		if not _hitbox_activated:
 			_hitbox_activated = true
-			boss.set_melee_hitbox_active(true)
+			boss.set_melee_hitbox_active(true, _effective_end - _effective_start)
 	else:
 		if _hitbox_activated:
 			_hitbox_activated = false

@@ -4,6 +4,7 @@ extends BossState
 
 @export var shoot_time: float = 1.45
 
+var _effective_shoot_time: float = 0.0
 var _timer: float = 0.0
 var _fired: bool = false
 
@@ -11,7 +12,9 @@ var _fired: bool = false
 func enter(_previous: StringName) -> void:
 	_timer = 0.0
 	_fired = false
-	boss.play_anim(&"Cast_Fireball")
+	var speed: float = boss.get_current_anim_speed()
+	_effective_shoot_time = maxf(shoot_time, 0.0) / speed
+	boss.play_action(&"Cast_Fireball", speed)
 	boss.start_fireball_cooldown()
 
 
@@ -28,7 +31,7 @@ func physics_update(delta: float) -> void:
 		boss.face_direction(to_player.normalized(), delta)
 	
 	# Đúng thời điểm chưởng: phóng cầu lửa
-	if _timer >= shoot_time and not _fired:
+	if _timer >= _effective_shoot_time and not _fired:
 		_fired = true
 		boss.spawn_fireball()
 	

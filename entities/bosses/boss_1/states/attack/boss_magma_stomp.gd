@@ -16,9 +16,9 @@ func enter(_previous: StringName) -> void:
 	_timer = 0.0
 	_slammed = false
 	
-	var anim_speed: float = boss.get_current_anim_speed() * anim_speed_mult
-	_effective_telegraph = telegraph_duration / anim_speed
-	_effective_impact = impact_time / anim_speed
+	var anim_speed: float = boss.get_current_anim_speed() * maxf(anim_speed_mult, 0.01)
+	_effective_telegraph = maxf(telegraph_duration, 0.0) / anim_speed
+	_effective_impact = maxf(impact_time, 0.0) / anim_speed
 	
 	boss.play_action(&"Taunt", anim_speed)
 	boss.start_magma_stomp_cooldown()
