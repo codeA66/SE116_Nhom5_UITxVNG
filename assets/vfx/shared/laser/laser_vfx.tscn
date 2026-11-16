@@ -1,0 +1,70 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/shared/laser/laser_vfx.gd" id="1_vfx"]
+[ext_resource type="Resource" path="res://assets/vfx/shared/laser/style/laser_vfx_default.tres" id="2_style"]
+
+[sub_resource type="QuadMesh" id="SharedQuad"]
+size = Vector2(1, 1)
+
+[node name="LaserVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+style = ExtResource("2_style")
+
+[node name="Beam" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+mesh = SubResource("SharedQuad")
+
+[node name="Warning" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+mesh = SubResource("SharedQuad")
+
+[node name="MuzzleFx" type="Node3D" parent="."]
+
+[node name="Flare" type="MeshInstance3D" parent="MuzzleFx"]
+visible = false
+cast_shadow = 0
+mesh = SubResource("SharedQuad")
+custom_aabb = AABB(-1.5, -1.5, -1.5, 3, 3, 3)
+
+[node name="Charge" type="GPUParticles3D" parent="MuzzleFx"]
+cast_shadow = 0
+emitting = false
+fixed_fps = 60
+local_coords = true
+visibility_aabb = AABB(-1.4, -1.4, -1.4, 2.8, 2.8, 2.8)
+draw_pass_1 = SubResource("SharedQuad")
+
+[node name="Burst" type="GPUParticles3D" parent="MuzzleFx"]
+cast_shadow = 0
+emitting = false
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+visibility_aabb = AABB(-1.6, -1.6, -1.6, 3.2, 3.2, 3.2)
+draw_pass_1 = SubResource("SharedQuad")
+
+[node name="ImpactFx" type="Node3D" parent="."]
+
+[node name="Flare" type="MeshInstance3D" parent="ImpactFx"]
+visible = false
+cast_shadow = 0
+mesh = SubResource("SharedQuad")
+custom_aabb = AABB(-1.5, -1.5, -1.5, 3, 3, 3)
+
+[node name="Burst" type="GPUParticles3D" parent="ImpactFx"]
+cast_shadow = 0
+emitting = false
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+visibility_aabb = AABB(-1.8, -1.8, -1.8, 3.6, 3.6, 3.6)
+draw_pass_1 = SubResource("SharedQuad")
+
+[node name="Sparks" type="GPUParticles3D" parent="ImpactFx"]
+cast_shadow = 0
+emitting = false
+randomness = 0.6
+visibility_aabb = AABB(-1.5, -1.5, -1.5, 3, 3, 3)
+draw_pass_1 = SubResource("SharedQuad")
