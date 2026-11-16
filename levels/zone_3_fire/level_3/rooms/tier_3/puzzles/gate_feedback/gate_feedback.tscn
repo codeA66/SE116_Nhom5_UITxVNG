@@ -1,0 +1,95 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/gate_feedback/gate_feedback.gd" id="feedback"]
+
+[sub_resource type="StandardMaterial3D" id="UnlitCopper"]
+albedo_color = Color(0.45, 0.2, 0.065, 1)
+
+[sub_resource type="BoxMesh" id="SolidHao"]
+material = SubResource("UnlitCopper")
+size = Vector3(1.5, 0.14, 0.05)
+
+[sub_resource type="BoxMesh" id="HalfHao"]
+material = SubResource("UnlitCopper")
+size = Vector3(0.6, 0.14, 0.05)
+
+[sub_resource type="Animation" id="PulseAnimation"]
+resource_name = "pulse"
+length = 1.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:pulse_intensity")
+tracks/0/interp = 1
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(-2, -2, 1),
+"update": 0,
+"values": [0.0, 1.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="FeedbackLibrary"]
+_data = {
+"pulse": SubResource("PulseAnimation")
+}
+
+[node name="GateFeedback" type="Node3D"]
+script = ExtResource("feedback")
+
+[node name="Glyph" type="Node3D" parent="."]
+
+[node name="Top" type="MeshInstance3D" parent="Glyph"]
+position = Vector3(0, 0.42, 0)
+mesh = SubResource("SolidHao")
+cast_shadow = 0
+
+[node name="MiddleLeft" type="MeshInstance3D" parent="Glyph"]
+position = Vector3(-0.45, 0, 0)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="MiddleRight" type="MeshInstance3D" parent="Glyph"]
+position = Vector3(0.45, 0, 0)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Bottom" type="MeshInstance3D" parent="Glyph"]
+position = Vector3(0, -0.42, 0)
+mesh = SubResource("SolidHao")
+cast_shadow = 0
+
+[node name="Glow" type="OmniLight3D" parent="."]
+position = Vector3(0, 0, -0.6)
+light_energy = 0.0
+shadow_enabled = false
+omni_range = 4.0
+
+[node name="TopBack" type="MeshInstance3D" parent="Glyph"]
+position = Vector3(0, 0.42, 0.5)
+mesh = SubResource("SolidHao")
+cast_shadow = 0
+
+[node name="MiddleLeftBack" type="MeshInstance3D" parent="Glyph"]
+position = Vector3(-0.45, 0, 0.5)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="MiddleRightBack" type="MeshInstance3D" parent="Glyph"]
+position = Vector3(0.45, 0, 0.5)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="BottomBack" type="MeshInstance3D" parent="Glyph"]
+position = Vector3(0, -0.42, 0.5)
+mesh = SubResource("SolidHao")
+cast_shadow = 0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+callback_mode_process = 0
+playback_auto_capture = false
+libraries = {
+"feedback": SubResource("FeedbackLibrary")
+}
+
+[node name="Notifier" type="VisibleOnScreenNotifier3D" parent="."]
+aabb = AABB(-2, -2, -1, 4, 4, 2)

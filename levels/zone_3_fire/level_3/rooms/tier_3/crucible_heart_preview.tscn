@@ -1,0 +1,95 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_00_crucible_heart.tscn" id="room"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/lighting/fire_lighting.tscn" id="lighting"]
+[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="zone"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
+[ext_resource type="Script" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="camera_zone"]
+[ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="camera_data"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_01_li_foundry.tscn" id="li_foundry"]
+
+[sub_resource type="Resource" id="CameraView"]
+script = ExtResource("camera_data")
+distance = 46.0
+pitch_degrees = 50.0
+fov = 40.0
+yaw_degrees = 45.0
+
+[sub_resource type="Environment" id="PreviewEnvironment"]
+background_mode = 1
+background_color = Color(0.035, 0.022, 0.028, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.65, 0.48, 0.42, 1)
+ambient_light_energy = 1.2
+tonemap_mode = 3
+tonemap_exposure = 1.15
+
+[sub_resource type="BoxShape3D" id="EndBarrier"]
+size = Vector3(4.4, 2, 0.3)
+
+[node name="CrucibleHeartPreview" type="Node3D"]
+editor_description = "F6 để đi từ trung tâm qua cửa Nam tới phòng Ly. Camera yaw 45°. Rào các nhánh còn lại chỉ thuộc scene xem thử."
+script = ExtResource("zone")
+shader_warmup = null
+
+[node name="CrucibleHeart" parent="." instance=ExtResource("room")]
+
+[node name="LiFoundry" parent="." instance=ExtResource("li_foundry")]
+position = Vector3(0, 0, 36)
+
+[node name="FireLighting" parent="." instance=ExtResource("lighting")]
+
+[node name="Environment" parent="FireLighting" index="0"]
+environment = SubResource("PreviewEnvironment")
+
+[node name="SunLight" parent="FireLighting" index="1"]
+light_energy = 1.8
+
+[node name="Start" type="Marker3D" parent="."]
+position = Vector3(0, 0.4, 9)
+script = ExtResource("spawn")
+spawn_id = &"start"
+
+[node name="ZoneCameraView" type="Node" parent="."]
+script = ExtResource("camera_zone")
+view = SubResource("CameraView")
+
+[node name="PreviewBarriers" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="End1" type="CollisionShape3D" parent="PreviewBarriers"]
+position = Vector3(0, 1.32, -20)
+rotation = Vector3(0, 0, 0)
+shape = SubResource("EndBarrier")
+
+[node name="End2" type="CollisionShape3D" parent="PreviewBarriers"]
+position = Vector3(14.142136, 1.32, -14.142136)
+rotation = Vector3(0, -0.785398, 0)
+shape = SubResource("EndBarrier")
+
+[node name="End3" type="CollisionShape3D" parent="PreviewBarriers"]
+position = Vector3(20, 1.32, 0)
+rotation = Vector3(0, -1.570796, 0)
+shape = SubResource("EndBarrier")
+
+[node name="End4" type="CollisionShape3D" parent="PreviewBarriers"]
+position = Vector3(14.142136, 1.32, 14.142136)
+rotation = Vector3(0, -2.356194, 0)
+shape = SubResource("EndBarrier")
+
+[node name="End6" type="CollisionShape3D" parent="PreviewBarriers"]
+position = Vector3(-14.142136, 1.32, 14.142136)
+rotation = Vector3(0, -3.926991, 0)
+shape = SubResource("EndBarrier")
+
+[node name="End7" type="CollisionShape3D" parent="PreviewBarriers"]
+position = Vector3(-20, 1.32, 0)
+rotation = Vector3(0, -4.712389, 0)
+shape = SubResource("EndBarrier")
+
+[node name="End8" type="CollisionShape3D" parent="PreviewBarriers"]
+position = Vector3(-14.142136, 1.32, -14.142136)
+rotation = Vector3(0, -5.497787, 0)
+shape = SubResource("EndBarrier")

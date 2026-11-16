@@ -1,0 +1,118 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/rotating_mirror/rotating_mirror.gd" id="mirror"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interactable"]
+
+[sub_resource type="StandardMaterial3D" id="Basalt"]
+albedo_color = Color(0.1, 0.065, 0.073, 1)
+
+[sub_resource type="StandardMaterial3D" id="Copper"]
+albedo_color = Color(0.5, 0.25, 0.085, 1)
+metallic = 0.65
+
+[sub_resource type="StandardMaterial3D" id="MirrorFace"]
+albedo_color = Color(0.58, 0.56, 0.4, 1)
+metallic = 0.8
+roughness = 0.3
+
+[sub_resource type="CylinderMesh" id="BaseMesh"]
+material = SubResource("Basalt")
+top_radius = 0.7
+bottom_radius = 0.7
+height = 0.16
+radial_segments = 16
+
+[sub_resource type="CylinderMesh" id="ColumnMesh"]
+material = SubResource("Copper")
+top_radius = 0.12
+bottom_radius = 0.12
+height = 1.25
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="RimMesh"]
+material = SubResource("Copper")
+top_radius = 1.0
+bottom_radius = 1.0
+height = 0.15
+radial_segments = 16
+
+[sub_resource type="CylinderMesh" id="FaceMesh"]
+material = SubResource("MirrorFace")
+top_radius = 0.86
+bottom_radius = 0.86
+height = 0.16
+radial_segments = 16
+
+[sub_resource type="BoxShape3D" id="ReflectorShape"]
+size = Vector3(1.7, 1.7, 0.12)
+
+[sub_resource type="SphereShape3D" id="InteractionShape"]
+radius = 0.8
+
+[sub_resource type="Animation" id="TurnAnimation"]
+resource_name = "step"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:turn_progress")
+tracks/0/interp = 1
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(-2, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="MirrorLibrary"]
+_data = {
+"step": SubResource("TurnAnimation")
+}
+
+[node name="RotatingMirror" type="Area3D"]
+collision_layer = 1
+collision_mask = 0
+monitoring = false
+monitorable = false
+script = ExtResource("mirror")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.08, 0)
+mesh = SubResource("BaseMesh")
+
+[node name="Stand" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.75, 0)
+mesh = SubResource("ColumnMesh")
+
+[node name="Pivot" type="Node3D" parent="."]
+position = Vector3(0, 1.65, 0)
+
+[node name="Rim" type="MeshInstance3D" parent="Pivot"]
+rotation = Vector3(1.570796, 0, 0)
+mesh = SubResource("RimMesh")
+
+[node name="Reflector" type="MeshInstance3D" parent="Pivot"]
+rotation = Vector3(1.570796, 0, 0)
+mesh = SubResource("FaceMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 1.65, 0)
+shape = SubResource("ReflectorShape")
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+position = Vector3(0, 0.7, 0)
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+script = ExtResource("interactable")
+prompt_text = "XOAY GƯƠNG"
+prompt_offset = Vector3(0, 1.7, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+shape = SubResource("InteractionShape")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+callback_mode_process = 0
+playback_auto_capture = false
+libraries = {
+"mirror": SubResource("MirrorLibrary")
+}

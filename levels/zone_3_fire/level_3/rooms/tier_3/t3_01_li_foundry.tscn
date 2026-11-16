@@ -1,0 +1,1229 @@
+[gd_scene format=3 uid="uid://csx0lkxvku6hr"]
+
+[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="1_24kyv"]
+[ext_resource type="PackedScene" uid="uid://bg4m8xemog4sg" path="res://assets/models/map_fire/fire_kit/altar.glb" id="altar"]
+[ext_resource type="PackedScene" uid="uid://bu4u42f7gc4jn" path="res://assets/models/map_fire/fire_kit/floor_cracked_4m.glb" id="cracked"]
+[ext_resource type="PackedScene" uid="uid://xguhx4sku1ya" path="res://assets/models/map_fire/fire_kit/fence_rail_2m.glb" id="fence"]
+[ext_resource type="PackedScene" uid="uid://d3uhpk27bnq6l" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="floor"]
+[ext_resource type="PackedScene" uid="uid://dxy40cskd7gxo" path="res://assets/models/map_fire/fire_kit/floor_lava_grate_4m.glb" id="grate"]
+[ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="lava"]
+[ext_resource type="PackedScene" uid="uid://d4kop2w21knsc" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="low_wall"]
+[ext_resource type="PackedScene" uid="uid://o6kkjrise7uu" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="pillar"]
+[ext_resource type="PackedScene" uid="uid://bplbxflrp2vjx" path="res://assets/models/map_fire/fire_kit/stair_4m.glb" id="stair"]
+[ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_torch_standing.tscn" id="torch"]
+[ext_resource type="PackedScene" uid="uid://ryltcx5bjkxr" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="wall"]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_01_li_foundry.gd" id="ly_controller"]
+[ext_resource type="Resource" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/li_puzzle_data.tres" id="ly_data"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/rotating_mirror/rotating_mirror.tscn" id="rotating_mirror"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/heat_lock/heat_lock.tscn" id="heat_lock"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/fire_beam/fire_beam.tscn" id="fire_beam"]
+[ext_resource type="Script" path="res://objects/gates/stone_gate/stone_gate.gd" id="gate_script"]
+[ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="camera_data"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/lighting/fire_lighting.tscn" id="standalone_lighting"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/gate_feedback/gate_feedback.tscn" id="gate_feedback"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/beam_puzzle_stage/beam_puzzle_stage.tscn" id="beam_stage"]
+
+[sub_resource type="StandardMaterial3D" id="Basalt"]
+albedo_color = Color(0.1, 0.065, 0.073, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="Underfloor"]
+material = SubResource("Basalt")
+size = Vector3(24, 1.8, 32)
+
+[sub_resource type="BoxMesh" id="ChannelBed"]
+material = SubResource("Basalt")
+size = Vector3(4, 1, 16)
+
+[sub_resource type="StandardMaterial3D" id="Copper"]
+albedo_color = Color(0.5, 0.25, 0.085, 1)
+metallic = 0.65
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="Threshold"]
+material = SubResource("Copper")
+size = Vector3(4, 0.04, 0.18)
+
+[sub_resource type="BoxShape3D" id="BoxShape1"]
+size = Vector3(10, 0.32, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape2"]
+size = Vector3(10, 0.32, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape3"]
+size = Vector3(4, 0.32, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape4"]
+size = Vector3(4, 0.32, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape5"]
+size = Vector3(4, 0.5, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape6"]
+size = Vector3(0.7, 4, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape7"]
+size = Vector3(0.7, 1.25, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape8"]
+size = Vector3(10, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape9"]
+size = Vector3(1, 5, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape10"]
+size = Vector3(10, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape11"]
+size = Vector3(1, 5, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape12"]
+size = Vector3(24, 1.25, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape14"]
+size = Vector3(6, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape15"]
+size = Vector3(8, 1, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape16"]
+size = Vector3(6, 1, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape17"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="ConvexPolygonShape3D" id="WestStairSlope"]
+points = PackedVector3Array(-8, 0, 0, -4, 0, 0, -8, 0, 6, -4, 0, 6, -8, 0.32, 0, -4, 0.32, 0, -8, 1.32, 6, -4, 1.32, 6)
+
+[sub_resource type="ConvexPolygonShape3D" id="EastStairSlope"]
+points = PackedVector3Array(4, 0, 10, 8, 0, 10, 4, 0, 14, 8, 0, 14, 4, 1.32, 10, 8, 1.32, 10, 4, 0.32, 14, 8, 0.32, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape18"]
+size = Vector3(0.3, 1.25, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape19"]
+size = Vector3(0.3, 1.25, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape20"]
+size = Vector3(4, 1.25, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape21"]
+size = Vector3(4, 1.25, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape22"]
+size = Vector3(0.3, 1.25, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape23"]
+size = Vector3(8, 1.25, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape24"]
+size = Vector3(2, 1.25, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape25"]
+size = Vector3(2, 1.25, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape26"]
+size = Vector3(6, 1.25, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape27"]
+size = Vector3(0.3, 1.25, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape28"]
+size = Vector3(2, 1.25, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape29"]
+size = Vector3(1.2, 1.1, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape30"]
+size = Vector3(1.2, 1.1, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape31"]
+size = Vector3(1.2, 1.1, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape32"]
+size = Vector3(1.5, 1.8, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape33"]
+size = Vector3(1.8, 1.5, 1.8)
+
+[sub_resource type="PlaneMesh" id="MoltenMetal"]
+material = ExtResource("lava")
+size = Vector2(3.65, 15.6)
+
+[sub_resource type="BoxMesh" id="RimLong"]
+material = SubResource("Copper")
+size = Vector3(0.22, 0.16, 16)
+
+[sub_resource type="BoxMesh" id="SealPillar"]
+material = SubResource("Basalt")
+size = Vector3(1.3, 1.8, 1.3)
+
+[sub_resource type="CylinderMesh" id="EmitterPort"]
+material = SubResource("Copper")
+top_radius = 0.6
+bottom_radius = 0.6
+height = 0.35
+radial_segments = 16
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="Gold"]
+albedo_color = Color(0.95, 0.55, 0.16, 1)
+metallic = 0.4
+roughness = 0.7
+emission_enabled = true
+emission = Color(0.95, 0.3, 0.045, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="CylinderMesh" id="EmitterMouth"]
+material = SubResource("Gold")
+top_radius = 0.43
+bottom_radius = 0.43
+height = 0.38
+radial_segments = 16
+rings = 1
+
+[sub_resource type="BoxMesh" id="HaoSolid"]
+material = SubResource("Gold")
+size = Vector3(1.45, 0.025, 0.18)
+
+[sub_resource type="BoxMesh" id="HaoHalf"]
+material = SubResource("Gold")
+size = Vector3(0.58, 0.025, 0.18)
+
+[sub_resource type="BoxMesh" id="Strip"]
+material = SubResource("Copper")
+size = Vector3(0.07, 0.025, 3)
+
+[sub_resource type="BoxShape3D" id="PuzzleGateShape"]
+size = Vector3(4, 4, 0.4)
+
+[sub_resource type="BoxMesh" id="PuzzleGateMesh"]
+material = SubResource("Copper")
+size = Vector3(3.95, 3.9, 0.35)
+
+[sub_resource type="Resource" id="StandaloneCamera"]
+script = ExtResource("camera_data")
+distance = 46.0
+pitch_degrees = 50.0
+fov = 40.0
+yaw_degrees = 45.0
+
+[sub_resource type="BoxShape3D" id="SlitLower"]
+size = Vector3(4, 1.4, 0.7)
+
+[sub_resource type="BoxShape3D" id="SlitUpper"]
+size = Vector3(4, 2, 0.7)
+
+[sub_resource type="BoxShape3D" id="SlitLeft"]
+size = Vector3(0.5, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="SlitRight"]
+size = Vector3(2, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="WorkshopShape"]
+size = Vector3(23, 12, 22.4)
+
+[sub_resource type="BoxShape3D" id="SecondMirrorBody"]
+size = Vector3(1.2, 1.1, 1.2)
+
+[sub_resource type="BoxShape3D" id="SecondEmitterBody"]
+size = Vector3(1.5, 1.8, 1.5)
+
+[sub_resource type="BoxShape3D" id="FarWestWallShape"]
+size = Vector3(4, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="NearDoorWallShape"]
+size = Vector3(2, 4, 0.7)
+
+[node name="LiFoundry" type="Node3D" node_paths=PackedStringArray("stages", "tutorial_lock", "workshop_area", "tutorial_gate_feedback", "shortcut_gate_feedback", "standalone_player", "standalone_spawn", "phase_two_spawn") unique_id=216420063]
+editor_description = "Ly hai lượt: giải bệ phong ấn bằng bộ A/B/C, bộ đầu hạ xuống và bộ D/E/F/G trồi lên. Giải lượt hai mở cửa hồi và hoàn thành ấn Ly."
+
+script = ExtResource("ly_controller")
+puzzle_data = ExtResource("ly_data")
+stages = [NodePath("Stages/FirstStage"), NodePath("Stages/ReturnStage")]
+workshop_area = NodePath("WorkshopArea")
+tutorial_gate_feedback = NodePath("TutorialGate/GateFeedback")
+shortcut_gate_feedback = NodePath("ShortcutGate/GateFeedback")
+tutorial_lock = NodePath("PuzzleFixtures/TutorialLock")
+standalone_player = NodePath("Player")
+standalone_spawn = NodePath("PuzzleStart")
+phase_two_spawn = NodePath("PhaseTwoSpawn")
+standalone_camera_view = SubResource("StandaloneCamera")
+standalone_lighting = ExtResource("standalone_lighting")
+
+[node name="Player" parent="." unique_id=1552758181 instance=ExtResource("1_24kyv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.898235, 0.62000036, 0)
+
+[node name="Architecture" type="Node3D" parent="." unique_id=1219347173]
+
+[node name="Floors" type="Node3D" parent="Architecture" unique_id=2105975673]
+
+[node name="Tile1" parent="Architecture/Floors" unique_id=1447405704 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -14)
+
+[node name="Tile2" parent="Architecture/Floors" unique_id=1739074248 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -10)
+
+[node name="Tile3" parent="Architecture/Floors" unique_id=1872046206 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -6)
+
+[node name="Tile4" parent="Architecture/Floors" unique_id=383535049 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -2)
+
+[node name="Tile5" parent="Architecture/Floors" unique_id=1001339411 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 2)
+
+[node name="Tile6" parent="Architecture/Floors" unique_id=1944772052 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 6)
+
+[node name="Tile7" parent="Architecture/Floors" unique_id=1276590720 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 10)
+
+[node name="Tile8" parent="Architecture/Floors" unique_id=37580584 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 14)
+
+[node name="Tile9" parent="Architecture/Floors" unique_id=946463866 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -14)
+
+[node name="Tile10" parent="Architecture/Floors" unique_id=13334609 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -10)
+
+[node name="Tile11" parent="Architecture/Floors" unique_id=2113782889 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -6)
+
+[node name="Tile12" parent="Architecture/Floors" unique_id=1313876586 instance=ExtResource("cracked")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2)
+
+[node name="Tile13" parent="Architecture/Floors" unique_id=132880590 instance=ExtResource("cracked")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 2)
+
+[node name="Tile14" parent="Architecture/Floors" unique_id=264612916 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 6)
+
+[node name="Tile15" parent="Architecture/Floors" unique_id=1651098417 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 10)
+
+[node name="Tile16" parent="Architecture/Floors" unique_id=1135549706 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 14)
+
+[node name="BankTile17" parent="Architecture/Floors" unique_id=706542063 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -14)
+
+[node name="BankTile18" parent="Architecture/Floors" unique_id=1227855748 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -10)
+
+[node name="BankTile19" parent="Architecture/Floors" unique_id=491028616 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -6)
+
+[node name="BankTile20" parent="Architecture/Floors" unique_id=2085071952 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -2)
+
+[node name="BankTile21" parent="Architecture/Floors" unique_id=1808910280 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 2)
+
+[node name="BankTile22" parent="Architecture/Floors" unique_id=186294691 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 6)
+
+[node name="BankTile23" parent="Architecture/Floors" unique_id=1191441537 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 10)
+
+[node name="BankTile24" parent="Architecture/Floors" unique_id=861517898 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 14)
+
+[node name="BankTile25" parent="Architecture/Floors" unique_id=2083680725 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -14)
+
+[node name="BankTile26" parent="Architecture/Floors" unique_id=35704551 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -10)
+
+[node name="BankTile27" parent="Architecture/Floors" unique_id=1609870543 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -6)
+
+[node name="BankTile28" parent="Architecture/Floors" unique_id=211810776 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -2)
+
+[node name="BankTile29" parent="Architecture/Floors" unique_id=1305775244 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 2)
+
+[node name="BankTile30" parent="Architecture/Floors" unique_id=1764745095 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 6)
+
+[node name="BankTile31" parent="Architecture/Floors" unique_id=997656353 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 10)
+
+[node name="BankTile32" parent="Architecture/Floors" unique_id=102594421 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 14)
+
+[node name="Tile33" parent="Architecture/Floors" unique_id=1228451780 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -14)
+
+[node name="Tile34" parent="Architecture/Floors" unique_id=160812958 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -10)
+
+[node name="Tile35" parent="Architecture/Floors" unique_id=1664082534 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -6)
+
+[node name="Tile36" parent="Architecture/Floors" unique_id=14757422 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
+
+[node name="Tile37" parent="Architecture/Floors" unique_id=1909403365 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
+
+[node name="Tile38" parent="Architecture/Floors" unique_id=1516902680 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 6)
+
+[node name="Tile39" parent="Architecture/Floors" unique_id=1394492473 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 10)
+
+[node name="Tile40" parent="Architecture/Floors" unique_id=700097177 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 14)
+
+[node name="Tile41" parent="Architecture/Floors" unique_id=757526778 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -14)
+
+[node name="Tile42" parent="Architecture/Floors" unique_id=1278447100 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -10)
+
+[node name="Tile43" parent="Architecture/Floors" unique_id=1854753039 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -6)
+
+[node name="Tile44" parent="Architecture/Floors" unique_id=537346185 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -2)
+
+[node name="Tile45" parent="Architecture/Floors" unique_id=1948937327 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 2)
+
+[node name="Tile46" parent="Architecture/Floors" unique_id=400436089 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
+
+[node name="Tile47" parent="Architecture/Floors" unique_id=875586933 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10)
+
+[node name="Tile48" parent="Architecture/Floors" unique_id=2097353598 instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 14)
+
+[node name="CenterTile-1_-14" parent="Architecture/Floors" unique_id=1522654999 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -14)
+
+[node name="CenterTile-1_-10" parent="Architecture/Floors" unique_id=454737897 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -10)
+
+[node name="CenterTile-1_-7" parent="Architecture/Floors" unique_id=1756593659 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, -1, 0, -7)
+
+[node name="CenterTile-1_12" parent="Architecture/Floors" unique_id=588071382 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 12)
+
+[node name="CenterTile-1_15" parent="Architecture/Floors" unique_id=1782702464 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, -1, 0, 15)
+
+[node name="CenterTile1_-14" parent="Architecture/Floors" unique_id=480751204 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -14)
+
+[node name="CenterTile1_-10" parent="Architecture/Floors" unique_id=1641137827 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -10)
+
+[node name="CenterTile1_-7" parent="Architecture/Floors" unique_id=297808729 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 1, 0, -7)
+
+[node name="CenterTile1_12" parent="Architecture/Floors" unique_id=513784895 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 12)
+
+[node name="CenterTile1_15" parent="Architecture/Floors" unique_id=428112989 instance=ExtResource("floor")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 1, 0, 15)
+
+[node name="Walls" type="Node3D" parent="Architecture" unique_id=1003287941]
+
+[node name="WestWall0" parent="Architecture/Walls" unique_id=578084844 instance=ExtResource("wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, -12, 0.32, -14)
+
+[node name="EastWall0" parent="Architecture/Walls" unique_id=432723055 instance=ExtResource("low_wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12, 0.32, -14)
+
+[node name="WestWall4" parent="Architecture/Walls" unique_id=608896500 instance=ExtResource("wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, -12, 0.32, -10)
+
+[node name="EastWall4" parent="Architecture/Walls" unique_id=1863683701 instance=ExtResource("low_wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12, 0.32, -10)
+
+[node name="WestWall8" parent="Architecture/Walls" unique_id=1827945896 instance=ExtResource("wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, -12, 0.32, -6)
+
+[node name="EastWall8" parent="Architecture/Walls" unique_id=1677740298 instance=ExtResource("low_wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12, 0.32, -6)
+
+[node name="WestWall12" parent="Architecture/Walls" unique_id=1946866391 instance=ExtResource("wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, -12, 0.32, -2)
+
+[node name="EastWall12" parent="Architecture/Walls" unique_id=678070020 instance=ExtResource("low_wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12, 0.32, -2)
+
+[node name="WestWall16" parent="Architecture/Walls" unique_id=1500488752 instance=ExtResource("wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, -12, 0.32, 2)
+
+[node name="EastWall16" parent="Architecture/Walls" unique_id=1201509837 instance=ExtResource("low_wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12, 0.32, 2)
+
+[node name="WestWall20" parent="Architecture/Walls" unique_id=1104562903 instance=ExtResource("wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, -12, 0.32, 6)
+
+[node name="EastWall20" parent="Architecture/Walls" unique_id=30603422 instance=ExtResource("low_wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12, 0.32, 6)
+
+[node name="WestWall24" parent="Architecture/Walls" unique_id=733161875 instance=ExtResource("wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, -12, 0.32, 10)
+
+[node name="EastWall24" parent="Architecture/Walls" unique_id=1479886388 instance=ExtResource("low_wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12, 0.32, 10)
+
+[node name="WestWall28" parent="Architecture/Walls" unique_id=1254972455 instance=ExtResource("wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, -12, 0.32, 14)
+
+[node name="EastWall28" parent="Architecture/Walls" unique_id=1385607201 instance=ExtResource("low_wall")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12, 0.32, 14)
+
+[node name="SouthWall0" parent="Architecture/Walls" unique_id=1667078114 instance=ExtResource("low_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.32, 16)
+
+[node name="NorthWall0" parent="Architecture/Walls" unique_id=12400299 instance=ExtResource("wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.32, -16)
+
+[node name="SouthWall4" parent="Architecture/Walls" unique_id=1455874666 instance=ExtResource("low_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, 16)
+
+[node name="NorthWall4" parent="Architecture/Walls" unique_id=283955964 instance=ExtResource("wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, -16)
+
+[node name="SouthWall8" parent="Architecture/Walls" unique_id=1993096947 instance=ExtResource("low_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.32, 16)
+
+[node name="SouthWall12" parent="Architecture/Walls" unique_id=1597307114 instance=ExtResource("low_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.32, 16)
+
+[node name="SouthWall16" parent="Architecture/Walls" unique_id=1255515068 instance=ExtResource("low_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.32, 16)
+
+[node name="NorthWall16" parent="Architecture/Walls" unique_id=1322481201 instance=ExtResource("wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.32, -16)
+
+[node name="SouthWall20" parent="Architecture/Walls" unique_id=1970134971 instance=ExtResource("low_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.32, 16)
+
+[node name="NorthWall20" parent="Architecture/Walls" unique_id=921950200 instance=ExtResource("wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.32, -16)
+
+[node name="EntranceWallLeft" parent="Architecture/Walls" unique_id=1548251798 instance=ExtResource("wall")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.32, -16)
+
+[node name="EntrancePostLeft" parent="Architecture/Walls" unique_id=1226416755 instance=ExtResource("pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 0.32, -16)
+
+[node name="EntranceWallRight" parent="Architecture/Walls" unique_id=332779944 instance=ExtResource("wall")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.32, -16)
+
+[node name="EntrancePostRight" parent="Architecture/Walls" unique_id=978046113 instance=ExtResource("pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.32, -16)
+
+[node name="VestibuleWall0" parent="Architecture/Walls" unique_id=1861375356 instance=ExtResource("wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.32, -8)
+
+[node name="VestibuleWall14" parent="Architecture/Walls" unique_id=1417259379 instance=ExtResource("wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.32, -8)
+
+[node name="VestibuleWall17" parent="Architecture/Walls" unique_id=1785686017 instance=ExtResource("wall")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.32, -8)
+
+[node name="VestibuleWallNearDoor" parent="Architecture/Walls" unique_id=609378463 instance=ExtResource("wall")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.32, -8)
+
+[node name="TutorialPostLeft" parent="Architecture/Walls" unique_id=1714454389 instance=ExtResource("pillar")]
+transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 1, -2.55, 0.32, -8)
+
+[node name="TutorialPostRight" parent="Architecture/Walls" unique_id=302155748 instance=ExtResource("pillar")]
+transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 1, 2.55, 0.32, -8)
+
+[node name="Railings" type="Node3D" parent="Architecture" unique_id=2089698450]
+
+[node name="ChannelRailWest" parent="Architecture/Railings" unique_id=1942528288 instance=ExtResource("fence")]
+transform = Transform3D(1.8834988e-06, 0, 1, 0, 1, 0, -6, 0, 3.1391647e-07, -2.17, 0.32, 0)
+
+[node name="ChannelRailEast" parent="Architecture/Railings" unique_id=170080762 instance=ExtResource("fence")]
+transform = Transform3D(1.8834988e-06, 0, 1, 0, 1, 0, -6, 0, 3.1391647e-07, 2.17, 0.32, 0)
+
+[node name="BridgeNorth" parent="Architecture/Railings" unique_id=2130048816 instance=ExtResource("fence")]
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.32, 6.13)
+
+[node name="BridgeSouth" parent="Architecture/Railings" unique_id=1816285211 instance=ExtResource("fence")]
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.32, 9.87)
+
+[node name="WestLandingOuter" parent="Architecture/Railings" unique_id=130906509 instance=ExtResource("fence")]
+transform = Transform3D(6.2783295e-07, 0, 1, 0, 1, 0, -2, 0, 3.1391647e-07, -9.85, 1.32, 8)
+
+[node name="WestLandingBack" parent="Architecture/Railings" unique_id=1756277130 instance=ExtResource("fence")]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.32, 9.87)
+
+[node name="WestLandingFrontLeft" parent="Architecture/Railings" unique_id=1993147233 instance=ExtResource("fence")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1.32, 6.13)
+
+[node name="WestLandingFrontRight" parent="Architecture/Railings" unique_id=871404180 instance=ExtResource("fence")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.32, 6.13)
+
+[node name="EastLandingFront" parent="Architecture/Railings" unique_id=373108947 instance=ExtResource("fence")]
+transform = Transform3D(3, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.32, 6.13)
+
+[node name="EastLandingOuter" parent="Architecture/Railings" unique_id=1939365615 instance=ExtResource("fence")]
+transform = Transform3D(6.2783295e-07, 0, 1, 0, 1, 0, -2, 0, 3.1391647e-07, 7.85, 1.32, 8)
+
+[node name="EastLandingBack" parent="Architecture/Railings" unique_id=1457835266 instance=ExtResource("fence")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.32, 9.87)
+
+[node name="FoundationWest" type="MeshInstance3D" parent="Architecture" unique_id=1498379400]
+transform = Transform3D(0.416667, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.6, 0)
+mesh = SubResource("Underfloor")
+
+[node name="FoundationEast" type="MeshInstance3D" parent="Architecture" unique_id=1195045001]
+transform = Transform3D(0.416667, 0, 0, 0, 1, 0, 0, 0, 1, 7, -0.6, 0)
+mesh = SubResource("Underfloor")
+
+[node name="FoundationNorth" type="MeshInstance3D" parent="Architecture" unique_id=255353833]
+transform = Transform3D(0.166667, 0, 0, 0, 1, 0, 0, 0, 0.3125, 0, -0.6, -11)
+mesh = SubResource("Underfloor")
+
+[node name="FoundationSouth" type="MeshInstance3D" parent="Architecture" unique_id=1197740946]
+transform = Transform3D(0.166667, 0, 0, 0, 1, 0, 0, 0, 0.1875, 0, -0.6, 13)
+mesh = SubResource("Underfloor")
+
+[node name="ChannelBed" type="MeshInstance3D" parent="Architecture" unique_id=1024341976]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4, 2)
+mesh = SubResource("ChannelBed")
+
+[node name="EntranceThreshold" type="MeshInstance3D" parent="Architecture" unique_id=1550252851]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -15.3)
+mesh = SubResource("Threshold")
+
+[node name="Collisions" type="StaticBody3D" parent="." unique_id=106240902]
+collision_mask = 0
+
+[node name="WestBank" type="CollisionShape3D" parent="Collisions" unique_id=147257398]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.16, 0)
+shape = SubResource("BoxShape1")
+
+[node name="EastBank" type="CollisionShape3D" parent="Collisions" unique_id=1815104411]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.16, 0)
+shape = SubResource("BoxShape2")
+
+[node name="NorthBank" type="CollisionShape3D" parent="Collisions" unique_id=1591229558]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, -11)
+shape = SubResource("BoxShape3")
+
+[node name="SouthBank" type="CollisionShape3D" parent="Collisions" unique_id=758855622]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 13)
+shape = SubResource("BoxShape4")
+
+[node name="ChannelBed" type="CollisionShape3D" parent="Collisions" unique_id=1290906410]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.15, 2)
+shape = SubResource("BoxShape5")
+
+[node name="WestWall" type="CollisionShape3D" parent="Collisions" unique_id=1190678959]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.32, 0)
+shape = SubResource("BoxShape6")
+
+[node name="EastWall" type="CollisionShape3D" parent="Collisions" unique_id=1396412684]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.945, 0)
+shape = SubResource("BoxShape7")
+
+[node name="NorthWallLeft" type="CollisionShape3D" parent="Collisions" unique_id=584074353]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 2.32, -16)
+shape = SubResource("BoxShape8")
+
+[node name="EntrancePostLeft" type="CollisionShape3D" parent="Collisions" unique_id=1605678606]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 2.82, -16)
+shape = SubResource("BoxShape9")
+
+[node name="NorthWallRight" type="CollisionShape3D" parent="Collisions" unique_id=317395752]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 2.32, -16)
+shape = SubResource("BoxShape10")
+
+[node name="EntrancePostRight" type="CollisionShape3D" parent="Collisions" unique_id=839280648]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 2.82, -16)
+shape = SubResource("BoxShape11")
+
+[node name="SouthWall" type="CollisionShape3D" parent="Collisions" unique_id=1566098538]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.945, 16)
+shape = SubResource("BoxShape12")
+
+[node name="VestibuleEast" type="CollisionShape3D" parent="Collisions" unique_id=1980117151]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2.32, -8)
+shape = SubResource("BoxShape14")
+
+[node name="WestLanding" type="CollisionShape3D" parent="Collisions" unique_id=436099862]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.82, 8)
+shape = SubResource("BoxShape15")
+
+[node name="EastLanding" type="CollisionShape3D" parent="Collisions" unique_id=1406722896]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.82, 8)
+shape = SubResource("BoxShape16")
+
+[node name="Bridge" type="CollisionShape3D" parent="Collisions" unique_id=1829356760]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.16, 8)
+shape = SubResource("BoxShape17")
+
+[node name="WestStairSlope" type="CollisionShape3D" parent="Collisions" unique_id=1906421870]
+shape = SubResource("WestStairSlope")
+
+[node name="EastStairSlope" type="CollisionShape3D" parent="Collisions" unique_id=660140749]
+shape = SubResource("EastStairSlope")
+
+[node name="ChannelRailWestCollider" type="CollisionShape3D" parent="Collisions" unique_id=803119977]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.17, 0.945, 0)
+shape = SubResource("BoxShape18")
+
+[node name="ChannelRailEastCollider" type="CollisionShape3D" parent="Collisions" unique_id=524099275]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.17, 0.945, 0)
+shape = SubResource("BoxShape19")
+
+[node name="BridgeNorthCollider" type="CollisionShape3D" parent="Collisions" unique_id=370134038]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.945, 6.13)
+shape = SubResource("BoxShape20")
+
+[node name="BridgeSouthCollider" type="CollisionShape3D" parent="Collisions" unique_id=2054939163]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.945, 9.87)
+shape = SubResource("BoxShape21")
+
+[node name="WestLandingOuterCollider" type="CollisionShape3D" parent="Collisions" unique_id=1583861043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.85, 1.945, 8)
+shape = SubResource("BoxShape22")
+
+[node name="WestLandingBackCollider" type="CollisionShape3D" parent="Collisions" unique_id=1551418510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.945, 9.87)
+shape = SubResource("BoxShape23")
+
+[node name="WestLandingFrontLeftCollider" type="CollisionShape3D" parent="Collisions" unique_id=290135535]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1.945, 6.13)
+shape = SubResource("BoxShape24")
+
+[node name="WestLandingFrontRightCollider" type="CollisionShape3D" parent="Collisions" unique_id=1798774302]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.945, 6.13)
+shape = SubResource("BoxShape25")
+
+[node name="EastLandingFrontCollider" type="CollisionShape3D" parent="Collisions" unique_id=1255248119]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.945, 6.13)
+shape = SubResource("BoxShape26")
+
+[node name="EastLandingOuterCollider" type="CollisionShape3D" parent="Collisions" unique_id=971950526]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.85, 1.945, 8)
+shape = SubResource("BoxShape27")
+
+[node name="EastLandingBackCollider" type="CollisionShape3D" parent="Collisions" unique_id=6435690]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.945, 9.87)
+shape = SubResource("BoxShape28")
+
+[node name="SealPedestal" type="CollisionShape3D" parent="Collisions" unique_id=826506567]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.07, 13.5)
+shape = SubResource("BoxShape33")
+
+[node name="MoltenChannel" type="Node3D" parent="." unique_id=1537243226]
+
+[node name="Liquid" type="MeshInstance3D" parent="MoltenChannel" unique_id=298602767]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.38, 2)
+cast_shadow = 0
+mesh = SubResource("MoltenMetal")
+
+[node name="CopperRimWest" type="MeshInstance3D" parent="MoltenChannel" unique_id=450730583]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.15, 0.36, 2)
+mesh = SubResource("RimLong")
+
+[node name="CopperRimEast" type="MeshInstance3D" parent="MoltenChannel" unique_id=2063042529]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.15, 0.36, 2)
+mesh = SubResource("RimLong")
+
+[node name="MaintenanceWalkway" type="Node3D" parent="." unique_id=689519521]
+
+[node name="LandingWest8" parent="MaintenanceWalkway" unique_id=1891239682 instance=ExtResource("grate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1, 8)
+
+[node name="LandingWest4" parent="MaintenanceWalkway" unique_id=2014265619 instance=ExtResource("grate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, 8)
+
+[node name="LandingEast4" parent="MaintenanceWalkway" unique_id=1350289956 instance=ExtResource("grate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, 8)
+
+[node name="LandingEast7" parent="MaintenanceWalkway" unique_id=1223791515 instance=ExtResource("grate")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1, 8)
+
+[node name="Bridge" parent="MaintenanceWalkway" unique_id=232472339 instance=ExtResource("grate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 8)
+
+[node name="WestStair" parent="MaintenanceWalkway" unique_id=372822368 instance=ExtResource("stair")]
+transform = Transform3D(-1.111111, 0, -4.8876205e-07, 0, 0.5, 0, 3.6204594e-07, 0, -1.5, -6, 0.32, 3)
+
+[node name="EastStair" parent="MaintenanceWalkway" unique_id=433240793 instance=ExtResource("stair")]
+transform = Transform3D(1.111111, 0, 0, 0, 0.5, 0, 0, 0, 1, 6, 0.32, 12)
+
+[node name="PuzzleFixtures" type="Node3D" parent="." unique_id=942614514]
+editor_description = "Nguồn tia → A → khóa đầu. Sau đó xoay A → B → C → khóa phong ấn. Dùng action interact tại từng gương."
+
+[node name="Mirrors" type="Node3D" parent="PuzzleFixtures" unique_id=36643853]
+
+[node name="MirrorA" parent="PuzzleFixtures/Mirrors" node_paths=PackedStringArray("incoming_anchor", "targets", "angle_targets") instance=ExtResource("rotating_mirror")]
+transform = Transform3D(0.7071069, 0, 0.70710665, 0, 1, 0, -0.70710665, 0, 0.7071069, -5, 0.32, -12)
+incoming_anchor = NodePath("../../FireEmitter/BeamAnchor")
+targets = [NodePath("../../TutorialLock"), NodePath("../MirrorB")]
+
+angle_targets = [NodePath("../../TutorialLock"), NodePath("../MirrorB"), NodePath("../../WrongRayTargets/AWrong1"), NodePath("../../WrongRayTargets/AWrong2")]
+
+[node name="MirrorB" parent="PuzzleFixtures/Mirrors" node_paths=PackedStringArray("incoming_anchor", "targets", "angle_targets") instance=ExtResource("rotating_mirror")]
+transform = Transform3D(0.7071069, 0, -0.70710665, 0, 1, 0, 0.70710665, 0, 0.7071069, -9, 0.32, -3)
+incoming_anchor = NodePath("../MirrorA")
+targets = [NodePath("../MirrorC")]
+
+angle_targets = [NodePath("../MirrorC"), NodePath("../../WrongRayTargets/BWrong1"), NodePath("../../WrongRayTargets/BWrong2"), NodePath("../../WrongRayTargets/BWrong3")]
+
+[node name="MirrorC" parent="PuzzleFixtures/Mirrors" node_paths=PackedStringArray("incoming_anchor", "targets", "angle_targets") instance=ExtResource("rotating_mirror")]
+transform = Transform3D(0.7071069, 0, 0.70710665, 0, 1, 0, -0.70710665, 0, 0.7071069, 5.2, 1.32, 8.2)
+incoming_anchor = NodePath("../MirrorB")
+targets = [NodePath("../../FinalLock")]
+
+angle_targets = [NodePath("../../FinalLock"), NodePath("../../WrongRayTargets/CWrong1"), NodePath("../../WrongRayTargets/CWrong2"), NodePath("../../WrongRayTargets/CWrong3")]
+
+[node name="FireEmitter" type="Node3D" parent="PuzzleFixtures" unique_id=87955094]
+transform = Transform3D(3.1391647e-07, 0, -1, 0, 1, 0, 1, 0, 3.1391647e-07, -9, 0.32, -12)
+
+[node name="Pedestal" type="MeshInstance3D" parent="PuzzleFixtures/FireEmitter" unique_id=920614572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("SealPillar")
+
+[node name="Nozzle" type="MeshInstance3D" parent="PuzzleFixtures/FireEmitter" unique_id=82147927]
+transform = Transform3D(1, 0, 0, 0, 3.1391647e-07, -1, 0, 1, 3.1391647e-07, 0, 1.65, -0.7)
+mesh = SubResource("EmitterPort")
+
+[node name="Mouth" type="MeshInstance3D" parent="PuzzleFixtures/FireEmitter" unique_id=1757917992]
+transform = Transform3D(1, 0, 0, 0, 3.1391647e-07, -1, 0, 1, 3.1391647e-07, 0, 1.65, -0.72)
+cast_shadow = 0
+mesh = SubResource("EmitterMouth")
+
+[node name="BeamAnchor" type="Marker3D" parent="PuzzleFixtures/FireEmitter" unique_id=765781462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, -1)
+
+[node name="TutorialLockAnchor" type="Marker3D" parent="PuzzleFixtures" unique_id=921958363]
+position = Vector3(0, 1.97, -8.65)
+
+[node name="FinalLockAnchor" type="Marker3D" parent="PuzzleFixtures" unique_id=1594873443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 13.5)
+
+[node name="SealPlatform" type="Node3D" parent="." unique_id=2084238268]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 13.5)
+
+[node name="Pedestal" parent="SealPlatform" unique_id=1174215512 instance=ExtResource("altar")]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+
+[node name="SealAnchor" type="Marker3D" parent="SealPlatform" unique_id=1374043312]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="ChainAnchor" type="Marker3D" parent="SealPlatform" unique_id=1928475329]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+
+[node name="LiFloorSign" type="Node3D" parent="." unique_id=479882153]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 11.7)
+
+[node name="Hao0" type="MeshInstance3D" parent="LiFloorSign" unique_id=994980751]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.015, -0.35)
+cast_shadow = 0
+mesh = SubResource("HaoSolid")
+
+[node name="Hao1Left" type="MeshInstance3D" parent="LiFloorSign" unique_id=821652843]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.435, 0.015, 0)
+cast_shadow = 0
+mesh = SubResource("HaoHalf")
+
+[node name="Hao1Right" type="MeshInstance3D" parent="LiFloorSign" unique_id=1338688821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.435, 0.015, 0)
+cast_shadow = 0
+mesh = SubResource("HaoHalf")
+
+[node name="Hao2" type="MeshInstance3D" parent="LiFloorSign" unique_id=1714719709]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.015, 0.35)
+cast_shadow = 0
+mesh = SubResource("HaoSolid")
+
+[node name="EncounterAnchors" type="Node3D" parent="." unique_id=2127835959]
+
+[node name="BrazierGuard" type="Marker3D" parent="EncounterAnchors" unique_id=1232576078]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, -5)
+
+[node name="FloorVentA" type="Marker3D" parent="EncounterAnchors" unique_id=1186160846]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, -2)
+
+[node name="FloorVentB" type="Marker3D" parent="EncounterAnchors" unique_id=1908184494]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, 2)
+
+[node name="Shortcut" type="Node3D" parent="." unique_id=1300616665]
+editor_description = "Lối hồi bên Đông rộng khoảng 3 m. Đi qua cửa phụ ở tiền sảnh."
+
+[node name="GateAnchor" type="Marker3D" parent="Shortcut" unique_id=689214340]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.32, -8)
+
+[node name="ReturnAnchor" type="Marker3D" parent="Shortcut" unique_id=1032943508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.32, 12)
+
+[node name="ReturnInlay0" type="MeshInstance3D" parent="Shortcut" unique_id=920794886]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.34, -3)
+cast_shadow = 0
+mesh = SubResource("Strip")
+
+[node name="ReturnInlay4" type="MeshInstance3D" parent="Shortcut" unique_id=1544134270]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.34, 1)
+cast_shadow = 0
+mesh = SubResource("Strip")
+
+[node name="ReturnInlay8" type="MeshInstance3D" parent="Shortcut" unique_id=647685073]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.34, 5)
+cast_shadow = 0
+mesh = SubResource("Strip")
+
+[node name="ReturnInlay12" type="MeshInstance3D" parent="Shortcut" unique_id=2134956892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.34, 9)
+cast_shadow = 0
+mesh = SubResource("Strip")
+
+[node name="ConnectionAnchor" type="Marker3D" parent="." unique_id=1437453057]
+transform = Transform3D(-1, 0, -3.2584137e-07, 0, 1, 0, 3.2584137e-07, 0, -1, 0, 0.32, -16)
+gizmo_extents = 1.5
+
+[node name="Decor" type="Node3D" parent="." unique_id=1295856659]
+
+[node name="Torch1" parent="Decor" unique_id=2115842829 instance=ExtResource("torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.8, 0.32, -14)
+light_energy = 1.5
+
+[node name="Torch2" parent="Decor" unique_id=1215487817 instance=ExtResource("torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.8, 0.32, -6)
+light_energy = 1.5
+
+[node name="Torch3" parent="Decor" unique_id=2025976888 instance=ExtResource("torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.8, 0.32, 5)
+light_energy = 1.5
+
+[node name="Torch4" parent="Decor" unique_id=811015544 instance=ExtResource("torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.8, 0.32, 14)
+light_energy = 1.5
+
+[node name="Torch5" parent="Decor" unique_id=119709408 instance=ExtResource("torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.32, -14)
+light_energy = 1.5
+
+[node name="Torch6" parent="Decor" unique_id=1284235120 instance=ExtResource("torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.32, -5)
+light_energy = 1.5
+
+[node name="Torch7" parent="Decor" unique_id=942005158 instance=ExtResource("torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.32, 5)
+light_energy = 1.5
+
+[node name="Torch8" parent="Decor" unique_id=752126532 instance=ExtResource("torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.32, 14)
+light_energy = 1.5
+[node name="TutorialLock" parent="PuzzleFixtures" instance=ExtResource("heat_lock")]
+position = Vector3(0, 1.97, -8.65)
+
+[node name="FinalLock" parent="PuzzleFixtures" instance=ExtResource("heat_lock")]
+position = Vector3(0, 2.7, 13.5)
+
+[node name="FireBeam" parent="." instance=ExtResource("fire_beam")]
+
+[node name="TutorialGate" type="StaticBody3D" parent="." node_paths=PackedStringArray("sources")]
+position = Vector3(0, 0.32, -8)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("gate_script")
+sources = [NodePath("../Stages/FirstStage")]
+pressure_mode = true
+open_time = 0.8
+sink_depth = 4.5
+open_trauma = 0.12
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TutorialGate"]
+position = Vector3(0, 2, 0)
+shape = SubResource("PuzzleGateShape")
+
+[node name="Visual" type="Node3D" parent="TutorialGate"]
+
+[node name="SealPlate" type="MeshInstance3D" parent="TutorialGate/Visual"]
+position = Vector3(0, 2, 0)
+mesh = SubResource("PuzzleGateMesh")
+
+[node name="ShortcutGate" type="StaticBody3D" parent="." node_paths=PackedStringArray("sources")]
+position = Vector3(10, 0.32, -8)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("gate_script")
+sources = [NodePath("../ExitLock")]
+pressure_mode = true
+open_time = 0.8
+sink_depth = 4.5
+open_trauma = 0.12
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ShortcutGate"]
+position = Vector3(0, 2, 0)
+shape = SubResource("PuzzleGateShape")
+
+[node name="Visual" type="Node3D" parent="ShortcutGate"]
+
+[node name="SealPlate" type="MeshInstance3D" parent="ShortcutGate/Visual"]
+position = Vector3(0, 2, 0)
+mesh = SubResource("PuzzleGateMesh")
+
+
+
+[node name="PuzzleStart" type="Marker3D" parent="."]
+position = Vector3(0, 0.4, -13)
+rotation = Vector3(0, 3.141593, 0)
+
+
+[node name="GateFeedback" parent="TutorialGate" node_paths=PackedStringArray("plate") instance=ExtResource("gate_feedback")]
+position = Vector3(0, 1.65, -0.25)
+plate = NodePath("../Visual/SealPlate")
+
+[node name="GateFeedback" parent="ShortcutGate" node_paths=PackedStringArray("plate") instance=ExtResource("gate_feedback")]
+position = Vector3(0, 1.65, -0.25)
+plate = NodePath("../Visual/SealPlate")
+[node name="SlitLower" parent="Architecture/Walls" instance=ExtResource("wall")]
+position = Vector3(-6, 0.32, -8)
+scale = Vector3(1, 0.35, 1)
+
+[node name="SlitLower" type="CollisionShape3D" parent="Collisions"]
+position = Vector3(-6, 1.02, -8)
+shape = SubResource("SlitLower")
+
+[node name="SlitUpper" parent="Architecture/Walls" instance=ExtResource("wall")]
+position = Vector3(-6, 2.32, -8)
+scale = Vector3(1, 0.5, 1)
+
+[node name="SlitUpper" type="CollisionShape3D" parent="Collisions"]
+position = Vector3(-6, 3.32, -8)
+shape = SubResource("SlitUpper")
+
+[node name="SlitLeft" parent="Architecture/Walls" instance=ExtResource("wall")]
+position = Vector3(-7.75, 0.32, -8)
+scale = Vector3(0.125, 1, 1)
+
+[node name="SlitLeft" type="CollisionShape3D" parent="Collisions"]
+position = Vector3(-7.75, 2.32, -8)
+shape = SubResource("SlitLeft")
+
+[node name="SlitRight" parent="Architecture/Walls" instance=ExtResource("wall")]
+position = Vector3(-5, 0.32, -8)
+scale = Vector3(0.5, 1, 1)
+
+[node name="SlitRight" type="CollisionShape3D" parent="Collisions"]
+position = Vector3(-5, 2.32, -8)
+shape = SubResource("SlitRight")
+
+[node name="FarWestWall" type="CollisionShape3D" parent="Collisions"]
+position = Vector3(-10, 2.32, -8)
+shape = SubResource("FarWestWallShape")
+
+[node name="NearDoorWall" type="CollisionShape3D" parent="Collisions"]
+position = Vector3(-3, 2.32, -8)
+shape = SubResource("NearDoorWallShape")
+
+[node name="ObstacleBody" type="StaticBody3D" parent="PuzzleFixtures"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="MirrorABase" type="CollisionShape3D" parent="PuzzleFixtures/ObstacleBody" unique_id=1050666293]
+position = Vector3(-5, 0.87, -12)
+shape = SubResource("BoxShape29")
+
+[node name="MirrorBBase" type="CollisionShape3D" parent="PuzzleFixtures/ObstacleBody" unique_id=215852420]
+position = Vector3(-9, 0.87, -3)
+shape = SubResource("BoxShape30")
+
+[node name="MirrorCBase" type="CollisionShape3D" parent="PuzzleFixtures/ObstacleBody" unique_id=875448717]
+position = Vector3(5.2, 1.87, 8.2)
+shape = SubResource("BoxShape31")
+
+[node name="EmitterBase" type="CollisionShape3D" parent="PuzzleFixtures/ObstacleBody" unique_id=1757990330]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1.22, -12)
+shape = SubResource("BoxShape32")
+
+[node name="SecondPuzzleRig" type="Node3D" parent="."]
+editor_description = "Bộ gương hồi lộ ra sau khi giải bệ phong ấn. Các vị trí được chỉnh ở độ cao đang nâng; runtime tự hạ bộ này lúc bắt đầu."
+
+[node name="Mirrors" type="Node3D" parent="SecondPuzzleRig"]
+
+[node name="MirrorD" parent="SecondPuzzleRig/Mirrors" node_paths=PackedStringArray("incoming_anchor", "targets", "angle_targets") instance=ExtResource("rotating_mirror")]
+position = Vector3(10, 0.32, 3)
+incoming_anchor = NodePath("../../FireEmitter/BeamAnchor")
+targets = [NodePath("../MirrorE")]
+
+angle_targets = [NodePath("../MirrorE"), NodePath("../MirrorG"), NodePath("../../WrongRayTargets/DWrong1"), NodePath("../../WrongRayTargets/DWrong2")]
+
+[node name="MirrorE" parent="SecondPuzzleRig/Mirrors" node_paths=PackedStringArray("incoming_anchor", "targets", "angle_targets") instance=ExtResource("rotating_mirror")]
+position = Vector3(-6, 0.32, -1)
+incoming_anchor = NodePath("../MirrorD")
+targets = [NodePath("../MirrorF")]
+
+angle_targets = [NodePath("../MirrorF"), NodePath("../../WrongRayTargets/EWrong1"), NodePath("../../WrongRayTargets/EWrong2"), NodePath("../../WrongRayTargets/EWrong3")]
+
+[node name="MirrorF" parent="SecondPuzzleRig/Mirrors" node_paths=PackedStringArray("incoming_anchor", "targets", "angle_targets") instance=ExtResource("rotating_mirror")]
+position = Vector3(-2.4, 1.32, 7)
+incoming_anchor = NodePath("../MirrorE")
+targets = [NodePath("../MirrorG")]
+
+angle_targets = [NodePath("../MirrorG"), NodePath("../../WrongRayTargets/FWrong1"), NodePath("../../WrongRayTargets/FWrong2"), NodePath("../../WrongRayTargets/FWrong3")]
+
+[node name="FireEmitter" type="Node3D" parent="SecondPuzzleRig"]
+position = Vector3(9, 0.32, 13.5)
+rotation = Vector3(0, -0.0949517063, 0)
+
+[node name="Pedestal" type="MeshInstance3D" parent="SecondPuzzleRig/FireEmitter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("SealPillar")
+
+[node name="Nozzle" type="MeshInstance3D" parent="SecondPuzzleRig/FireEmitter"]
+transform = Transform3D(1, 0, 0, 0, 3.1391647e-07, -1, 0, 1, 3.1391647e-07, 0, 1.65, -0.7)
+mesh = SubResource("EmitterPort")
+
+[node name="Mouth" type="MeshInstance3D" parent="SecondPuzzleRig/FireEmitter"]
+transform = Transform3D(1, 0, 0, 0, 3.1391647e-07, -1, 0, 1, 3.1391647e-07, 0, 1.65, -0.72)
+cast_shadow = 0
+mesh = SubResource("EmitterMouth")
+
+[node name="BeamAnchor" type="Marker3D" parent="SecondPuzzleRig/FireEmitter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, -1)
+
+[node name="ObstacleBody" type="StaticBody3D" parent="SecondPuzzleRig"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="MirrorDBase" type="CollisionShape3D" parent="SecondPuzzleRig/ObstacleBody"]
+position = Vector3(10, 0.87, 3)
+shape = SubResource("SecondMirrorBody")
+
+[node name="MirrorEBase" type="CollisionShape3D" parent="SecondPuzzleRig/ObstacleBody"]
+position = Vector3(-6, 0.87, -1)
+shape = SubResource("SecondMirrorBody")
+
+[node name="MirrorFBase" type="CollisionShape3D" parent="SecondPuzzleRig/ObstacleBody"]
+position = Vector3(-2.4, 1.87, 7)
+shape = SubResource("SecondMirrorBody")
+
+[node name="EmitterBase" type="CollisionShape3D" parent="SecondPuzzleRig/ObstacleBody"]
+position = Vector3(9, 1.22, 13.5)
+shape = SubResource("SecondEmitterBody")
+
+[node name="ExitLock" parent="." instance=ExtResource("heat_lock")]
+position = Vector3(10, 1.97, -7.35)
+
+[node name="ReturnBeam" parent="." instance=ExtResource("fire_beam")]
+
+[node name="WorkshopArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WorkshopArea"]
+position = Vector3(0, 4, 4.8)
+shape = SubResource("WorkshopShape")
+
+[node name="Stages" type="Node3D" parent="."]
+
+[node name="FirstStage" parent="Stages" node_paths=PackedStringArray("rig", "mirrors", "emitter", "beam", "receiver", "blockers") instance=ExtResource("beam_stage")]
+rig = NodePath("../../PuzzleFixtures")
+mirrors = [NodePath("../../PuzzleFixtures/Mirrors/MirrorA"), NodePath("../../PuzzleFixtures/Mirrors/MirrorB"), NodePath("../../PuzzleFixtures/Mirrors/MirrorC")]
+emitter = NodePath("../../PuzzleFixtures/FireEmitter/BeamAnchor")
+beam = NodePath("../../FireBeam")
+receiver = NodePath("../../PuzzleFixtures/FinalLock")
+blockers = [NodePath("../../PuzzleFixtures/ObstacleBody/MirrorABase"), NodePath("../../PuzzleFixtures/ObstacleBody/MirrorBBase"), NodePath("../../PuzzleFixtures/ObstacleBody/MirrorCBase"), NodePath("../../PuzzleFixtures/ObstacleBody/EmitterBase")]
+
+[node name="ReturnStage" parent="Stages" node_paths=PackedStringArray("rig", "mirrors", "emitter", "beam", "receiver", "blockers") instance=ExtResource("beam_stage")]
+rig = NodePath("../../SecondPuzzleRig")
+mirrors = [NodePath("../../SecondPuzzleRig/Mirrors/MirrorD"), NodePath("../../SecondPuzzleRig/Mirrors/MirrorE"), NodePath("../../SecondPuzzleRig/Mirrors/MirrorF"), NodePath("../../SecondPuzzleRig/Mirrors/MirrorG")]
+emitter = NodePath("../../SecondPuzzleRig/FireEmitter/BeamAnchor")
+beam = NodePath("../../ReturnBeam")
+receiver = NodePath("../../ExitLock")
+blockers = [NodePath("../../SecondPuzzleRig/ObstacleBody/MirrorDBase"), NodePath("../../SecondPuzzleRig/ObstacleBody/MirrorEBase"), NodePath("../../SecondPuzzleRig/ObstacleBody/MirrorFBase"), NodePath("../../SecondPuzzleRig/ObstacleBody/EmitterBase"), NodePath("../../SecondPuzzleRig/ObstacleBody/MirrorGBase")]
+
+[node name="WrongRayTargets" type="Node3D" parent="PuzzleFixtures"]
+editor_description = "Điểm hướng của các mũi tên đỏ trên sơ đồ. Tia vẫn phản xạ bằng hướng tới thực tế và pháp tuyến mặt gương."
+
+[node name="AWrong1" type="Marker3D" parent="PuzzleFixtures/WrongRayTargets"]
+position = Vector3(-8, 1.97, -15)
+
+[node name="AWrong2" type="Marker3D" parent="PuzzleFixtures/WrongRayTargets"]
+position = Vector3(-1, 1.97, -15.3)
+
+[node name="BWrong1" type="Marker3D" parent="PuzzleFixtures/WrongRayTargets"]
+position = Vector3(-4, 1.97, -6)
+
+[node name="BWrong2" type="Marker3D" parent="PuzzleFixtures/WrongRayTargets"]
+position = Vector3(-11, 1.97, -5)
+
+[node name="BWrong3" type="Marker3D" parent="PuzzleFixtures/WrongRayTargets"]
+position = Vector3(-11, 1.97, 0)
+
+[node name="CWrong1" type="Marker3D" parent="PuzzleFixtures/WrongRayTargets"]
+position = Vector3(0.5, 2.97, 8.2)
+
+[node name="CWrong2" type="Marker3D" parent="PuzzleFixtures/WrongRayTargets"]
+position = Vector3(8, 2.97, 6.7)
+
+[node name="CWrong3" type="Marker3D" parent="PuzzleFixtures/WrongRayTargets"]
+position = Vector3(9, 2.97, 4.7)
+
+[node name="WrongRayTargets" type="Node3D" parent="SecondPuzzleRig"]
+editor_description = "Điểm hướng của các mũi tên đỏ trên sơ đồ. Tia vẫn phản xạ bằng hướng tới thực tế và pháp tuyến mặt gương."
+
+[node name="DWrong1" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(10.5, 1.97, -3)
+
+[node name="DWrong2" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(11.8, 1.97, 5)
+
+[node name="EWrong1" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(-8, 1.97, -3)
+
+[node name="EWrong2" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(-3, 1.97, -3.5)
+
+[node name="EWrong3" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(-8, 1.97, 2)
+
+[node name="FWrong1" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(-4.8, 2.97, 2.7)
+
+[node name="FWrong2" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(-6, 2.97, 9.5)
+
+[node name="FWrong3" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(-1.8, 2.97, 11)
+
+[node name="GWrong1" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(3, 1.97, -4.5)
+
+[node name="GWrong2" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(6.5, 1.97, 3.3)
+
+[node name="GWrong3" type="Marker3D" parent="SecondPuzzleRig/WrongRayTargets"]
+position = Vector3(7.5, 1.97, 0)
+
+[node name="MirrorG" parent="SecondPuzzleRig/Mirrors" node_paths=PackedStringArray("incoming_anchor", "targets", "angle_targets") instance=ExtResource("rotating_mirror")]
+position = Vector3(5, 0.32, -3)
+incoming_anchor = NodePath("../MirrorF")
+targets = [NodePath("../../../ExitLock")]
+angle_targets = [NodePath("../../../ExitLock"), NodePath("../../WrongRayTargets/GWrong1"), NodePath("../../WrongRayTargets/GWrong2"), NodePath("../../WrongRayTargets/GWrong3")]
+
+[node name="MirrorGBase" type="CollisionShape3D" parent="SecondPuzzleRig/ObstacleBody"]
+position = Vector3(5, 0.87, -3)
+shape = SubResource("SecondMirrorBody")
+
+
+
+[node name="PhaseTwoSpawn" type="Marker3D" parent="."]
+position = Vector3(8.8, 0.4, -4.2)
+rotation = Vector3(0, 3.141593, 0)
+editor_description = "Điểm tiếp tục phase 2 bên trong xưởng; cửa 1 giữ đóng."
