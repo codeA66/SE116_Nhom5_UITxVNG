@@ -68,3 +68,18 @@ thấy lỗi gốc trong log.
 
 Template export của máy nhóm trưởng nằm ở `D:\GodotData\export_templates` (liên kết từ
 `%APPDATA%\Godot\export_templates`).
+
+## 4. Bộ đệm export cũ làm sai màu / sai thông số (15/11/2026)
+
+**Triệu chứng.** Lốc xoáy (Thổi Gió cấp 2) trong editor màu xám đen, nhưng bản export release vẫn màu xanh lơ
+của bản VFX cũ.
+
+**Nguyên nhân** (đo trên bản release thật, in thông số vật liệu lúc chạy): vật liệu mang `rim_color = (0.3, 0.62, 0.73)`,
+đúng màu cũ, dù file `wind_tornado_ribbon.gdshader` trong bản export đã là bản mới. Khi export, Godot đổi scene
+`.tscn` sang nhị phân và lưu đệm ở `.godot/exported/`. Chỉ sửa shader / tài nguyên dùng chung mà scene không đổi
+thì Godot vẫn lấy bản đệm cũ. Xoá `.godot/exported` rồi export lại thì vật liệu đúng màu mới `(0.08, 0.09, 0.12)`.
+
+**Quy tắc.** Trước khi export bản phát hành (hoặc khi bản export khác editor về màu, thông số):
+1. Tắt Godot.
+2. Xoá thư mục `.godot/exported` (chỉ là bộ đệm, Godot tự tạo lại).
+3. Mở Godot, export lại.
