@@ -1,4 +1,6 @@
-# Kế hoạch Thiết kế Boss 1: "Dị Thú Tha Hoá" (Mutant Boss - Map Gió)
+# Kế hoạch Thiết kế Boss 1: "Ngưu Vương Huyết Diệm" (Crimson Minotaur - Map Gió)
+
+Cập nhật moveset: đã bỏ Normal Attack 1/2 và toàn bộ Melee; các mô tả quét tay/combo bên dưới thuộc thiết kế cũ. Thư viện gameplay dùng Idle, Walk, Charge, FireballCast, JumpSlam, Roar, MagmaStomp, Death.
 
 Cập nhật triển khai 2026-11-16: boss mặc định 50 HP; phá khiên về Idle; hệ số damage phase 3 áp dụng toàn bộ moveset; chết dọn đạn và hazard. Thông số và kết quả kiểm tra hiện tại xem assets/models/bosses/boss_1/boss_profile/README.md. Các mô tả hiệu ứng/ý tưởng khác bên dưới là kế hoạch thiết kế, chưa đồng nghĩa đã triển khai.
 
@@ -8,7 +10,7 @@ Tài liệu đặc tả kỹ thuật và kế hoạch triển khai Boss đầu t
 
 ## 1. Tổng quan & Ý tưởng Thiết kế
 
-- **Tên Boss:** Dị Thú Tha Hoá (*Corrupted Mutant*).
+- **Tên Boss:** Ngưu Vương Huyết Diệm (*Crimson Minotaur*).
 - **Vị trí xuất hiện:** Cuối Level 1, khu vực `BossEntry` của `T2Room27BossGate` (hoặc đấu trường riêng kết nối qua cổng).
 - **Mục tiêu gameplay:** 
   - Là bài kiểm tra tổng hợp kỹ năng của người chơi ở Level 1: né đòn quét kiếm bằng Dash, né sóng chấn bằng Jump, và đặc biệt là **dùng Kỹ năng Gió (E) để phản đòn cầu lửa phá khiên bất tử**.

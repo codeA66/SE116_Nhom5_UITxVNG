@@ -20,7 +20,7 @@ func enter(_previous: StringName) -> void:
 	_effective_telegraph = maxf(telegraph_duration, 0.0) / anim_speed
 	_effective_impact = maxf(impact_time, 0.0) / anim_speed
 	
-	boss.play_action(&"Taunt", anim_speed)
+	boss.play_action(&"MagmaStomp", anim_speed)
 	boss.start_magma_stomp_cooldown()
 	boss.show_magma_indicators(_effective_impact)
 

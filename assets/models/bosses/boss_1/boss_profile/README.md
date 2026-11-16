@@ -1,4 +1,4 @@
-# Boss Crimson — Boss 1
+# Ngưu Vương Huyết Diệm (Crimson Minotaur) — Boss 1
 
 Model và animation lấy từ `BossCrimson_Godot.zip` do người dùng cung cấp.
 
@@ -9,7 +9,7 @@ Model và animation lấy từ `BossCrimson_Godot.zip` do người dùng cung c�
 - `boss.tscn`: visual độc lập, tự phát Idle và gắn Charge VFX.
 - `vfx/charge_vfx/`: VFX húc gồm vệt gió ở đầu/sừng, vòng va chạm và bụi chân.
 - `vfx/fireball_vfx/`: VFX cầu lửa có sẵn, được giữ nguyên.
-- Texture và `source_fbx/` của model trước được giữ lại; chúng không điều khiển bộ animation mới.
+- Đã dọn model Minotaur cũ (`.blend`, `.blend1`, `.glb`), thư mục FBX cũ và texture `boss_1_texture_pbr_20250901.png` cùng metadata nhập. Các file này không được bộ model/animation hiện tại tham chiếu. GLB hiện tại, ba texture albedo mới và cả hai bộ VFX được giữ lại.
 
 ## Animation
 
@@ -17,17 +17,14 @@ Model và animation lấy từ `BossCrimson_Godot.zip` do người dùng cung c�
 | --- | --- | --- | --- |
 | Idle | Idle | 4,033 s | Có |
 | Walk | Walk | 1,433 s | Có |
-| Normal_Attack_1 | Normal_Attack_1 | 2,667 s | Không |
-| Normal_Attack_2 | Normal_Attack_2 | 2,667 s | Không |
-| Cast_Fireball | Cast_Fireball | 3,367 s | Không |
-| Jump_Attack / Jump Attack | Jump_Attack | 3,700 s | Không |
-| Roaring / Buff | Roaring | 5,400 s | Không |
-| Taunt | Taunt | 2,833 s | Không |
-| Dying | Dying | 4,600 s | Không |
+| FireballCast | Cast_Fireball | 3,367 s | Không |
+| JumpSlam | Jump_Attack | 3,700 s | Không |
+| Roar | Roaring | 5,400 s | Không |
+| MagmaStomp | Taunt | 2,833 s | Không |
+| Death | Dying | 4,600 s | Không |
 | Charge | Charge | 3,200 s | Không |
-| Orc Idle | Idle | 4,033 s | Có |
 
-Các alias giữ giao diện animation của FSM hiện tại. Chiêu húc đã được gắn vào AI bằng state `Charge` và `ChargeController`; scene demo vẫn dùng được độc lập.
+Thư viện gameplay dùng 8 tên hành động thống nhất; bỏ các alias cũ và hai clip Normal Attack. GLB nguồn vẫn giữ toàn bộ clip gốc để lưu trữ. Chiêu húc đã được gắn vào AI bằng state `Charge` và `ChargeController`; scene demo vẫn dùng được độc lập.
 
 ## Gắn vào gameplay
 
@@ -37,7 +34,6 @@ Không lưu pose xương của model cũ trong `boss.tscn`. Không có hai Anima
 
 Mốc animation trong scene boss:
 
-- Cận chiến: ngừng xoay ở 1,00 s, active từ 1,13 đến 1,40 s của clip. FSM chia các mốc cho tốc độ phase.
 - Nhảy dậm: lấy đà 0,50 s, tác động 1,60 s của clip; FSM chia theo tốc độ phase.
 - Cầu lửa: phóng ở 1,93 s.
 - Charge VFX: impact ở 64/30 s; phát một lần mỗi lượt, được reset khi phát lại.
@@ -46,18 +42,18 @@ Thư viện gameplay đã được bake in-place theo lựa chọn của ngườ
 
 - X/Z của Hips được giữ tại mốc Idle, tính theo hệ tọa độ model sau khi chuyển từ hệ trục của skeleton. Không khóa nhầm trục đứng của rig.
 - Giữ nhún, cúi và ngã theo trục đứng của các clip thông thường.
-- Riêng `Jump_Attack` / `Jump Attack`, bỏ phần nâng Hips vượt độ cao Idle vì controller đã tạo quỹ đạo bay; giữ hạ người, co gối và tư thế tiếp đất. Có key tại điểm chuyển để giữ liên tục chuyển động.
-- Các key xoay khớp, thời lượng, alias, VFX Charge và VFX fireball được giữ nguyên. Xử lý nằm trong tài nguyên animation, không thêm công việc mỗi frame vào controller.
+- Riêng `JumpSlam`, bỏ phần nâng Hips vượt độ cao Idle vì controller đã tạo quỹ đạo bay; giữ hạ người, co gối và tư thế tiếp đất. Có key tại điểm chuyển để giữ liên tục chuyển động.
+- Các key xoay khớp, thời lượng, VFX Charge và VFX fireball được giữ nguyên. Xử lý nằm trong tài nguyên animation, không thêm công việc mỗi frame vào controller.
 - GLB không bị ghi lại và vẫn chứa đủ animation/chuyển vị gốc. Metadata thư viện lưu mốc in-place, chính sách độ cao và SHA-256 của GLB nguồn để đối chiếu.
 
 ## Xem thử và kiểm tra
 
 - Chạy `vfx/charge_vfx/charge_vfx_demo.tscn`: tự húc một lần, dùng action `jump` để phát lại; không thêm phím cứng hoặc Input Map mới.
-- Chạy `tests/enemies/boss/test_boss_profile.tscn`: kiểm tra 34 xương, 13 tên clip/alias, loop, track, pose; đo Hips khi lấy mẫu toàn bộ clip và khi blend; đồng bộ và tái phát VFX; tỉ lệ nhỏ/lớn, hướng -Z, giới hạn số vệt/hạt; va chạm cận chiến thật ở phase 1/3; cầu lửa thật; nhảy thật và đáp ở hai hướng, scale 0,5/2 và tốc độ phase 1/3; các mốc khóa máu, phá khiên và chết.
+- Chạy `tests/enemies/boss/test_boss_profile.tscn`: kiểm tra 34 xương, 8 tên clip gameplay, loop, track, pose; đo Hips khi lấy mẫu toàn bộ clip và khi blend; đồng bộ và tái phát VFX; tỉ lệ nhỏ/lớn, hướng -Z, giới hạn số vệt/hạt; va chạm cận chiến thật ở phase 1/3; cầu lửa thật; nhảy thật và đáp ở hai hướng, scale 0,5/2 và tốc độ phase 1/3; các mốc khóa máu, phá khiên và chết.
 - Khi chạy tự động trên Windows, đặt APPDATA và LOCALAPPDATA vào thư mục riêng dưới `.godot/` để không chạm save thật.
 - Ảnh kiểm tra cục bộ: `.godot/boss_crimson_integration/`.
 
-Kết quả chạy Godot 4.7.2 Compatibility: test profile hoàn tất mã 0, không lỗi kiểm tra. Đo được active cận chiến ở khoảng 0,733 s (phase 1) và 0,567 s (phase 3), mỗi đòn trúng một lần; cầu lửa xuất hiện khoảng 1,933 s. Mốc lấy mẫu có sai số một vài khung vật lý. Độ trôi ngang Hips của nguồn đạt khoảng 2,749 m ở scale 2,7; thư viện in-place giữ độ trôi dưới 0,001 m khi thử cả scale và hướng nhảy khác nhau. Đối chiếu bản trước/sau bake không thay đổi 29.897 key ngoài track vị trí Hips (tính cả alias). Đã chụp các tư thế Idle, đánh, chưởng, nhảy và Charge VFX.
+Kết quả hiện tại: test profile mã 0; thư viện có đúng 8 clip gameplay, không còn Melee hoặc alias cũ. FireballCast phóng ở khoảng 1,217 s (phase 1, 1,93/1,6 s); JumpSlam đáp đúng mục tiêu khi đổi hướng và scale. Bộ test Charge có 15 tình huống va chạm và kiểm tra xương chân thực sự chuyển động. Test AI kiểm tra ở sát chân, tầm magma và tầm nhảy; Forge Boss nạp và chuyển phase đúng.
 
 ## Chiêu húc và kích thước
 
@@ -76,7 +72,7 @@ Kết quả chạy Godot 4.7.2 Compatibility: test profile hoàn tất mã 0, kh
 ## Dọn code boss (2026-11-16)
 
 - HealthComponent của scene dùng BossPhaseController (kế thừa HealthComponent): chặn sát thương vượt mốc trước signal chết; khiên chặn tại BossHurtbox, không trừ rồi cộng lại HP. Mốc mặc định 50% / 20%, hồi 40%; HP cực nhỏ vẫn giữ ít nhất 1 HP ở các mốc.
-- Phá hết khiên trở lại Idle. Phase 3 nhân damage cho melee, shockwave, magma, Charge và fireball. AttackData/MovementStats/material thay đổi theo instance, không sửa Resource nguồn. Đạn giữ damage tại thời điểm phóng.
+- Phá hết khiên trở lại Idle. Phase 3 nhân damage cho shockwave, magma, Charge và fireball. AttackData/MovementStats/material thay đổi theo instance, không sửa Resource nguồn. Đạn giữ damage tại thời điểm phóng.
 - Boss chết hủy magma, sóng, chỉ thị, hitbox, trả toàn bộ cầu lửa thuộc boss về pool và dọn minion. Hủy hazard nhiều lần không phát finished lặp.
 - Inspector: Minions chứa scene, số lượng và bán kính triệu hồi; HitFeedback chứa màu/thời gian flash; Cooldowns chứa Timer dùng lại; ActionSelector chứa danh sách BossActionRule theo thứ tự ưu tiên. ChargeController đăng ký vào selector chung và giữ API debug request_charge.
 - Damage/knockback nằm ở AttackData từng chiêu, tốc độ/damage cơ bản cầu lửa nằm ở scene BossFireball. Các trường trùng không được sử dụng trong BossData đã bỏ, Resource Forge Boss đã được chuyển theo. Stunned và các trường cấu hình cho state này đã bỏ theo thiết kế mới.
@@ -91,3 +87,7 @@ Chạy từng scene: tests/enemies/boss/test_boss_1.tscn, test_boss_profile.tscn
 Bài hồi quy có va chạm thật cho các đòn, khiên/khóa máu với HP 1/50/5000, hệ số 0/2/7, Resource giữa hai boss, player cũ rời sau player mới, ba loại minion, hủy/rebuild magma, chế độ hitbox magma tự dựng, thời gian/tốc độ animation bằng 0. Bộ Charge giữ các trường hợp hitbox không vuông, scale nhỏ/lớn, tường, mép vực và chuyển động xương thật.
 
 Đo riêng _update_telegraph trong headless Godot 4.7.2: 5 mẫu x 10.000 lượt, trung vị trước 13,0079 us/lượt (16 material), sau 5,1109 us/lượt (2 material). Đây là phép đo CPU của chỉ thị, không phải FPS toàn cảnh; baseline và log lưu trong .godot/boss_cleanup_test.
+
+## Moveset hiện tại
+
+Tên hiển thị: Ngưu Vương Huyết Diệm. Định danh Boss1 và thư mục boss_1 giữ ổn định cho các scene đang tham chiếu. Các đòn chủ động: Charge, FireballCast, JumpSlam, MagmaStomp; Roar chuyển phase. Đã bỏ Melee, hitbox cận chiến, Timer/dữ liệu liên quan và hai animation Normal_Attack_1/2 trong thư viện gameplay. Forge Boss kế thừa cùng moveset. Khoảng chọn đòn còn lại giữ nguyên: đứng dưới minimum_range của mọi đòn thì boss áp sát/chờ hồi chiêu; không tự thêm đòn cận chiến thay thế.

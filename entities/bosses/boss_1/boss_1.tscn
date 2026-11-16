@@ -4,16 +4,13 @@
 [ext_resource type="Script" uid="uid://cfhne3y8brqpf" path="res://entities/bosses/boss_1/boss_1.gd" id="2_script"]
 [ext_resource type="Resource" uid="uid://bxmwovptestn8" path="res://resources/enemies/bosses/boss_1/boss_1_data.tres" id="3_data"]
 [ext_resource type="Resource" path="res://resources/enemies/bosses/boss_1/boss_1_movement.tres" id="4_movement"]
-[ext_resource type="Resource" uid="uid://c4ry1nemhld0m" path="res://resources/enemies/bosses/boss_1/boss_1_melee_attack.tres" id="5_melee_attack"]
 [ext_resource type="Resource" uid="uid://bhe1s3ncd2s8l" path="res://resources/enemies/bosses/boss_1/boss_1_shockwave.tres" id="6_shockwave_data"]
 [ext_resource type="PackedScene" path="res://objects/combat/projectiles/boss_fireball/boss_fireball.tscn" id="7_fireball_scene"]
 [ext_resource type="PackedScene" uid="uid://obc4uovdwcms" path="res://assets/models/bosses/boss_1/boss_profile/model/boss_1.glb" id="8_model"]
 [ext_resource type="AnimationLibrary" path="res://assets/models/bosses/boss_1/boss_profile/animation/boss_animation_library.tres" id="9_anim_lib"]
-[ext_resource type="Script" uid="uid://sx06x8j6a2f6" path="res://components/combat/hitbox/hitbox_component.gd" id="10_hitbox"]
 [ext_resource type="PackedScene" path="res://objects/combat/shockwave/ground_shockwave.tscn" id="11_shockwave"]
 [ext_resource type="Script" uid="uid://bhmnvs2kyy801" path="res://entities/bosses/boss_1/states/movement/boss_idle.gd" id="12_idle"]
 [ext_resource type="Script" uid="uid://c72fm7ds1xd52" path="res://entities/bosses/boss_1/states/movement/boss_chase.gd" id="13_chase"]
-[ext_resource type="Script" uid="uid://cfkqte1owsgre" path="res://entities/bosses/boss_1/states/attack/boss_melee.gd" id="14_melee"]
 [ext_resource type="Script" uid="uid://h3b6a6xhboam" path="res://entities/bosses/boss_1/states/attack/boss_jump_slam.gd" id="15_jump_slam"]
 [ext_resource type="Script" uid="uid://dub5a8rufbvjb" path="res://entities/bosses/boss_1/states/attack/boss_buff.gd" id="16_buff"]
 [ext_resource type="Script" uid="uid://c4rbxt8ntfsw7" path="res://entities/bosses/boss_1/states/attack/boss_cast_fireball.gd" id="17_cast_fireball"]
@@ -43,9 +40,6 @@
 radius = 0.85
 height = 3.0
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_melee"]
-size = Vector3(2, 2, 2)
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss_hurtbox"]
 radius = 0.95
 height = 3.0
@@ -72,7 +66,6 @@ collision_layer = 4
 collision_mask = 1
 script = ExtResource("2_script")
 data = ExtResource("3_data")
-melee_attack_data = ExtResource("5_melee_attack")
 shockwave_data = ExtResource("6_shockwave_data")
 magma_attack_data = ExtResource("22_magma_attack")
 roar_push_radius = 6.5
@@ -93,17 +86,6 @@ skeleton_path = NodePath("../BossModel/Armature/Skeleton3D")
 
 [node name="FireballSpawn" type="Marker3D" parent="Model" index="1" unique_id=1101667487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 1.4)
-
-[node name="MeleeHitbox" type="Area3D" parent="Model" index="2" unique_id=91563326]
-collision_layer = 16
-collision_mask = 2
-monitoring = false
-monitorable = false
-script = ExtResource("10_hitbox")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Model/MeleeHitbox" index="0" unique_id=1226506607]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 1.2)
-shape = SubResource("BoxShape3D_melee")
 
 [node name="ChargeHitbox" parent="Model" instance=ExtResource("charge_hitbox")]
 
@@ -152,12 +134,6 @@ script = ExtResource("12_idle")
 
 [node name="Chase" type="Node" parent="StateMachine" index="1" unique_id=1292460170]
 script = ExtResource("13_chase")
-
-[node name="Melee" type="Node" parent="StateMachine" index="2" unique_id=247641324]
-script = ExtResource("14_melee")
-telegraph_duration = 1.0
-active_start = 1.13
-active_end = 1.4
 
 [node name="JumpSlam" type="Node" parent="StateMachine" index="3" unique_id=623372893]
 script = ExtResource("15_jump_slam")

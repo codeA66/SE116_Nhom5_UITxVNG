@@ -1,6 +1,7 @@
 [gd_scene format=3]
 [ext_resource type="Script" path="res://abilities/wind_blast/wind_blast_area.gd" id="1_area"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/blast/wind_blast_vfx.tscn" id="2_vfx"]
+[ext_resource type="PackedScene" path="res://abilities/wind_blast/wind_blast_target_selector.tscn" id="3_selector"]
 [sub_resource type="BoxShape3D" id="BoxShape3D_area"]
 resource_local_to_scene = true
 size = Vector3(2.5, 2, 5)
@@ -16,3 +17,6 @@ shape = SubResource("BoxShape3D_area")
 [node name="Sound" type="AudioStreamPlayer3D" parent="."]
 position = Vector3(0, 0.9, 0)
 [node name="WindBlastVfx" parent="." instance=ExtResource("2_vfx")]
+[node name="MagmaSelector" parent="." node_paths=PackedStringArray("blast", "volume") instance=ExtResource("3_selector")]
+blast = NodePath("..")
+volume = NodePath("../CollisionShape3D")

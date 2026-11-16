@@ -1,6 +1,6 @@
 class_name BossCastFireball
 extends BossState
-## State tụ chưởng và phóng Cầu Lửa (Cast_Fireball).
+## State tụ chưởng và phóng Cầu Lửa (FireballCast).
 
 @export var shoot_time: float = 1.45
 
@@ -14,7 +14,7 @@ func enter(_previous: StringName) -> void:
 	_fired = false
 	var speed: float = boss.get_current_anim_speed()
 	_effective_shoot_time = maxf(shoot_time, 0.0) / speed
-	boss.play_action(&"Cast_Fireball", speed)
+	boss.play_action(&"FireballCast", speed)
 	boss.start_fireball_cooldown()
 
 

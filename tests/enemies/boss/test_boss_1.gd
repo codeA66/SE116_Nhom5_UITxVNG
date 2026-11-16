@@ -18,6 +18,7 @@ func _run() -> void:
 	await _test_shared_hitbox()
 	await _test_minions()
 	await _test_auto_magma()
+	await _test_remaining_moveset()
 	await _test_moveset_damage()
 	await _test_magma_lifecycle()
 	await _test_fast_fireball()
@@ -62,17 +63,17 @@ func _test_resource_isolation() -> void:
 	var first: Boss1 = spawn_boss()
 	var second: Boss1 = spawn_boss()
 	var charge: BossCharge = first.get_node("StateMachine/Charge") as BossCharge
-	var base: int = first.melee_attack_data.damage
+	var base: int = first.magma_attack_data.damage
 	var charge_base: int = charge.data.attack.damage
 	var attack: AttackData = first.get_attack_data(charge.data.attack)
 	for factor: int in [0, 2, 7]:
 		first.data.damage_multiplier_phase3 = factor
 		first.current_phase = 3
-		_check(first.melee_attack_data.damage == base * factor, "Hệ số melee " + str(factor))
+		_check(first.magma_attack_data.damage == base * factor, "Hệ số magma " + str(factor))
 		_check(attack.damage == charge_base * factor, "Hệ số Charge " + str(factor))
-		_check(second.melee_attack_data.damage == base and charge.data.attack.damage == charge_base, "Không đổi Resource nguồn hoặc boss khác")
+		_check(second.magma_attack_data.damage == base and charge.data.attack.damage == charge_base, "Không đổi Resource nguồn hoặc boss khác")
 	first.current_phase = 1
-	_check(first.melee_attack_data.damage == base, "Đổi phase debug không nhân damage dồn")
+	_check(first.magma_attack_data.damage == base, "Đổi phase debug không nhân damage dồn")
 	_check(first.movement != second.movement, "Movement riêng mỗi boss")
 	_check(first.shield_sphere.material_override != second.shield_sphere.material_override, "Material khiên riêng mỗi boss")
 	first.free()
@@ -144,6 +145,33 @@ func _test_auto_magma() -> void:
 func _on_applied(_hurtbox: HurtboxComponent) -> void:
 	_applied += 1
 
+func _test_remaining_moveset() -> void:
+	var boss: Boss1 = spawn_boss()
+	_check(boss.data.display_name == "Ngưu Vương Huyết Diệm", "Tên hiển thị boss mới")
+	_check(not boss.state_machine.has_state(&"Melee") and not boss.has_node("Model/MeleeHitbox"), "Loại cận chiến khỏi FSM và scene")
+	boss.set_physics_process(true)
+	await get_tree().create_timer(0.1).timeout
+	var target: Marker3D = Marker3D.new()
+	add_child(target)
+	boss.set_target_player(target)
+	boss.set_physics_process(false)
+	target.position = Vector3(0, 0, 0.25)
+	_check(not boss.action_selector.try_select(), "Không chọn đòn cận chiến ở khoảng sát chân")
+	target.position.z = 2.0
+	_check(boss.action_selector.try_select() and boss.state_machine.current_state.name == &"MagmaStomp", "Magma là lựa chọn gần thay cho Melee")
+	_check((boss.get_node("AnimationPlayer") as AnimationPlayer).current_animation == &"MagmaStomp", "Đòn magma phát clip đã đổi tên")
+	boss.set_physics_process(true)
+	await get_tree().create_timer(1.0).timeout
+	_check(boss.radial_magma_hazard.is_active(), "State magma thực sự tạo hazard sau khi bỏ Melee")
+	boss.set_physics_process(false)
+	boss.radial_magma_hazard.cancel()
+	boss.state_machine.transition_to(&"Idle")
+	target.position.z = 10.0
+	_check(boss.action_selector.try_select() and boss.state_machine.current_state.name == &"JumpSlam", "Khoảng xa chọn JumpSlam")
+	_check((boss.get_node("AnimationPlayer") as AnimationPlayer).current_animation == &"JumpSlam", "Đòn nhảy phát clip đã đổi tên")
+	boss.free()
+	target.free()
+
 func _test_moveset_damage() -> void:
 	for phase: int in [1, 3]:
 		var boss: Boss1 = spawn_boss()
@@ -152,10 +180,6 @@ func _test_moveset_damage() -> void:
 		var target: CharacterBody3D = spawn_target(Vector3(0, 0, 1.5), 0.0)
 		var health: HealthComponent = target.get_node("HealthComponent") as HealthComponent
 		var hurtbox: HurtboxComponent = target.get_node("HurtboxComponent") as HurtboxComponent
-		boss.set_melee_hitbox_active(true, 0.2)
-		await get_tree().create_timer(0.1).timeout
-		_check(100 - health.current_health == factor, "Va chạm melee phase " + str(phase))
-		boss.set_melee_hitbox_active(false)
 		health.heal_full()
 		target.position = Vector3(0, 0, 5)
 		await get_tree().physics_frame

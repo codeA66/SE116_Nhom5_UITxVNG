@@ -1,9 +1,9 @@
 class_name BossData
 extends Resource
-## Thông số cấu hình của Boss 1 (Dị Thú Tha Hoá). Không hard-code số ma thuật.
+## Thông số cấu hình của Boss 1 (Ngưu Vương Huyết Diệm). Không hard-code số ma thuật.
 
 @export_group("General")
-@export var display_name: String = "Dị Thú Tha Hoá"
+@export var display_name: String = "Ngưu Vương Huyết Diệm"
 @export var max_health: int = 20
 
 @export_group("Health Gates")
@@ -19,12 +19,6 @@ extends Resource
 @export_group("I-Frames")
 ## I-Frame sau mỗi lần trúng đòn ở Phase 1 & 2 (s)
 @export var iframe_duration_normal: float = 0.6
-
-@export_group("Melee Attack")
-@export var melee_range: float = 3.2
-@export var melee_cooldown_phase1: float = 1.4
-@export var melee_cooldown_phase2: float = 0.9
-@export var melee_cooldown_phase3: float = 0.5
 
 @export_group("Jump Slam")
 @export var jump_slam_min_range: float = 5.0

@@ -1,5 +1,5 @@
 extends Node3D
-## Kiểm tra model, các clip tương thích và VFX húc của Boss Crimson.
+## Kiểm tra model, các clip tương thích và VFX húc của Ngưu Vương Huyết Diệm.
 
 const BOSS_PATH: String = "res://entities/bosses/boss_1/boss_1.tscn"
 const VISUAL_PATH: String = "res://assets/models/bosses/boss_1/boss_profile/boss.tscn"
@@ -8,7 +8,7 @@ const HIPS_PATH: NodePath = ^"Armature/Skeleton3D:mixamorig_Hips"
 const POSITION_TOLERANCE: float = 0.0001
 ## GLB chưa tối ưu và thư viện nhập có sai số nội suy khoảng 1 mm theo hệ model.
 const SOURCE_POSITION_TOLERANCE: float = 0.002
-const REQUIRED_CLIPS: Array[StringName] = [&"Idle", &"Walk", &"Normal_Attack_1", &"Normal_Attack_2", &"Cast_Fireball", &"Jump_Attack", &"Roaring", &"Taunt", &"Dying", &"Charge", &"Buff", &"Orc Idle", &"Jump Attack"]
+const REQUIRED_CLIPS: Array[StringName] = [&"Idle", &"Walk", &"FireballCast", &"JumpSlam", &"Roar", &"MagmaStomp", &"Death", &"Charge"]
 
 var _failures: int = 0
 var _impact_count: int = 0
@@ -27,6 +27,8 @@ func _run() -> void:
 	add_child(boss)
 	boss.set_physics_process(false)
 	var player: AnimationPlayer = boss.get_node("AnimationPlayer") as AnimationPlayer
+	_check(player.get_animation_list().size() == REQUIRED_CLIPS.size(), "Chỉ có 8 clip gameplay, không còn alias và Normal Attack")
+	_check(not boss.has_node("StateMachine/Melee") and not boss.has_node("Model/MeleeHitbox"), "Không còn state/hitbox Melee")
 	var model: Node3D = boss.get_node("Model/Visual/BossModel") as Node3D
 	var skeleton: Skeleton3D = model.get_node("Armature/Skeleton3D") as Skeleton3D
 	var vfx: Node3D = boss.get_node("Model/Visual/ChargeVFX") as Node3D
@@ -38,7 +40,7 @@ func _run() -> void:
 		if not player.has_animation(clip):
 			continue
 		var animation: Animation = player.get_animation(clip)
-		var should_loop: bool = clip in [&"Idle", &"Walk", &"Orc Idle"]
+		var should_loop: bool = clip in [&"Idle", &"Walk"]
 		_check((animation.loop_mode == Animation.LOOP_LINEAR) == should_loop, "Chế độ lặp " + String(clip))
 		for track: int in animation.get_track_count():
 			var path: NodePath = animation.track_get_path(track)
@@ -135,10 +137,15 @@ func _test_in_place(model: Node3D, player: AnimationPlayer, skeleton: Skeleton3D
 		if clip == &"RESET":
 			continue
 		var source: Animation = source_player.get_animation(clip)
-		var output: Animation = player.get_animation(clip)
+		var names: Dictionary[StringName, StringName] = {&"Cast_Fireball": &"FireballCast", &"Jump_Attack": &"JumpSlam", &"Roaring": &"Roar", &"Taunt": &"MagmaStomp", &"Dying": &"Death"}
+		var gameplay_clip: StringName = names.get(clip, clip)
+		if not player.has_animation(gameplay_clip):
+			_check(clip in [&"Normal_Attack_1", &"Normal_Attack_2"], "Chỉ bỏ hai clip cận chiến")
+			continue
+		var output: Animation = player.get_animation(gameplay_clip)
 		var source_track: int = source.find_track(HIPS_PATH, Animation.TYPE_POSITION_3D)
 		_check(is_equal_approx(source.length, output.length), "Giữ thời lượng " + String(clip))
-		player.play(clip, 0.0)
+		player.play(gameplay_clip, 0.0)
 		var samples: int = ceili(source.length * 30.0)
 		for sample: int in range(samples + 1):
 			var time: float = minf(float(sample) / 30.0, source.length - 0.0001)
@@ -158,12 +165,9 @@ func _test_in_place(model: Node3D, player: AnimationPlayer, skeleton: Skeleton3D
 				_check(absf(actual.y - original.y) < SOURCE_POSITION_TOLERANCE, "Giữ nhún, cúi và ngã " + String(clip))
 	_check(maximum_source_drift > 1.0, "GLB vẫn chứa chuyển vị gốc")
 	print("IN_PLACE source_max_horizontal_m=", maximum_source_drift, " gameplay_max_horizontal_m=", maximum_gameplay_drift)
-	_check(player.get_animation(&"Buff") == player.get_animation(&"Roaring"), "Alias Buff dùng clip đã bake")
-	_check(player.get_animation(&"Orc Idle") == player.get_animation(&"Idle"), "Alias Orc Idle dùng clip đã bake")
-	_check(player.get_animation(&"Jump Attack") == player.get_animation(&"Jump_Attack"), "Alias nhảy dùng clip đã bake")
 	player.play(&"Idle", 0.0)
 	player.advance(0.0)
-	player.play(&"Jump Attack", 0.15)
+	player.play(&"JumpSlam", 0.15)
 	for frame: int in range(12):
 		player.advance(1.0 / 60.0)
 		var actual: Vector3 = model.to_local(skeleton.to_global(skeleton.get_bone_global_pose(hips).origin))
@@ -193,32 +197,6 @@ func _test_action_timing(boss: Node3D, player: AnimationPlayer) -> void:
 	add_child(target)
 	target.position = Vector3(0.0, 1.5, 1.2)
 	var machine: StateMachine = boss.get_node("StateMachine") as StateMachine
-	var hitbox: HitboxComponent = boss.get_node("Model/MeleeHitbox") as HitboxComponent
-	for phase: int in [1, 3]:
-		boss.set("current_phase", phase)
-		boss.position = Vector3.ZERO
-		health.heal_full()
-		boss.set_physics_process(true)
-		machine.transition_to(&"Melee")
-		var melee: Node = machine.get_node("Melee")
-		var speed: float = float(boss.call("get_current_anim_speed"))
-		var expected: float = float(melee.get("active_start")) / speed
-		var elapsed: float = 0.0
-		var first_active: float = -1.0
-		var duration: float = player.get_animation(&"Normal_Attack_1").length / speed + 0.15
-		while elapsed < duration:
-			await get_tree().physics_frame
-			elapsed += get_physics_process_delta_time()
-			if first_active < 0.0 and hitbox.is_active():
-				first_active = elapsed
-			if elapsed < expected - 0.06:
-				_check(health.current_health == 20, "Không gây sát thương trước active frames")
-		boss.set_physics_process(false)
-		_check(absf(first_active - expected) < 0.06, "Hitbox đúng mốc animation ở phase " + str(phase))
-		var attack: AttackData = boss.get("melee_attack_data") as AttackData
-		_check(health.current_health == 20 - attack.damage, "Va chạm thật chỉ trúng một lần ở phase " + str(phase))
-		_check(not hitbox.is_active(), "Hitbox tắt sau khi kết thúc đòn")
-		print("MELEE phase=", phase, " first_active=", first_active, " expected=", expected, " damage=", 20 - health.current_health)
 	var pool: ObjectPool = boss.get_node("FireballPool") as ObjectPool
 	target.position = Vector3(8.0, 1.5, 8.0)
 	await get_tree().physics_frame
@@ -258,7 +236,7 @@ func _test_health_gates(boss: Node3D, player: AnimationPlayer) -> void:
 	first.ignores_invincibility = true
 	hurtbox.receive_hit(first)
 	_check(bool(boss.get("is_shielded")) and int(boss.get("current_phase")) == 2, "Khóa máu 50% và bật khiên")
-	_check(player.current_animation == &"Buff", "Chuyển phase phát alias Buff mới")
+	_check(player.current_animation == &"Roar", "Chuyển phase phát alias Buff mới")
 	boss.call("on_fireball_hit", null)
 	_check(player.current_animation == &"Idle", "Phá khiên trở lại Idle như gameplay hiện tại")
 	var second: DamageInfo = DamageInfo.new(int(max_health * 0.3), DamageInfo.Type.PHYSICAL, Vector3.ZERO, null)
@@ -271,7 +249,7 @@ func _test_health_gates(boss: Node3D, player: AnimationPlayer) -> void:
 	var kill: DamageInfo = DamageInfo.new(health.current_health, DamageInfo.Type.PHYSICAL, Vector3.ZERO, null)
 	kill.ignores_invincibility = true
 	hurtbox.receive_hit(kill)
-	_check(health.is_dead() and player.current_animation == &"Dying", "Boss chết bằng animation mới")
+	_check(health.is_dead() and player.current_animation == &"Death", "Boss chết bằng animation mới")
 
 func _test_jump_alignment(boss: Node3D, player: AnimationPlayer, model: Node3D, skeleton: Skeleton3D) -> void:
 	var floor_body: StaticBody3D = StaticBody3D.new()
@@ -301,7 +279,7 @@ func _test_jump_alignment(boss: Node3D, player: AnimationPlayer, model: Node3D, 
 		boss.set_physics_process(true)
 		machine.transition_to(&"JumpSlam")
 		var speed: float = float(boss.call("get_current_anim_speed"))
-		var duration: float = player.get_animation(&"Jump Attack").length / speed + 0.1
+		var duration: float = player.get_animation(&"JumpSlam").length / speed + 0.1
 		var elapsed: float = 0.0
 		var highest_body: float = 0.0
 		while elapsed < duration:

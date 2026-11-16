@@ -16,12 +16,14 @@ var _active: bool = false
 var _already_pushed: Array[WindReceiverComponent] = []
 
 @onready var _shape: CollisionShape3D = $CollisionShape3D
+@onready var _magma_selector: WindBlastTargetSelector = $MagmaSelector
 
 
 func _ready() -> void:
 	monitorable = false
 	monitoring = false
 	area_entered.connect(_on_area_entered)
+	_magma_selector.selected.connect(_on_magma_selected)
 
 
 func is_active() -> bool:
@@ -35,6 +37,7 @@ func begin_charge(data: WindBlastData) -> void:
 func activate(data: WindBlastData) -> void:
 	_data = data
 	_already_pushed.clear()
+	_magma_selector.begin()
 	_active = true
 	# Shape là local_to_scene nên đổi kích thước không ảnh hưởng instance khác
 	var box := _shape.shape as BoxShape3D
@@ -46,6 +49,7 @@ func activate(data: WindBlastData) -> void:
 
 func deactivate() -> void:
 	_active = false
+	_magma_selector.cancel()
 	set_deferred(&"monitoring", false)
 	blast_stopped.emit()
 
@@ -60,33 +64,27 @@ func _on_area_entered(area: Area3D) -> void:
 	direction.y = 0.0
 	var f_norm := direction.normalized() if not direction.is_zero_approx() else Vector3.FORWARD
 
-	# Nếu trúng khối gai Magma (MagmaHazard): chỉ phá đúng 1 khối đầu tiên theo hướng gió rồi tan biến
-	var is_magma: bool = (receiver.owner is MagmaHazard or receiver.get_parent() is MagmaHazard)
-	if is_magma:
-		var target_receiver: WindReceiverComponent = receiver
-		var best_dist: float = (receiver.global_position - global_position).dot(f_norm)
-
-		# Quét các receiver khác đang overlap trong frame này để chọn đúng khối phía trước gần nhất
-		for other_area in get_overlapping_areas():
-			var other_recv := other_area as WindReceiverComponent
-			if other_recv and other_recv != receiver and other_recv not in _already_pushed:
-				if other_recv.owner is MagmaHazard or other_recv.get_parent() is MagmaHazard:
-					var d := (other_recv.global_position - global_position).dot(f_norm)
-					if d < best_dist and d > -0.5:
-						best_dist = d
-						target_receiver = other_recv
-
-		_already_pushed.append(target_receiver)
-		target_receiver.push(f_norm * _data.push_speed)
-		pushed.emit(target_receiver)
-		dissipated.emit()
-		deactivate()
+	if _magma_selector.handles(receiver):
+		_magma_selector.offer(receiver)
 		return
 
 	_already_pushed.append(receiver)
 	receiver.push(f_norm * _data.push_speed)
 	_hit_owner(receiver, f_norm)
 	pushed.emit(receiver)
+
+
+func _on_magma_selected(receiver: WindReceiverComponent) -> void:
+	if not _active or receiver in _already_pushed:
+		return
+	var direction: Vector3 = global_basis.z
+	direction.y = 0.0
+	direction = direction.normalized() if not direction.is_zero_approx() else Vector3.FORWARD
+	_already_pushed.append(receiver)
+	receiver.push(direction * _data.push_speed)
+	pushed.emit(receiver)
+	dissipated.emit()
+	deactivate()
 
 
 ## Thứ có máu (quái, hình nộm) mất máu; vật chỉ nhận gió (thuyền, lửa, đồ giải đố) bỏ qua.

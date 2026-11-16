@@ -1,6 +1,6 @@
 class_name Boss1
 extends Character
-## Script điều khiển chính của Boss 1 (Dị Thú Tha Hoá).
+## Script điều khiển chính của Boss 1 (Ngưu Vương Huyết Diệm).
 ## Quản lý các phase, cơ chế khóa máu 50%/20%, khiên bất hoại, và i-frames theo từng phase.
 
 signal phase_changed(new_phase: int)
@@ -8,7 +8,6 @@ signal shield_broken
 signal boss_defeated
 
 @export var data: BossData
-@export var melee_attack_data: AttackData
 @export var shockwave_data: ShockwaveData
 @export var magma_attack_data: AttackData = preload("res://resources/enemies/bosses/boss_1/boss_1_magma_attack.tres")
 
@@ -49,7 +48,6 @@ var _shockwave_base_damage: int = 0
 @onready var action_selector: BossActionSelector = $ActionSelector
 @onready var health: BossPhaseController = $HealthComponent
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent
-@onready var melee_hitbox: HitboxComponent = $Model/MeleeHitbox
 @onready var shockwave: GroundShockwave = $GroundShockwave
 @onready var radial_magma_hazard: Node3D = get_node_or_null(^"RadialMagmaHazard")
 @onready var fireball_spawn: Marker3D = $Model/FireballSpawn
@@ -64,7 +62,6 @@ func _ready() -> void:
 	movement = movement.duplicate() as MovementStats
 	health.configure(data)
 	health.phase_changed.connect(_on_phase_changed)
-	melee_attack_data = get_attack_data(melee_attack_data)
 	_shockwave_base_damage = shockwave_data.damage
 	shockwave_data = shockwave_data.duplicate() as ShockwaveData
 	magma_attack_data = get_attack_data(magma_attack_data)
@@ -88,10 +85,6 @@ func _ready() -> void:
 			_shield_material = _shield_material.duplicate() as StandardMaterial3D
 		shield_sphere.material_override = _shield_material
 		shield_sphere.visible = false
-	
-	if melee_hitbox:
-		melee_hitbox.monitoring = false
-		melee_hitbox.monitorable = false
 	
 	# Ưu tiên kết nối signal player_spawned từ ZoneRoot để không quét cây scene mỗi frame.
 	# Nếu chạy trực tiếp (F6 test), quét một lần duy nhất tại _ready.
@@ -260,21 +253,6 @@ func _update_shield_visual() -> void:
 
 ## --- Đòn Đánh & Kỹ Năng ---
 
-func can_melee() -> bool:
-	return _cooldowns.is_ready(&"Melee")
-
-
-func start_melee_cooldown() -> void:
-	_cooldowns.start_cooldown(&"Melee", data.get_phase_value(&"melee_cooldown", current_phase))
-
-func set_melee_hitbox_active(is_active: bool, duration: float = -1.0) -> void:
-	if melee_hitbox:
-		if is_active and melee_attack_data:
-			melee_hitbox.activate(melee_attack_data, duration)
-		else:
-			melee_hitbox.deactivate()
-
-
 func can_jump_slam() -> bool:
 	return _cooldowns.is_ready(&"JumpSlam") and is_on_floor()
 
@@ -413,7 +391,6 @@ func on_death() -> void:
 	if _death_handled:
 		return
 	_death_handled = true
-	melee_hitbox.deactivate()
 	hide_jump_indicator()
 	shield_sphere.visible = false
 	health.is_shielded = false

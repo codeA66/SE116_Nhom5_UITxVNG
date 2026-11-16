@@ -1,6 +1,6 @@
 class_name BossJumpSlam
 extends BossState
-## Đòn nhảy vồ và dậm đất sinh sóng chấn diện rộng (Jump Attack).
+## Đòn nhảy vồ và dậm đất sinh sóng chấn diện rộng (JumpSlam).
 
 @export var windup_time: float = 0.8
 @export var impact_time: float = 1.75
@@ -23,7 +23,7 @@ func enter(_previous: StringName) -> void:
 	_effective_windup = maxf(windup_time, 0.0) / anim_speed
 	_effective_impact = maxf(impact_time, maxf(windup_time, 0.0) + 0.01) / anim_speed
 	
-	boss.play_action(&"Jump Attack", anim_speed)
+	boss.play_action(&"JumpSlam", anim_speed)
 	boss.start_jump_slam_cooldown()
 	
 	if is_instance_valid(boss.target_player):

@@ -6,11 +6,6 @@ script = ExtResource("2")
 state = &"CastFireball"
 readiness_method = &"can_cast_fireball"
 requires_shield = true
-[sub_resource type="Resource" id="melee"]
-script = ExtResource("2")
-state = &"Melee"
-readiness_method = &"can_melee"
-maximum_range_property = &"melee_range"
 [sub_resource type="Resource" id="magma"]
 script = ExtResource("2")
 state = &"MagmaStomp"
@@ -25,4 +20,4 @@ minimum_range_property = &"jump_slam_min_range"
 maximum_range_property = &"jump_slam_max_range"
 [node name="ActionSelector" type="Node"]
 script = ExtResource("1")
-rules = Array[ExtResource("2")]([SubResource("fireball"), SubResource("melee"), SubResource("magma"), SubResource("jump")])
+rules = Array[ExtResource("2")]([SubResource("fireball"), SubResource("magma"), SubResource("jump")])
