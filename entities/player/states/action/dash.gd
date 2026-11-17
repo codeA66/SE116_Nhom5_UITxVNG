@@ -26,7 +26,7 @@ func exit() -> void:
 func physics_update(delta: float) -> void:
 	_elapsed += delta
 	if _elapsed < _dash.duration:
-		_apply_dash_velocity(1.0)
+		_apply_dash_velocity(_speed_factor())
 		return
 
 	_apply_exit_velocity()
@@ -36,6 +36,14 @@ func physics_update(delta: float) -> void:
 		state_machine.transition_to(IDLE)
 	else:
 		state_machine.transition_to(RUN)
+
+
+func _speed_factor() -> float:
+	var t := _elapsed / maxf(_dash.duration, 0.001)
+	if t <= _dash.slowdown_start:
+		return 1.0
+	var k := (t - _dash.slowdown_start) / maxf(1.0 - _dash.slowdown_start, 0.001)
+	return lerpf(1.0, _dash.slowdown_end_factor, clampf(k, 0.0, 1.0))
 
 
 func _apply_dash_velocity(factor: float) -> void:

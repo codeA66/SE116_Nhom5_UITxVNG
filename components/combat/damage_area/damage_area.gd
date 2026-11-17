@@ -43,6 +43,15 @@ func _physics_process(delta: float) -> void:
 	set_physics_process(not _targets.is_empty())
 
 
+## Bật / tắt vùng (bẫy theo nhịp: laser...). Tắt thì quên luôn mục tiêu đang đứng trong:
+## chỉ tắt monitoring không xoá danh sách, vùng vẫn đánh tiếp người đang đứng trong
+func set_active(active: bool) -> void:
+	set_deferred(&"monitoring", active)
+	if not active:
+		_targets.clear()
+		set_physics_process(false)
+
+
 func _on_area_entered(area: Area3D) -> void:
 	var hurtbox := area as HurtboxComponent
 	if hurtbox == null:
