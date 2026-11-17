@@ -1,12 +1,12 @@
 extends Node
-## Kiểm tra hầm tối phòng 2, 3 (đo hành vi thật):
+## Kiểm tra hầm tối phòng 3 (đo hành vi thật). Phòng 2 luôn sáng bằng đèn cố định:
 ## 1. Ngoài hầm: nắng sáng bình thường.
-## 2. Bước xuống hầm: nắng, đèn hắt tắt dần, ánh sáng môi trường giảm; không có quầng sáng tự có (dùng đuốc cầm tay).
+## 2. Phòng 2 sáng (không vùng tối, 4 đèn cố định bật). Bước sang phòng 3: nắng, đèn hắt tắt dần, ánh sáng môi trường giảm; không có quầng sáng tự có (dùng đuốc cầm tay).
 ## 3. Phun lửa vào đuốc tắt: đuốc sáng mãi (đèn có năng lượng, ngọn lửa hiện), lưu cờ.
 ## 4. Đi qua chỗ hai hộp vùng tối chồng nhau vẫn tối; ra khỏi hầm thì sáng lại như cũ.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/cellar_dark_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 const FLAME_BREATH: AbilityData = preload("res://abilities/flame_breath/flame_breath.tres")
 
 var _player: Player
@@ -37,7 +37,7 @@ func _run() -> void:
 	var sun: DirectionalLight3D = _level.get_node("FireLighting/SunLight")
 	var env: Environment = (_level.get_node("FireLighting/Environment") as WorldEnvironment).environment
 	var zone: DarkZone = _level.get_node("CellarDarkZone") as DarkZone
-	var torch: IgnitableBrazier = _level.get_node("CellarTorches/CellarTorch01") as IgnitableBrazier
+	var torch: IgnitableBrazier = _level.get_node("CellarTorches/CellarTorch05") as IgnitableBrazier
 	var sun0: float = sun.light_energy
 	var amb0: float = env.ambient_light_energy
 	# 1. Ngoài hầm (chốt chặn)
@@ -45,11 +45,18 @@ func _run() -> void:
 	await _frames(70)
 	_check(not zone.is_dark and is_equal_approx(sun.light_energy, sun0), "ngoài hầm sáng bình thường (nắng %.2f)" % sun.light_energy)
 	await _capture("cellar_outside.png")
-	# 2. Vào phòng 2
+	# 2. Phòng 2 luôn sáng, rồi sang phòng 3 (tối)
 	_player.teleport(Vector3(26, 0.4, 32))
 	await _frames(70)
+	var lit_all: bool = true
+	for i: int in range(1, 5):
+		lit_all = lit_all and (_level.get_node("Room2/Room2Light%d" % i) as OmniLight3D).light_energy > 3.0
+	_check(not zone.is_dark and is_equal_approx(sun.light_energy, sun0) and lit_all, "phòng 2 sáng sẵn: không tối, 4 đèn bật (nắng %.2f)" % sun.light_energy)
+	await _capture("cellar_room2_lit.png")
+	_player.teleport(Vector3(42, 0.4, 16))
+	await _frames(70)
 	var carried: OmniLight3D = zone.get_node("CarriedLight")
-	_check(zone.is_dark and sun.light_energy < 0.05 and env.ambient_light_energy < amb0 * 0.5, "vào hầm thì tối (nắng %.2f, môi trường %.2f → %.2f)" % [sun.light_energy, amb0, env.ambient_light_energy])
+	_check(zone.is_dark and sun.light_energy < 0.05 and env.ambient_light_energy < amb0 * 0.5, "vào phòng 3 thì tối (nắng %.2f, môi trường %.2f → %.2f)" % [sun.light_energy, amb0, env.ambient_light_energy])
 	# Hầm level 3 tắt quầng sáng tự có (use_carried_light = false): soi đường bằng đuốc cầm tay từ lửa trại phòng 5
 	_check(not carried.visible and not zone.use_carried_light, "không có quầng sáng tự có (dùng đuốc cầm tay)")
 	await _capture("cellar_dark.png")
@@ -70,11 +77,11 @@ func _run() -> void:
 	await _frames(60)
 	var light: OmniLight3D = torch.get_node("Light")
 	_check(torch.is_lit and light.light_energy > 1.0 and GameState.has_flag(torch.persistent_id), "Phun lửa thắp đuốc: sáng (năng lượng %.2f), lưu cờ" % light.light_energy)
-	_player.teleport(Vector3(24, 0.4, 32))
+	_player.teleport(Vector3(40, 0.4, 14))
 	await _frames(20)
 	await _capture("cellar_torch_lit.png")
-	# 4. Đi bộ từ phòng 2 sang đường 2 → 3 (chỗ hai hộp chồng nhau) rồi ra khỏi hầm qua bậc thang
-	_player.teleport(Vector3(22, 0.4, 26))
+	# 4. Đi bộ trên đường 2 → 3 (chỗ hai hộp chồng nhau) rồi ra khỏi hầm qua bậc thang
+	_player.teleport(Vector3(22, 0.4, 23))
 	await _frames(5)
 	await _walk(Vector3(22, 0, 14), 6.0)
 	_check(zone.is_dark, "đi qua chỗ hai hộp vùng tối chồng nhau vẫn tối")

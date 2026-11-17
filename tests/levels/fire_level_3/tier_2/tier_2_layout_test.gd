@@ -1,99 +1,98 @@
 extends Node
 ## Kiểm tra blockout tier 2 map Lửa ("Lò Rèn Lòng Núi") bằng va chạm và input thật:
-## 1. Cấu trúc: phòng tier 1 / tier 2 nằm ở Rooms/Tier1, Rooms/Tier2; đủ 16 phòng tier 2 (9 phòng + Hang băng + 6 phòng tháp).
+## 1. Cấu trúc: tier 2 là scene riêng (levels/zone_3_fire/tier_2/tier_2.tscn), đủ 16 phòng tier 2 (9 phòng + Hang băng + 6 phòng tháp).
 ## 2. Đứng được: đặt player vào từng phòng / đoạn nối, đo đứng trên sàn.
 ## 3. Tự đi: bấm hướng di chuyển thật qua mọi tuyến (cửa, cầu, bậc thang lên +8 / xuống 0, tháp lên +24).
 ## 4. Lan can: giữ phím đẩy ra mép đường nối / bậc thang vài giây, không rơi.
-## 5. Nối tier: cổng phòng boss 10 tắt khi chưa hạ boss; có cờ boss thì bước vào sang cổng đáp tier 2 và đi ngược lại được.
-##    Vào tier 2 thì tier 1 ẩn hình (TierZone), ra lại thì hiện.
+## 5. Điểm xuất hiện: player được đặt ở điểm "start" của scene tier 2 (cổng đổi scene từ phòng boss 10 tier 1 trỏ tới đó).
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/tier_2/tier_2_layout_test.tscn
 ## (bỏ --headless, thêm "-- --capture" để chụp ảnh từng phòng + toàn cảnh có tên phòng vào output/fire_level_3/tier_2/)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_2/tier_2.tscn")
 const BOSS_FLAG: StringName = &"level_3.boss_defeated"
 const TIER_2_ROOM_COUNT: int = 16
 
 ## Điểm đứng (x, y sàn, z)
 const SPOTS: Array[Dictionary] = [
-	{"name": "t2_01_arrival", "p": Vector3(208, 4, 50)},
-	{"name": "t2_02_hammer_hall", "p": Vector3(236, 4, 52)},
-	{"name": "t2_03_forge_hub", "p": Vector3(270, 4, 44)},
-	{"name": "t2_04_timber_works", "p": Vector3(274, 8, 14)},
-	{"name": "t2_05_slime_hall", "p": Vector3(308, 8, 14)},
-	{"name": "t2_06_dark_forge", "p": Vector3(310, 4, 50)},
+	{"name": "t2_01_arrival", "p": Vector3(2, -0.32, -0.6)},
+	{"name": "t2_02_hammer_hall", "p": Vector3(30, -0.32, 1.4)},
+	{"name": "t2_03_forge_hub", "p": Vector3(64, -0.32, -6.6)},
+	{"name": "t2_04_timber_works", "p": Vector3(68, 3.68, -36.6)},
+	{"name": "t2_05_slime_hall", "p": Vector3(102, 3.68, -36.6)},
+	{"name": "t2_06_dark_forge", "p": Vector3(104, -0.32, -0.6)},
 	# Phòng 07 chỉ còn bệ vào và bệ cuối (đường ô sàn sụp đo ở blackout_test)
-	{"name": "t2_07_blackout", "p": Vector3(330, 4, 50)},
-	{"name": "t2_07_blackout_end", "p": Vector3(350, 4, 40)},
-	{"name": "t2_08_lava_tide", "p": Vector3(278, 0, 88)},
-	{"name": "t2_09_wisp_hall", "p": Vector3(306, 0, 82)},
+	{"name": "t2_07_blackout", "p": Vector3(124, -0.32, -0.6)},
+	{"name": "t2_07_blackout_end", "p": Vector3(144, -0.32, -10.6)},
+	{"name": "t2_08_lava_tide", "p": Vector3(72, -4.32, 37.4)},
+	{"name": "t2_09_wisp_hall", "p": Vector3(100, -4.32, 31.4)},
 	# Tháp xoắn ngang: sáu phòng cao dần 8 / 12 / 16 / 20 / 24 / 28
-	{"name": "t2_t1_forge", "p": Vector3(254, 8, 30)},
-	{"name": "t2_t2_anvil", "p": Vector3(232, 12, 30)},
-	{"name": "t2_t3_crucible", "p": Vector3(208, 16, 30)},
-	{"name": "t2_t4_chain", "p": Vector3(208, 20, 8)},
-	{"name": "t2_t5_smelter", "p": Vector3(232, 24, 8)},
-	{"name": "t2_t6_summit", "p": Vector3(252, 28, 6)},
-	{"name": "t2_s_ice_cave", "p": Vector3(342, 8, 12)},
-	{"name": "path_hub_timber_stair", "p": Vector3(278, 5, 30)},
+	{"name": "t2_t1_forge", "p": Vector3(48, 3.68, -20.6)},
+	{"name": "t2_t2_anvil", "p": Vector3(26, 7.68, -20.6)},
+	{"name": "t2_t3_crucible", "p": Vector3(2, 11.68, -20.6)},
+	{"name": "t2_t4_chain", "p": Vector3(2, 15.68, -42.6)},
+	{"name": "t2_t5_smelter", "p": Vector3(26, 19.68, -42.6)},
+	{"name": "t2_t6_summit", "p": Vector3(46, 23.68, -44.6)},
+	{"name": "t2_s_ice_cave", "p": Vector3(136, 3.68, -38.6)},
+	{"name": "path_hub_timber_stair", "p": Vector3(72, 0.68, -20.6)},
 	# Hai ô cầu thang mỗi khe 8 m: ô đầu (y thấp) và ô sau (y cao)
-	{"name": "path_tower_stair_foyer_a", "p": Vector3(250, 5, 42)},
-	{"name": "path_tower_stair_foyer_b", "p": Vector3(250, 7, 38)},
-	{"name": "path_tower_stair_t1_t2", "p": Vector3(246, 9, 30)},
-	{"name": "path_tower_stair_t2_t3", "p": Vector3(222, 13, 30)},
-	{"name": "path_tower_stair_t3_t4", "p": Vector3(210, 17, 22)},
-	{"name": "path_tower_stair_t4_t5", "p": Vector3(218, 21, 6)},
-	{"name": "path_tower_stair_t5_t6", "p": Vector3(242, 25, 6)},
+	{"name": "path_tower_stair_foyer_a", "p": Vector3(44, 0.68, -8.6)},
+	{"name": "path_tower_stair_foyer_b", "p": Vector3(44, 2.68, -12.6)},
+	{"name": "path_tower_stair_t1_t2", "p": Vector3(40, 4.68, -20.6)},
+	{"name": "path_tower_stair_t2_t3", "p": Vector3(16, 8.68, -20.6)},
+	{"name": "path_tower_stair_t3_t4", "p": Vector3(4, 12.68, -28.6)},
+	{"name": "path_tower_stair_t4_t5", "p": Vector3(12, 16.68, -44.6)},
+	{"name": "path_tower_stair_t5_t6", "p": Vector3(36, 20.68, -44.6)},
 ]
 
 ## Tuyến tự đi: chuỗi điểm (x, y sàn, z)
 const LEGS: Array[Dictionary] = [
-	{"name": "arrival_foyer_hub", "points": [Vector3(208, 4, 52), Vector3(216, 4, 50), Vector3(240, 4, 50), Vector3(262, 4, 50), Vector3(268, 4, 50)]},
-	{"name": "hub_timber_slime_ice (lên +8)", "points": [Vector3(278, 4, 40), Vector3(278, 4, 34), Vector3(278, 8, 26), Vector3(278, 8, 12), Vector3(286, 8, 14), Vector3(310, 8, 14), Vector3(330, 8, 14), Vector3(340, 8, 18)]},
-	{"name": "hub_dark_blackout", "points": [Vector3(288, 4, 52), Vector3(294, 4, 50), Vector3(326, 4, 50), Vector3(330, 4, 50)]},
-	{"name": "hub_tide_wisp (xuống 0)", "points": [Vector3(278, 4, 58), Vector3(278, 4, 66), Vector3(278, 0, 74), Vector3(278, 0, 82), Vector3(294, 0, 86), Vector3(306, 0, 86)]},
+	{"name": "arrival_foyer_hub", "points": [Vector3(2, -0.32, 1.4), Vector3(10, -0.32, -0.6), Vector3(34, -0.32, -0.6), Vector3(56, -0.32, -0.6), Vector3(62, -0.32, -0.6)]},
+	{"name": "hub_timber_slime_ice (lên +8)", "points": [Vector3(72, -0.32, -10.6), Vector3(72, -0.32, -16.6), Vector3(72, 3.68, -24.6), Vector3(72, 3.68, -38.6), Vector3(80, 3.68, -36.6), Vector3(104, 3.68, -36.6), Vector3(124, 3.68, -36.6), Vector3(134, 3.68, -32.6)]},
+	{"name": "hub_dark_blackout", "points": [Vector3(82, -0.32, 1.4), Vector3(88, -0.32, -0.6), Vector3(120, -0.32, -0.6), Vector3(124, -0.32, -0.6)]},
+	{"name": "hub_tide_wisp (xuống 0)", "points": [Vector3(72, -0.32, 7.4), Vector3(72, -0.32, 15.4), Vector3(72, -4.32, 23.4), Vector3(72, -4.32, 31.4), Vector3(88, -4.32, 35.4), Vector3(100, -4.32, 35.4)]},
 	# Cổng tháp và cổng tầng đã mở nhờ cờ đặt ở _ready; đi bộ thật từ sảnh chân tháp lên tầng boss, không nhảy
-	{"name": "foyer_to_summit (tháp, lên +24, không nhảy)", "points": [Vector3(250, 4, 50), Vector3(250, 4, 42), Vector3(250, 8, 34),
-			Vector3(250, 8, 30), Vector3(246, 8, 30), Vector3(238, 12, 30), Vector3(226, 12, 30), Vector3(222, 12, 30),
-			Vector3(214, 16, 30), Vector3(210, 16, 28), Vector3(210, 16, 22), Vector3(210, 20, 14), Vector3(210, 20, 6),
-			Vector3(218, 20, 6), Vector3(228, 24, 6), Vector3(238, 24, 6), Vector3(242, 24, 6), Vector3(252, 28, 6)]},
+	{"name": "foyer_to_summit (tháp, lên +24, không nhảy)", "points": [Vector3(44, -0.32, -0.6), Vector3(44, -0.32, -8.6), Vector3(44, 3.68, -16.6),
+			Vector3(44, 3.68, -20.6), Vector3(40, 3.68, -20.6), Vector3(32, 7.68, -20.6), Vector3(20, 7.68, -20.6), Vector3(16, 7.68, -20.6),
+			Vector3(8, 11.68, -20.6), Vector3(4, 11.68, -22.6), Vector3(4, 11.68, -28.6), Vector3(4, 15.68, -36.6), Vector3(4, 15.68, -44.6),
+			Vector3(12, 15.68, -44.6), Vector3(22, 19.68, -44.6), Vector3(32, 19.68, -44.6), Vector3(36, 19.68, -44.6), Vector3(46, 23.68, -44.6)]},
 ]
 
 ## Đẩy ra mép: điểm đứng và hướng đẩy (x, z)
 const RAILS: Array[Dictionary] = [
-	{"name": "arrival_path_north", "p": Vector3(220, 4, 50), "push": Vector2(0, -1)},
-	{"name": "arrival_path_south", "p": Vector3(220, 4, 50), "push": Vector2(0, 1)},
-	{"name": "hub_dark_path_south", "p": Vector3(296, 4, 50), "push": Vector2(0, 1)},
-	{"name": "timber_stair_east", "p": Vector3(278, 5, 30), "push": Vector2(1, 0)},
-	{"name": "timber_stair_west", "p": Vector3(278, 5, 30), "push": Vector2(-1, 0)},
-	{"name": "tide_stair_west", "p": Vector3(278, 3, 70), "push": Vector2(-1, 0)},
-	{"name": "wisp_path_north", "p": Vector3(296, 0, 86), "push": Vector2(0, -1)},
-	{"name": "tower_stair_foyer_east", "p": Vector3(250, 5, 42), "push": Vector2(1, 0)},
-	{"name": "tower_stair_foyer_west", "p": Vector3(250, 7, 38), "push": Vector2(-1, 0)},
-	{"name": "tower_stair_t1_t2_north", "p": Vector3(246, 9, 30), "push": Vector2(0, -1)},
-	{"name": "tower_stair_t1_t2_south", "p": Vector3(246, 9, 30), "push": Vector2(0, 1)},
-	{"name": "tower_stair_t3_t4_east", "p": Vector3(210, 17, 22), "push": Vector2(1, 0)},
-	{"name": "tower_stair_t4_t5_south", "p": Vector3(218, 21, 6), "push": Vector2(0, 1)},
-	{"name": "ice_path_south", "p": Vector3(324, 8, 14), "push": Vector2(0, 1)},
+	{"name": "arrival_path_north", "p": Vector3(14, -0.32, -0.6), "push": Vector2(0, -1)},
+	{"name": "arrival_path_south", "p": Vector3(14, -0.32, -0.6), "push": Vector2(0, 1)},
+	{"name": "hub_dark_path_south", "p": Vector3(90, -0.32, -0.6), "push": Vector2(0, 1)},
+	{"name": "timber_stair_east", "p": Vector3(72, 0.68, -20.6), "push": Vector2(1, 0)},
+	{"name": "timber_stair_west", "p": Vector3(72, 0.68, -20.6), "push": Vector2(-1, 0)},
+	{"name": "tide_stair_west", "p": Vector3(72, -1.32, 19.4), "push": Vector2(-1, 0)},
+	{"name": "wisp_path_north", "p": Vector3(90, -4.32, 35.4), "push": Vector2(0, -1)},
+	{"name": "tower_stair_foyer_east", "p": Vector3(44, 0.68, -8.6), "push": Vector2(1, 0)},
+	{"name": "tower_stair_foyer_west", "p": Vector3(44, 2.68, -12.6), "push": Vector2(-1, 0)},
+	{"name": "tower_stair_t1_t2_north", "p": Vector3(40, 4.68, -20.6), "push": Vector2(0, -1)},
+	{"name": "tower_stair_t1_t2_south", "p": Vector3(40, 4.68, -20.6), "push": Vector2(0, 1)},
+	{"name": "tower_stair_t3_t4_east", "p": Vector3(4, 12.68, -28.6), "push": Vector2(1, 0)},
+	{"name": "tower_stair_t4_t5_south", "p": Vector3(12, 16.68, -44.6), "push": Vector2(0, 1)},
+	{"name": "ice_path_south", "p": Vector3(118, 3.68, -36.6), "push": Vector2(0, 1)},
 ]
 
 ## Nhãn tên phòng cho ảnh toàn cảnh (x, z)
 const LABELS: Array[Dictionary] = [
-	{"text": "01 Cổng đáp", "p": Vector2(208, 52)},
-	{"text": "02 Sảnh chân tháp", "p": Vector2(240, 52)},
-	{"text": "03 HUB LÒ CAO", "p": Vector2(278, 44)},
-	{"text": "04 Xưởng gỗ", "p": Vector2(278, 12)},
-	{"text": "05 Sảnh Slime", "p": Vector2(308, 12)},
-	{"text": "S Hang băng\n(bí mật)", "p": Vector2(338, 14)},
-	{"text": "06 Xưởng tối", "p": Vector2(310, 50)},
-	{"text": "07 Phòng tối om", "p": Vector2(342, 50)},
-	{"text": "08 Sân đấu", "p": Vector2(278, 88)},
-	{"text": "09 Sảnh ma trơi", "p": Vector2(312, 88)},
-	{"text": "T1 (y8)", "p": Vector2(254, 30)},
-	{"text": "T2 (y12)", "p": Vector2(232, 30)},
-	{"text": "T3 (y16)", "p": Vector2(208, 30)},
-	{"text": "T4 (y20)", "p": Vector2(208, 8)},
-	{"text": "T5 (y24)", "p": Vector2(232, 8)},
-	{"text": "BOSS (y28)", "p": Vector2(256, 8)},
+	{"text": "01 Cổng đáp", "p": Vector2(2, 1.4)},
+	{"text": "02 Sảnh chân tháp", "p": Vector2(34, 1.4)},
+	{"text": "03 HUB LÒ CAO", "p": Vector2(72, -6.6)},
+	{"text": "04 Xưởng gỗ", "p": Vector2(72, -38.6)},
+	{"text": "05 Sảnh Slime", "p": Vector2(102, -38.6)},
+	{"text": "S Hang băng\n(bí mật)", "p": Vector2(132, -36.6)},
+	{"text": "06 Xưởng tối", "p": Vector2(104, -0.6)},
+	{"text": "07 Phòng tối om", "p": Vector2(136, -0.6)},
+	{"text": "08 Sân đấu", "p": Vector2(72, 37.4)},
+	{"text": "09 Sảnh ma trơi", "p": Vector2(106, 37.4)},
+	{"text": "T1 (y8)", "p": Vector2(48, -20.6)},
+	{"text": "T2 (y12)", "p": Vector2(26, -20.6)},
+	{"text": "T3 (y16)", "p": Vector2(2, -20.6)},
+	{"text": "T4 (y20)", "p": Vector2(2, -42.6)},
+	{"text": "T5 (y24)", "p": Vector2(26, -42.6)},
+	{"text": "BOSS (y28)", "p": Vector2(50, -42.6)},
 ]
 
 @export var settle_frames: int = 45
@@ -123,7 +122,7 @@ func _ready() -> void:
 	# (cơ chế đo riêng ở flammables_test)
 	# Đợt 4: trận quái đã thắng (quái không chắn / cắn lúc tự đi), đã hạ Slime Mẹ (mở cổng boss + lối tắt)
 	for flag: StringName in [&"level_3.t2_exit_vines", &"level_3.t2_ice_cave_wall", &"level_3.t2_wisps_cleared",
-			&"level_3.t2_hub_ambush", &"level_3.t2_timber_caster", &"level_3.t2_slime_hall", &"level_3.t2_dark_forge_pack",
+			&"level_3.t2_hub_ambush", &"level_3.t2_timber_caster", &"level_3.t2_room05_cagespider", &"level_3.t2_room05_cageslime", &"level_3.t2_room08_cage", &"level_3.t2_dark_forge_pack",
 			# Tháp: đã mở (bản 2: cờ thử thách u tối) và đã hạ trận từng tầng (mở cổng tầng); cổng đo riêng ở tower_gates_test
 			&"level_3.t2_tower_unlocked",
 			&"level_3.t2_t1_cleared", &"level_3.t2_t2_cleared", &"level_3.t2_t3_cleared", &"level_3.t2_t4_cleared", &"level_3.t2_t5_cleared"]:
@@ -165,49 +164,23 @@ func _run() -> void:
 # ---------- Các mục ----------
 
 func _t_structure() -> void:
-	var tier_1: Node = _level.get_node_or_null(^"Rooms/Tier1")
 	var tier_2: Node = _level.get_node_or_null(^"Rooms/Tier2")
 	var rooms_2: int = 0
 	if tier_2:
 		for child: Node in tier_2.get_children():
 			if String(child.name).begins_with("T2"):
 				rooms_2 += 1
-	_check(tier_1 != null and tier_1.get_node_or_null(^"Room10Boss") != null and tier_1.get_node_or_null(^"CellarCover") != null,
-			"tier 1 nằm ở Rooms/Tier1 (có Room10Boss, CellarCover)")
-	_check(rooms_2 == TIER_2_ROOM_COUNT and tier_2.get_node_or_null(^"Connectors") != null,
+	_check(rooms_2 == TIER_2_ROOM_COUNT and tier_2 != null and tier_2.get_node_or_null(^"Connectors") != null,
 			"tier 2 nằm ở Rooms/Tier2: %d phòng + đường nối" % rooms_2)
+	_check(_level.get_node_or_null(^"Rooms/Tier1") == null, "scene tier 2 không chứa phòng tier 1")
 
 
 func _t_portal() -> void:
-	var reveal: FlagReveal = _level.get_node(^"Room10ExitReveal") as FlagReveal
-	var arrival: WarpPortal = _level.get_node(^"Tier2Links/Tier2ArrivalPortal") as WarpPortal
-	var tier_1: Node3D = _level.get_node(^"Rooms/Tier1") as Node3D
-	var tier_2: Node3D = _level.get_node(^"Rooms/Tier2") as Node3D
-	var exit: WarpPortal = reveal.get_node(^"ExitPortal") as WarpPortal
-	# Chưa hạ boss thì cả hai cổng tắt và cổng phòng 10 bị FlagReveal giấu: cùng một cờ
-	_check(reveal.flag == BOSS_FLAG and exit.required_flag == BOSS_FLAG and arrival.required_flag == BOSS_FLAG
-			and exit.target == arrival and arrival.target == exit, "hai cổng trỏ vào nhau, chỉ mở khi có cờ hạ boss tier 1")
-	# Đi từ điểm đáp (lệch sang bên) vào tâm cổng, tránh bệ đá ngay trước tâm cổng
-	_teleport(exit.get_arrival().global_position + Vector3(0, 0.3, 0))
-	await _frames(20)
-	await _walk_into(exit, 120)
-	await _wait_until(func() -> bool: return _player.global_position.x > 196.0, 180)
-	await _frames(40)
+	# Tier 2 là scene riêng: không còn cổng đôi trong scene. Player vào đúng điểm "start" (đã đặt ở _run)
+	var start: Node3D = _level.get_node(^"Start") as Node3D
 	var pos := _player.global_position
-	_check(exit.is_active() and pos.x > 200.0 and pos.x < 216.0 and absf(pos.y - 4.32) < 0.6 and _player.is_on_floor(),
-			"hạ boss: bước vào cổng phòng 10 sang cổng đáp tier 2 (%s)" % pos.snapped(Vector3.ONE * 0.1))
-	_check(not tier_1.is_visible_in_tree() and tier_2.is_visible_in_tree(), "ở tier 2: tier 1 ẩn hình, tier 2 hiện")
-	if _capture:
-		await _shot("portal_arrival.png")
-	# Đi ngược về
-	_teleport(arrival.get_arrival().global_position + Vector3(0, 0.3, 0))
-	await _frames(20)
-	await _walk_into(arrival, 120)
-	await _wait_until(func() -> bool: return _player.global_position.x < 190.0, 180)
-	await _frames(40)
-	pos = _player.global_position
-	_check(pos.x > 160.0 and pos.x < 176.0 and _player.is_on_floor(), "cổng đáp tier 2 đưa về phòng boss 10 (%s)" % pos.snapped(Vector3.ONE * 0.1))
-	_check(tier_1.is_visible_in_tree() and not tier_2.is_visible_in_tree(), "về tier 1: tier 2 ẩn hình, tier 1 hiện")
+	_check(pos.distance_to(start.global_position) < 1.0 and _player.is_on_floor(),
+			"vào tier 2 đứng ở điểm start (%s)" % pos.snapped(Vector3.ONE * 0.1))
 
 
 func _t_spots() -> void:
@@ -345,13 +318,13 @@ func _shot(file: String) -> void:
 
 ## Toàn cảnh tier 2 nhìn chéo và từ trên xuống, có tên phòng
 func _capture_overview() -> void:
-	_teleport(Vector3(278, 5, 44))
+	_teleport(Vector3(72, 0.68, -6.6))
 	await _frames(30)
 	var cam := Camera3D.new()
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
 	cam.far = 400.0
 	_level.add_child(cam)
-	var center := Vector3(280.0, 0.0, 50.0)
+	var center := Vector3(74, -4.32, -0.6)
 	var basis := Basis.from_euler(Vector3(deg_to_rad(-60.0), deg_to_rad(20.0), 0.0))
 	cam.global_transform = Transform3D(basis, center + basis.z * 150.0)
 	cam.size = 130.0

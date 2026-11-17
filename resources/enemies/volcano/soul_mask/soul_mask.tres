@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="SoulMaskData" format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/volcano/soul_mask/soul_mask_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/soul_mask/soul_mask_movement.tres" id="2_move"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/soul_mask/soul_mask_beam_attack.tres" id="3_attack"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/soul_mask/soul_mask_hover.tres" id="4_hover"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/soul_mask/soul_mask_beam.tres" id="5_beam"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Đầu Lửa"
+max_health = 5
+movement = ExtResource("2_move")
+detect_range = 12.0
+lose_range = 18.0
+leash_range = 20.0
+attack = ExtResource("3_attack")
+attack_range = 12.0
+attack_cooldown = 2.5
+patrol_radius = 3.0
+stun_time = 0.3
+hover = ExtResource("4_hover")
+beam = ExtResource("5_beam")

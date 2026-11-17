@@ -3,7 +3,7 @@ extends Node
 ## đạt khi player vẫn đứng trên sàn (không rơi, không chết).
 ## Chạy: godot --headless --path . res://tests/levels/fire_level_3/level_3_rail_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 ## Điểm đứng (x, y sàn, z) và hướng đẩy ra mép (x, z)
 const CASES: Array[Dictionary] = [

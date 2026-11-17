@@ -32,7 +32,7 @@ transform = Transform3D(1, 0, 0, 0, 0.3, 0, 0, 0, 1, 0, 0, 0)
 [node name="Model" parent="Rubble" instance=ExtResource("3_broken")]
 
 [node name="HurtboxComponent" type="Area3D" parent="."]
-editor_description = "Chỉ để vụ nổ (ExplosionComponent, TNT) tìm thấy tường; invulnerable nên đòn thường không có tác dụng."
+editor_description = "Chỉ để vụ nổ (ExplosionComponent) tìm thấy tường; invulnerable nên đòn thường không có tác dụng."
 collision_layer = 4
 collision_mask = 0
 monitoring = false

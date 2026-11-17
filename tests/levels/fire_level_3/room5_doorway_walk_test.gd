@@ -3,7 +3,7 @@ extends Node
 ## không kẹt ở khe giữa ô đường nối (cầu 3 m) và sàn phòng (lỗi cũ: lọt khe 0,5 m tại x ~55,75, kẹt không bước ra được).
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/room5_doorway_walk_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _failed: int = 0

@@ -1,29 +1,22 @@
 extends Node
 ## Test quái và boss tier 2 map Lửa (tháp xoắn ngang):
-## 1. Trận quái: đúng số / loại quái mỗi phòng và mỗi tầng tháp (T1, T2, T3, T5), ngủ trước khi vào, vào vùng thì thức; hạ hết thì lưu cờ;
-##    sói cùng trận chung một bầy; slime nổ cạnh tường nứt phòng 05 thì vỡ tường (mở Hang băng). Hạ trận tầng thì cổng tầng mở;
-##    Slime Mẹ tầng 4 (xuất hiện khi vào phòng, hạ thì lưu cờ, mở cổng 4).
-## 2. Cổng tháp: chưa có sách thì chặn đi bộ ở cửa bắc phòng 02; đủ 3 sách thì mở và đi qua được.
-## 3. Slime Mẹ, thông số cực đoan (đo ở phòng T4): đẻ mỗi 0,5 s (giới hạn 4 con), đẻ 0 con, tách 0 con, nhảy xa tối đa 0 m / cao 0 m.
+## 1. Trận quái: đúng số / loại quái mỗi phòng và tầng tháp T4 (4 Đầu Lửa), ngủ trước khi vào, vào vùng thì thức; hạ hết thì lưu cờ;
+##    sói cùng trận chung một bầy; slime nổ cạnh tường nứt phòng 05 thì vỡ tường (mở Hang băng). Hạ trận tầng thì đĩa dịch chuyển giữa phòng mở;
+##    Slime Mẹ tầng 3 (xuất hiện khi vào phòng, hạ thì lưu cờ, mở đĩa T3).
+## 2. (Bỏ) Cổng tháp ở cửa bắc phòng 02: tháp giờ vào bằng bệ dịch chuyển ở Hub.
+## 3. Slime Mẹ, thông số cực đoan (đo ở phòng T3): đẻ mỗi 0,5 s (giới hạn 4 con), đẻ 0 con, tách 0 con, nhảy xa tối đa 0 m / cao 0 m.
 ## 4. Boss tạm: vào tầng boss thì xuất hiện (máu 30); hạ thì lưu cờ, hiện khung cổng tier 3.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/tier_2/fights/fights_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_2/tier_2.tscn")
 const MOTHER_SCENE: PackedScene = preload("res://entities/enemies/volcano/lava_slime/mother/slime_mother.tscn")
 const EXPECTED: Dictionary = {
 	&"T2HubAmbush": {&"FireCaster": 2, &"ShadowWolf": 2},
-	&"T2TimberCaster": {&"FireCaster": 1},
-	&"T2SlimeHall": {&"LavaSlime": 4},
-	&"T2DarkForgePack": {&"ShadowWolf": 3},
-	# Tháp: mỗi tầng một trận (T4 là Slime Mẹ, đo riêng ở _t_tower_mother)
-	&"TowerT1Wolves": {&"ShadowWolf": 4},
-	&"TowerT2Casters": {&"FireCaster": 1, &"LavaSlime": 3},
-	&"TowerT3Slimes": {&"LavaSlime": 5, &"ShadowWolf": 3},
-	&"TowerT5Mixed": {&"FireCaster": 2, &"ShadowWolf": 3},
-}
-## Cờ trận tầng -> cổng tầng mở theo cờ đó
-const TOWER_GATES: Dictionary = {
-	&"TowerT1Wolves": &"FloorGate1", &"TowerT2Casters": &"FloorGate2", &"TowerT3Slimes": &"FloorGate3", &"TowerT5Mixed": &"FloorGate5",
+	&"T2TimberCaster": {&"SoulMask": 4},
+	&"T2DarkForgePack": {&"FireCaster": 2, &"FireSpider": 2},
+	&"T2WispHall": {&"ShadowWolf": 3},
+	# Tháp: T4 là 4 Đầu Lửa. T1 / T2 / T5 là lồng (đo ở tower_floors_test), T3 Slime Mẹ (đo ở _t_tower_fights)
+	&"TowerT4Masks": {&"SoulMask": 4},
 }
 const BOSS_FLAG := &"level_3.t2_boss_defeated"
 
@@ -52,10 +45,11 @@ func _ready() -> void:
 	_player.health.max_health = 40
 	_player.health.heal_full()
 	_fights = _level.get_node(^"Tier2Fights") as Node3D
+	await _t_hub_gates(false)
 	await _t_encounters()
+	await _t_hub_gates(true)
 	await _t_tower_fights()
-	await _t_slime_wall()
-	await _t_tower_gate()
+	await _t_south_shard()
 	await _t_mother_extremes()
 	await _t_boss()
 	print("FIGHTS RESULT: %s" % ("OK (%d checks)" % _checks if _failed == 0 else "%d FAIL / %d" % [_failed, _checks]))
@@ -95,25 +89,24 @@ func _t_encounters() -> void:
 		await _frames(30)
 		_check(cleared[0] and GameState.has_flag(enc.persistent_id), "%s: hạ hết thì xong trận, lưu cờ %s" % [enc_name, enc.persistent_id])
 		_player.health.heal_full()
-		_teleport(Vector3(212, 4.42, 52), Vector3.RIGHT)
+		_teleport(Vector3(6, 0.1, 1.4), Vector3.RIGHT)
 		await _frames(20)
 
 
-## Trận tháp: hạ hết thì cổng tầng tương ứng mở; Slime Mẹ T4 mở cổng 4; các cổng còn lại độc lập
+## Trận tháp: hạ hết thì cổng dịch chuyển lên tầng sau mở; Slime Mẹ T4 mở cổng T4; các cổng còn lại độc lập
 func _t_tower_fights() -> void:
-	for enc_name: StringName in TOWER_GATES:
-		var gate := _fights.get_node(NodePath(String(TOWER_GATES[enc_name]))) as StoneGate
-		_check(gate.is_open, "%s: trận đã hạ ở _t_encounters, cổng mở" % TOWER_GATES[enc_name])
-	var gate4 := _fights.get_node(^"FloorGate4") as StoneGate
-	_check(not gate4.is_open, "FloorGate4: chưa hạ Slime Mẹ tầng 4 thì đóng")
-	var fight := _fights.get_node(^"TowerT4MotherFight") as BossFight
+	var gate4 := _level.get_node(^"Tier2Links/TowerExitT4") as WarpPortal
+	_check(gate4.is_active(), "TowerExitT4: hạ 4 Đầu Lửa ở _t_encounters thì đĩa lên T5 mở")
+	var gate3 := _level.get_node(^"Tier2Links/TowerExitT3") as WarpPortal
+	_check(not gate3.is_active(), "TowerExitT3: chưa hạ Slime Mẹ tầng 3 thì đĩa đóng")
+	var fight := _fights.get_node(^"TowerT3MotherFight") as BossFight
 	var mother_ref := [null]
 	fight.started.connect(func(boss: Node3D) -> void: mother_ref[0] = boss, CONNECT_ONE_SHOT)
 	_player.health.heal_full()
-	_teleport(Vector3(208, 20.42, 10), Vector3.FORWARD)
+	_teleport(fight.global_position + Vector3(0, -0.22, 3), Vector3.FORWARD)
 	await _frames(20)
 	var mother := mother_ref[0] as SlimeMother
-	_check(mother != null and mother.health.max_health == 24, "vào tầng 4: Slime Mẹ xuất hiện (máu %d)" % (mother.health.max_health if mother else -1))
+	_check(mother != null and mother.health.max_health == 24, "vào tầng 3: Slime Mẹ xuất hiện (máu %d)" % (mother.health.max_health if mother else -1))
 	if mother == null:
 		return
 	_clear_slimes(mother)
@@ -121,42 +114,54 @@ func _t_tower_fights() -> void:
 	await _frames(10)
 	_clear_slimes(null)
 	await _frames(int(1.8 * 60.0))
-	_check(GameState.has_flag(&"level_3.t2_t4_cleared") and gate4.is_open, "hạ Slime Mẹ tầng 4: lưu cờ, FloorGate4 mở")
-	_teleport(Vector3(212, 4.42, 52), Vector3.RIGHT)
+	_check(GameState.has_flag(&"level_3.t2_t3_cleared") and gate3.is_active(), "hạ Slime Mẹ tầng 3: lưu cờ, đĩa lên T4 mở")
+	_teleport(Vector3(6, 0.1, 1.4), Vector3.RIGHT)
 	await _frames(20)
 
 
-func _t_slime_wall() -> void:
-	var wall := _level.get_node(^"Tier2Mechanics/IceCaveWall") as CrackedWall
-	var slime := (load("res://entities/enemies/volcano/lava_slime/lava_slime.tscn") as PackedScene).instantiate() as LavaSlime
-	_level.add_child(slime)
-	slime.global_position = Vector3(318, 8.42, 14)
-	await _frames(10)
-	_check(not wall.is_broken, "tường nứt phòng 05 còn nguyên")
-	slime.explode()
+## 3 cổng Hub (bắc / đông / nam): chưa hạ trận phục kích Hub thì đóng, đi bộ vào bị chặn; hạ xong thì chìm, đi qua được.
+## Lối bắc xuất phát sau bệ đá dịch chuyển giữa Hub (bệ chắn đường đi thẳng)
+func _t_hub_gates(cleared: bool) -> void:
+	var hub := _fights.get_node(^"T2HubAmbush") as Node3D
+	var center := hub.global_position + Vector3.UP * 0.1
+	var hurtbox := _player.get_node(^"HurtboxComponent") as HurtboxComponent
+	# Lúc đo cổng đóng: tắt trận Hub để đi trong Hub không kích hoạt trận trước _t_encounters
+	if not cleared:
+		hub.process_mode = Node.PROCESS_MODE_DISABLED
+	for gate_name: String in ["HubGateNorth", "HubGateEast", "HubGateSouth"]:
+		var gate := _fights.get_node(NodePath(gate_name)) as StoneGate
+		var dir := Vector3(gate.global_position.x - center.x, 0, gate.global_position.z - center.z)
+		var gate_dist := dir.length()
+		dir = dir.normalized()
+		_check(gate.is_open == cleared, "%s: %s" % [gate_name, "hạ trận Hub xong thì mở" if cleared else "chưa hạ trận Hub thì đóng"])
+		var start := center + (dir * 8.0 if gate_name == "HubGateNorth" else Vector3.ZERO)
+		hurtbox.set_invincible(10.0)
+		_teleport(start, dir)
+		await _frames(10)
+		for _i: int in range(200):
+			_press_towards(dir)
+			await get_tree().physics_frame
+		_release()
+		var gone := (_player.global_position - center).dot(dir)
+		if cleared:
+			_check(gone > gate_dist + 2.0, "%s: đi bộ qua lối (%.1f m, cổng ở %.1f m)" % [gate_name, gone, gate_dist])
+		else:
+			_check(gone < gate_dist, "%s: đi bộ vào bị cổng chặn (%.1f m, cổng ở %.1f m)" % [gate_name, gone, gate_dist])
+	_player.health.heal_full()
+	_teleport(Vector3(6, 0.1, 1.4), Vector3.RIGHT)
 	await _frames(20)
-	_check(wall.is_broken, "slime nổ sát tường nứt: tường vỡ, mở lối Hang băng")
+	hub.process_mode = Node.PROCESS_MODE_INHERIT
+	await _frames(5)
 
 
-# ---------- 2. Cổng tháp ----------
-
-func _t_tower_gate() -> void:
-	var tower_gate := _fights.get_node(^"TowerGate") as StoneGate
-	_check(not tower_gate.is_open, "tháp chưa mở: cổng tháp đóng")
-	var z := await _walk(Vector3(250, 4.42, 48), Vector3.FORWARD, 120)
-	_check(z > 44.1, "đi bộ từ phòng 02 lên cửa bắc: bị cổng tháp chặn (z = %.2f)" % z)
-	# Bản 2: đủ 3 mảnh vỡ không mở lối 02 → T1; chỉ cờ tháp mở (thử thách u tối) mới mở
-	for flag: StringName in [&"level_3.t2_shard_north", &"level_3.t2_shard_east", &"level_3.t2_shard_south"]:
-		GameState.set_flag(flag)
-	await _frames(int(1.6 * 60.0))
-	_check(not tower_gate.is_open, "đủ 3 mảnh vỡ: lối 02 → T1 vẫn đóng (vào tháp bằng truyền tống)")
-	GameState.set_flag(&"level_3.t2_tower_unlocked")
-	await _frames(int(1.6 * 60.0))
-	z = await _walk(Vector3(250, 4.42, 48), Vector3.FORWARD, 120)
-	_check(tower_gate.is_open and z < 43.0, "tháp đã mở: cổng mở, đi qua cửa bắc phòng 02 (z = %.1f)" % z)
+## Phòng 09: hạ trận sói (_t_encounters) thì ngọc Nam hiện trên trụ rune
+func _t_south_shard() -> void:
+	var shard := _level.get_node_or_null(^"Tier2Mechanics/ForgeShards/SouthShardReveal/SouthShard")
+	_check(GameState.has_flag(&"level_3.t2_wisps_cleared") and shard != null and (shard as Node3D).is_visible_in_tree(), "hạ trận sói phòng 09: ngọc Nam hiện ra")
+	_check(_level.get_node_or_null(^"Tier2Mechanics/Room09Wisps") == null, "phòng 09 không còn ma trơi, đợt quái, rương")
 
 
-# ---------- 3. Slime Mẹ: thông số cực đoan (đo ở phòng T4) ----------
+# ---------- 3. Slime Mẹ: thông số cực đoan (đo ở phòng T3) ----------
 
 func _t_mother_extremes() -> void:
 	var cases: Array = [
@@ -164,6 +169,7 @@ func _t_mother_extremes() -> void:
 		[0.5, 3, 4, 0, 7.0, 3.0, "đẻ mỗi 0,5 s x 3 con, tối đa 4, tách 0"],
 		[1.0, 0, 4, 5, 0.0, 0.0, "đẻ 0 con, tách 5, nhảy xa 0 m cao 0 m"],
 	]
+	var t4 := _fights.get_node(^"TowerT3MotherFight") as Node3D
 	for c: Array in cases:
 		var mother := MOTHER_SCENE.instantiate() as SlimeMother
 		var d := (mother.data as SlimeMotherData).duplicate() as SlimeMotherData
@@ -175,11 +181,11 @@ func _t_mother_extremes() -> void:
 		d.slam_height = c[5]
 		mother.data = d
 		_level.add_child(mother)
-		mother.global_position = Vector3(208, 20.42, 5)
+		mother.global_position = t4.global_position + Vector3(0, -0.22, -3)
 		# Thêm vào cây rồi mới đặt chỗ: chỗ "nhà" (giới hạn đuổi) lấy lúc _ready là gốc tọa độ, đặt lại cho đúng
 		mother.home_position = mother.global_position
 		_player.health.heal_full()
-		_teleport(Vector3(208, 20.42, 11), Vector3.BACK)
+		_teleport(t4.global_position + Vector3(0, -0.22, 3), Vector3.BACK)
 		mother.target = _player
 		var start := mother.global_position
 		var max_alive := 0
@@ -194,7 +200,7 @@ func _t_mother_extremes() -> void:
 		_check(max_alive == expect_alive, "%s: số con sống tối đa %d (mong %d)" % [c[6], max_alive, expect_alive])
 		if d.slam_max_distance == 0.0:
 			var drift := Vector2(mother.global_position.x - start.x, mother.global_position.z - start.z).length()
-			_check(slams[0] >= 1 and is_finite(mother.global_position.y) and mother.global_position.y < 21.5,
+			_check(slams[0] >= 1 and is_finite(mother.global_position.y) and mother.global_position.y < t4.global_position.y + 1.0,
 					"%s: vẫn dậm (%d lần), không bay mất (y = %.2f, lệch %.1f m)" % [c[6], slams[0], mother.global_position.y, drift])
 		_clear_slimes(mother)
 		await _frames(3)
@@ -216,11 +222,11 @@ func _t_boss() -> void:
 	var boss_ref := [null]
 	fight.started.connect(func(boss: Node3D) -> void: boss_ref[0] = boss, CONNECT_ONE_SHOT)
 	_player.health.heal_full()
-	_teleport(Vector3(256, 28.42, 12), Vector3.FORWARD)
+	_teleport(fight.global_position + Vector3(0, -0.22, 3), Vector3.FORWARD)
 	await _frames(30)
 	var boss := boss_ref[0] as Boss1
 	_check(boss != null and boss.health.max_health == 30 and boss.data.display_name.ends_with("(tạm)"),
-			"vào phòng 12: boss tạm xuất hiện (%s, máu %d)" % [boss.data.display_name if boss else "-", boss.health.max_health if boss else -1])
+			"vào tầng boss T6: boss tạm xuất hiện (%s, máu %d)" % [boss.data.display_name if boss else "-", boss.health.max_health if boss else -1])
 	if boss == null:
 		return
 	var defeated := [false]

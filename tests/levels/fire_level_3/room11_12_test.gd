@@ -6,10 +6,11 @@ extends Node
 ## 4. Hết giờ (lower_time ngắn): lồng chạm mức đứt dây, rơi xuống dung nham. Ra rồi vào lại: treo lại từ đầu.
 ## 5. Còn quái: giữ interact ở tời không kéo được. Hạ hết quái: thả tay lồng tuột chậm, giữ interact thì lồng lên.
 ## 6. Lồng lên tới đỉnh: khoá ngang cầu gỗ, chưa tự thả con tin. Leo bậc thang (đi bộ thật) lên sàn gỗ,
-##    ra cuối cầu, bấm interact (MỞ LỒNG): con tin bước ra sàn, lưu cờ, cổng nam Hub mở, đi qua được.
+##    ra cuối cầu, bấm interact (MỞ LỒNG): con tin bước ra sàn, lưu cờ; cổng nam Hub VẪN đóng.
+## 7. Phòng 13: vào phòng thì trận 2 nhện + 2 sói bắt đầu; hạ hết thì lưu cờ, cổng nam Hub mở, đi qua được.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/room11_12_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _level: Node
@@ -124,7 +125,24 @@ func _run() -> void:
 	_check(rescue.phase == HostageRescue.Phase.RESCUED and hostage.global_position.distance_to(shore) < 0.05 and GameState.has_flag(rescue.persistent_id), "bấm MỞ LỒNG: con tin ra sàn gỗ, lưu cờ")
 	await _capture("room12_rescued.png")
 	await _frames(120)
-	_check(gate.is_open, "cứu được con tin: cổng nam Hub mở")
+	_check(not gate.is_open, "cứu con tin không mở cổng nam Hub (cổng do phòng 13 giữ)")
+	# 7. Phòng 13
+	var fight: Encounter = _level.get_node("Room13/Room13Encounter") as Encounter
+	var kinds: Dictionary = {}
+	for e: Node in fight.get_node("Enemies").get_children():
+		var kind: StringName = (e.get_script() as Script).get_global_name()
+		kinds[kind] = int(kinds.get(kind, 0)) + 1
+	_check(kinds == {&"FireSpider": 2, &"ShadowWolf": 2}, "phòng 13 có 2 nhện + 2 sói (%s)" % kinds)
+	_check(not fight.is_running(), "phòng 13: quái ngủ trước khi player vào")
+	_player.teleport(Vector3(120, 0.4, 90))
+	await _frames(20)
+	_check(fight.is_running(), "vào phòng 13: trận bắt đầu")
+	await _capture("room13_fight.png")
+	for e: Node in fight.get_node("Enemies").get_children():
+		if e is Enemy and not (e as Enemy).is_dead():
+			(e as Enemy).health.take_damage(9999)
+	await _frames(120)
+	_check(GameState.has_flag(&"level_3.room13_encounter") and gate.is_open, "hạ hết quái phòng 13: lưu cờ, cổng nam Hub mở")
 	await _walk_from(Vector3(122, 4.4, 56), Vector3(122, 4, 66))
 	_check(_player.global_position.z > 61.0, "đi qua cửa nam Hub (z = %.2f)" % _player.global_position.z)
 	print("ROOM11 12 RESULT: %s" % ("OK" if _failed == 0 else "%d FAIL" % _failed))

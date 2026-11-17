@@ -1,5 +1,7 @@
 # Thiết kế lại Tier 2 map Lửa: "Tháp Lò Rèn"
 
+> **Cập nhật 2026-11-14 (người dùng chốt): BỎ thử thách u tối.** Đã xóa `objects/fire_puzzle/dark_trial/`, `resources/world/puzzles/dark_trial.tres` và test của nó. Vòng chơi mới: 3 mảnh vỡ → đặt lên **bệ dịch chuyển** giữa Hub (`ShardAltar`, model `assets/models/map_fire/warp_altar/`) → đủ 3 mảnh thì tâm bệ có cột sáng + tia lửa, cờ `level_3.t2_shard_switch` → đứng lên tâm bệ là dịch chuyển tới T1 (`TowerEntryPortal` ẩn hình) → cổng về Hub ở T1 (`TowerLandingPortal`). Lò cao Hub dùng cờ `level_3.t2_shard_switch`. Các mục nói về thử thách u tối bên dưới là lịch sử, không còn đúng.
+
 Trạng thái bản 2: **giai đoạn 1 (mảnh vỡ thay sách, HUD đếm mảnh) đã làm và qua test**; lối 02 → T1 giữ cổng nhưng chỉ mở theo cờ `level_3.t2_tower_unlocked` (chưa có gì đặt cờ này tới giai đoạn 3-4). **Giai đoạn 2 (bệ công tắc `ShardAltar` ở (278, 4.32, 46)) đã làm và qua test** (`shard_altar_test` 12 kiểm tra, đi bộ + interact thật; lưu cờ `level_3.t2_shard_switch`). **Giai đoạn 3 (thử thách u tối `DarkTrial`) đã làm và qua test** (`dark_trial_test` 34 kiểm tra): trụ Bắc (308, 8.32, 12) nhện lửa, Đông (351.5, 4.32, 39.5) sói bóng (dời từ 344, 41 vì chỗ đó là vực), Nam (312, 0.32, 92) Quỷ Xương Lửa; đồng hồ 120 s; thắng lưu `level_3.t2_dark_trial_done`. Thời gian lộ trình chưa đo bằng đi bộ thật (ước tính trên giấy ~55 s đi bộ + đánh). Thắp lò mới thử bằng `BurnableComponent.ignite()`, chưa thử bằng Phun lửa thật. Giai đoạn 4-6 chưa làm (xem mục 0). Trạng thái bản 1: **đã duyệt; giai đoạn 1 (bố cục + nối) và giai đoạn 2 (cổng + cờ) và giai đoạn 3 (quái từng tầng) giai đoạn 4 (sách + miếu) và giai đoạn 5 (dọn phòng, cơ chế bỏ) đã làm và qua test** (`tier_2_layout_test` 57 kiểm tra, có đi bộ thật từ sảnh chân tháp lên tầng boss). Giai đoạn 6 (test đi trọn vòng) chưa làm. Giai đoạn 2 lệch thiết kế một chỗ: bỏ `SummitGate` vì phòng boss không có cửa ở tường bắc (một tấm cổng giữa phòng thì đi vòng qua được); "mở cổng" là khung cổng tier 3 hiện ra khi hạ boss như cũ. Giai đoạn 3 lệch bảng mục 5: T1 4 sói (không phải 3), T2 1 Quỷ Xương Lửa + 3 slime, T3 5 slime + 3 sói, T4 Slime Mẹ thông số mặc định (không rút còn 2 con), T5 một đợt (không hai đợt). Thời gian hạ đo bằng người chơi máy: T1 ~10 s, T2 ~5 s, T3 ~4 s, T4 ~18 s, T5 ~10 s; tầng slime ngắn hơn mục tiêu.
 
 ## 0. Bản 2 (đã duyệt hướng, chưa làm): mảnh vỡ, bệ công tắc, thử thách u tối, truyền tống
@@ -161,8 +163,8 @@ Ngoài checkpoint đầu ở 01, thêm 3 miếu (`fire_checkpoint`): Hub, sảnh
 |---|---|
 | `docs/zone_3_fire/level_3_tier_2_layout.gd` | `ROOMS`, `CONNECTORS`, `DECOR`, `ENCOUNTERS`, vị trí sách / checkpoint / cổng, `TIER_ZONE` |
 | `docs/zone_3_fire/build_level_3.gd` | Bỏ búa, lõi, ống dẫn, cổng lõi, thủy triều, mini-boss; thêm cổng theo cờ và checkpoint mới |
-| `levels/zone_3_fire/level_3/rooms/tier_2/*.tscn`, `level_3.tscn` | Phòng và nút mới; **sửa tại chỗ** như các lượt trước (chạy lại trình dựng sẽ xóa phần trang trí phiên khác đã sửa tay, nên chỉ chạy `--check-only`) |
-| `levels/zone_3_fire/level_3/rooms/README.md` | Cập nhật mô tả tier 2 |
+| `levels/zone_3_fire/tier_2/rooms/*.tscn`, `level_3.tscn` | Phòng và nút mới; **sửa tại chỗ** như các lượt trước (chạy lại trình dựng sẽ xóa phần trang trí phiên khác đã sửa tay, nên chỉ chạy `--check-only`) |
+| `levels/zone_3_fire/tier_1/rooms/README.md` | Cập nhật mô tả tier 2 |
 | Test: `tier_2_layout_test`, `fights_test`, `forge/`, `tide_wisps/`, `skills/` | Cập nhật theo bố cục mới; phòng và cơ chế bị bỏ thì bỏ test tương ứng |
 | Test mới: `tower_flow_test`, dùng lại `game_feel_test` | Đi trọn vòng (xem 9) |
 

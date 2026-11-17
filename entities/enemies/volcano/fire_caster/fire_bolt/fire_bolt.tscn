@@ -61,9 +61,9 @@ scale_min = 0.8
 scale_max = 1.6
 
 [node name="FireBolt" type="Area3D"]
-collision_layer = 0
+collision_layer = 128
 collision_mask = 3
-monitorable = false
+monitorable = true
 script = ExtResource("1_bolt")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

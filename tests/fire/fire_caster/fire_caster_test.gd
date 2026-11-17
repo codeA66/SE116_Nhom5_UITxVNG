@@ -52,6 +52,7 @@ func _run() -> void:
 	await _t_wall_and_dash()
 	await _t_fire_resist()
 	await _t_wind()
+	await _t_tornado_reflect()
 	await _t_extreme()
 	await _t_rotated_root()
 	print("FIRE CASTER RESULT: %s" % ("OK (%d checks)" % _checks if _failed == 0 else "%d FAIL / %d" % [_failed, _checks]))
@@ -67,7 +68,7 @@ func _t_load() -> void:
 	var model := caster.get_node("Model/Visual/FireCasterModel") as Node3D
 	var burnable := caster.get_node("BurnableComponent") as BurnableComponent
 	_check(model.is_visible_in_tree() and caster.data.display_name == "Quỷ Xương Lửa" and caster.health.max_health == 4, "nạp: model hiện, tên + máu 4")
-	_check(is_zero_approx(caster.hurtbox.resistances.get(DamageInfo.Type.FIRE, 1.0)), "kháng lửa: hệ số sát thương lửa 0")
+	_check(is_equal_approx(caster.hurtbox.resistances.get(DamageInfo.Type.FIRE, 1.0), 1.0), "không miễn lửa: hệ số sát thương lửa 1")
 	var anim := caster.get_node("AnimationPlayer") as AnimationPlayer
 	var clips: Array[StringName] = [&"Idle", &"Walk", &"Cast", &"Hurt", &"Death"]
 	_check(caster.skeleton.get_bone_count() == 23 and clips.all(func(c: StringName) -> bool: return anim.has_animation(c)), "rig: Skeleton3D %d xương, đủ 5 clip" % caster.skeleton.get_bone_count())
@@ -82,7 +83,7 @@ func _t_load() -> void:
 			bad_tracks += 1
 	_check(bad_tracks == 0, "clip Cast: mọi track trỏ đúng xương (%d track sai)" % bad_tracks)
 	burnable.ignite(_player)
-	_check(not burnable.is_burning(), "không bắt lửa (ignite thẳng cũng không cháy)")
+	_check(burnable.is_burning(), "bắt lửa được (ignite thẳng thì cháy)")
 	await _capture("fire_caster_idle.png", caster.global_position)
 	_cleanup()
 
@@ -200,7 +201,10 @@ func _t_fire_resist() -> void:
 	Input.action_release(&"skill_fire")
 	await _frames(20)
 	var burnable := caster.get_node("BurnableComponent") as BurnableComponent
-	_check(caster.health.current_health == hp and not burnable.is_burning(), "phun lửa thật 1,5 s: không mất máu, không cháy (%d → %d)" % [hp, caster.health.current_health])
+	# Không còn miễn lửa: phun lửa làm mất máu và bắt cháy
+	_check(caster.health.current_health < hp, "phun lửa thật 1,5 s: mất máu (%d → %d)" % [hp, caster.health.current_health])
+	_check(burnable.is_burning() or caster.is_dead(), "phun lửa thật: bắt cháy")
+	hp = caster.health.current_health
 	await _frames(30)
 	_reset_player(caster.global_position + Vector3(0, 0, 1.3), Vector3.FORWARD)
 	await _frames(10)
@@ -241,6 +245,37 @@ func _t_wind() -> void:
 	var dummy_pushed := _flat(dummy.global_position, d0)
 	_check(pushed > dummy_pushed * 1.3, "bị đẩy xa hơn quái thường (%.2f m so với %.2f m)" % [pushed, dummy_pushed])
 	_cleanup()
+
+
+## Lốc xoáy (Gió cấp 2) thả bằng phím thật về phía cầu lửa đang bay: cầu bị dội ngược về quỷ, quỷ mất máu,
+## player không mất máu. Thổi gió (cấp 1) vẫn không dội được (giữ như cũ: chỉ ngắt niệm)
+func _t_tornado_reflect() -> void:
+	GameState.progress.ability_levels[WIND_BLAST.id] = 2
+	_reset_player(PLAYER_HOME, Vector3.FORWARD)
+	await _frames(70)
+	var caster := await _spawn(PLAYER_HOME + Vector3(0, 0, -8.5), null)
+	var bolts: Array[FireBolt] = []
+	var bolt_hit_caster := [false]
+	caster.bolt_fired.connect(func(b: FireBolt) -> void:
+		bolts.append(b)
+		b.hit.connect(func(hb: HurtboxComponent, landed: bool) -> void:
+			bolt_hit_caster[0] = bolt_hit_caster[0] or (landed and hb.owner == caster)))
+	var fired := await _wait_until(func() -> bool: return not bolts.is_empty(), 300)
+	var hp_player := _player.health.current_health
+	var hp_caster := caster.health.current_health
+	_player.energy.set_current(_player.energy.get_max())
+	_aim_mouse_at(caster.global_position + Vector3.UP)
+	await _tap(&"skill")
+	var bolt: FireBolt = bolts[0] if fired else null
+	var reflected := await _wait_until(func() -> bool: return bolt != null and bolt.is_reflected(), 90)
+	await _wait_until(func() -> bool: return bolt_hit_caster[0], 120)
+	await _frames(10)
+	_check(fired and reflected, "thả Lốc xoáy vào cầu lửa đang bay: cầu bị dội ngược")
+	_check(bolt_hit_caster[0] and (caster.health.current_health < hp_caster or caster.is_dead()), "cầu dội ngược trúng chính Quỷ Xương Lửa: mất máu (%d → %d)" % [hp_caster, caster.health.current_health])
+	_check(_player.health.current_health == hp_player, "player không trúng cầu đã dội (máu %d → %d)" % [hp_player, _player.health.current_health])
+	GameState.progress.ability_levels.erase(WIND_BLAST.id)
+	_cleanup()
+	await _frames(60)
 
 
 func _t_extreme() -> void:

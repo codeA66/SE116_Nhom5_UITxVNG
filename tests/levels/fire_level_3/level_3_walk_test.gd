@@ -4,7 +4,7 @@ extends Node
 ## Lỗi khi: không tới được điểm trong thời gian cho phép (kẹt tường / bậc), hoặc rơi / chết.
 ## Chạy: godot --path . res://tests/levels/fire_level_3/level_3_walk_test.tscn  (thêm "-- --capture" để chụp lúc lỗi)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 ## Mỗi chặng: điểm (x, y sàn, z). y chỉ dùng để phát hiện rơi.
 const LEGS: Array[Dictionary] = [

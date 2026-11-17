@@ -1,8 +1,9 @@
 class_name FireBolt
 extends Area3D
 ## Cầu lửa sọ của Quỷ Xương Lửa. Bay thẳng, nổ khi chạm tường hoặc player; trúng player thì gây đòn lửa
-## và làm player bắt lửa (BurnableComponent). Không bị gió / kiếm đánh bật lại; chỉ hurtbox có reflect_projectile()
-## (Khiên xỉ) dội ngược được: cầu bay về quái đã bắn và tính là đòn của người dội.
+## và làm player bắt lửa (BurnableComponent). Kiếm không đánh bật được. Dội ngược được bằng: hurtbox có
+## reflect_projectile() (Khiên xỉ), hoặc gió có gọi deflect_by_wind() (Lốc xoáy; cầu nằm ở lớp wind_receiver để lốc
+## thấy). Dội rồi thì cầu bay về quái đã bắn và tính là đòn của người dội; mỗi quả chỉ dội một lần.
 ## Dùng với ObjectPool: không queue_free, xong việc phát finished để pool thu lại.
 ## Theo dõi va chạm bằng signal; chỉ chạy _physics_process khi đang bay hoặc đang nổ.
 
@@ -22,6 +23,7 @@ var _remaining: float = 0.0
 var _explode_left: float = 0.0
 var _exploding: bool = false
 var _spent: bool = true
+var _reflected: bool = false
 
 @onready var _shape: CollisionShape3D = $CollisionShape3D
 @onready var _visual: Node3D = $Visual
@@ -44,6 +46,7 @@ func launch(attack: AttackData, data: FireBoltData, origin: Vector3, direction: 
 	_data = data
 	_source = source
 	_spent = false
+	_reflected = false
 	_damage_type = attack.damage_type
 	_exploding = false
 	_remaining = data.lifetime
@@ -58,6 +61,17 @@ func launch(attack: AttackData, data: FireBoltData, origin: Vector3, direction: 
 	_visual.visible = true
 	_trail.emitting = true
 	set_physics_process(true)
+
+
+## Gió (Lốc xoáy) dội ngược: by = người tạo gió. Đã dội hoặc đã nổ thì bỏ qua
+func deflect_by_wind(by: Node3D) -> void:
+	if _spent or _reflected or by == null:
+		return
+	_reflect(by)
+
+
+func is_reflected() -> bool:
+	return _reflected
 
 
 ## Tan ngay không gây sát thương (quái bắn đã chết)
@@ -128,6 +142,7 @@ func _reflect(by: Node3D) -> void:
 		if not to_source.is_zero_approx():
 			direction = to_source.normalized()
 	_velocity = direction * speed
+	_reflected = true
 	_source = by
 	_damage_type = _data.reflected_damage_type
 	_remaining = _data.lifetime

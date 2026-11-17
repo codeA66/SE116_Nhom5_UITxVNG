@@ -8,7 +8,7 @@ extends Node
 ## 6. Còn 1 máu bước vào: chết (hết máu mới chết).
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/flooded_bridge_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _level: Node
@@ -21,6 +21,8 @@ func _ready() -> void:
 	if GameState.progress_committed.is_connected(SaveManager.save_game):
 		GameState.progress_committed.disconnect(SaveManager.save_game)
 	GameState.replace_progress(PlayerProgress.new())
+	# Bài này chỉ đo cầu ngập: coi như đã hạ sói canh lối tây (bẫy lối tây tắt ở _run)
+	GameState.set_flag(&"level_3.west_walk_guards")
 	_level = LEVEL.instantiate()
 	(_level as ZoneRoot).player_spawned.connect(func(p: Player) -> void: _player = p)
 	add_child(_level)
@@ -29,6 +31,8 @@ func _ready() -> void:
 
 func _run() -> void:
 	await _frames(30)
+	# Cầu ngập nằm cạnh lối tây: tắt bẫy lửa đuổi để không lẫn máu mất do bẫy (bẫy đo riêng ở west_walk_test)
+	(_level.get_node("WestWalk/WestWalkTrap") as Area3D).monitoring = false
 	var lava: LavaZone = _level.find_child("FloodLavaZone", true, false) as LavaZone
 	var sheets: Array[Node] = _level.find_children("FloodSheet*", "MeshInstance3D", true, false)
 	var falls: Array[Node] = lava.get_parent().find_children("lavafall_4m*", "", false, false) if lava else []

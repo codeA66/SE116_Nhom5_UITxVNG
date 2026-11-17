@@ -3,17 +3,17 @@ extends Node
 ## 1. Không mang mảnh: bấm interact không đặt được gì, công tắc tắt.
 ## 2. Mang 1 mảnh (Nam, ngoài thứ tự): đặt đúng hốc của nó; HUD "đã đặt 1/3".
 ## 3. Mang 2 mảnh còn lại: một lần bấm đặt cả hai; đủ 3 thì sáng, lưu cờ công tắc, phát activated đúng 1 lần.
-## 4. Bệ chắn đường (va chạm thật): đi thẳng vào bệ không xuyên qua.
+## 4. Va chạm thật: đi lên đĩa giữa được, vành ổ chặn lại.
 ## 5. Tải lại map: bệ vẫn sáng, đủ 3 hốc, không bấm lại được.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/tier_2/shard_altar/shard_altar_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_2/tier_2.tscn")
 const ALTAR_PATH: NodePath = ^"Tier2Mechanics/ForgeShards/ShardAltar"
 const COUNTER_PATH: NodePath = ^"Tier2Mechanics/ForgeShards/ShardCounter"
 const SHARDS: ForgeShardSet = preload("res://resources/world/puzzles/forge_shards.tres")
 ## Chỗ đứng trước bệ (bệ ở z 46, sâu 3,1 m) và điểm bắt đầu đi bộ
-const FRONT: Vector3 = Vector3(278, 4.42, 48.6)
-const START: Vector3 = Vector3(278, 4.42, 54)
+const FRONT: Vector3 = Vector3(72, 0.1, -2)
+const START: Vector3 = Vector3(72, 0.1, 3.4)
 
 var _player: Player
 var _level: ZoneRoot
@@ -38,9 +38,10 @@ func _ready() -> void:
 	var altar := _altar()
 	altar.activated.connect(func() -> void: _activations += 1)
 	await _t_empty(altar)
+	# Đo va chạm trước khi đủ đá: đủ đá thì bước lên tâm bệ là dịch chuyển
+	await _t_blocks()
 	await _t_one_out_of_order(altar)
 	await _t_rest(altar)
-	await _t_blocks()
 	await _reload()
 	_t_reloaded()
 	print("SHARD ALTAR RESULT: %s" % ("OK (%d checks)" % _checks if _failed == 0 else "%d FAIL / %d" % [_failed, _checks]))
@@ -93,7 +94,8 @@ func _t_rest(altar: ShardAltar) -> void:
 func _t_blocks() -> void:
 	await _walk_dir(START, Vector3.FORWARD, 150)
 	var z: float = _player.global_position.z
-	_check(z > 47.4, "đi thẳng vào bệ bị chặn (z = %.2f, mặt nam bệ ở 47,55)" % z)
+	# Bệ chìm ngang sàn: đi qua đĩa giữa được, vành ổ Bắc (tâm z 44,45, bán kính 0,62) chặn lại
+	_check(z > -5.53 and z < -4.1, "đi qua đĩa giữa, bị vành ổ Bắc chặn (z = %.2f, mép vành 45,07)" % z)
 
 
 func _t_reloaded() -> void:

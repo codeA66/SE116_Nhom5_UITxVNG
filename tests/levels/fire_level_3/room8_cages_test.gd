@@ -7,7 +7,7 @@ extends Node
 ## 5. Còn lồng chưa vỡ: cổng vẫn đóng. Vỡ đủ 4 + hạ hết quái: cổng chìm, cất cả khung, đi qua được.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/room8_cages_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 const FLAME_BREATH: AbilityData = preload("res://abilities/flame_breath/flame_breath.tres")
 
 var _player: Player

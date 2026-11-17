@@ -1,0 +1,142 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_statue/laser_statue.gd" id="1_statue"]
+[ext_resource type="Resource" path="res://resources/combat/hazards/laser_statue.tres" id="2_data"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/laser_statue/laser_statue.glb" id="3_model"]
+[ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="5_damage"]
+[ext_resource type="Script" path="res://components/core/state_machine/state_machine.gd" id="6_fsm"]
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_statue/states/statue_idle.gd" id="7_idle"]
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_statue/states/statue_aim.gd" id="8_aim"]
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_statue/states/statue_lock.gd" id="9_lock"]
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_statue/states/statue_fire.gd" id="10_fire"]
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_statue/states/statue_cooldown.gd" id="11_cool"]
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_statue/states/statue_dead.gd" id="12_dead"]
+[ext_resource type="Script" path="res://components/combat/health/health_component.gd" id="13_health"]
+[ext_resource type="Script" path="res://components/combat/hurtbox/hurtbox_component.gd" id="14_hurtbox"]
+
+[sub_resource type="BoxShape3D" id="PedestalShape"]
+size = Vector3(1.3, 1.15, 1.1)
+
+[sub_resource type="BoxShape3D" id="FigureShape"]
+size = Vector3(1.1, 2.35, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="BeamMat"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 0.15, 0.05, 0.75)
+
+[sub_resource type="CylinderMesh" id="BeamMesh"]
+material = SubResource("BeamMat")
+top_radius = 0.5
+bottom_radius = 0.5
+height = 1.0
+radial_segments = 8
+rings = 1
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="StandardMaterial3D" id="StripMat"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 0.15, 0.05, 0.35)
+
+[sub_resource type="PlaneMesh" id="StripMesh"]
+material = SubResource("StripMat")
+size = Vector2(1, 1)
+
+[sub_resource type="StandardMaterial3D" id="HitFlash"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.75)
+
+[sub_resource type="BoxShape3D" id="HurtShape"]
+size = Vector3(1.3, 3.4, 1.1)
+
+[node name="LaserStatue" type="StaticBody3D"]
+collision_mask = 0
+script = ExtResource("1_statue")
+data = ExtResource("2_data")
+hit_flash_material = SubResource("HitFlash")
+
+[node name="Model" parent="." instance=ExtResource("3_model")]
+
+[node name="PedestalCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.575, 0)
+shape = SubResource("PedestalShape")
+
+[node name="FigureCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, -0.1)
+shape = SubResource("FigureShape")
+
+[node name="Eye" type="Marker3D" parent="."]
+editor_description = "Điểm phát tia: trùng gốc mesh LaserEye trong model (mắt trong mũ trùm, mặt trước +Z)"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9, 0.26)
+
+[node name="Beam" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("BeamMesh")
+
+[node name="WarnLine" type="MeshInstance3D" parent="."]
+editor_description = "Đường cảnh báo trên đất: tấm 1 × 1, script kéo dãn theo đường tia"
+cast_shadow = 0
+mesh = SubResource("StripMesh")
+
+[node name="Trail" type="MeshInstance3D" parent="."]
+editor_description = "Vệt cháy sau đầu tia lúc quét"
+cast_shadow = 0
+mesh = SubResource("StripMesh")
+
+[node name="Detect" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Detect"]
+
+[node name="DamageArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_damage")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageArea"]
+disabled = true
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("13_health")
+
+[node name="HurtboxComponent" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+editor_description = "Lớp enemy: đòn của player (kiếm, cung, phép) trúng được tượng"
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("14_hurtbox")
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+shape = SubResource("HurtShape")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("6_fsm")
+initial_state = NodePath("StatueIdle")
+
+[node name="StatueIdle" type="Node" parent="StateMachine"]
+script = ExtResource("7_idle")
+
+[node name="StatueAim" type="Node" parent="StateMachine"]
+script = ExtResource("8_aim")
+
+[node name="StatueLock" type="Node" parent="StateMachine"]
+script = ExtResource("9_lock")
+
+[node name="StatueFire" type="Node" parent="StateMachine"]
+script = ExtResource("10_fire")
+
+[node name="StatueCooldown" type="Node" parent="StateMachine"]
+script = ExtResource("11_cool")
+
+[node name="StatueDead" type="Node" parent="StateMachine"]
+script = ExtResource("12_dead")

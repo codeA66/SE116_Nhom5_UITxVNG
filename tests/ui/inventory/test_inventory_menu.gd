@@ -10,10 +10,9 @@ extends Node
 ## UC5  Esc khi đang cầm nguyên tố chỉ bỏ cầm, không đóng; Esc lần nữa mới đóng.
 ## UC6  C / Z đổi trang: Vật phẩm hiện chìa khóa (theo cờ) và Ấn Gió x2; trang Bùa ẩn khi chưa có bùa.
 ## UC7  Bùa: có bùa thì trang Bùa hiện; ngoài khu đổi bùa không đeo được; trong khu: đeo bùa 1 ô được, bùa 3 ô báo thiếu; tháo được.
-## UC8  NPC nâng cấp: đủ Ấn Gió -> lên cấp 2, vật phẩm bị trừ, tên thành "Thổi gió II", chấm cấp đổi; thiếu thì không đổi.
+## UC8  NPC nâng cấp: đủ Ấn Gió -> lên cấp 2, vật phẩm bị trừ, tên thành "Lốc xoáy", chấm cấp đổi; thiếu thì không đổi.
 ## UC9  Lưu / đọc: vật phẩm, cấp kỹ năng, bùa, bùa đang đeo, số ô khắc giữ nguyên qua to_dict / from_dict.
 ## UC10 Cực đoan: chưa có nguyên tố nào (thẻ "???"), 12 loại vật phẩm, tên vật phẩm rất dài -> không lỗi, vẫn chọn được.
-## UC11 Vật phẩm dùng phím: có TNT thì nằm trong trang Vật phẩm (loại Dụng cụ); Enter chọn dùng (phím T) / bỏ chọn.
 
 const MENU := "res://ui/menus/inventory/inventory_menu.tscn"
 const WIND := "res://abilities/wind_blast/wind_blast.tres"
@@ -60,7 +59,6 @@ func _run() -> void:
 	await _uc8_upgrade()
 	_uc9_save()
 	await _uc10_extreme()
-	await _uc11_quick_items()
 	GameState.replace_progress(saved)
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
@@ -79,7 +77,7 @@ func _fixture() -> PlayerProgress:
 
 
 func _elements() -> ElementsPage:
-	return _menu.get_node("Body/Pages/ElementsPage") as ElementsPage
+	return _menu.get_node("Body/Pages/InventoryPages/ElementsPage") as ElementsPage
 
 
 func _detail_text() -> String:
@@ -204,7 +202,9 @@ func _uc7_charms() -> void:
 	_check(page != null, "UC7: C C -> trang Bùa (%s)" % _menu.get_current_page())
 	if page == null:
 		return
-	_check(page._empty.visible and page._equipped_tiles.size() == 1 and page._equipped_tiles[0].mode == CharmTile.Mode.EMPTY_SLOT, "UC7: chưa có bùa -> dòng trống + 1 ô trống")
+	# Danh mục thật có thể đã có bùa (chưa sở hữu): dòng "chưa có bùa" chỉ hiện khi danh mục rỗng
+	var base_count: int = GameState.ITEMS.charms.size()
+	_check(page._empty.visible == (base_count == 0) and page._equipped_tiles.size() == 1 and page._equipped_tiles[0].mode == CharmTile.Mode.EMPTY_SLOT, "UC7: chưa có bùa -> 1 ô trống (danh mục thật %d bùa)" % base_count)
 	_check(page._notch_label.text == "Ô KHẮC  0 / 3", "UC7: ô khắc 0 / 3 ('%s')" % page._notch_label.text)
 	await _shot("charms_empty")
 	var light := _make_charm(&"test_light", "Lông Vũ Thử", 1, "res://ui/hud/icons/wind.svg")
@@ -216,17 +216,21 @@ func _uc7_charms() -> void:
 	for charm: CharmData in [light, heavy, mid]:
 		GameState.add_charm(charm)
 	await _frames(3)
-	_check(page._grid_tiles.size() == 4, "UC7: lưới đủ 4 ô theo danh mục (%d)" % page._grid_tiles.size())
-	_check(page._collection_heading.text == "BỘ SƯU TẬP  3 / 4", "UC7: tiêu đề bộ sưu tập ('%s')" % page._collection_heading.text)
-	page._grid_tiles[3].grab_focus()
+	_check(page._grid_tiles.size() == base_count + 4, "UC7: lưới đủ %d ô theo danh mục (%d)" % [base_count + 4, page._grid_tiles.size()])
+	_check(page._collection_heading.text == "BỘ SƯU TẬP  3 / %d" % (base_count + 4), "UC7: tiêu đề bộ sưu tập ('%s')" % page._collection_heading.text)
+	# Ô tìm theo id: bùa thật trong danh mục đứng trước bùa thử
+	var light_tile := page._find_tile(page._grid_tiles, &"test_light")
+	var heavy_tile := page._find_tile(page._grid_tiles, &"test_heavy")
+	var hidden_tile := page._find_tile(page._grid_tiles, &"test_hidden")
+	hidden_tile.grab_focus()
 	await _frames(2)
-	_check(not page._grid_tiles[3].owned and _detail_text().contains("???"), "UC7: bùa chưa tìm thấy -> bóng tối '???'")
+	_check(not hidden_tile.owned and _detail_text().contains("???"), "UC7: bùa chưa tìm thấy -> bóng tối '???'")
 	# Ngoài khu đổi bùa: rung + trạng thái đỏ, không đeo
-	page._grid_tiles[0].grab_focus()
+	light_tile.grab_focus()
 	await _frames(2)
 	await _action(&"ui_accept")
 	_check(not GameState.is_charm_equipped(&"test_light"), "UC7: ngoài khu đổi bùa -> không đeo được")
-	_check(page._grid_tiles[0]._shake > 0.0 or page._grid_tiles[0]._fx_tween.is_running(), "UC7: ô rung khi bị từ chối")
+	_check(light_tile._shake > 0.0 or (light_tile._fx_tween != null and light_tile._fx_tween.is_running()), "UC7: ô rung khi bị từ chối")
 	_check(page._status.get_theme_color(&"font_color") == _menu.style.warning and page._status.text.contains("khu đổi bùa"), "UC7: dòng trạng thái đỏ ghi lý do")
 	GameState.enter_charm_station()
 	await _wait(0.4)
@@ -241,7 +245,7 @@ func _uc7_charms() -> void:
 	_check(is_equal_approx(page._notches.used, 1.0), "UC7: hạt ô khắc sáng lên 1 (%.2f)" % page._notches.used)
 	await _shot("charms_equipped")
 	# Bùa 3 ô khi còn 2 ô: từ chối
-	page._grid_tiles[1].grab_focus()
+	heavy_tile.grab_focus()
 	await _frames(2)
 	await _action(&"ui_accept")
 	_check(not GameState.is_charm_equipped(&"test_heavy") and page._status.text.contains("Không đủ ô khắc"), "UC7: bùa 3 ô báo thiếu ô khắc")
@@ -251,7 +255,7 @@ func _uc7_charms() -> void:
 	await _action(&"ui_accept")
 	await _frames(3)
 	_check(not GameState.is_charm_equipped(&"test_light"), "UC7: tháo bùa từ hàng đang đeo")
-	_check(get_viewport().gui_get_focus_owner() == page._grid_tiles[0], "UC7: tháo xong con trỏ về ô bùa trong lưới")
+	_check(get_viewport().gui_get_focus_owner() == page._find_tile(page._grid_tiles, &"test_light"), "UC7: tháo xong con trỏ về ô bùa trong lưới")
 	await _wait(_menu.style.charm_fly_time + 0.3)
 	_check(not page._ghost.visible and is_equal_approx(page._notches.used, 0.0), "UC7: bay về xong, ô khắc tắt hết")
 	GameState.exit_charm_station()
@@ -267,7 +271,7 @@ func _uc8_upgrade() -> void:
 	_check(GameState.upgrade_ability(wind) and GameState.get_ability_level(wind) == 2, "UC8: lên cấp 2")
 	_check(GameState.get_item_count(seal) == 0, "UC8: Ấn Gió bị lấy đi (còn %d)" % GameState.get_item_count(seal))
 	_check(not GameState.upgrade_ability(wind) and GameState.get_ability_level(wind) == 2, "UC8: thiếu Ấn Gió -> không lên cấp 3")
-	_check(wind.get_level_name(2) == "Thổi gió II", "UC8: tên cấp 2 = '%s'" % wind.get_level_name(2))
+	_check(wind.get_level_name(2) == "Lốc xoáy", "UC8: tên cấp 2 = '%s'" % wind.get_level_name(2))
 	_menu.close()
 	await _wait(0.3)
 	await _key(KEY_TAB)
@@ -345,7 +349,9 @@ func _uc10_extreme() -> void:
 	await _action(&"menu_next_page")
 	await _wait(0.5)
 	var charms := _menu.get_current_page() as CharmsPage
-	_check(charms != null and charms._grid_tiles.size() == 30, "UC10: 30 bùa hiện đủ trong lưới")
+	# Cộng cả bùa thật đang có trong danh mục
+	var expected_tiles: int = GameState.ITEMS.charms.size()
+	_check(charms != null and charms._grid_tiles.size() == expected_tiles, "UC10: 30 bùa thử (+ bùa thật) hiện đủ trong lưới (%d / %d)" % [charms._grid_tiles.size() if charms else -1, expected_tiles])
 	if charms:
 		var used := GameState.get_used_notches()
 		_check(charms._notch_label.text == "Ô KHẮC  %d / 12" % used, "UC10: 12 ô khắc ('%s')" % charms._notch_label.text)
@@ -380,47 +386,6 @@ func _key(code: Key) -> void:
 		Input.parse_input_event(event)
 		await get_tree().process_frame
 	await _frames(2)
-
-
-func _uc11_quick_items() -> void:
-	GameState.replace_progress(_fixture())
-	GameState.set_flag(&"level_3.tnt")
-	await _key(KEY_TAB)
-	for _i: int in range(4):
-		if _menu.get_current_page() is ItemsPage:
-			break
-		await _action(&"menu_next_page")
-	var page := _menu.get_current_page() as ItemsPage
-	var tile: ItemTile = null
-	if page:
-		for candidate: ItemTile in page._tiles:
-			if candidate.item.id == &"tnt":
-				tile = candidate
-	_check(tile != null, "UC11: có TNT -> nằm trong trang Vật phẩm")
-	if tile == null:
-		_menu.close()
-		await _frames(40)
-		return
-	tile.grab_focus()
-	await _frames(2)
-	_check(not tile.is_selected_item() and _detail_text().contains("Dụng cụ") and _detail_text().contains("Chưa dùng"), "UC11: TNT chưa chọn dùng, chi tiết ghi loại Dụng cụ ('%s')" % _detail_text().left(80))
-	await _action(&"ui_accept")
-	_check(GameState.get_selected_item() != null and GameState.get_selected_item().id == &"tnt" and tile.is_selected_item() and _detail_text().contains("Đang dùng"), "UC11: Enter -> chọn dùng TNT (phím T), chi tiết cập nhật")
-	await _action(&"ui_accept")
-	_check(GameState.get_selected_item() == null and not tile.is_selected_item(), "UC11: Enter lần nữa -> bỏ chọn")
-	var seal_tile: ItemTile = null
-	for candidate: ItemTile in page._tiles:
-		if candidate.item.id != &"tnt":
-			seal_tile = candidate
-	if seal_tile:
-		seal_tile.grab_focus()
-		await _action(&"ui_accept")
-		_check(GameState.get_selected_item() == null, "UC11: Enter trên vật phẩm thường (%s) không chọn gì" % seal_tile.item.display_name)
-	tile.grab_focus()
-	await _action(&"ui_accept")
-	await _shot("items_tnt")
-	_menu.close()
-	await _frames(40)
 
 
 func _action(action: StringName) -> void:

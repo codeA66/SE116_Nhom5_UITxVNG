@@ -276,7 +276,7 @@ func on_fireball_hit(_fireball: BossFireball) -> void:
 	_crack_shield()
 
 
-## Vụ nổ (TNT...) trúng boss: tính như một lần phản cầu lửa, để người chơi có cách khác phá khiên
+## Vụ nổ (slime nổ, thùng dầu...) trúng boss: tính như một lần phản cầu lửa, để người chơi có cách khác phá khiên
 func on_explosion_hit(_source: Node3D) -> void:
 	_crack_shield()
 

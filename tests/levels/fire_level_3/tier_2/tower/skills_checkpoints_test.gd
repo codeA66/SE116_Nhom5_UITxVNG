@@ -2,21 +2,22 @@ extends Node
 ## Test sách → mảnh vỡ (bản 2, docs/zone_3_fire/tier_2_tower_design.md mục 0) và miếu checkpoint của tháp tier 2 map Lửa:
 ## 1. Ba mảnh vỡ ở ba khu, đúng chỗ bệ đá, giấu tới khi hạ xong trận của khu. Đi bộ tới mảnh, bấm interact thì nhặt được,
 ##    lưu cờ mảnh; bộ đếm HUD hiện trong tier 2 và tăng 0/3 → 3/3.
-## 2. Miếu checkpoint ở Hub, sảnh chân tháp, giữa tháp (T3): đứng vững trên điểm hồi sinh; đi bộ chạm miếu thì lưu đúng id, hồi đầy máu.
+## 2. Miếu checkpoint ở Hub, sảnh chân tháp (trong tháp không còn miếu): đứng vững trên điểm hồi sinh; đi bộ chạm miếu thì lưu đúng id, hồi đầy máu.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/tier_2/tower/skills_checkpoints_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_2/tier_2.tscn")
 ## Mảnh: tên node, cờ trận của khu, cờ mảnh, vị trí mảnh
 const SHARDS: Array[Dictionary] = [
-	{"name": "NorthShard", "flag": &"level_3.t2_slime_hall", "shard": &"level_3.t2_shard_north", "p": Vector3(312, 8.86, 4)},
-	{"name": "EastShard", "flag": &"level_3.t2_dark_forge_pack", "shard": &"level_3.t2_shard_east", "p": Vector3(348, 4.86, 41)},
-	{"name": "SouthShard", "flag": &"level_3.t2_wisps_cleared", "shard": &"level_3.t2_shard_south", "p": Vector3(316, 0.86, 92)},
+	{"name": "NorthShard", "flag": &"level_3.t2_room05_cagespider", "extra_flag": &"level_3.t2_room05_cageslime", "shard": &"level_3.t2_shard_north", "p": Vector3(132, 4.54, -36.6)},
+	{"name": "EastShard", "flag": &"level_3.t2_dark_forge_pack", "shard": &"level_3.t2_shard_east", "p": Vector3(142, 0.54, -9.6)},
+	{"name": "SouthShard", "flag": &"level_3.t2_wisps_cleared", "shard": &"level_3.t2_shard_south", "p": Vector3(110, -3.46, 41.4)},
 ]
-## Miếu: node, id, điểm bắt đầu đi bộ tới miếu
+## Miếu: node, id, điểm bắt đầu đi bộ tới miếu (from) hoặc node chỗ đáp cổng tháp (from_node).
+## dz: lệch điểm xuất phát vào phía giữa phòng để không đi vướng cột khung cổng
 const CHECKPOINTS: Array[Dictionary] = [
-	{"name": "HubCheckpoint", "id": &"level_3.t2_hub", "from": Vector3(273, 4.42, 55.5)},
-	{"name": "FoyerCheckpoint", "id": &"level_3.t2_foyer", "from": Vector3(254.5, 4.42, 52)},
-	{"name": "TowerMidCheckpoint", "id": &"level_3.t2_tower_mid", "from": Vector3(209, 16.42, 30)},
+	# Hub: đi từ phía đông vào (phía bắc miếu có cột đèn chắn, đi thẳng từ bắc thì không chạm được vùng lưu)
+	{"name": "HubCheckpoint", "id": &"level_3.t2_hub", "from": Vector3(71, 0.1, 9.9)},
+	{"name": "FoyerCheckpoint", "id": &"level_3.t2_foyer", "from": Vector3(48.5, 0.1, 1.4)},
 ]
 
 var _player: Player
@@ -39,10 +40,6 @@ func _ready() -> void:
 	_level.player_spawned.connect(func(p: Player) -> void: _player = p)
 	add_child(_level)
 	await _frames(30)
-	# Quái tầng thức khi vào phòng rồi cắn người chơi làm sai phép đo hồi máu: gỡ (quái đo ở fights_test)
-	for child: Node in _level.get_node(^"Tier2Fights").get_children():
-		if String(child.name).begins_with("TowerT"):
-			child.free()
 	_player.health.max_health = 9999
 	_player.health.heal_full()
 	await _t_shards()
@@ -59,7 +56,7 @@ func _t_shards() -> void:
 	var counter := _level.get_node(^"Tier2Mechanics/ForgeShards/ShardCounter") as ForgeShardCounter
 	var panel := counter.get_node(^"Panel") as Control
 	# Người chơi đứng trong tier 2 (Hub) thì bộ đếm hiện
-	_player.teleport(Vector3(278, 4.42, 50))
+	_player.teleport(Vector3(72, 0.1, -0.6))
 	await _frames(30)
 	_check(panel.visible and counter.get_text() == "Mảnh vỡ 0/3", "vào tier 2: bộ đếm hiện \"%s\"" % counter.get_text())
 	for s: Dictionary in SHARDS:
@@ -67,6 +64,8 @@ func _t_shards() -> void:
 	var picked: int = 0
 	for s: Dictionary in SHARDS:
 		GameState.set_flag(s.flag)
+		if s.has("extra_flag"):
+			GameState.set_flag(s.extra_flag)
 		var shard := _level.get_node_or_null(_shard_path(s.name)) as KeyPickup
 		_check(shard != null and shard.key_id == s.shard, "%s: hạ xong trận %s thì mảnh hiện ra, cờ %s" % [s.name, s.flag, s.shard])
 		if shard == null:
@@ -84,12 +83,21 @@ func _t_shards() -> void:
 		_check(GameState.has_flag(s.shard) and not is_instance_valid(shard), "%s: đi tới bấm interact thì nhặt, lưu cờ %s" % [s.name, s.shard])
 		_check(counter.get_text() == "Mảnh vỡ %d/3" % picked, "%s: bộ đếm tăng (\"%s\")" % [s.name, counter.get_text()])
 	# Ra khỏi tier 2 (về tier 1) thì bộ đếm ẩn
-	_player.teleport(Vector3(58, 4.42, 52))
+	_player.teleport(Vector3(-148, 0.1, 1.4))
 	await _frames(30)
 	_check(not panel.visible, "ra khỏi tier 2: bộ đếm ẩn")
 
 
 func _t_checkpoints() -> void:
+	# Quái phục kích Hub (chưa hạ) vây cắn và chắn đường tới miếu Hub làm sai phép đo: tắt hẳn trận Hub (không kích hoạt,
+	# quái đứng yên, dời ra xa; trận đo ở fights_test). Xoá quái thì trận bắt đầu mà không bao giờ xong, rào trận chặn lối vào miếu.
+	# Bất tử trước đòn quái phòng khác; phần "bị thương" của test gọi thẳng health.take_damage nên không bị chặn
+	var hub := _level.get_node(^"Tier2Fights/T2HubAmbush")
+	hub.process_mode = Node.PROCESS_MODE_DISABLED
+	# Quái đã thức đuổi theo từ bước nhặt mảnh có thể đang đứng chắn lối vào miếu: dời ra xa khỏi Hub
+	for e: Node in hub.get_node(^"Enemies").get_children():
+		(e as Node3D).global_position += Vector3(0, 0, 200)
+	(_player.get_node(^"HurtboxComponent") as HurtboxComponent).set_invincible(9999.0)
 	for c: Dictionary in CHECKPOINTS:
 		var cp := _level.get_node("Tier2Links/%s" % c.name) as Checkpoint
 		_check(cp != null and not cp.is_active(), "%s: lúc đầu miếu tắt" % c.name)
@@ -103,10 +111,11 @@ func _t_checkpoints() -> void:
 		_player.health.heal_full()
 		_player.health.take_damage(3)
 		var hurt := _player.health.current_health
-		await _walk_to(c.from, cp.global_position)
+		var from: Vector3 = c.from if c.has("from") else (_level.get_node(c.from_node) as Node3D).global_position + Vector3(0, 0.1, float(c.get("dz", 0.0)))
+		await _walk_to(from, cp.global_position)
 		await _frames(60)
 		_check(GameState.get_checkpoint_spawn_id() == c.id and cp.is_active(), "%s: chạm miếu lưu checkpoint %s (đang là %s)" % [c.name, c.id, GameState.get_checkpoint_spawn_id()])
-		_check(_player.health.current_health == _player.health.max_health and hurt < _player.health.max_health, "%s: hồi đầy máu (%d → %d)" % [c.name, hurt, _player.health.current_health])
+		_check(_player.health.current_health == _player.health.max_health and hurt < _player.health.max_health, "%s: hồi đầy máu (%d → %d), dừng cách miếu %.2f m" % [c.name, hurt, _player.health.current_health, Vector2(_player.global_position.x - cp.global_position.x, _player.global_position.z - cp.global_position.z).length()])
 
 
 func _walk_to(from: Vector3, target: Vector3) -> void:
