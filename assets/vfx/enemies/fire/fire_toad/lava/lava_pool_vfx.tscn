@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/enemies/fire/fire_toad/lava/lava_pool_vfx.gd" id="script"]
+
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_pool.gdshader" id="lava"]
+
+[ext_resource type="Shader" path="res://assets/shaders/combat/vfx_library/distortion/distortion_vfx.gdshader" id="distortion"]
+
+[ext_resource type="Shader" path="res://assets/shaders/combat/vfx_library/particle/particle_vfx.gdshader" id="particle"]
+
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/decals/cracks.png" id="cracks"]
+
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/noise/cellular.tres" id="noise"]
+
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/sparks/shard.png" id="shard"]
+
+[sub_resource type="Gradient" id="HeatColors"]
+offsets = PackedFloat32Array(0, 0.3, 0.68, 1)
+colors = PackedColorArray(0.22, 0.018, 0.026, 0.8, 0.83, 0.12, 0.034, 1, 1, 0.61, 0.12, 1, 1, 0.965, 0.74, 1)
+
+[sub_resource type="GradientTexture2D" id="HeatRamp"]
+gradient = SubResource("HeatColors")
+width = 128
+height = 1
+
+[sub_resource type="ShaderMaterial" id="SurfaceMaterial"]
+resource_local_to_scene = true
+shader = ExtResource("lava")
+shader_parameter/cellular_noise = ExtResource("noise")
+shader_parameter/crack_mask = ExtResource("cracks")
+
+[sub_resource type="ShaderMaterial" id="HazeMaterial"]
+shader = ExtResource("distortion")
+shader_parameter/warp_mode = 1
+shader_parameter/strength_px = 4
+shader_parameter/haze_speed = 3.6
+shader_parameter/haze_frequency = 8
+
+[sub_resource type="ShaderMaterial" id="PopMaterial"]
+shader = ExtResource("particle")
+shader_parameter/palette_atlas = SubResource("HeatRamp")
+shader_parameter/shape_mask = ExtResource("shard")
+shader_parameter/erosion_noise = ExtResource("noise")
+shader_parameter/intensity = 1.25
+
+[sub_resource type="PlaneMesh" id="SurfaceMesh"]
+size = Vector2(2, 2)
+subdivide_width = 0
+subdivide_depth = 0
+
+[sub_resource type="QuadMesh" id="PopMesh"]
+size = Vector2(0.11, 0.18)
+material = SubResource("PopMaterial")
+
+[sub_resource type="ParticleProcessMaterial" id="PopProcess"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.04
+emission_ring_radius = 0.86
+emission_ring_inner_radius = 0.30
+direction = Vector3(0, 1, 0)
+spread = 22.0
+gravity = Vector3(0, -3.4, 0)
+initial_velocity_min = 1.1
+initial_velocity_max = 2.6
+angle_min = -54.0
+angle_max = 54.0
+scale_min = 0.40
+scale_max = 1.0
+
+[node name="LavaPoolVfx" type="Node3D"]
+visible = false
+script = ExtResource("script")
+
+[node name="Surface" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SurfaceMesh")
+material_override = SubResource("SurfaceMaterial")
+
+[node name="Haze" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SurfaceMesh")
+material_override = SubResource("HazeMaterial")
+position = Vector3(0, 0.24, 0)
+scale = Vector3(0.97, 1, 0.97)
+
+[node name="Pops" type="GPUParticles3D" parent="."]
+visible = false
+cast_shadow = 0
+emitting = false
+amount = 12
+lifetime = 0.55
+visibility_aabb = AABB(-18, -18, -18, 36, 36, 36)
+process_material = SubResource("PopProcess")
+draw_pass_1 = SubResource("PopMesh")
+local_coords = true
+randomness = 0.8

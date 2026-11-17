@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/hazards/lava_pool/lava_pool.gd" id="1_script"]
+[ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="2_damage"]
+
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/fire/fire_toad/lava/lava_pool_vfx.tscn" id="3_vfx"]
+
+[sub_resource type="CylinderShape3D" id="LavaShape"]
+resource_local_to_scene = true
+height = 1.2
+radius = 3.0
+
+[node name="LavaPool" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Vfx" parent="." instance=ExtResource("3_vfx")]
+
+[node name="DamageArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_damage")
+knockback = 2.0
+hit_interval = 0.6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("LavaShape")

@@ -1,0 +1,14 @@
+[gd_resource type="NoiseTexture2D" format=3]
+
+[sub_resource type="FastNoiseLite" id="Noise"]
+seed = 527
+frequency = 0.047
+fractal_type = 1
+fractal_octaves = 4
+fractal_gain = 0.53
+
+[resource]
+width = 128
+height = 128
+seamless = true
+noise = SubResource("Noise")

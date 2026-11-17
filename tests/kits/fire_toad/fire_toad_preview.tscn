@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://tests/kits/fire_toad/fire_toad_preview.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/fire_toad/fire_toad.glb" id="2_boss"]
+[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/lighting/fire_lighting.tscn" id="4_light"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="5_floor"]
+
+[node name="FireToadPreview" type="Node3D"]
+script = ExtResource("1_script")
+floor_tile_scene = ExtResource("5_floor")
+
+[node name="FireLighting" parent="." instance=ExtResource("4_light")]
+
+[node name="Floor" type="Node3D" parent="."]
+
+[node name="FireToad" parent="." instance=ExtResource("2_boss")]
+scale = Vector3(1.4, 1.4, 1.4)
+
+[node name="ComparisonPlayer" parent="." instance=ExtResource("3_player")]
+process_mode = 4
+position = Vector3(3.6, 0, -1.1)
+rotation = Vector3(0, 1.95, 0)
+
+[node name="Camera" type="Camera3D" parent="."]
+current = true
+fov = 30.0
+
+[node name="Controls" type="CanvasLayer" parent="."]
+
+[node name="Row" type="HBoxContainer" parent="Controls"]
+offset_left = 20.0
+offset_top = 20.0
+theme_override_constants/separation = 8
+
+[node name="ClipPicker" type="OptionButton" parent="Controls/Row"]
+custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
+
+[node name="Replay" type="Button" parent="Controls/Row"]
+layout_mode = 2
+text = "Phát lại"

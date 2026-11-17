@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FireToadData" format=3]
+
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/fire_toad_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/skills/fire_toad_skills_normal.tres" id="2_normal"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/skills/fire_toad_skills_enraged.tres" id="3_enraged"]
+
+[resource]
+script = ExtResource("1_data")
+max_health = 30
+normal = ExtResource("2_normal")
+enraged = ExtResource("3_enraged")
+hover_ratio = 0.5
+hover_duration = 12.0
+hover_height = 6.0
+hover_rise_time = 1.2
+hover_drop_interval = 0.45
+enrage_ratio = 0.0
+leap_height = 5.0
+leap_time = 0.9
