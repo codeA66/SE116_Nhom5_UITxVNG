@@ -6,6 +6,8 @@ extends FireToadState
 func _run(_id: int) -> void:
 	toad.seated = true
 	toad.set_invulnerable(true)
+	# Chỉ hiện trên ngai khi đã đấu xong và quay về cúi chào.
+	toad.vfx.arrival.set_model_visible(toad.health.is_dead())
 	toad.slam_indicator.hide_indicator()
 	toad.trim_pools()
 	if toad.throne:

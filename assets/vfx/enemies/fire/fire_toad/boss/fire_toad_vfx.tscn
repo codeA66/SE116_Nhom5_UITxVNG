@@ -3,12 +3,13 @@
 [ext_resource type="Script" path="res://assets/vfx/enemies/fire/fire_toad/boss/fire_toad_vfx.gd" id="script"]
 
 [ext_resource type="PackedScene" path="res://assets/vfx/enemies/fire/fire_toad/impact/fire_toad_impact_vfx.tscn" id="impact"]
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/fire/fire_toad/arrival/fire_toad_arrival.tscn" id="arrival"]
 
-[ext_resource type="Shader" path="res://assets/shaders/combat/vfx_library/mesh/mesh_vfx_add.gdshader" id="add"]
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_vfx/mesh/mesh_vfx_add.gdshader" id="add"]
 
-[ext_resource type="Shader" path="res://assets/shaders/combat/vfx_library/particle/particle_vfx.gdshader" id="particle"]
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_vfx/particle/particle_vfx.gdshader" id="particle"]
 
-[ext_resource type="Shader" path="res://assets/shaders/combat/vfx_library/distortion/distortion_vfx.gdshader" id="distortion"]
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_vfx/particle/distortion_vfx.gdshader" id="distortion"]
 
 [ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/glow/soft_round.tres" id="soft"]
 
@@ -20,7 +21,7 @@
 
 [ext_resource type="PackedScene" path="res://assets/models/enemies/fire_spider/web_patch.glb" id="web"]
 
-[ext_resource type="Shader" path="res://assets/shaders/combat/vfx_library/mesh/mesh_vfx.gdshader" id="overlay"]
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_vfx/mesh/mesh_vfx.gdshader" id="overlay"]
 [ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/decals/cracks.png" id="cracks"]
 
 [sub_resource type="Gradient" id="HeatColors"]
@@ -287,6 +288,41 @@ shader_parameter/intensity = 1.65
 shader_parameter/noise_tiling = Vector2(1.3, 3)
 shader_parameter/noise_scroll = Vector2(0.1, -1.12)
 
+[sub_resource type="Gradient" id="ShotHaloFalloff"]
+offsets = PackedFloat32Array(0, 0.48, 0.57, 0.68, 0.86, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.24, 0.24, 0.24, 1, 0.91, 0.91, 0.91, 1, 0.54, 0.54, 0.54, 1, 0.12, 0.12, 0.12, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="ShotHaloMask"]
+gradient = SubResource("ShotHaloFalloff")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="ShaderMaterial" id="ShotHotHalo"]
+shader = ExtResource("particle")
+shader_parameter/palette_atlas = SubResource("HeatRamp")
+shader_parameter/shape_mask = SubResource("ShotHaloMask")
+shader_parameter/use_particle_age = false
+shader_parameter/use_particle_rotation = false
+shader_parameter/vfx_progress = 0.0
+shader_parameter/vfx_opacity = 0.82
+shader_parameter/noise_influence = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShotColdHalo"]
+shader = ExtResource("particle")
+shader_parameter/palette_atlas = SubResource("WindRamp")
+shader_parameter/shape_mask = SubResource("ShotHaloMask")
+shader_parameter/use_particle_age = false
+shader_parameter/use_particle_rotation = false
+shader_parameter/vfx_progress = 0.0
+shader_parameter/vfx_opacity = 0.82
+shader_parameter/noise_influence = 0.0
+
+[sub_resource type="QuadMesh" id="ShotHaloMesh"]
+size = Vector2(1.45, 1.45)
+
 [sub_resource type="ShaderMaterial" id="ColdEmberMat"]
 shader = ExtResource("particle")
 shader_parameter/palette_atlas = SubResource("WindRamp")
@@ -320,10 +356,14 @@ scale_max = 1.02
 script = ExtResource("script")
 shot_hot_cracks = SubResource("ShotHotCracks")
 shot_cold_cracks = SubResource("ShotColdCracks")
+shot_hot_halo = SubResource("ShotHotHalo")
+shot_cold_halo = SubResource("ShotColdHalo")
 shot_hot_tail = SubResource("JetMaterial")
 shot_cold_tail = SubResource("ShotColdTail")
 shot_hot_embers = SubResource("ShotHotEmber")
 shot_cold_embers = SubResource("ShotColdEmber")
+
+[node name="FireToadArrival" parent="." instance=ExtResource("arrival")]
 
 [node name="Mouth" type="Node3D" parent="."]
 top_level = true
@@ -476,34 +516,36 @@ mesh = SubResource("VeilMesh")
 material_override = SubResource("VeilMaterial")
 position = Vector3(0.9, 1.4, -0.4)
 
-[node name="Shots" type="Node3D" parent="."]
-
-[node name="ShotPrototype" type="Node3D" parent="Shots"]
-top_level = true
+[node name="ShotPrototype" type="Node3D" parent="."]
 visible = false
 
-[node name="Basalt" type="MeshInstance3D" parent="Shots/ShotPrototype"]
+[node name="Basalt" type="MeshInstance3D" parent="ShotPrototype"]
 cast_shadow = 0
 mesh = SubResource("ShotBasaltMesh")
 
-[node name="Cracks" type="MeshInstance3D" parent="Shots/ShotPrototype"]
+[node name="Cracks" type="MeshInstance3D" parent="ShotPrototype"]
 cast_shadow = 0
 mesh = SubResource("ShotBasaltMesh")
 material_override = SubResource("ShotHotCracks")
 scale = Vector3(1.035, 1.025, 1.035)
 
-[node name="Nose" type="MeshInstance3D" parent="Shots/ShotPrototype"]
+[node name="Halo" type="MeshInstance3D" parent="ShotPrototype"]
+cast_shadow = 0
+mesh = SubResource("ShotHaloMesh")
+material_override = SubResource("ShotHotHalo")
+
+[node name="Nose" type="MeshInstance3D" parent="ShotPrototype"]
 cast_shadow = 0
 mesh = SubResource("ShotNoseMesh")
 position = Vector3(0, 0.29, 0)
 
-[node name="Tail" type="MeshInstance3D" parent="Shots/ShotPrototype"]
+[node name="Tail" type="MeshInstance3D" parent="ShotPrototype"]
 cast_shadow = 0
 mesh = SubResource("ShotTailMesh")
 material_override = SubResource("JetMaterial")
 position = Vector3(0, -1.11, 0)
 
-[node name="Embers" type="GPUParticles3D" parent="Shots/ShotPrototype"]
+[node name="Embers" type="GPUParticles3D" parent="ShotPrototype"]
 visible = false
 cast_shadow = 0
 emitting = false

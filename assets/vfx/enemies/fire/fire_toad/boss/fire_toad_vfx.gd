@@ -1,17 +1,84 @@
 extends Node3D
 ## Tách điểm bám của thân và mặt đất để sóng nổ đứng yên ở vị trí va chạm.
 
-class ShotVisual:
-	var root: Node3D
+class ShotVisual extends Node3D:
+	var projectile: BossFireball
 	var cracks: MeshInstance3D
+	var halo: MeshInstance3D
 	var tail: MeshInstance3D
 	var embers: GPUParticles3D
-	var projectile: Node3D
-	var tint_source: OmniLight3D
-	var last_position: Vector3
-	var reflected: bool
+	var hot_cracks: Material
+	var cold_cracks: Material
+	var hot_halo: Material
+	var cold_halo: Material
+	var hot_tail: Material
+	var cold_tail: Material
+	var hot_embers: Mesh
+	var cold_embers: Mesh
+	var _light: OmniLight3D
+	var _reflection_origin: Vector3
+	var _reflected: bool
+
+	func _ready() -> void:
+		set_process(false)
+		projectile.visibility_changed.connect(_on_projectile_visibility_changed)
+		# Đạn phải xử lý tín hiệu gió trước để dùng đúng màu và hướng sau phản đòn.
+		projectile.ready.connect(_bind_reflection, CONNECT_ONE_SHOT)
+
+	func _process(_delta: float) -> void:
+		var direction: Vector3 = projectile.global_position - _reflection_origin
+		if not direction.is_zero_approx():
+			basis = _flight_basis(projectile.global_basis.inverse() * direction)
+			set_process(false)
+
+	func play(direction: Vector3, enraged: bool) -> void:
+		set_process(false)
+		_reflected = false
+		cracks.material_override = hot_cracks
+		halo.material_override = hot_halo
+		tail.material_override = hot_tail
+		embers.draw_pass_1 = hot_embers
+		basis = _flight_basis(projectile.global_basis.inverse() * direction)
+		reset_physics_interpolation()
+		embers.amount_ratio = 1.0 if enraged else 0.78
+		embers.show()
+		embers.restart()
+		embers.emitting = true
+
+	func _bind_reflection() -> void:
+		_light = projectile.get_node(^"OmniLight3D") as OmniLight3D
+		var receiver: WindReceiverComponent = projectile.get_node(^"WindReceiverComponent") as WindReceiverComponent
+		receiver.pushed.connect(_on_wind_pushed)
+
+	func _on_wind_pushed(_impulse: Vector3) -> void:
+		if not projectile.visible or _reflected or _light.light_color.b <= _light.light_color.r:
+			return
+		_reflected = true
+		cracks.material_override = cold_cracks
+		halo.material_override = cold_halo
+		tail.material_override = cold_tail
+		embers.draw_pass_1 = cold_embers
+		# Lấy hướng từ bước di chuyển thật để đuôi bám đúng quỹ đạo mới.
+		_reflection_origin = projectile.global_position
+		set_process(true)
+
+	func _on_projectile_visibility_changed() -> void:
+		if projectile.visible:
+			return
+		set_process(false)
+		embers.emitting = false
+		embers.hide()
+
+	func _flight_basis(direction: Vector3) -> Basis:
+		var flight: Vector3 = direction.normalized()
+		if flight.is_zero_approx():
+			flight = Vector3.FORWARD
+		var up: Vector3 = Vector3.UP if absf(flight.y) < 0.98 else Vector3.FORWARD
+		var side: Vector3 = flight.cross(up).normalized()
+		return Basis(side, flight, side.cross(flight))
 
 const ImpactVfx = preload("res://assets/vfx/enemies/fire/fire_toad/impact/fire_toad_impact_vfx.gd")
+const ArrivalVfx = preload("res://assets/vfx/enemies/fire/fire_toad/arrival/fire_toad_arrival.gd")
 
 enum MouthPhase { OFF, CHARGE, UP, FORWARD, WEB }
 
@@ -40,16 +107,15 @@ enum MouthPhase { OFF, CHARGE, UP, FORWARD, WEB }
 @export_range(0.01, 1.0, 0.01) var death_floor_slack: float = 0.10
 
 @export_group("Cầu lửa ngang")
-@export_range(1, 12, 1) var shot_slots: int = 6
 @export var shot_hot_cracks: Material
 @export var shot_cold_cracks: Material
+@export var shot_hot_halo: Material
+@export var shot_cold_halo: Material
 @export var shot_hot_tail: Material
 @export var shot_cold_tail: Material
 @export var shot_hot_embers: Mesh
 @export var shot_cold_embers: Mesh
 
-var _shots: Array[ShotVisual] = []
-var _active_shots: int
 var _fallback: Marker3D
 var _facing: Node3D
 var _visual_model: Node3D
@@ -71,7 +137,11 @@ var _death_probe_y: float
 var _death_floor_ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()
 var _impact_cursor: int
 var _impacts: Array[ImpactVfx] = []
+var _death_veil_material: ShaderMaterial
+var _mouth_glow_material: ShaderMaterial
+var _mouth_beam_material: ShaderMaterial
 
+@onready var arrival: ArrivalVfx = $FireToadArrival
 @onready var _socket: Node3D = $Mouth
 @onready var _mouth_core: MeshInstance3D = $Mouth/Core
 @onready var _mouth_glow: MeshInstance3D = $Mouth/Glow
@@ -91,17 +161,10 @@ var _impacts: Array[ImpactVfx] = []
 
 
 func _ready() -> void:
-	# Tạo các vệt một lần để lúc bắn chỉ chọn slot có sẵn.
-	var prototype: Node3D = $Shots/ShotPrototype
-	for i: int in range(shot_slots):
-		var shot: ShotVisual = ShotVisual.new()
-		shot.root = prototype if i == 0 else prototype.duplicate() as Node3D
-		if i > 0:
-			$Shots.add_child(shot.root)
-		shot.cracks = shot.root.get_node("Cracks") as MeshInstance3D
-		shot.tail = shot.root.get_node("Tail") as MeshInstance3D
-		shot.embers = shot.root.get_node("Embers") as GPUParticles3D
-		_shots.append(shot)
+	# Mỗi vật liệu điều khiển riêng một lớp trên từng boss.
+	_death_veil_material = _duplicate_shader_material(_death_veil)
+	_mouth_glow_material = _duplicate_shader_material(_mouth_glow)
+	_mouth_beam_material = _duplicate_shader_material(_mouth_beam)
 	for mesh: Node in _web_cue.find_children("*", "GeometryInstance3D", true, false):
 		(mesh as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	for child: Node in $Impacts.get_children():
@@ -132,8 +195,6 @@ func _physics_process(_delta: float) -> void:
 
 
 func _process(delta: float) -> void:
-	if _active_shots > 0:
-		_update_shots()
 	_sync_body()
 	if _mode != MouthPhase.OFF:
 		_mouth_age += delta
@@ -145,8 +206,8 @@ func _process(delta: float) -> void:
 		_death_remaining -= delta
 		var age: float = 1.0 - clampf(_death_remaining / _death_duration, 0.0, 1.0)
 		if _death_veil.visible:
-			_death_veil.set_instance_shader_parameter(&"vfx_progress", age)
-			_death_veil.set_instance_shader_parameter(&"vfx_opacity", smoothstep(0.06, 0.27, age) * (1.0 - smoothstep(0.57, 1.0, age)))
+			_death_veil_material.set_shader_parameter(&"vfx_progress", age)
+			_death_veil_material.set_shader_parameter(&"vfx_opacity", smoothstep(0.06, 0.27, age) * (1.0 - smoothstep(0.57, 1.0, age)))
 			_death_veil.scale = Vector3.ONE * lerpf(0.7, 1.35, age)
 		if _death_remaining <= 0.0:
 			_stop_particles(_ash)
@@ -160,12 +221,14 @@ func _process(delta: float) -> void:
 			_collapse_pending = false
 			set_physics_process(true)
 	if (_mode == MouthPhase.OFF and not _dying and not _collapse_pending
-			and not _hovering and not _leaping and not _hot and _active_shots == 0):
+			and not _hovering and not _leaping and not _hot):
 		set_process(false)
 
 
 func bind_model(visual_model: Node3D, fallback: Marker3D) -> void:
 	_visual_model = visual_model
+	var ground_shadow: Node3D = get_parent().get_node_or_null(^"BlobShadow") as Node3D
+	arrival.bind_model(visual_model, ground_shadow)
 	_fallback = fallback
 	_facing = fallback.get_parent() as Node3D
 	var skeletons: Array[Node] = visual_model.find_children("*", "Skeleton3D", true, false)
@@ -195,37 +258,36 @@ func spit_forward() -> void:
 	_restart_particles(_forward_sparks)
 
 
-func play_shot(projectile: Node3D, direction: Vector3) -> void:
-	var original: Node3D = projectile.get_node("Visual") as Node3D
-	for shot: ShotVisual in _shots:
-		if shot.projectile == projectile:
-			# Có thể mượn lại cùng viên đạn trước khi tới frame dọn vệt.
-			_start_shot(shot, projectile, direction)
-			return
-	for shot: ShotVisual in _shots:
-		if is_instance_valid(shot.projectile):
-			continue
-		_active_shots += 1
-		_start_shot(shot, projectile, direction)
-		return
-	original.show()
-
-
-func _start_shot(shot: ShotVisual, projectile: Node3D, direction: Vector3) -> void:
-	(projectile.get_node("Visual") as Node3D).hide()
+func prepare_shot(instance: Node) -> void:
+	var projectile: BossFireball = instance as BossFireball
+	var prototype: Node3D = $ShotPrototype
+	var layers: Node3D = prototype.duplicate() as Node3D
+	var shot: ShotVisual = ShotVisual.new()
+	shot.name = &"FireToadShotVisual"
 	shot.projectile = projectile
-	shot.tint_source = projectile.get_node("OmniLight3D") as OmniLight3D
-	shot.last_position = projectile.global_position
-	shot.reflected = false
-	shot.cracks.material_override = shot_hot_cracks
-	shot.tail.material_override = shot_hot_tail
-	shot.embers.draw_pass_1 = shot_hot_embers
-	shot.root.global_transform = Transform3D(_shot_basis(direction), shot.last_position)
-	shot.root.reset_physics_interpolation()
-	shot.root.show()
-	shot.embers.amount_ratio = 1.0 if _hot else 0.78
-	_restart_particles(shot.embers)
-	set_process(true)
+	shot.hot_cracks = shot_hot_cracks
+	shot.cold_cracks = shot_cold_cracks
+	shot.hot_halo = shot_hot_halo
+	shot.cold_halo = shot_cold_halo
+	shot.hot_tail = shot_hot_tail
+	shot.cold_tail = shot_cold_tail
+	shot.hot_embers = shot_hot_embers
+	shot.cold_embers = shot_cold_embers
+	shot.cracks = layers.get_node(^"Cracks") as MeshInstance3D
+	shot.halo = layers.get_node(^"Halo") as MeshInstance3D
+	shot.tail = layers.get_node(^"Tail") as MeshInstance3D
+	shot.embers = layers.get_node(^"Embers") as GPUParticles3D
+	layers.show()
+	shot.add_child(layers)
+	# Vỏ dùng cùng transform và vòng đời với đạn để hai lớp luôn khớp nhau.
+	var original: Node3D = projectile.get_node(^"Visual") as Node3D
+	original.hide()
+	projectile.add_child(shot)
+
+
+func play_shot(projectile: BossFireball, direction: Vector3) -> void:
+	var shot: ShotVisual = projectile.get_node(^"FireToadShotVisual") as ShotVisual
+	shot.play(direction, _hot)
 
 
 func begin_leap() -> void:
@@ -256,6 +318,10 @@ func platform_land() -> void:
 	_play_impact(global_position, takeoff_radius * _model_scale(), ImpactVfx.Kind.LIFT, takeoff_time)
 
 
+func arrival_land(where: Vector3) -> void:
+	_play_impact(where, landing_radius * _model_scale(), ImpactVfx.Kind.LAND, landing_time)
+
+
 func sentinel_puff(where: Vector3, spawning: bool) -> void:
 	var kind: ImpactVfx.Kind = ImpactVfx.Kind.SENTINEL_IN if spawning else ImpactVfx.Kind.SENTINEL_OUT
 	_play_impact(where, sentinel_radius, kind, sentinel_burst_time)
@@ -279,6 +345,7 @@ func end_hover(where: Vector3) -> void:
 func phase_changed(phase: StringName) -> void:
 	if phase != &"enraged":
 		return
+	arrival.defer_model_overlay()
 	_hot = true
 	_sync_body()
 	_restart_particles(_aura)
@@ -313,41 +380,9 @@ func death(duration: float, ground_y: float) -> void:
 	_smoke.lifetime = minf(_smoke.lifetime, duration)
 	_restart_particles(_ash)
 	_restart_particles(_smoke)
-	_death_veil.set_instance_shader_parameter(&"vfx_opacity", 0.0)
+	_death_veil_material.set_shader_parameter(&"vfx_opacity", 0.0)
 	_death_veil.show()
 	set_process(true)
-
-
-func _update_shots() -> void:
-	for shot: ShotVisual in _shots:
-		if shot.projectile == null:
-			continue
-		if not is_instance_valid(shot.projectile) or not shot.projectile.visible:
-			shot.projectile = null
-			shot.tint_source = null
-			shot.root.hide()
-			_stop_particles(shot.embers)
-			_active_shots -= 1
-			continue
-		var point: Vector3 = shot.projectile.global_position
-		var direction: Vector3 = point - shot.last_position
-		if direction.length_squared() > 0.000001:
-			shot.root.global_transform = Transform3D(_shot_basis(direction), point)
-			shot.last_position = point
-		if not shot.reflected and shot.tint_source.light_color.b > shot.tint_source.light_color.r:
-			shot.reflected = true
-			shot.cracks.material_override = shot_cold_cracks
-			shot.tail.material_override = shot_cold_tail
-			shot.embers.draw_pass_1 = shot_cold_embers
-
-
-func _shot_basis(direction: Vector3) -> Basis:
-	var flight: Vector3 = direction.normalized()
-	if flight.is_zero_approx():
-		flight = Vector3.FORWARD
-	var up: Vector3 = Vector3.UP if absf(flight.y) < 0.98 else Vector3.FORWARD
-	var side: Vector3 = flight.cross(up).normalized()
-	return Basis(side, flight, side.cross(flight))
 
 
 func _model_scale() -> float:
@@ -395,9 +430,9 @@ func _draw_mouth(progress: float) -> void:
 		_web_cue.scale = Vector3.ONE * maxf(web_size * web_cue_scale, 0.01)
 		_web_cue.rotation.y = lerpf(-0.6, 0.3, progress)
 	_mouth_glow.scale = Vector3.ONE * (wide * 2.2)
-	_mouth_glow.set_instance_shader_parameter(&"vfx_opacity", strength * 0.84)
-	_mouth_beam.set_instance_shader_parameter(&"vfx_opacity", strength)
-	_mouth_beam.set_instance_shader_parameter(&"vfx_dissolve", progress * 0.8)
+	_mouth_glow_material.set_shader_parameter(&"vfx_opacity", strength * 0.84)
+	_mouth_beam_material.set_shader_parameter(&"vfx_opacity", strength)
+	_mouth_beam_material.set_shader_parameter(&"vfx_dissolve", progress * 0.8)
 
 
 func _hide_mouth() -> void:
@@ -428,3 +463,10 @@ func _restart_particles(particle: GPUParticles3D) -> void:
 func _stop_particles(particle: GPUParticles3D) -> void:
 	particle.emitting = false
 	particle.hide()
+
+
+func _duplicate_shader_material(mesh: MeshInstance3D) -> ShaderMaterial:
+	var source: ShaderMaterial = mesh.material_override as ShaderMaterial
+	var unique_material: ShaderMaterial = source.duplicate() as ShaderMaterial
+	mesh.material_override = unique_material
+	return unique_material

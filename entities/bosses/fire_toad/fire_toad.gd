@@ -66,6 +66,12 @@ var _flash_tween: Tween
 @onready var _shot_pool: ObjectPool = $ShotPool
 
 
+func _enter_tree() -> void:
+	var shot_pool: ObjectPool = $ShotPool
+	var effects: FireToadVfx = $FireToadVfx
+	shot_pool.configure_instance = effects.prepare_shot
+
+
 func _ready() -> void:
 	super()
 	health.max_health = data.max_health
