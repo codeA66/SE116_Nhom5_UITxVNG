@@ -3,7 +3,7 @@ extends BossState
 ## State gồng nộ và kích hoạt Khiên Bất Hoại ở mốc 50% và 20% HP.
 
 func enter(_previous: StringName) -> void:
-	boss.play_anim(&"Buff")
+	boss.play_action(&"Roar", boss.get_current_anim_speed())
 	boss.activate_invulnerable_shield()
 	boss.perform_buff_roar()
 	boss.summon_minions_for_current_phase()

@@ -13,6 +13,7 @@ signal hit_boss(boss: Character)
 @export var damage: int = 1
 @export var knockback: float = 6.0
 
+var _launch_damage: int = 0
 var _velocity: Vector3 = Vector3.ZERO
 var _remaining_life: float = 0.0
 var _reflected: bool = false
@@ -23,6 +24,8 @@ var _pooled: bool = true
 
 @onready var _wind_receiver: WindReceiverComponent = $WindReceiverComponent
 @onready var _light: OmniLight3D = $OmniLight3D
+@onready var _world_sweep: ShapeCast3D = $WorldSweep
+@onready var _hurtbox_sweep: ShapeCast3D = $HurtboxSweep
 
 
 func _ready() -> void:
@@ -36,6 +39,7 @@ func _ready() -> void:
 
 ## Được gọi bởi ObjectPool khi fireball được lấy ra để dùng
 func pool_acquired() -> void:
+	_pooled = true
 	set_deferred(&"monitoring", true)
 	if _wind_receiver:
 		_wind_receiver.set_deferred(&"monitorable", true)
@@ -45,6 +49,10 @@ func pool_acquired() -> void:
 func pool_released() -> void:
 	_spent = true
 	_reflected = false
+	_boss_ref = null
+	_velocity = Vector3.ZERO
+	_remaining_life = 0.0
+	_launch_damage = 0
 	set_physics_process(false)
 	set_deferred(&"monitoring", false)
 	if _wind_receiver:
@@ -56,7 +64,8 @@ func pool_detached() -> void:
 	_pooled = false
 
 
-func launch(origin: Vector3, direction: Vector3, boss: Node3D) -> void:
+func launch(origin: Vector3, direction: Vector3, boss: Node3D, damage_multiplier: int = 1) -> void:
+	_launch_damage = maxi(damage, 0) * maxi(damage_multiplier, 0)
 	_boss_ref = boss
 	_reflected = false
 	_spent = false
@@ -77,10 +86,35 @@ func launch(origin: Vector3, direction: Vector3, boss: Node3D) -> void:
 func _physics_process(delta: float) -> void:
 	if _spent:
 		return
-	global_position += _velocity * delta
+	_move_swept(_velocity * delta)
+	if _spent:
+		return
 	_remaining_life -= delta
 	if _remaining_life <= 0.0:
 		_explode()
+
+
+## Tách World và hurtbox để body của nhân vật không che khuất hurtbox nhỏ hơn.
+func _move_swept(motion: Vector3) -> void:
+	_world_sweep.target_position = _world_sweep.global_basis.inverse() * motion
+	_hurtbox_sweep.target_position = _hurtbox_sweep.global_basis.inverse() * motion
+	_hurtbox_sweep.collision_mask = collision_mask & ~1
+	_world_sweep.force_shapecast_update()
+	_hurtbox_sweep.force_shapecast_update()
+	var world_fraction: float = _world_sweep.get_closest_collision_safe_fraction()
+	var target_fraction: float = _hurtbox_sweep.get_closest_collision_safe_fraction()
+	if _world_sweep.is_colliding() and (not _hurtbox_sweep.is_colliding() or world_fraction <= target_fraction):
+		global_position += motion * world_fraction
+		_explode()
+		return
+	if _hurtbox_sweep.is_colliding():
+		global_position += motion * target_fraction
+		for index: int in _hurtbox_sweep.get_collision_count():
+			_on_area_entered(_hurtbox_sweep.get_collider(index) as Area3D)
+			if _spent:
+				return
+		return
+	global_position += motion
 
 
 func _on_area_entered(area: Area3D) -> void:
@@ -99,14 +133,14 @@ func _on_area_entered(area: Area3D) -> void:
 			_explode()
 			return
 		elif (hurtbox.collision_layer & 4) != 0: # Layer 3 (enemy = 4)
-			var info := DamageInfo.new(damage, DamageInfo.Type.PHYSICAL, _velocity.normalized() * knockback, null)
+			var info := DamageInfo.new(_launch_damage, DamageInfo.Type.PHYSICAL, _velocity.normalized() * knockback, null)
 			hurtbox.receive_hit(info)
 			_explode()
 			return
 	else:
 		# Chưa phản đòn: đánh trúng Player (layer 2 = 2)
 		if (hurtbox.collision_layer & 2) != 0:
-			var info := DamageInfo.new(damage, DamageInfo.Type.PHYSICAL, _velocity.normalized() * knockback, _boss_ref)
+			var info := DamageInfo.new(_launch_damage, DamageInfo.Type.PHYSICAL, _velocity.normalized() * knockback, _boss_ref)
 			hurtbox.receive_hit(info)
 			_explode()
 

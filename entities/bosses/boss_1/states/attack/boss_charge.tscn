@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/states/attack/boss_charge.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/boss_1/boss_1_charge.tres" id="2"]
+[node name="Charge" type="Node"]
+script = ExtResource("1")
+data = ExtResource("2")
+[node name="GroundAhead" type="RayCast3D" parent="."]
+top_level = true
+enabled = false
+collision_mask = 1

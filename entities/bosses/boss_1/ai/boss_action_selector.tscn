@@ -1,0 +1,23 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/ai/boss_action_selector.gd" id="1"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/ai/boss_action_rule.gd" id="2"]
+[sub_resource type="Resource" id="fireball"]
+script = ExtResource("2")
+state = &"CastFireball"
+readiness_method = &"can_cast_fireball"
+requires_shield = true
+[sub_resource type="Resource" id="magma"]
+script = ExtResource("2")
+state = &"MagmaStomp"
+readiness_method = &"can_magma_stomp"
+minimum_range_property = &"magma_stomp_min_range"
+maximum_range_property = &"magma_stomp_max_range"
+[sub_resource type="Resource" id="jump"]
+script = ExtResource("2")
+state = &"JumpSlam"
+readiness_method = &"can_jump_slam"
+minimum_range_property = &"jump_slam_min_range"
+maximum_range_property = &"jump_slam_max_range"
+[node name="ActionSelector" type="Node"]
+script = ExtResource("1")
+rules = Array[ExtResource("2")]([SubResource("fireball"), SubResource("magma"), SubResource("jump")])

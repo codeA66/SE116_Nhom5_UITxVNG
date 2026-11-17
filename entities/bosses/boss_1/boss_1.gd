@@ -1,6 +1,6 @@
 class_name Boss1
 extends Character
-## Script điều khiển chính của Boss 1 (Dị Thú Tha Hoá).
+## Script điều khiển chính của Boss 1 (Ngưu Vương Huyết Diệm).
 ## Quản lý các phase, cơ chế khóa máu 50%/20%, khiên bất hoại, và i-frames theo từng phase.
 
 signal phase_changed(new_phase: int)
@@ -8,66 +8,46 @@ signal shield_broken
 signal boss_defeated
 
 @export var data: BossData
-@export var melee_attack_data: AttackData
 @export var shockwave_data: ShockwaveData
 @export var magma_attack_data: AttackData = preload("res://resources/enemies/bosses/boss_1/boss_1_magma_attack.tres")
-@export var fireball_scene: PackedScene
 
-@export_group("Minion Scenes")
-@export var grunt_scene: PackedScene = preload("res://entities/enemies/palace/enemy_1/enemy_1.tscn")
-@export var shield_bearer_scene: PackedScene = preload("res://entities/enemies/palace/shield_bearer/shield_bearer.tscn")
-@export var wisp_caster_scene: PackedScene = preload("res://entities/enemies/palace/wisp_caster/wisp_caster.tscn")
-
-@export_group("Minion Summon - Phase 2 (50% HP)")
-## Số lượng lính kiếm summon ở Phase 2
-@export var phase2_grunt_count: int = 1
-## Số lượng lính khiên summon ở Phase 2 (chắn đường trước mặt)
-@export var phase2_shield_count: int = 1
-## Số lượng pháp sư summon ở Phase 2
-@export var phase2_caster_count: int = 0
-
-@export_group("Minion Summon - Phase 3 (20% HP)")
-## Số lượng lính kiếm summon ở Phase 3
-@export var phase3_grunt_count: int = 2
-## Số lượng lính khiên summon ở Phase 3
-@export var phase3_shield_count: int = 1
-## Số lượng pháp sư summon ở Phase 3
-@export var phase3_caster_count: int = 1
-
-@export_group("Minion Spawn & Roar Settings")
-## Bán kính vòng tròn quanh Boss để xuất hiện quái phụ
-@export var minion_spawn_radius: float = 4.5
+@export_group("Roar")
 ## Bán kính tác động của tiếng gầm đẩy lùi người chơi
 @export var roar_push_radius: float = 6.5
 ## Lực đẩy lùi người chơi
 @export var roar_push_force: float = 14.0
 
-@export_group("Hit Reaction")
-## Màu nháy đỏ phủ lên Boss khi bị trúng đòn
-@export var hit_flash_color: Color = Color(1.0, 0.15, 0.15, 0.75)
-## Thời gian nháy đỏ mỗi hit (s)
-@export var hit_flash_time: float = 0.12
-
-@onready var _fireball_pool: ObjectPool = $FireballPool
-
-var current_phase: int = 1
-var is_shielded: bool = false
-var shield_stacks: int = 0
+var current_phase: int:
+	get:
+		return health.current_phase
+	set(value):
+		health.current_phase = clampi(value, 1, 3)
+		_refresh_attack_damage()
+var is_shielded: bool:
+	get:
+		return health.is_shielded
+	set(value):
+		health.is_shielded = value
+var shield_stacks: int:
+	get:
+		return health.shield_stacks
+	set(value):
+		health.shield_stacks = maxi(value, 0)
 var target_player: Node3D = null
 
-var _melee_timer: float = 0.0
-var _jump_slam_timer: float = 0.0
-var _fireball_timer: float = 0.0
-var _magma_stomp_timer: float = 0.0
 
-var _gate_50_triggered: bool = false
-var _gate_20_triggered: bool = false
 var _is_current_anim_finished: bool = false
-var _spawned_minions: Array[Node] = []
+var _tracked_animation: StringName
+var _death_handled: bool = false
+var _attacks: Dictionary[AttackData, AttackData] = {}
+var _shockwave_base_damage: int = 0
 
-@onready var health: HealthComponent = $HealthComponent
+@onready var minions: BossMinionController = $Minions
+@onready var _cooldowns: BossCooldowns = $Cooldowns
+@onready var _fireball_pool: ObjectPool = $FireballPool
+@onready var action_selector: BossActionSelector = $ActionSelector
+@onready var health: BossPhaseController = $HealthComponent
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent
-@onready var melee_hitbox: HitboxComponent = $Model/MeleeHitbox
 @onready var shockwave: GroundShockwave = $GroundShockwave
 @onready var radial_magma_hazard: Node3D = get_node_or_null(^"RadialMagmaHazard")
 @onready var fireball_spawn: Marker3D = $Model/FireballSpawn
@@ -75,21 +55,19 @@ var _spawned_minions: Array[Node] = []
 @onready var aoe_indicator: Node3D = $AoeCircleIndicator
 @onready var _shield_material: StandardMaterial3D = null
 
-var _flash_material: StandardMaterial3D
-var _model_meshes: Array[GeometryInstance3D] = []
-var _flash_tween: Tween
-
-
 func _ready() -> void:
 	super._ready()
 	assert(data != null, "Boss1 chưa được gán BossData!")
 	
-	health.max_health = data.max_health
-	health.current_health = data.max_health
+	movement = movement.duplicate() as MovementStats
+	health.configure(data)
+	health.phase_changed.connect(_on_phase_changed)
+	_shockwave_base_damage = shockwave_data.damage
+	shockwave_data = shockwave_data.duplicate() as ShockwaveData
+	magma_attack_data = get_attack_data(magma_attack_data)
 	
 	# Cài đặt I-frame cho Phase 1
 	hurtbox.invincibility_time = data.iframe_duration_normal
-	hurtbox.hurt.connect(_on_hurtbox_hurt)
 	health.died.connect(_on_died)
 	
 	if _anim:
@@ -103,22 +81,10 @@ func _ready() -> void:
 			_shield_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			_shield_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 			_shield_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-			shield_sphere.material_override = _shield_material
+		else:
+			_shield_material = _shield_material.duplicate() as StandardMaterial3D
+		shield_sphere.material_override = _shield_material
 		shield_sphere.visible = false
-	
-	# Chuẩn bị flash material cho hiệu ứng trúng đòn
-	_flash_material = StandardMaterial3D.new()
-	_flash_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_flash_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_flash_material.albedo_color = hit_flash_color
-	
-	if model:
-		for node: Node in model.find_children("*", "GeometryInstance3D", true, false):
-			_model_meshes.append(node as GeometryInstance3D)
-	
-	if melee_hitbox:
-		melee_hitbox.monitoring = false
-		melee_hitbox.monitorable = false
 	
 	# Ưu tiên kết nối signal player_spawned từ ZoneRoot để không quét cây scene mỗi frame.
 	# Nếu chạy trực tiếp (F6 test), quét một lần duy nhất tại _ready.
@@ -130,13 +96,21 @@ func _ready() -> void:
 
 
 func _on_player_spawned(p: Player) -> void:
-	target_player = p
-	# Khi player rời scene (ví dụ: reload) thì xoá tham chiếu
-	p.tree_exiting.connect(_on_player_removed)
+	set_target_player(p)
 
 
-func _on_player_removed() -> void:
-	target_player = null
+func set_target_player(player: Node3D) -> void:
+	target_player = player
+	if player == null:
+		return
+	var callback: Callable = _on_player_removed.bind(player)
+	if not player.tree_exiting.is_connected(callback):
+		player.tree_exiting.connect(callback, CONNECT_ONE_SHOT)
+
+
+func _on_player_removed(player: Node3D) -> void:
+	if target_player == player:
+		target_player = null
 
 
 func _find_zone_root() -> ZoneRoot:
@@ -153,16 +127,20 @@ func _find_player_once() -> void:
 	# Chỉ chạy một lần tại _ready, không chạy mỗi frame
 	var players := get_tree().get_nodes_in_group(&"player")
 	if not players.is_empty():
-		target_player = players[0] as Node3D
+		set_target_player(players[0] as Node3D)
 
 
 func play_anim(anim_name: StringName) -> void:
+	if _anim.current_animation == anim_name and _anim.is_playing():
+		return
 	_is_current_anim_finished = false
-	super.play_anim(anim_name)
+	_tracked_animation = anim_name
+	_anim.play(anim_name, ANIM_BLEND, 1.0)
 
 
 func play_action(anim_name: StringName, speed: float = 1.0, blend: float = -1.0) -> void:
 	_is_current_anim_finished = false
+	_tracked_animation = anim_name
 	super.play_action(anim_name, speed, blend)
 
 
@@ -170,94 +148,43 @@ func is_anim_finished() -> bool:
 	return _is_current_anim_finished or (_anim != null and not _anim.is_playing())
 
 
-func _on_animation_finished(_anim_name: StringName) -> void:
-	_is_current_anim_finished = true
+func _on_animation_finished(anim_name: StringName) -> void:
+	if anim_name == _tracked_animation:
+		_is_current_anim_finished = true
 
 
-func _physics_process(delta: float) -> void:
-	_melee_timer = maxf(_melee_timer - delta, 0.0)
-	_jump_slam_timer = maxf(_jump_slam_timer - delta, 0.0)
-	_fireball_timer = maxf(_fireball_timer - delta, 0.0)
-	_magma_stomp_timer = maxf(_magma_stomp_timer - delta, 0.0)
-	
-	super._physics_process(delta)
+func _on_phase_changed(phase: int) -> void:
+	_refresh_attack_damage()
+	movement.max_speed = get_current_walk_speed()
+	phase_changed.emit(phase)
+	state_machine.transition_to(&"Buff")
 
 
-## --- Quản lý Máu & Khóa Máu (Health Gating) ---
-
-func _on_hurtbox_hurt(_info: DamageInfo, _damage_taken: int) -> void:
-	# Nếu đang có khiên bảo vệ: Hồi lại máu ngay (miễn nhiễm sát thương tuyệt đối)
-	if is_shielded:
-		health.current_health = health.current_health + _damage_taken
-		var fx: Node = get_node_or_null(^"/root/CombatFx")
-		if fx and fx.has_method(&"spawn_hit"):
-			fx.spawn_hit(global_position + Vector3(0, 1.5, 0), Vector3.UP)
-		return
-	
-	# Hiệu ứng nháy đỏ model và tia lửa va chạm khi trúng đòn thực tế
-	_flash_hit()
-	var combat_fx: Node = get_node_or_null(^"/root/CombatFx")
-	if combat_fx and combat_fx.has_method(&"spawn_hit"):
-		combat_fx.spawn_hit(global_position + Vector3(0, 1.5, 0), Vector3.UP)
-	
-	var hp_ratio := float(health.current_health) / float(data.max_health)
-	
-	# Khóa máu ở mốc 50% (lần đầu chạm <= 50%)
-	if not _gate_50_triggered and hp_ratio <= 0.50:
-		_gate_50_triggered = true
-		health.current_health = int(data.max_health * 0.50)
-		current_phase = 2
-		phase_changed.emit(2)
-		state_machine.transition_to(&"Buff")
-		return
-	
-	# Khóa máu ở mốc 20% (lần đầu chạm <= 20%) -> Chuyển Phase 3, hồi máu lên 40% (Aura Đỏ), kích hoạt x2 damage
-	if not _gate_20_triggered and hp_ratio <= 0.20:
-		_gate_20_triggered = true
-		current_phase = 3
-		phase_changed.emit(3)
-		# Hồi phục sinh lực lên 40% Max HP theo cơ chế Aura Đỏ
-		health.current_health = int(data.max_health * 0.40)
-		print("[Boss1] Kích hoạt Khiên Bất Hoại Lần 2 & Hồi phục sinh lực lên 40% HP (Aura Đỏ)!")
-		_apply_phase_3_damage_multiplier()
-		state_machine.transition_to(&"Buff")
-		return
+func get_damage_multiplier() -> int:
+	return maxi(data.damage_multiplier_phase3, 0) if current_phase == 3 else 1
 
 
-func _apply_phase_3_damage_multiplier() -> void:
-	if melee_attack_data:
-		melee_attack_data.damage = data.melee_damage * data.damage_multiplier_phase3
+## Nhân bản một lần, giữ Resource nguồn bất biến giữa các instance.
+func get_attack_data(source: AttackData) -> AttackData:
+	if source == null:
+		return null
+	if _attacks.has(source):
+		return _attacks[source]
+	var runtime: AttackData = source.duplicate() as AttackData
+	runtime.damage = source.damage * get_damage_multiplier()
+	_attacks[source] = runtime
+	return runtime
+
+
+func _refresh_attack_damage() -> void:
+	for source: AttackData in _attacks:
+		_attacks[source].damage = source.damage * get_damage_multiplier()
 	if shockwave_data:
-		shockwave_data.damage = data.jump_slam_damage * data.damage_multiplier_phase3
-	if magma_attack_data:
-		magma_attack_data.damage = data.magma_stomp_damage * data.damage_multiplier_phase3
+		shockwave_data.damage = _shockwave_base_damage * get_damage_multiplier()
 
 
 func _on_died() -> void:
 	state_machine.transition_to(&"Dead")
-
-
-func _flash_hit() -> void:
-	if _model_meshes.is_empty() and model:
-		for node: Node in model.find_children("*", "GeometryInstance3D", true, false):
-			_model_meshes.append(node as GeometryInstance3D)
-	
-	if _flash_material == null:
-		return
-	
-	_set_flash_overlay(true)
-	if _flash_tween:
-		_flash_tween.kill()
-	_flash_tween = create_tween()
-	_flash_tween.tween_interval(hit_flash_time)
-	_flash_tween.tween_callback(_set_flash_overlay.bind(false))
-
-
-func _set_flash_overlay(on: bool) -> void:
-	var mat: Material = _flash_material if on else null
-	for mesh: GeometryInstance3D in _model_meshes:
-		if is_instance_valid(mesh):
-			mesh.material_overlay = mat
 
 
 ## --- Khiên Bất Tử & Phản Đòn Cầu Lửa ---
@@ -326,43 +253,21 @@ func _update_shield_visual() -> void:
 
 ## --- Đòn Đánh & Kỹ Năng ---
 
-func can_melee() -> bool:
-	return _melee_timer <= 0.0
-
-
-func start_melee_cooldown() -> void:
-	if current_phase == 1:
-		_melee_timer = data.melee_cooldown_phase1
-	elif current_phase == 2:
-		_melee_timer = data.melee_cooldown_phase2
-	else:
-		_melee_timer = data.melee_cooldown_phase3
-
-
-func set_melee_hitbox_active(is_active: bool) -> void:
-	if melee_hitbox:
-		if is_active and melee_attack_data:
-			melee_hitbox.activate(melee_attack_data, 0.55)
-		else:
-			melee_hitbox.deactivate()
-
-
 func can_jump_slam() -> bool:
-	return _jump_slam_timer <= 0.0 and is_on_floor()
+	return _cooldowns.is_ready(&"JumpSlam") and is_on_floor()
 
 
 func start_jump_slam_cooldown() -> void:
-	if current_phase == 1:
-		_jump_slam_timer = data.jump_slam_cooldown_phase1
-	elif current_phase == 2:
-		_jump_slam_timer = data.jump_slam_cooldown_phase2
-	else:
-		_jump_slam_timer = data.jump_slam_cooldown_phase3
-
+	_cooldowns.start_cooldown(&"JumpSlam", data.get_phase_value(&"jump_slam_cooldown", current_phase))
 
 func show_jump_indicator(target_pos: Vector3, radius: float, duration: float) -> void:
 	if aoe_indicator:
 		aoe_indicator.show_indicator(target_pos, radius, duration)
+
+
+func update_jump_indicator(target_pos: Vector3) -> void:
+	if aoe_indicator:
+		aoe_indicator.update_target(target_pos)
 
 
 func hide_jump_indicator() -> void:
@@ -370,7 +275,7 @@ func hide_jump_indicator() -> void:
 		aoe_indicator.hide_indicator()
 
 
-func trigger_ground_slam() -> void:
+func trigger_ground_slam(snap_to_floor: bool = false) -> void:
 	if shockwave and shockwave_data:
 		var slam_pos: Vector3 = global_position
 		var space_state := get_world_3d().direct_space_state
@@ -382,6 +287,8 @@ func trigger_ground_slam() -> void:
 		var hit := space_state.intersect_ray(query)
 		if not hit.is_empty():
 			slam_pos.y = (hit["position"] as Vector3).y
+		if snap_to_floor:
+			global_position = slam_pos
 		shockwave.launch(slam_pos, shockwave_data, self)
 	var shake: Node = get_node_or_null(^"/root/ScreenShake")
 	if shake and shake.has_method(&"add_trauma"):
@@ -389,17 +296,11 @@ func trigger_ground_slam() -> void:
 
 
 func can_magma_stomp() -> bool:
-	return _magma_stomp_timer <= 0.0 and is_on_floor()
+	return _cooldowns.is_ready(&"MagmaStomp") and is_on_floor()
 
 
 func start_magma_stomp_cooldown() -> void:
-	if current_phase == 1:
-		_magma_stomp_timer = data.magma_stomp_cooldown_phase1
-	elif current_phase == 2:
-		_magma_stomp_timer = data.magma_stomp_cooldown_phase2
-	else:
-		_magma_stomp_timer = data.magma_stomp_cooldown_phase3
-
+	_cooldowns.start_cooldown(&"MagmaStomp", data.get_phase_value(&"magma_stomp_cooldown", current_phase))
 
 func show_magma_indicators(duration: float) -> void:
 	if radial_magma_hazard and radial_magma_hazard.has_method(&"show_telegraph"):
@@ -421,30 +322,18 @@ func trigger_magma_stomp() -> void:
 
 
 func can_cast_fireball() -> bool:
-	return _fireball_timer <= 0.0
+	return _cooldowns.is_ready(&"Fireball")
 
 
 func start_fireball_cooldown() -> void:
-	if current_phase == 1:
-		_fireball_timer = data.fireball_cooldown_phase1
-	elif current_phase == 2:
-		_fireball_timer = data.fireball_cooldown_phase2
-	else:
-		# Giãn cách 10s cho Phase 3 theo đúng yêu cầu
-		_fireball_timer = data.fireball_cooldown_phase3
-
+	_cooldowns.start_cooldown(&"Fireball", data.get_phase_value(&"fireball_cooldown", current_phase))
 
 func get_current_anim_speed() -> float:
-	if current_phase == 1:
-		return data.anim_speed_phase1
-	elif current_phase == 2:
-		return data.anim_speed_phase2
-	else:
-		return data.anim_speed_phase3
+	return maxf(data.get_phase_value(&"anim_speed", current_phase), 0.01)
 
 
 func spawn_fireball() -> void:
-	if _fireball_pool == null:
+	if _fireball_pool == null or health.is_dead():
 		return
 	var fireball := _fireball_pool.acquire() as BossFireball
 	if fireball == null:
@@ -460,7 +349,7 @@ func spawn_fireball() -> void:
 	# Kết nối một lần: khi fireball xong thì trả về pool
 	if not fireball.finished.is_connected(_on_fireball_finished):
 		fireball.finished.connect(_on_fireball_finished)
-	fireball.launch(spawn_pos, shoot_dir.normalized(), self)
+	fireball.launch(spawn_pos, shoot_dir.normalized(), self, get_damage_multiplier())
 
 
 func _on_fireball_finished(fireball: BossFireball) -> void:
@@ -469,12 +358,7 @@ func _on_fireball_finished(fireball: BossFireball) -> void:
 
 
 func get_current_walk_speed() -> float:
-	if current_phase == 1:
-		return data.walk_speed_phase1
-	elif current_phase == 2:
-		return data.walk_speed_phase2
-	else:
-		return data.walk_speed_phase3
+	return maxf(data.get_phase_value(&"walk_speed", current_phase), 0.0)
 
 
 func is_enraged() -> bool:
@@ -500,80 +384,25 @@ func perform_buff_roar() -> void:
 
 
 func summon_minions_for_current_phase() -> void:
-	var grunts: int = 0
-	var shields: int = 0
-	var casters: int = 0
-	
-	if current_phase == 2:
-		grunts = phase2_grunt_count
-		shields = phase2_shield_count
-		casters = phase2_caster_count
-	elif current_phase == 3:
-		grunts = phase3_grunt_count
-		shields = phase3_shield_count
-		casters = phase3_caster_count
-	
-	var scenes_to_spawn: Array[PackedScene] = []
-	if grunt_scene:
-		for i in grunts:
-			scenes_to_spawn.append(grunt_scene)
-	if shield_bearer_scene:
-		for i in shields:
-			scenes_to_spawn.append(shield_bearer_scene)
-	if wisp_caster_scene:
-		for i in casters:
-			scenes_to_spawn.append(wisp_caster_scene)
-	
-	var total: int = scenes_to_spawn.size()
-	if total == 0:
-		return
-	
-	var parent_node: Node = get_parent()
-	if parent_node == null:
-		return
-	
-	var angle_step: float = TAU / float(total)
-	var base_angle: float = model.rotation.y if model else 0.0
-	var fx: Node = get_node_or_null(^"/root/CombatFx")
-	
-	for i in total:
-		var scene: PackedScene = scenes_to_spawn[i]
-		var minion := scene.instantiate() as Node3D
-		if minion == null:
-			continue
-		
-		var angle: float = base_angle + float(i) * angle_step + randf_range(-0.15, 0.15)
-		var offset: Vector3 = Vector3(sin(angle), 0.0, cos(angle)) * minion_spawn_radius
-		var spawn_pos: Vector3 = global_position + offset
-		
-		parent_node.add_child(minion)
-		minion.global_position = spawn_pos
-		_spawned_minions.append(minion)
-		
-		minion.tree_exiting.connect(_on_minion_removed.bind(minion))
-		
-		if fx and fx.has_method(&"spawn_hit"):
-			fx.spawn_hit(spawn_pos + Vector3(0, 1.0, 0), Vector3.UP)
-
-
-func _on_minion_removed(minion: Node) -> void:
-	_spawned_minions.erase(minion)
+	minions.summon(current_phase)
 
 
 func on_death() -> void:
+	if _death_handled:
+		return
+	_death_handled = true
+	hide_jump_indicator()
+	shield_sphere.visible = false
+	health.is_shielded = false
+	shockwave.stop(true)
+	if radial_magma_hazard:
+		radial_magma_hazard.cancel()
+	_fireball_pool.release_all()
+	_cooldowns.stop_all()
 	collision_layer = 0
 	collision_mask = 1 # Chỉ chặn sàn để không rơi
 	if hurtbox:
 		hurtbox.set_deferred(&"monitorable", false)
 	
-	# Tiêu diệt toàn bộ quái phụ được triệu hồi khi Boss bị hạ gục
-	for minion in _spawned_minions.duplicate():
-		if is_instance_valid(minion):
-			var health_comp: HealthComponent = minion.get_node_or_null(^"HealthComponent") as HealthComponent
-			if health_comp and not health_comp.is_dead():
-				health_comp.take_damage(999)
-			elif minion.has_method(&"queue_free"):
-				minion.queue_free()
-	_spawned_minions.clear()
-	
+	minions.clear()
 	boss_defeated.emit()

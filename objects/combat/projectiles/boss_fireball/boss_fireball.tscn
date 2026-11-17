@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://objects/combat/projectiles/boss_fireball/boss_fireball.gd" id="1_fireball"]
 [ext_resource type="Script" path="res://components/elements/wind/wind_receiver/wind_receiver_component.gd" id="2_wind"]
+[ext_resource type="PackedScene" path="res://components/utility/uniform_scale/uniform_scale_component.tscn" id="3_size"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_hit"]
 radius = 0.35
@@ -21,6 +22,7 @@ rings = 6
 radius = 0.85
 
 [node name="BossFireball" type="Area3D"]
+top_level = true
 collision_layer = 16
 collision_mask = 3
 script = ExtResource("1_fireball")
@@ -46,3 +48,22 @@ wind_multiplier = 1.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WindReceiverComponent"]
 shape = SubResource("SphereShape3D_wind")
+
+[node name="Size" parent="." instance=ExtResource("3_size")]
+multiplier = 1.5
+
+[node name="WorldSweep" type="ShapeCast3D" parent="."]
+enabled = false
+shape = SubResource("SphereShape3D_hit")
+target_position = Vector3(0, 0, 0)
+collision_mask = 1
+max_results = 1
+
+[node name="HurtboxSweep" type="ShapeCast3D" parent="."]
+enabled = false
+shape = SubResource("SphereShape3D_hit")
+target_position = Vector3(0, 0, 0)
+collision_mask = 2
+collide_with_areas = true
+collide_with_bodies = false
+max_results = 8
