@@ -55,6 +55,27 @@ func is_combat_ready() -> bool:
 	return _combat_ready
 
 
+## Chờ tới khi khu chứa node đã sẵn sàng (combat_ready). Trong lúc chuẩn bị, ZoneRoot tắt xử lý cả khu nên tường /
+## sàn bị gỡ khỏi không gian vật lý (disable_mode mặc định): vật nào dò tia hay xét chồng lấn lúc khởi động phải chờ hàm này.
+## Không nằm trong khu nào (mở riêng scene bằng F6) thì chỉ chờ một khung vật lý
+static func wait_combat_ready(node: Node) -> void:
+	var zone := _find_zone(node)
+	if zone and not zone.is_combat_ready():
+		await zone.combat_ready
+	elif node.is_inside_tree():
+		await node.get_tree().physics_frame
+
+
+## ZoneRoot gần nhất phía trên node (dò theo cha, không phụ thuộc current_scene vì lúc đổi khu nó chưa trỏ tới khu mới)
+static func _find_zone(node: Node) -> ZoneRoot:
+	var current := node.get_parent()
+	while current:
+		if current is ZoneRoot:
+			return current as ZoneRoot
+		current = current.get_parent()
+	return null
+
+
 func _warm_up_shaders() -> void:
 	if shader_warmup == null:
 		return

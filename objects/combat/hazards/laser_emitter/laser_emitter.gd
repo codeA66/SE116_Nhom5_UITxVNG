@@ -45,8 +45,10 @@ func _ready() -> void:
 	_timer.one_shot = true
 	_timer.timeout.connect(_advance)
 	_damage.set_active(false)
-	# Đợi vật lý dựng xong tường mới đo tia
-	await get_tree().physics_frame
+	# Khu đang chuẩn bị thì tường chưa có trong vật lý: đo tia lúc đó sẽ bắn xuyên tường
+	await ZoneRoot.wait_combat_ready(self)
+	if not is_inside_tree():
+		return
 	_start_at(fposmod(phase_offset, maxf(timing.cycle_length(), 0.001)))
 
 
@@ -81,7 +83,8 @@ func _advance() -> void:
 
 func _enter(next: Phase, duration: float) -> void:
 	phase = next
-	if next == Phase.WARN or (next == Phase.ON and _length <= 0.0):
+	# Đo lại mỗi lần vào báo trước và bật: một tia dò, rẻ; nếu lần đầu hụt tường thì lần sau tự sửa
+	if next != Phase.OFF:
 		_measure()
 	_damage.set_active(next == Phase.ON)
 	if next == Phase.ON:
