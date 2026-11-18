@@ -18,6 +18,7 @@ signal fusion_bow_draw(element_id: StringName, amount: float)
 signal fusion_bow_released(element_id: StringName)
 ## Cất cung (sau khi bắn hoặc huỷ kéo) khi cung đang ghép element_id: VFX tắt hẳn
 signal fusion_bow_aim_ended(element_id: StringName)
+signal combat_action_committed(element_id: StringName, skill_id: StringName)
 
 ## Chỉ số cộng thêm vào máu tối đa (StatBonusEffect.stat)
 const MAX_HEALTH_STAT := &"max_health"
@@ -323,6 +324,8 @@ func get_fusion() -> FusionData:
 ## State Attack báo hitbox cận chiến vừa bật: chạy các buff nguyên tố của vũ khí (nhát cuối phóng gió, phản đạn...)
 func notify_melee_active(attack: AttackData, combo_index: int, combo_size: int, direction: Vector3, active_time: float) -> void:
 	var fusion := get_fusion()
+	var element_id: StringName = fusion.element.id if fusion and fusion.element else &""
+	combat_action_committed.emit(element_id, &"")
 	if fusion == null:
 		return
 	for effect in fusion.effects:
@@ -636,6 +639,7 @@ func start_skill(id: StringName) -> SkillData:
 	_skill_buffers[base.id] = 0.0
 	_skill_cooldowns[base.id] = data.get_lockout()
 	skill_cooldown_started.emit(base.id, _skill_cooldowns[base.id])
+	combat_action_committed.emit(&"", data.id)
 	return data
 
 
@@ -830,6 +834,7 @@ func _launch_projectile(weapon: WeaponData, attack: AttackData, direction: Vecto
 	var origin := Vector3(global_position.x, spawn.y, global_position.z)
 	var shot_speed := weapon.projectile_speed if speed < 0.0 else speed
 	arrow.launch(attack, shot_speed, weapon.projectile_lifetime, direction, self, origin, damage)
+	combat_action_committed.emit(element.id if fusion and element else &"", &"")
 	if fusion:
 		for effect: FusionEffect in fusion.effects:
 			effect.on_projectile_fired(self, arrow)

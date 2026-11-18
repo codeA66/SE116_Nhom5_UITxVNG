@@ -46,8 +46,8 @@ Preview đã dùng khoảng cách 32 m, FOV 30°, pitch 50° và yaw 45° theo c
 
 - Nguồn concept của người dùng: `concept tier 3.txt`, cùng sơ đồ tám nhánh và sơ đồ đường tia của phòng Ly đã gửi trong hội thoại.
 - Quyết định bổ sung của người dùng trong hội thoại được ghi vào các mục hiện trạng bên dưới.
-- Phòng Ly và Khảm có scene và logic thử thách. Phòng 3–8 lưu lại ý tưởng từ concept.
-- Phần phòng 3–8 mô tả luồng dự kiến. Số lượng vật thể, kích thước, timing, damage và thứ tự thao tác cụ thể còn cần chốt trước khi triển khai.
+- Phòng Ly, Khảm và Tốn có scene và logic thử thách trong preview.
+- Phần phòng 4–8 mô tả luồng dự kiến. Số lượng vật thể, kích thước, timing, damage và thứ tự thao tác cụ thể còn cần chốt trước khi triển khai.
 - Tất cả nội dung riêng của tier 3 nằm trong `levels/zone_3_fire/level_3/rooms/tier_3/`.
 
 ## 2. Tổng thể tầng 3
@@ -78,7 +78,7 @@ Scene `t3_00_crucible_heart.tscn`, controller `t3_00_crucible_heart.gd`.
 - Điểm đặt NPC là `CentralPlatform/FurnaceAnchor`, tại `(0, 0.5, 0)` so với gốc phòng.
 - Trước mỗi cửa có ký hiệu ba hào của quẻ tương ứng. Khi cờ hoàn thành được bật, ký hiệu đổi sang màu sáng và phát sáng.
 - Mỗi nhánh có `ConnectionAnchor` để nối phòng. Trong hệ tọa độ của phòng trung tâm, đầu các nhánh cách tâm 20 m.
-- Preview nối phòng Ly ở Nam và Khảm ở Bắc. Sáu nhánh còn lại có rào tạm.
+- Preview nối Ly ở Nam, Khảm ở Bắc và Tốn ở Đông Nam. Năm nhánh còn lại có rào tạm.
 - Chưa tích hợp tier 3 vào tuyến đi hoàn chỉnh của `level_3.tscn`.
 
 ### 2.3. Hướng và số thứ tự phòng
@@ -89,7 +89,7 @@ Quy ước trong scene: Bắc = `-Z`, Nam = `+Z`, Đông = `+X`, Tây = `-X`. B�
 |---|---|---|---|---|
 | 1 | Ly ☲ — Hỏa | Nam | `ly` | Đã dựng và có câu đố hai phase |
 | 2 | Khảm ☵ — Thủy | Bắc | `kham` | Có van, làm nguội, sàn sập và reset cục bộ |
-| 3 | Tốn ☴ — Phong | Đông Nam | `ton` | Có cửa/ký hiệu; thử thách còn ở concept |
+| 3 | Tốn ☴ — Phong | Đông Nam | `ton` | Có tuyến mang lửa qua ba cụm gió trong preview |
 | 4 | Chấn ☳ — Lôi | Đông | `chan` | Có cửa/ký hiệu; thử thách còn ở concept |
 | 5 | Cấn ☶ — Sơn | Đông Bắc | `can_son` | Có cửa/ký hiệu; thử thách còn ở concept |
 | 6 | Đoài ☱ — Trạch | Tây | `doai` | Có cửa/ký hiệu; thử thách còn ở concept |
@@ -433,21 +433,97 @@ Lỗi `Assertion failed: Khảm cần KhamPuzzleData` trước đây do preview 
 
 Khảm hiện nối và chơi thử qua preview; chưa tích hợp vào tuyến hoàn chỉnh `level_3.tscn`. NPC, hai checkpoint toàn tầng, trận áp chế Lò và phần thưởng vẫn chưa được triển khai. Concept cũ về quái truy đuổi/bùn/tích nhiệt/kéo chân đã bỏ, không phải hạng mục chờ làm của phòng. Concept Đoài giữ hướng trụ nam châm/phế kim ở mục phòng Đoài bên dưới.
 
-## 5. Phòng 3–8 — Thiết kế và hiện trạng
+## 5. Phòng 3 — Tốn ☴: Hành Lang Bão Tro
 
-Phòng 3–8 hiện có cửa và ký hiệu ở trung tâm, layout thử thách còn cần chốt. Các cơ chế trong phần này là concept, chưa phải walkthrough đã dựng và kiểm thử.
+**Tên tiếng Anh:** The Ashen Gale.
 
-### 5.1. Phòng 3 — Tốn ☴: Hành Lang Bão Tro
+**Scene:** `t3_03_ton_ashen_gale.tscn`. **Controller:** `t3_03_ton_ashen_gale.gd`.
 
-**The Ashen Gale — nhánh Đông Nam.**
+### 5.1. Vị trí và bố cục hiện tại
 
-- **Không khí:** cửa Tốn gợi chỗ Tôn Ngộ Không tránh lửa; khói bụi, gió rít, ống thông gió và hành lang hẹp trên vực. Không nhấn vào lửa trực tiếp.
-- **Gimmick:** mang lửa giữa các đuốc trong những nhịp gió lặng hoặc sau bình phong đá. Gió theo chu kỳ có thể thổi tắt đuốc; nếu mọi đuốc tắt, concept cho bóng tối đẩy player về đầu phòng.
-- **Luồng dự kiến:** nhận lửa ở đầu tuyến → quan sát nhịp gió → nấp sau bình phong và chuyển lửa sang đuốc kế tiếp → duy trì chuỗi đuốc tới mục tiêu phong ấn → mở đường hồi.
-- **Combat/bẫy:** gió đẩy player trượt ra mép vực; địch tầm xa ở đầu gió bắn tên lửa nhanh hơn nhờ gió.
-- **Còn cần chốt:** cách mang lửa, điều kiện đuốc tắt, reset cả phòng hay từng đoạn và lực gió phù hợp điều khiển camera 45°.
+- Phòng nối với cửa Đông Nam của Thái Cực Đỉnh trong `crucible_heart_preview.tscn`. Gốc phòng ở `(14.142136, 0, 14.142136)` và quay 45° quanh trục Y so với sảnh trung tâm.
+- Từ tiền sảnh, tuyến chính đi theo local +Z qua cụm gió 1, rẽ +X qua cụm 2 rồi tiếp tục +Z qua cụm 3. Cả tuyến đi bộ hoặc chạy được.
+- Ở chiếu nghỉ sau cụm 1, nhánh đi thẳng theo +Z dẫn tới một đuốc ở cuối đường cụt. Tuyến chính rẽ sang cầu ngang.
+- Sau cụm 3, cầu dài bên phải dẫn tới cầu ngang về tiền sảnh. Bệ giải ấn nằm trên cầu ngang. Cổng lối tắt ở phía tiền sảnh khóa đường tiếp cận bệ từ đầu phòng.
+- Phòng dùng khoảng tối để làm nổi bật tàn đỏ của đuốc, ánh sáng của đuốc đã thắp và hướng gió. Thử thách hiện dùng gió và vực. Máy bắn tên đã được gỡ khỏi phòng.
 
-### 5.2. Phòng 4 — Chấn ☳: Bệ Rèn Thiên Lôi
+### 5.2. Gimmick đã triển khai
+
+- Bấm **truyền lửa** tại nguồn để mở cửa vào tuyến. Lửa bay theo player, không tự hao và vẫn được giữ khi châm đuốc dọc đường. Đuốc đã thắp chỉ chiếu sáng và giữ sáng tới hết lượt.
+- Ba cụm gió dùng một chu kỳ. Mũi tên sát sàn hiện ở cuối thời gian lặng để báo hướng. Vệt tro dài và sáng xuất hiện khi gió thổi.
+- Bình phong tự qua lại ngang với từng luồng. Khi player đứng sau phần chắn, bình phong chặn lực đẩy và phơi gió. Khi đứng trong gió, độ phơi tăng dần, lửa lập lòe rồi tắt khi chạm ngưỡng. Khi được che hoặc rời gió, độ phơi giảm dần.
+- Đòn không có lửa cộng độ phơi ngay cả khi trú. Đòn vũ khí ép lửa và kỹ năng lửa trong danh sách cấu hình không cộng phơi. Roll đang thực hiện dập lửa ngay.
+- Hết lửa hoặc rơi vực đưa player về đầu phòng với đầy máu. Đuốc, nhịp gió và vị trí bình phong về trạng thái đầu lượt.
+
+### 5.3. Mốc bố trí
+
+Tọa độ dưới đây là local của scene phòng. Hướng gió cũng tính theo trục local của phòng, trước khi xoay scene vào preview.
+
+| Node hoặc vị trí | Tọa độ local `(x, y, z)` | Vai trò |
+|---|---|---|
+| `Restart` | `(0, 0.39, 2.65)` | Vị trí hồi sinh đầu phòng |
+| `Source` | `(-1, 0.32, 4.6)` | Nhận lửa mang theo và mở cửa vào tuyến |
+| `EntryGate` | `(0, 1.65, 9.65)` | Khóa tuyến thử thách trước khi nhận lửa |
+| `First` | `(0, 1.24, 16.85)` | Cụm 1, thổi theo +X |
+| `Bend` | `(9, 1.24, 25.25)` | Cụm 2, thổi theo −Z |
+| `Final` | `(17, 1.24, 38.5)` | Cụm 3, thổi theo −X |
+| `FalseTrailTorch` | `(-0.12, 0.32, 51.35)` | Đuốc ở cuối nhánh cụt |
+| `Seal` | `(8.15, 0.32, 5)` | Bệ giải ấn tại dấu X đỏ trên sơ đồ |
+| `ShortcutGate` | `(3.1, 1.65, 5)` | Mở lối từ bệ về tiền sảnh sau khi giải ấn |
+
+### 5.4. Walkthrough cho người chơi
+
+#### Bước 1 — Nhận lửa
+
+Từ cửa Đông Nam, tới đuốc nguồn đã cháy và bấm **truyền lửa**. Châm thêm đuốc tiền sảnh nếu cần nhìn rõ mép cầu.
+
+#### Bước 2 — Vượt cụm đầu và đọc chỗ rẽ
+
+Nhìn mũi tên báo hướng, nương theo phía khuất của bình phong và tiến khi gió lặng. Sau cụm đầu, rẽ qua cầu ngang. Nếu đi thẳng đến đuốc đường cụt, có thể châm đuốc rồi quay lại chiếu nghỉ.
+
+#### Bước 3 — Qua hai cụm còn lại
+
+Ở cụm 2, quan sát lại hướng gió để chọn đúng phía bình phong. Tạm dừng tại khoảng sàn an toàn nếu lửa đang lập lòe. Canh nhịp để vượt cụm 3 rồi đi theo cầu dài bên phải tới cầu ngang.
+
+#### Bước 4 — Giải ấn và trở về
+
+Giữ lửa tới bệ trên cầu ngang, bấm **truyền lửa**, rồi đi qua cổng vừa mở để về tiền sảnh và Thái Cực Đỉnh.
+
+### 5.5. Đáp án cho biên tập và debug
+
+| Kiểm tra | Kết quả mong đợi |
+|---|---|
+| Mang lửa và thắp đuốc đường cụt | Đuốc sáng, player giữ lửa, chưa có cờ giải ấn |
+| Đi vào cầu ngang từ tiền sảnh trước khi giải | Va chạm cổng chặn đường tới bệ |
+| Vòng đủ tuyến và thắp bệ | Bệ sáng, gió dừng và cổng về mở |
+| Làm tắt lửa trước khi giải | Player hồi đầy máu ở đầu phòng và phải nhận lửa lại |
+
+### 5.6. Tiến độ và liên kết với lò
+
+- Phòng ghi cờ `level_3.t3_seal_ton` vào `GameState` khi bệ được thắp, sau đó phát `activated` và `seal_released(&"ton")`.
+- Trung tâm đọc cờ để cập nhật ký hiệu và tiến độ tám ấn. Nạp lại cờ đã hoàn thành sẽ mở cổng, bật sáng đuốc và giữ gió ở trạng thái tắt.
+- Reset thử thách trước khi hoàn thành chỉ đặt lại các thành phần trong phòng Tốn và trạng thái player. Thao tác này không ghi thêm checkpoint.
+
+### 5.7. Các thành phần và thông số
+
+| Thành phần hoặc dữ liệu | Trách nhiệm và thông số mặc định |
+|---|---|
+| `t3_03_ton_ashen_gale.gd` | Một nhịp gió dùng chung, trạng thái cổng, reset lượt và tiến độ |
+| `puzzles/ton_puzzle_data.tres` | Lặng 1,8 giây, báo trước trong 0,45 giây cuối, thổi 4,2 giây |
+| `puzzles/ton_carried_flame/` | Lửa bay theo, lập lòe và tắt. Ngưỡng phơi 1,6, bắt đầu báo ở 45%, hồi 0,65 mỗi giây, đòn không lửa cộng 0,55 |
+| `puzzles/ton_flame_station/` | Nguồn, đuốc và bệ dùng chung tương tác. Đèn khi thắp có năng lượng 5,2 và tầm 10,5 m |
+| `puzzles/ton_wind_screen/` | Vùng gió, bình phong, mũi tên và vệt tro. Cụm 1/2/3 có hành trình 8/8/11 m và tốc độ bình phong 2,6/2,2/2,7 m/s |
+| `entities/player/player.gd` | Phát tín hiệu `combat_action_committed` để phòng tính phơi cho đòn đã thực sự tung |
+
+### 5.8. Đã kiểm tra và phần chưa làm
+
+Đã chạy thử trên Godot 4.7.2 bằng input di chuyển. Tuyến đi qua cả ba cụm, rẽ vào đường cụt, thắp đuốc, quay lại cầu và giải ấn ở vị trí mới. Đã đo va chạm cổng trước và sau khi giải, kiểm tra nạp lại tiến độ và xem ánh đuốc, mũi tên, vệt tro qua camera preview. Vùng hình ảnh gió đã được kiểm tra với hai kích thước lệch và rất nhỏ/rất lớn. Mục tiêu 2–3 phút vẫn cần đo qua lượt chơi với người mới.
+
+## 6. Phòng 4–8 — Thiết kế và hiện trạng
+
+Cả năm phòng đã có cửa và ký hiệu ở trung tâm. Thử thách còn ở giai đoạn concept.
+
+### 6.1. Phòng 4 — Chấn ☳: Bệ Rèn Thiên Lôi
 
 **The Thunder Anvil — nhánh Đông.**
 
@@ -457,7 +533,7 @@ Phòng 3–8 hiện có cửa và ký hiệu ở trung tâm, layout thử thách
 - **Combat/bẫy:** dụ địch giáp nặng vào búa hay dòng điện để phá giáp. Cách tránh sóng cần được chốt theo bộ di chuyển hiện dùng và quyết định về nhảy ở đầu tài liệu.
 - **Còn cần chốt:** quy tắc đẩy khối, trạng thái mạch có lưu giữa chu kỳ không, báo trước búa và khả năng tránh sóng với bộ kỹ năng hiện có.
 
-### 5.3. Phòng 5 — Cấn ☶: Vách Đá Hắc Diện Thạch
+### 6.2. Phòng 5 — Cấn ☶: Vách Đá Hắc Diện Thạch
 
 **The Obsidian Bulwark — nhánh Đông Bắc.**
 
@@ -467,7 +543,7 @@ Phòng 3–8 hiện có cửa và ký hiệu ở trung tâm, layout thử thách
 - **Combat/bẫy:** golem ngụy trang trong tường, kích hoạt khi player quay lưng hoặc qua vạch cấm.
 - **Còn cần chốt:** thời gian tích lũy/reset khi bị soi, cách hiển thị vùng nguy hiểm, liên hệ giữa vật che và camera, điều kiện đánh thức golem.
 
-### 5.4. Phòng 6 — Đoài ☱: Đầm Lầy Xỉ Kim Loại
+### 6.3. Phòng 6 — Đoài ☱: Đầm Lầy Xỉ Kim Loại
 
 **The Molten Mire — nhánh Tây.**
 
@@ -489,7 +565,7 @@ Phòng 3–8 hiện có cửa và ký hiệu ở trung tâm, layout thử thách
 
 **Còn cần chốt:** cách tương tác với trụ; cách chọn hút/đẩy và nhóm khối bị ảnh hưởng; khối chạy theo ray, điểm ghép hay quy tắc nào; hình dạng và số lượng khối; cách thể hiện trạng thái cầu đã khóa; vùng an toàn khi chuyển khối; cách thu hồi; bố cục đường hồi; loại địch và luật hồi sinh cục bộ. Những chi tiết này cần được duyệt trong plan riêng trước khi dựng phòng.
 
-### 5.5. Phòng 7 — Càn ☰: Thiên Đỉnh Quang Lộ
+### 6.4. Phòng 7 — Càn ☰: Thiên Đỉnh Quang Lộ
 
 **The Zenith Spire — nhánh Tây Bắc.**
 
@@ -499,7 +575,7 @@ Phòng 3–8 hiện có cửa và ký hiệu ở trung tâm, layout thử thách
 - **Combat/bẫy:** thiên binh tha hóa bắn vũ khí ánh sáng trên hành lang hẹp không lan can; concept có yêu cầu parry hoặc né chính xác.
 - **Còn cần chốt:** khả năng đổi góc camera của game, cách đọc cầu khi camera cố định, có yêu cầu parry hay không và cách tránh khóa player khi tắt cầu.
 
-### 5.6. Phòng 8 — Khôn ☷: Hầm Mộ Tro Tàn
+### 6.5. Phòng 8 — Khôn ☷: Hầm Mộ Tro Tàn
 
 **The Cinder Catacombs — nhánh Tây Nam.**
 
@@ -509,17 +585,19 @@ Phòng 3–8 hiện có cửa và ký hiệu ở trung tâm, layout thử thách
 - **Combat/bẫy:** đánh vỡ bình tro có thể thả bầy quái nhỏ; địch tinh anh hồi sinh từ tro nếu xác chưa được thanh tẩy bằng lửa thiêng.
 - **Còn cần chốt:** hành động nào dọn được tro, tro có phủ lại không, cơ chế thanh tẩy xác và mức độ bắt buộc của lối ngầm.
 
-## 6. Cách mở scene và tiếp tục phát triển
+## 7. Cách mở scene và tiếp tục phát triển
 
-1. Mở `crucible_heart_preview.tscn` bằng F6 để chạy tuyến trung tâm → Ly ở Nam hoặc Khảm ở Bắc → trung tâm. Scene này có spawn, lighting và camera riêng.
+1. Mở `crucible_heart_preview.tscn` bằng F6 để từ trung tâm đi Ly ở Nam, Khảm ở Bắc hoặc Tốn ở Đông Nam. Scene này có spawn, lighting và camera riêng.
 2. Có thể F6 `t3_01_li_foundry.tscn` để thử riêng phòng Ly. Khi phòng được đặt dưới `ZoneRoot`, player nhúng của phòng sẽ được bỏ và dùng player do zone tạo.
 3. Tiến độ được đọc từ `GameState`; checkpoint cũ có thể làm phòng vào thẳng phase 2 hoặc trạng thái đã hoàn thành. Khi kiểm thử từ đầu cần dùng hồ sơ thử trống, không xóa hồ sơ người chơi ngoài ý muốn.
-4. Khi thêm phòng 3–8, dựng vào nhánh có ký hiệu tương ứng, nối cờ `level_3.t3_seal_<id>` đã khai báo tại trung tâm. Chi tiết thử thách phải được chốt riêng trước khi code.
+4. Khi thêm phòng 4–8, dựng vào nhánh có ký hiệu tương ứng, nối cờ `level_3.t3_seal_<id>` đã khai báo tại trung tâm. Chi tiết thử thách phải được chốt riêng trước khi code.
 5. Ưu tiên tái sử dụng asset của project. Chỉ tạo model mới khi thật sự cần theo yêu cầu của người dùng.
 6. Sau tám phong ấn, dùng signal trung tâm để nối trình tự hội thoại, mở lò và trận áp chế. Không coi giải đủ 8/8 là đã thắng trận lò hoặc đã nhận phần thưởng.
 
-## 7. Phạm vi bàn giao Git
+## 8. Phạm vi bàn giao Git
 
 Nhánh `feature/fire-map/tier-3` được tách từ bản `main` trên remote tại thời điểm bàn giao. Phạm vi commit là thư mục `rooms/tier_3`, bao gồm trung tâm, phòng Ly, các component câu đố, preview và tài liệu này. Những thay đổi boss và các chỉnh sửa ngoài tier 3 không nằm trong commit.
 
 Lượt bàn giao Khảm bổ sung scene/controller phòng, các component van/đường lạnh/sàn sập/hơi/bẫy F, cập nhật preview và thiết kế. Có thêm VFX dùng chung tại `assets/vfx/fire/hot_steam/` và bộ chặn đòn trước khi trừ máu trong `components/combat/hurtbox/hurtbox_component.gd`. Các chỉnh sửa cân bằng kỹ năng, charm, giao diện và thư viện navigation không dùng bởi Khảm không thuộc lượt commit này.
+
+Lượt bàn giao Tốn gồm scene/controller phòng, các component mang lửa, trạm đuốc, bình phong, preview, tài liệu và tín hiệu đòn đánh trong player. Máy bắn thử và các thay đổi cân bằng ngoài phòng không thuộc lượt bàn giao này.

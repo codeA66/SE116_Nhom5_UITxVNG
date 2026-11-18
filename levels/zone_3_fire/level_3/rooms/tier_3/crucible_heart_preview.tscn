@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dmwg4kxuamlrs" path="res://entities/player/camera/camera_view_data.gd" id="camera_data"]
 [ext_resource type="Script" uid="uid://bc8v6nbg2gdkj" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="camera_zone"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_02_kham_condenser.tscn" id="kham"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_03_ton_ashen_gale.tscn" id="ton"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/lighting/fire_lighting.tscn" id="lighting"]
 [ext_resource type="PackedScene" uid="uid://csx0lkxvku6hr" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_01_li_foundry.tscn" id="li_foundry"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_00_crucible_heart.tscn" id="room"]
@@ -18,7 +19,7 @@ yaw_degrees = 45.0
 size = Vector3(4.4, 2, 0.3)
 
 [node name="CrucibleHeartPreview" type="Node3D" unique_id=377200202]
-editor_description = "F6 từ trung tâm. Cửa Bắc tới bố cục Khảm, cửa Nam tới Ly. Camera theo Map Lửa."
+editor_description = "F6 từ trung tâm. Cửa Bắc tới Khảm, cửa Nam tới Ly, cửa Đông Nam tới Tốn. Camera theo Map Lửa."
 script = ExtResource("zone")
 shader_warmup = null
 
@@ -32,6 +33,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -37)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
 
 [node name="FireLighting" parent="." unique_id=916934404 instance=ExtResource("lighting")]
+
+[node name="TonAshenGale" parent="." instance=ExtResource("ton")]
+position = Vector3(14.142136, 0, 14.142136)
+rotation = Vector3(0, 0.78539816, 0)
 
 [node name="Start" type="Marker3D" parent="." unique_id=56900508]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 9)
@@ -51,10 +56,6 @@ shape = SubResource("EndBarrier")
 
 [node name="End3" type="CollisionShape3D" parent="PreviewBarriers" unique_id=1504076173]
 transform = Transform3D(3.1391647e-07, 0, -1, 0, 1, 0, 1, 0, 3.1391647e-07, 20, 1.32, 0)
-shape = SubResource("EndBarrier")
-
-[node name="End4" type="CollisionShape3D" parent="PreviewBarriers" unique_id=1305295490]
-transform = Transform3D(-0.7071065, 0, -0.7071071, 0, 1, 0, 0.7071071, 0, -0.7071065, 14.142136, 1.32, 14.142136)
 shape = SubResource("EndBarrier")
 
 [node name="End6" type="CollisionShape3D" parent="PreviewBarriers" unique_id=1369457546]
