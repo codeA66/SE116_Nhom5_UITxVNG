@@ -5,6 +5,8 @@ extends Node3D
 @export var cooling_time: float = 0.8
 @export var floor_offset: float = 0.045
 @export_range(0.0, 1.0) var normal_pop_ratio: float = 0.50
+@export_range(0.0, 1.0, 0.01) var haze_opacity: float = 0.16
+@export_range(0.05, 2.0, 0.05) var smoke_height_per_radius: float = 0.28
 
 var _age: float
 var _life: float
@@ -15,6 +17,7 @@ var _haze_material: ShaderMaterial
 @onready var _surface_material: ShaderMaterial = $Surface.material_override as ShaderMaterial
 @onready var _haze: MeshInstance3D = $Haze
 @onready var _pops: GPUParticles3D = $Pops
+@onready var _smoke: GPUParticles3D = $Smoke
 
 
 func _ready() -> void:
@@ -33,9 +36,10 @@ func _process(delta: float) -> void:
 	_surface_material.set_shader_parameter(&"spread", spread)
 	_surface_material.set_shader_parameter(&"cooling", cooling)
 	_surface_material.set_shader_parameter(&"opacity", fade)
-	_haze_material.set_shader_parameter(&"vfx_opacity", 0.26 * spread * (1.0 - cooling))
+	_haze_material.set_shader_parameter(&"vfx_opacity", haze_opacity * spread * (1.0 - cooling))
 	if remaining <= cooling_time and _pops.emitting:
 		_pops.emitting = false
+		_smoke.emitting = false
 
 
 func play(radius: float, lifetime: float, spread_time: float, fade_time: float, hot: bool) -> void:
@@ -55,6 +59,10 @@ func play(radius: float, lifetime: float, spread_time: float, fade_time: float, 
 	_pops.show()
 	_pops.restart()
 	_pops.emitting = true
+	_smoke.position.y = radius * smoke_height_per_radius
+	_smoke.show()
+	_smoke.restart()
+	_smoke.emitting = true
 	set_process(true)
 
 
@@ -64,6 +72,8 @@ func reset() -> void:
 	_age = 0.0
 	_pops.emitting = false
 	_pops.hide()
+	_smoke.emitting = false
+	_smoke.hide()
 	_surface_material.set_shader_parameter(&"spread", 0.0)
 	_surface_material.set_shader_parameter(&"cooling", 0.0)
 	_surface_material.set_shader_parameter(&"opacity", 0.0)

@@ -180,8 +180,6 @@ func to_dict(progress: PlayerProgress) -> Dictionary:
 		"charms": _serialize_ids(progress.charms),
 		"equipped_charms": _serialize_ids(progress.equipped_charms),
 		"charm_notches": progress.charm_notches,
-		# Vật phẩm dùng nút đang chọn (phím use_item)
-		"selected_item": String(progress.selected_item),
 		# Hướng dẫn đã mở khóa
 		"tutorials": _serialize_ids(progress.unlocked_tutorials),
 	}
@@ -247,10 +245,6 @@ func from_dict(data: Dictionary) -> PlayerProgress:
 	_read_ids(data.get("tutorials", []), progress.unlocked_tutorials)
 	for tut: StringName in progress.unlocked_tutorials:
 		progress.flags[StringName("tut_" + String(tut))] = true
-	# Chỉ nhận vật phẩm dùng nút có trong danh mục (save sửa tay / bản cũ thì bỏ qua)
-	var selected := StringName(str(data.get("selected_item", "")))
-	if GameState.ITEMS.get_item(selected) is QuickItemData:
-		progress.selected_item = selected
 	var notches: Variant = data.get("charm_notches", -1)
 	if notches is int or notches is float:
 		progress.charm_notches = maxi(int(notches), -1)

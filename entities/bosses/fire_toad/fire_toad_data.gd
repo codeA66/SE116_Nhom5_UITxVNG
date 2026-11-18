@@ -36,7 +36,7 @@ extends Resource
 @export_group("Bắn thẳng")
 ## Cầu lửa bắn từ bệ ngoài bay ngang ở độ cao này so với mặt sàn đấu (m). Bay ngang để quả lệch không cắm xuống sàn
 ## giữa đường; phải cao hơn mặt bệ ngoài + bán kính đạn và thấp hơn đỉnh hurtbox player + bán kính đạn
-@export_range(0.3, 3.0, 0.05) var shot_height: float = 1.5
+@export_range(0.3, 3.0, 0.05) var shot_height: float = 1.6
 
 @export_group("Trúng đòn")
 @export var hit_flash_color: Color = Color(1.0, 0.85, 0.7, 0.7)

@@ -1,19 +1,25 @@
-[gd_resource type="Resource" script_class="SlimeMotherData" format=3]
+[gd_resource type="Resource" script_class="SlimeMotherData" format=3 uid="uid://cbnv8o7a4cpdf"]
 
-[ext_resource type="Script" path="res://entities/enemies/volcano/lava_slime/mother/slime_mother_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dnet6q3mxhwte" path="res://entities/enemies/volcano/lava_slime/mother/slime_mother_data.gd" id="1_data"]
 [ext_resource type="Resource" path="res://resources/enemies/volcano/lava_slime/lava_slime_movement.tres" id="2_move"]
-[ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="3_attack"]
+[ext_resource type="Script" uid="uid://bco0nr7ogmwo" path="res://entities/_base/data/attack_data.gd" id="3_attack"]
 [ext_resource type="PackedScene" path="res://entities/enemies/volcano/lava_slime/lava_slime.tscn" id="4_child"]
 
 [sub_resource type="Resource" id="SlamAttack"]
 script = ExtResource("3_attack")
 animation = &"Deflate"
-damage = 1
 damage_type = 1
 knockback = 10.0
 
 [resource]
 script = ExtResource("1_data")
+child_scene = ExtResource("4_child")
+hop_interval = 0.9
+hop_distance = 2.4
+explosion_radius = 3.5
+explosion_ignites = false
+fire_damage_multiplier = 1.0
+fire_immune = false
 display_name = "Slime Mẹ"
 max_health = 24
 movement = ExtResource("2_move")
@@ -25,10 +31,5 @@ attack_range = 6.0
 attack_cooldown = 2.0
 patrol_radius = 2.0
 stagger_on_hit = false
-stagger_on_wind = false
 wind_multiplier = 0.2
-hop_interval = 0.9
-hop_distance = 2.4
-explosion_radius = 3.5
-explosion_ignites = false
-child_scene = ExtResource("4_child")
+stagger_on_wind = false

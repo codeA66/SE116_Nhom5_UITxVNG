@@ -3,47 +3,125 @@
 [ext_resource type="Script" path="res://objects/fire_puzzle/forge_shards/shard_altar.gd" id="1"]
 [ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2"]
 [ext_resource type="PackedScene" path="res://ui/dialog/dialog_box.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/pedestal_001.glb" id="4"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/warp_altar/warp_altar.glb" id="4"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/gem_003.glb" id="5"]
 [ext_resource type="Resource" path="res://resources/world/puzzles/forge_shards.tres" id="6"]
+[ext_resource type="Material" path="res://assets/models/map_fire/warp_altar/warp_altar_unlit.tres" id="7"]
 
-[sub_resource type="BoxShape3D" id="Body"]
-size = Vector3(2.9, 0.86, 3.1)
+[sub_resource type="StandardMaterial3D" id="BeamMat"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 0.5, 0.15, 0.35)
+
+[sub_resource type="CylinderMesh" id="BeamMesh"]
+material = SubResource("BeamMat")
+top_radius = 0.55
+bottom_radius = 0.85
+height = 5.0
+radial_segments = 16
+rings = 1
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="ParticleProcessMaterial" id="EmberProcess"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.05
+emission_ring_radius = 0.8
+emission_ring_inner_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 12.0
+initial_velocity_min = 1.5
+initial_velocity_max = 3.0
+gravity = Vector3(0, 0.5, 0)
+scale_min = 0.6
+scale_max = 1.2
+color = Color(1, 0.6, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="EmberMat"]
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+
+[sub_resource type="QuadMesh" id="EmberMesh"]
+material = SubResource("EmberMat")
+size = Vector2(0.12, 0.12)
+
+[sub_resource type="CylinderShape3D" id="SocketRim"]
+height = 0.6
+radius = 0.62
 
 [sub_resource type="SphereShape3D" id="Range"]
-radius = 2.6
+radius = 3.4
 
-[node name="ShardAltar" type="StaticBody3D"]
+[node name="ShardAltar" type="StaticBody3D" node_paths=PackedStringArray("center_fx")]
 collision_mask = 0
 script = ExtResource("1")
 shards = ExtResource("6")
+socket_glows = [NodePath("Model/SocketGlow_1"), NodePath("Model/SocketGlow_3"), NodePath("Model/SocketGlow_2")]
+portal_disc = NodePath("Model/PortalDisc")
+portal_flag = &"level_3.t2_shard_switch"
+center_fx = NodePath("CenterFx")
+unlit_material = ExtResource("7")
 
 [node name="Model" parent="." instance=ExtResource("4")]
-transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0, 0, 0)
+editor_description = "Bệ chìm 0,28 m để mặt nền trong ngang sàn: player không có bước lên bậc"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.28, 0)
 
-[node name="Collision" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.43, 0)
-shape = SubResource("Body")
+[node name="RimNorth" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.55)
+shape = SubResource("SocketRim")
+
+[node name="RimEast" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.342, 0, 0.775)
+shape = SubResource("SocketRim")
+
+[node name="RimSouth" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.342, 0, 0.775)
+shape = SubResource("SocketRim")
 
 [node name="Sockets" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.86, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 
 [node name="Socket0" type="Node3D" parent="Sockets"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.55)
 
 [node name="Gem" parent="Sockets/Socket0" instance=ExtResource("5")]
 transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 0, 0, 0)
 
 [node name="Socket1" type="Node3D" parent="Sockets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.342, 0, 0.775)
 
 [node name="Gem" parent="Sockets/Socket1" instance=ExtResource("5")]
 transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 0, 0, 0)
 
 [node name="Socket2" type="Node3D" parent="Sockets"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.342, 0, 0.775)
 
 [node name="Gem" parent="Sockets/Socket2" instance=ExtResource("5")]
 transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 0, 0, 0)
+
+[node name="CenterFx" type="Node3D" parent="."]
+visible = false
+
+[node name="Beam" type="MeshInstance3D" parent="CenterFx"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+cast_shadow = 0
+mesh = SubResource("BeamMesh")
+
+[node name="Embers" type="GPUParticles3D" parent="CenterFx"]
+cast_shadow = 0
+emitting = false
+amount = 40
+lifetime = 1.6
+visibility_aabb = AABB(-1.5, 0, -1.5, 3, 6, 3)
+process_material = SubResource("EmberProcess")
+draw_pass_1 = SubResource("EmberMesh")
 
 [node name="Glow" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)

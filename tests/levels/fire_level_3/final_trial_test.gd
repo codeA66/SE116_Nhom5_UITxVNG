@@ -9,7 +9,7 @@ extends Node
 ## 5. Hết giờ (đặt duration ngắn): sàn trở lại, cửa mở, lưu cờ, cổng phòng boss mở, đi qua được.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/final_trial_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _level: Node

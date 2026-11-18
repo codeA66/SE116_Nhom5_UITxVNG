@@ -4,7 +4,7 @@ extends Node
 ## quá MAX_DY (cột ở hai tầng khác nhau). Cũng kiểm không còn model fence_2m cũ (cột dính liền thanh).
 ## Không cần dựng cảnh chơi. Chạy: godot --headless --path . res://tests/levels/fire_level_3/fence_post_gap_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 const MIN_GAP: float = 1.25
 const MAX_DY: float = 1.2
 

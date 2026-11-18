@@ -4,22 +4,25 @@ render_mode unshaded, cull_disabled, shadows_disabled, depth_draw_never, fog_dis
 uniform float fracture : hint_range(0.0, 1.0) = 0.0;
 uniform float opening : hint_range(0.0, 1.0) = 0.0;
 uniform float closure : hint_range(0.0, 1.0) = 0.0;
-uniform vec4 void_color : source_color = vec4(0.035, 0.016, 0.072, 1.0);
-uniform vec4 violet_color : source_color = vec4(0.59, 0.35, 0.95, 1.0);
-uniform vec4 edge_color : source_color = vec4(0.96, 0.88, 1.0, 1.0);
+uniform vec4 void_color : source_color = vec4(0.055, 0.022, 0.10, 1.0);
+uniform vec4 violet_color : source_color = vec4(0.43, 0.22, 0.80, 1.0);
+uniform vec4 edge_color : source_color = vec4(0.92, 0.86, 1.0, 1.0);
+uniform vec4 fringe_color : source_color = vec4(0.42, 0.38, 0.86, 1.0);
+uniform float flow_speed : hint_range(0.0, 4.0) = 0.65;
+uniform float edge_width : hint_range(0.002, 0.04) = 0.009;
+uniform float aura_width : hint_range(0.02, 0.2) = 0.085;
+uniform int shard_count : hint_range(0, 12) = 12;
 
 float fissure(float y) {
-	float x = mix(-0.20, 0.03, smoothstep(-0.92, -0.54, y));
-	x -= 0.23 * smoothstep(-0.54, -0.20, y);
-	x += 0.30 * smoothstep(-0.20, 0.17, y);
-	x -= 0.25 * smoothstep(0.17, 0.47, y);
-	x += 0.27 * smoothstep(0.47, 0.91, y);
-	return x + 0.012 * sin(y * 51.0) + 0.008 * sin(y * 97.0);
+	// Các đoạn gãy tạo vết xé, tránh đường sin đều như cổng phép tròn.
+	float step_y = floor((y + 1.0) * 15.0);
+	float corner = fract(sin(step_y * 18.37) * 431.97) - 0.5;
+	return 0.042 * corner + 0.048 * sin(y * 8.0) + 0.025 * sin(y * 23.0);
 }
 
 float segment_distance(vec2 p, vec2 a, vec2 b) {
 	vec2 ab = b - a;
-	return length(p - a - ab * clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0));
+	return length(p - a - ab * clamp(dot(p - a, ab) / max(dot(ab, ab), 0.000001), 0.0, 1.0));
 }
 
 float branch(vec2 p, vec2 a, vec2 b, vec2 tip, float spread) {
@@ -29,51 +32,60 @@ float branch(vec2 p, vec2 a, vec2 b, vec2 tip, float spread) {
 	if (spread > 0.5) {
 		d = min(d, segment_distance(p, b, end + vec2(0.0001, 0.0)));
 	}
-	return (1.0 - smoothstep(0.004, 0.014, d)) * smoothstep(0.0, 0.15, spread);
+	return (1.0 - smoothstep(0.003, 0.010, d)) * smoothstep(0.0, 0.15, spread);
 }
 
 void fragment() {
 	vec2 p = vec2(UV.x * 2.0 - 1.0, 1.0 - UV.y * 2.0);
-	float reach = 1.0 - smoothstep(fracture * 0.96, fracture * 0.96 + 0.07, abs(p.y));
-	float taper = pow(max(1.0 - pow(abs(p.y) / 0.94, 2.0), 0.0), 0.86);
+	float clock = TIME * flow_speed;
+	float reach = 1.0 - smoothstep(fracture * 0.92, fracture * 0.92 + 0.055, abs(p.y));
+	float taper = pow(max(1.0 - abs(p.y) / 0.94, 0.0), 0.68);
 	float side = p.x - fissure(p.y);
-	float rough = 0.80 + 0.12 * sin(p.y * 15.0) + 0.08 * sin(p.y * 43.0);
-	float width = opening * 0.65 * taper * (rough + (side < 0.0 ? 0.03 : 0.15));
+	float serration = 0.88 + 0.06 * sin(p.y * 29.0) + 0.06 * sin(p.y * 67.0);
+	float width = opening * 0.72 * taper * serration;
 	float edge_dist = abs(side) - width;
-	float aura = (1.0 - smoothstep(0.012, 0.135, abs(edge_dist))) * reach;
-	float edge = (1.0 - smoothstep(0.007, 0.026, abs(edge_dist))) * reach;
-	float interior = (1.0 - smoothstep(-0.020, 0.012, edge_dist)) * reach
-		* smoothstep(0.015, 0.15, opening);
-	float forks = branch(p, vec2(fissure(-0.16) - opening * 0.32, -0.16),
-		vec2(-0.43, -0.32), vec2(-0.73, -0.25), smoothstep(0.12, 0.75, fracture));
-	forks = max(forks, branch(p, vec2(fissure(0.22) + opening * 0.35, 0.22),
-		vec2(0.48, 0.27), vec2(0.78, 0.54), smoothstep(0.22, 0.85, fracture)));
-	forks = max(forks, branch(p, vec2(fissure(0.57) - opening * 0.18, 0.57),
-		vec2(-0.34, 0.62), vec2(-0.51, 0.85), smoothstep(0.49, 0.94, fracture)));
-	forks *= 1.0 - 0.80 * opening;
+	float edge = (1.0 - smoothstep(edge_width, edge_width * 2.0, abs(edge_dist))) * reach;
+	float aura = exp(-abs(edge_dist) / aura_width) * reach;
+	float fringe = (1.0 - smoothstep(0.003, 0.011, abs(edge_dist - 0.035))) * reach;
+	float interior = (1.0 - smoothstep(-0.007, 0.007, edge_dist)) * reach * smoothstep(0.015, 0.12, opening);
 
-	// Một mặt phẳng là đủ để các mảnh vỡ văng theo mép khe cùng một nhịp.
-	float shards = 0.0;
-	for (int i = 0; i < 8; i++) {
+	float forks = branch(p, vec2(-width * 0.65, -0.27), vec2(-0.62, -0.40), vec2(-0.84, -0.34), smoothstep(0.12, 0.8, fracture));
+	forks = max(forks, branch(p, vec2(width * 0.65, 0.17), vec2(0.55, 0.34), vec2(0.77, 0.59), smoothstep(0.26, 0.9, fracture)));
+	forks = max(forks, branch(p, vec2(-width * 0.35, 0.61), vec2(-0.33, 0.74), vec2(-0.46, 0.90), smoothstep(0.42, 0.96, fracture)));
+	forks *= 1.0 - 0.68 * opening;
+
+	// Mảnh vỡ nằm trong shader để không tạo thêm hạt lúc mở khe.
+	float shard_fill = 0.0;
+	float shard_edge = 0.0;
+	for (int i = 0; i < 12; i++) {
+		if (i >= shard_count) { break; }
 		float k = float(i);
 		float seed = fract(sin(k * 18.31 + 3.27) * 1531.34);
 		float dir = mod(k, 2.0) < 1.0 ? -1.0 : 1.0;
-		float y = mix(-0.70, 0.72, (k + 0.5) / 8.0);
-		vec2 center = vec2(fissure(y) + dir * (0.10 + opening * (0.40 + seed * 0.34)), y);
-		center += vec2(0.022 * cos(TIME * 4.0 + k), 0.046 * sin(TIME * 3.0 + k));
+		float y = mix(-0.78, 0.78, (k + 0.5) / 12.0);
+		float local_taper = pow(max(1.0 - abs(y) / 0.94, 0.0), 0.68);
+		vec2 center = vec2(fissure(y) + dir * (0.13 + opening * (0.72 * local_taper + 0.04 + seed * 0.08)), y);
+		center += vec2(0.013 * cos(clock * 1.7 + k), 0.020 * sin(clock * 1.3 + k));
 		vec2 v = p - center;
-		float angle = seed * 6.2832;
+		float angle = seed * 6.2832 + sin(clock + k) * 0.15;
 		vec2 q = mat2(vec2(cos(angle), sin(angle)), vec2(-sin(angle), cos(angle))) * v;
-		float chip = 1.0 - smoothstep(0.78, 1.0, abs(q.x) / (0.012 + seed * 0.020) + abs(q.y) / (0.034 + seed * 0.027));
-		shards = max(shards, chip * smoothstep(0.20, 0.70, fracture));
+		float diamond = abs(q.x) / (0.018 + seed * 0.018) + abs(q.y) / (0.038 + seed * 0.022);
+		float alive = smoothstep(0.18, 0.65, fracture) * (1.0 - smoothstep(0.3, 1.0, closure));
+		shard_fill = max(shard_fill, (1.0 - smoothstep(0.86, 1.0, diamond)) * alive);
+		shard_edge = max(shard_edge, (1.0 - smoothstep(0.09, 0.27, abs(diamond - 0.84))) * alive);
 	}
-	float drift = p.x + p.y * 0.26 + 0.10 * sin(p.y * 3.2 - TIME * 2.0);
-	float streak = pow(max(0.0, sin(drift * 23.0 + TIME * 1.9)), 15.0) * 0.12;
-	streak *= 0.2 + 0.8 * smoothstep(-0.8, 0.65, sin(p.y * 9.0 + p.x * 11.0 - TIME));
-	float visible_factor = smoothstep(0.0, 0.12, fracture) * (1.0 - smoothstep(0.78, 1.0, closure));
-	float highlight = max(edge, max(forks * 0.85, shards * 0.88));
-	vec3 color = mix(violet_color.rgb, void_color.rgb + violet_color.rgb * streak, interior);
+
+	float flow = sin(p.y * 11.0 - clock * 2.1 + sin(p.x * 8.0 + clock));
+	float filament = pow(max(flow, 0.0), 22.0) * smoothstep(0.12, 0.85, abs(side) / max(width, 0.01));
+	float contour = pow(max(sin(edge_dist * 46.0 + clock * 1.6 + p.y * 5.0), 0.0), 20.0);
+	float pulse = 0.75 + 0.25 * sin(p.y * 15.0 - clock * 5.0);
+	float highlight = max(edge * pulse, max(forks * 0.70, shard_edge * 0.68));
+	vec3 interior_color = void_color.rgb + violet_color.rgb * (filament * 0.22 + contour * 0.16);
+	vec3 color = mix(violet_color.rgb * 0.45, interior_color, interior);
+	color = mix(color, fringe_color.rgb, fringe * 0.65);
+	color = mix(color, void_color.rgb * 0.6, shard_fill);
 	color = mix(color, edge_color.rgb, highlight);
+	float visible_factor = smoothstep(0.0, 0.12, fracture) * (1.0 - smoothstep(0.85, 1.0, closure));
 	ALBEDO = color;
-	ALPHA = max(interior * 0.98, max(aura * 0.39, highlight)) * visible_factor;
+	ALPHA = max(interior * 0.99, max(aura * 0.48, max(fringe * 0.65, max(highlight, shard_fill)))) * visible_factor;
 }

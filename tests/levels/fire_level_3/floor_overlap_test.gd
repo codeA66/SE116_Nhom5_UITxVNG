@@ -4,7 +4,7 @@ extends Node
 ## Đo bằng hình học thật: mọi cặp ô vuông 4 m đang hiện (có xoay) chồng nhau hơn 5 cm mà lệch cao dưới MIN_GAP thì lỗi.
 ## Không cần dựng cảnh chơi. Chạy: godot --headless --path . res://tests/levels/fire_level_3/floor_overlap_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 ## Chồng nhau thì mặt trên phải cách nhau tối thiểu bằng này (m)
 const MIN_GAP: float = 0.05
 const TILE: float = 4.0

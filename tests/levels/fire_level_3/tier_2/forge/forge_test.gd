@@ -4,7 +4,7 @@ extends Node
 ## đứng ngoài mặt búa không trúng. Cực đoan: báo trước 0,1 s / 3 s, búa nhỏ 0,5 m (đứng lệch 1 m không trúng) / to 6 m.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/tier_2/forge/forge_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_2/tier_2.tscn")
 const HAMMER_SCENE: PackedScene = preload("res://objects/combat/hazards/forge_hammer/forge_hammer.tscn")
 const ENEMY_SCENE: PackedScene = preload("res://entities/enemies/_base/enemy.tscn")
 
@@ -22,7 +22,7 @@ func _ready() -> void:
 	GameState.replace_progress(PlayerProgress.new())
 	GameState.set_flag(&"level_3.boss_defeated")
 	# Trận quái tier 2 coi như đã thắng, để quái không chen vào phép đo búa
-	for flag: StringName in [&"level_3.t2_hub_ambush", &"level_3.t2_timber_caster", &"level_3.t2_slime_hall", &"level_3.t2_dark_forge_pack"]:
+	for flag: StringName in [&"level_3.t2_hub_ambush", &"level_3.t2_timber_caster", &"level_3.t2_room05_cagespider", &"level_3.t2_room05_cageslime", &"level_3.t2_room08_cage", &"level_3.t2_dark_forge_pack"]:
 		GameState.set_flag(flag)
 	await _load_level()
 	_player.health.max_health = 9999
@@ -36,7 +36,7 @@ func _ready() -> void:
 # ---------- 1. Búa đứng riêng (đặt trên sàn phòng 03 Hub, ngoài hành lang búa) ----------
 
 func _t_hammer_alone() -> void:
-	var at := Vector3(284, 4.32, 58)
+	var at := Vector3(78, 0, 7.4)
 	var hammer := _spawn_hammer(at, {"warning_time": 0.8, "start_delay": 0.3})
 	var log := {"warn": -1, "slam": -1}
 	hammer.warned.connect(func() -> void: if int(log["warn"]) < 0: log["warn"] = Time.get_ticks_msec())
@@ -75,7 +75,7 @@ func _t_hammer_alone() -> void:
 
 
 func _t_hammer_extremes() -> void:
-	var at := Vector3(272, 4.32, 58)
+	var at := Vector3(66, 0, 7.4)
 	for warn: float in [0.1, 3.0]:
 		var h := _spawn_hammer(at, {"warning_time": warn, "start_delay": 0.3})
 		var log := {"warn": -1, "slam": -1}

@@ -8,7 +8,7 @@ extends Node
 ##    spawn_interval rất lớn + max_alive 50, vùng hoạt động hẹp dài không vuông.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/spawner_cage_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 const CAGE_SCENE: PackedScene = preload("res://objects/combat/spawner_cage/spawner_cage.tscn")
 
 var _player: Player

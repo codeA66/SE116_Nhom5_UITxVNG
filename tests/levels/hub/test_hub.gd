@@ -138,7 +138,7 @@ func _uc4b_fire_key() -> void:
 	await _wait(0.3)
 	_check(GameState.has_flag(&"hub.fire_key") and not is_instance_valid(key), "UC4b: bấm tương tác -> có chìa Lửa, chìa biến mất")
 	var portal := gate.get_node("Portal") as Portal
-	_check(gate.is_open() and opened[0] == 1 and portal.target_zone == "res://levels/zone_3_fire/level_3/level_3.tscn" and portal.target_portal_id == &"start", "UC4b: cổng Lửa mở (opened %d lần), dẫn tới level_3 / start" % opened[0])
+	_check(gate.is_open() and opened[0] == 1 and portal.target_zone == "res://levels/zone_3_fire/tier_1/tier_1.tscn" and portal.target_portal_id == &"start", "UC4b: cổng Lửa mở (opened %d lần), dẫn tới level_3 / start" % opened[0])
 
 
 func _uc5_temple() -> void:
@@ -203,7 +203,7 @@ func _uc8_enter_fire_gate() -> void:
 	var spawn := scene.find_child("SpawnStart*", true, false) as Node3D if scene else null
 	var d: float = fire_player.global_position.distance_to(spawn.global_position) if fire_player and spawn else -1.0
 	_uc9_starter_kit(scene, fire_player)
-	_check(scene != null and scene.scene_file_path == "res://levels/zone_3_fire/level_3/level_3.tscn" and d >= 0.0 and d < 1.5, "UC8: đã vào map lửa, player ở điểm spawn phòng 1 (cảnh %s, lệch %.2f m)" % [scene.scene_file_path if scene else "null", d])
+	_check(scene != null and scene.scene_file_path == "res://levels/zone_3_fire/tier_1/tier_1.tscn" and d >= 0.0 and d < 1.5, "UC8: đã vào map lửa, player ở điểm spawn phòng 1 (cảnh %s, lệch %.2f m)" % [scene.scene_file_path if scene else "null", d])
 	await _capture("hub_to_fire.png")
 
 

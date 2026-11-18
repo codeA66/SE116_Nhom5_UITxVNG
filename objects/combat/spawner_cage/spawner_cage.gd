@@ -24,6 +24,8 @@ signal activated
 ## Cờ lưu khi đã phá lồng và hạ hết quái. Để trống = mỗi lần vào khu lại có lồng
 @export var persistent_id: StringName
 ## Vùng player phải đứng trong để lồng hoạt động (hộp, tâm đáy tại active_area_offset so với lồng)
+## Chờ bao lâu (s) từ lần đầu player bước vào vùng mới sinh con đầu. 0 = sinh ngay
+@export_range(0.0, 10.0, 0.1) var start_delay: float = 0.0
 @export var active_area_size: Vector3 = Vector3(14.0, 4.0, 18.0):
 	set(value):
 		active_area_size = value.max(Vector3.ONE * 0.5)
@@ -39,6 +41,7 @@ signal activated
 var is_broken: bool = false
 var is_cleared: bool = false
 
+var _woken: bool = false
 var _alive: int = 0
 var _player: Node3D
 var _spawn_index: int = 0
@@ -104,6 +107,13 @@ func _on_body_entered(body: Node3D) -> void:
 	_player = body
 	if is_broken:
 		return
+	if not _woken and start_delay > 0.0:
+		_woken = true
+		await get_tree().create_timer(start_delay, false).timeout
+		# Ra khỏi vùng trong lúc chờ: lần vào sau sinh ngay
+		if not is_inside_tree() or is_broken or not _area.overlaps_body(body):
+			return
+	_woken = true
 	_timer.start(spawn_interval)
 	# Sinh ngay con đầu để vào phòng là thấy lồng đang hoạt động. Gọi trễ: đang trong callback vật lý
 	# nên không được thêm node có vùng va chạm ngay lúc này

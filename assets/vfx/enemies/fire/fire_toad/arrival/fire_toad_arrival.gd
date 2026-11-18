@@ -15,8 +15,8 @@ const REVEAL_SHADER: Shader = preload("res://assets/shaders/fire/fire_toad_vfx/a
 
 @export_group("Vị trí khe nứt")
 @export_range(0.1, 15.0, 0.1) var reveal_height: float = 5.4
-@export_range(0.0, 10.0, 0.1) var rift_center_height: float = 1.35
-@export_range(0.1, 15.0, 0.1) var rift_depth: float = 2.4
+@export_range(0.0, 10.0, 0.1) var rift_center_height: float = 1.8
+@export_range(0.1, 15.0, 0.1) var rift_depth: float = 0.5
 @export_group("Nhịp mở")
 @export_range(0.0, 1.0, 0.01) var opening_start: float = 0.06
 @export_range(0.05, 1.0, 0.01) var fully_open_at: float = 0.52
@@ -48,9 +48,14 @@ func begin(feet: Vector3) -> void:
 	set_model_visible(false)
 	if not _prepared:
 		_prepare_surfaces()
-	# Đặt khe sau cóc theo hướng nhìn để vẫn thấy vết rách bao quanh silhouette.
+	# Chỉ lấy hướng ngang của camera để khe luôn dựng đứng trong thế giới.
 	var camera: Camera3D = get_viewport().get_camera_3d()
-	var alignment: Basis = camera.global_basis.orthonormalized() if camera != null else Basis.IDENTITY
+	var normal: Vector3 = camera.global_basis.z if camera != null else Vector3.BACK
+	normal.y = 0.0
+	if normal.is_zero_approx():
+		normal = Vector3.BACK
+	normal = normal.normalized()
+	var alignment: Basis = Basis(Vector3.UP.cross(normal), Vector3.UP, normal)
 	global_transform = Transform3D(alignment, feet + Vector3.UP * rift_center_height - alignment.z * rift_depth)
 	reset_physics_interpolation()
 	for material: ShaderMaterial in _materials:

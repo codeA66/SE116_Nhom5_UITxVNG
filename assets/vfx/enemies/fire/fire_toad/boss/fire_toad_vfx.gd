@@ -88,6 +88,8 @@ enum MouthPhase { OFF, CHARGE, UP, FORWARD, WEB }
 @export var web_cue_scale: float = 0.76
 @export var charge_size: float = 0.54
 @export var mouth_socket: StringName = &"MouthSocket"
+@export_range(0.1, 4.0, 0.05) var pressure_radius: float = 1.35
+@export_range(0.05, 1.0, 0.01) var leap_smoke_fade_time: float = 0.48
 @export_group("Va chạm")
 @export var takeoff_radius: float = 1.65
 @export var takeoff_time: float = 0.46
@@ -140,6 +142,7 @@ var _impacts: Array[ImpactVfx] = []
 var _death_veil_material: ShaderMaterial
 var _mouth_glow_material: ShaderMaterial
 var _mouth_beam_material: ShaderMaterial
+var _leap_smoke_remaining: float
 
 @onready var arrival: ArrivalVfx = $FireToadArrival
 @onready var _socket: Node3D = $Mouth
@@ -149,6 +152,9 @@ var _mouth_beam_material: ShaderMaterial
 @onready var _web_cue: Node3D = $Mouth/WebCue
 @onready var _up_sparks: GPUParticles3D = $Mouth/UpSparks
 @onready var _forward_sparks: GPUParticles3D = $Mouth/ForwardSparks
+@onready var _inward_sparks: GPUParticles3D = $Mouth/InwardSparks
+@onready var _pressure: MeshInstance3D = $Mouth/Pressure
+@onready var _pressure_material: ShaderMaterial = _pressure.material_override as ShaderMaterial
 @onready var _body: Node3D = $Body
 @onready var _trail: GPUParticles3D = $Body/LeapTrail
 @onready var _trail_smoke: GPUParticles3D = $Body/LeapSmoke
@@ -196,6 +202,11 @@ func _physics_process(_delta: float) -> void:
 
 func _process(delta: float) -> void:
 	_sync_body()
+	if _leap_smoke_remaining > 0.0:
+		_leap_smoke_remaining = maxf(_leap_smoke_remaining - delta, 0.0)
+		if _leap_smoke_remaining <= 0.0:
+			_trail.hide()
+			_trail_smoke.hide()
 	if _mode != MouthPhase.OFF:
 		_mouth_age += delta
 		if _mouth_age >= _mouth_duration:
@@ -221,7 +232,7 @@ func _process(delta: float) -> void:
 			_collapse_pending = false
 			set_physics_process(true)
 	if (_mode == MouthPhase.OFF and not _dying and not _collapse_pending
-			and not _hovering and not _leaping and not _hot):
+			and not _hovering and not _leaping and not _hot and _leap_smoke_remaining <= 0.0):
 		set_process(false)
 
 
@@ -292,6 +303,7 @@ func play_shot(projectile: BossFireball, direction: Vector3) -> void:
 
 func begin_leap() -> void:
 	_leaping = true
+	_leap_smoke_remaining = 0.0
 	_sync_body()
 	_play_impact(global_position, takeoff_radius * _model_scale(), ImpactVfx.Kind.LIFT, takeoff_time)
 	_trail.amount_ratio = 1.0 if _hot else 0.68
@@ -302,8 +314,11 @@ func begin_leap() -> void:
 
 func end_leap() -> void:
 	_leaping = false
-	_stop_particles(_trail)
-	_stop_particles(_trail_smoke)
+	# Hạt dùng toạ độ thế giới được tan tại chỗ thay vì biến mất lúc chân vừa chạm đất.
+	_trail.emitting = false
+	_trail_smoke.emitting = false
+	_leap_smoke_remaining = leap_smoke_fade_time
+	set_process(true)
 
 
 func slam_land(where: Vector3, radius: float) -> void:
@@ -405,6 +420,9 @@ func _open_mouth(mode: MouthPhase, duration: float) -> void:
 	_mouth_beam.visible = mode == MouthPhase.UP or mode == MouthPhase.FORWARD
 	_web_cue.visible = mode == MouthPhase.WEB
 	_mouth_core.visible = mode != MouthPhase.WEB
+	_pressure.visible = mode == MouthPhase.CHARGE or mode == MouthPhase.UP or mode == MouthPhase.FORWARD
+	if mode == MouthPhase.CHARGE:
+		_restart_particles(_inward_sparks)
 	_socket.show()
 	_draw_mouth(0.0)
 	_socket.reset_physics_interpolation()
@@ -431,6 +449,11 @@ func _draw_mouth(progress: float) -> void:
 		_web_cue.rotation.y = lerpf(-0.6, 0.3, progress)
 	_mouth_glow.scale = Vector3.ONE * (wide * 2.2)
 	_mouth_glow_material.set_shader_parameter(&"vfx_opacity", strength * 0.84)
+	var charging: bool = _mode == MouthPhase.CHARGE
+	var pressure_size: float = pressure_radius * (lerpf(1.0, 0.32, progress) if charging else lerpf(0.2, 1.0, progress))
+	_pressure.scale = Vector3(pressure_size, 1.0, pressure_size)
+	_pressure_material.set_shader_parameter(&"opacity", strength)
+	_pressure_material.set_shader_parameter(&"progress", progress)
 	_mouth_beam_material.set_shader_parameter(&"vfx_opacity", strength)
 	_mouth_beam_material.set_shader_parameter(&"vfx_dissolve", progress * 0.8)
 
@@ -439,6 +462,7 @@ func _hide_mouth() -> void:
 	_mode = MouthPhase.OFF
 	_stop_particles(_up_sparks)
 	_stop_particles(_forward_sparks)
+	_stop_particles(_inward_sparks)
 	_socket.hide()
 
 

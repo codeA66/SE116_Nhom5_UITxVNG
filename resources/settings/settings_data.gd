@@ -29,7 +29,6 @@ extends Resource
 	&"skill": "Kỹ năng 1",
 	&"skill_fire": "Kỹ năng 2",
 	&"interact": "Tương tác",
-	&"use_item": "Dùng vật phẩm",
 	&"inventory": "Túi đồ (Tab)",
 	&"help": "Sổ hướng dẫn",
 }

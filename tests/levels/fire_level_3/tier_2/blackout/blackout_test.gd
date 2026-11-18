@@ -8,7 +8,7 @@ extends Node
 ## 5. Lõi đông + cổng: cổng về Hub tắt khi chưa có lõi; nhặt lõi thì mở, bước vào sang Hub.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/tier_2/blackout/blackout_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_2/tier_2.tscn")
 const FLAME_BREATH: AbilityData = preload("res://abilities/flame_breath/flame_breath.tres")
 const BOW_FIRE: FusionData = preload("res://resources/combat/fusion/fire/bow_fire.tres")
 const BOW_SLOT := WeaponData.Slot.BOW
@@ -49,7 +49,7 @@ func _t_ember() -> void:
 	# Chưa ghép: không có đốm
 	GameState.unfuse(BOW_SLOT)
 	# Bắn thẳng vào tường cao phía bắc phòng 01 (tên phải cắm vào đâu đó mới có điểm trúng; phòng 02 có búa nện)
-	_teleport(Vector3(208, 4.42, 52), Vector3.FORWARD)
+	_teleport(Vector3(2, 0.1, 1.4), Vector3.FORWARD)
 	await _frames(10)
 	await _shoot()
 	await _frames(60)
@@ -104,13 +104,13 @@ func _t_ember_extremes() -> void:
 
 func _t_dark() -> void:
 	var sun := _level.get_node(^"FireLighting/SunLight") as DirectionalLight3D
-	_teleport(Vector3(318, 4.42, 50), Vector3.RIGHT)
+	_teleport(Vector3(112, 0.1, -0.6), Vector3.RIGHT)
 	await _frames(90)
 	var outside := sun.light_energy
-	_teleport(Vector3(330, 4.42, 50), Vector3.RIGHT)
+	_teleport(Vector3(124, 0.1, -0.6), Vector3.RIGHT)
 	await _frames(90)
 	var inside := sun.light_energy
-	_teleport(Vector3(318, 4.42, 50), Vector3.RIGHT)
+	_teleport(Vector3(112, 0.1, -0.6), Vector3.RIGHT)
 	await _frames(90)
 	var back := sun.light_energy
 	_check(outside > 0.1 and inside < outside * 0.05 and absf(back - outside) < 0.05,
@@ -130,7 +130,7 @@ func _t_dummy_energy() -> void:
 	var gained := _player.energy.current
 	_check(gained >= 2, "chém hình nộm ở bệ vào: +%d năng lượng" % gained)
 	var bow := GameState.get_weapon_in_slot(BOW_SLOT)
-	_teleport(Vector3(330, 4.42, 50), Vector3.RIGHT)
+	_teleport(Vector3(124, 0.1, -0.6), Vector3.RIGHT)
 	await _frames(10)
 	var before := _player.energy.current
 	await _shoot(false)
@@ -145,16 +145,16 @@ func _t_path() -> void:
 	var fell := {"n": 0}
 	for t: Node in tiles:
 		(t as CrumblingFloor).crumbled.connect(func() -> void: fell["n"] = int(fell["n"]) + 1)
-	_teleport(Vector3(330, 4.42, 50), Vector3.RIGHT)
+	_teleport(Vector3(124, 0.1, -0.6), Vector3.RIGHT)
 	await _frames(20)
-	var route: Array[Vector3] = [Vector3(333, 4.32, 50), Vector3(339, 4.32, 50), Vector3(339, 4.32, 56), Vector3(345, 4.32, 56), Vector3(345, 4.32, 42), Vector3(350, 4.32, 41)]
+	var route: Array[Vector3] = [Vector3(127, 0, -0.6), Vector3(133, 0, -0.6), Vector3(133, 0, 5.4), Vector3(139, 0, 5.4), Vector3(139, 0, -8.6), Vector3(144, 0, -9.6)]
 	var ok := true
 	for p: Vector3 in route:
 		ok = ok and await _run_to(p, 240)
-		if _player.global_position.y < 3.0:
+		if _player.global_position.y < -1.32:
 			ok = false
 			break
-	_check(ok and _player.global_position.y > 4.0, "đi bộ hết đường ô sàn sụp tới bệ cuối (%s)" % _player.global_position.snapped(Vector3.ONE * 0.1))
+	_check(ok and _player.global_position.y > -0.32, "đi bộ hết đường ô sàn sụp tới bệ cuối (%s)" % _player.global_position.snapped(Vector3.ONE * 0.1))
 	await _frames(int(6.0 * 60))
 	var restored := 0
 	for t: Node in tiles:
@@ -177,15 +177,15 @@ func _t_core_portal() -> void:
 	for _i: int in range(120):
 		var to := portal.global_position - _player.global_position
 		to.y = 0.0
-		if to.length() < 0.3 or _player.global_position.x < 300.0:
+		if to.length() < 0.3 or _player.global_position.x < 94.0:
 			break
 		_press_towards(to.normalized())
 		await get_tree().physics_frame
 	_release()
-	await _wait_until(func() -> bool: return _player.global_position.x < 300.0, 180)
+	await _wait_until(func() -> bool: return _player.global_position.x < 94.0, 180)
 	await _frames(30)
 	var pos := _player.global_position
-	_check(pos.x > 264.0 and pos.x < 292.0 and pos.z > 36.0 and pos.z < 64.0 and _player.is_on_floor(), "bước vào cổng: về Hub (%s)" % pos.snapped(Vector3.ONE * 0.1))
+	_check(pos.x > 58.0 and pos.x < 86.0 and pos.z > -14.6 and pos.z < 13.4 and _player.is_on_floor(), "bước vào cổng: về Hub (%s)" % pos.snapped(Vector3.ONE * 0.1))
 
 
 # ---------- Tiện ích ----------

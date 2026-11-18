@@ -6,7 +6,7 @@ extends Node
 ## 4. Rơi xuống biển lava (AbyssKillZone): splash bắn ở mặt dung nham ngay dưới chỗ rơi.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/lava_fx_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 const LAVA_ZONE: PackedScene = preload("res://objects/combat/hazards/lava_zone/lava_zone.tscn")
 const LAVA_BOOTS: AbilityData = preload("res://abilities/lava_boots/lava_boots.tres")
 

@@ -1,4 +1,4 @@
-[gd_resource type="NoiseTexture2D" format=3]
+[gd_resource type="NoiseTexture2D" format=3 uid="uid://cl0q8w80a47c0"]
 
 [sub_resource type="FastNoiseLite" id="Noise"]
 seed = 187
@@ -8,5 +8,5 @@ fractal_octaves = 2
 [resource]
 width = 256
 height = 8
-seamless = true
 noise = SubResource("Noise")
+seamless = true

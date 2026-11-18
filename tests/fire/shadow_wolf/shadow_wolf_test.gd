@@ -76,7 +76,7 @@ func _t_load() -> void:
 			if sk == null or sk.find_bone(path.get_concatenated_subnames()) < 0:
 				bad += 1
 	_check(bad == 0, "mọi track của 9 clip trỏ đúng xương (%d sai)" % bad)
-	_check(is_equal_approx(a.hurtbox.resistances.get(DamageInfo.Type.FIRE, 1.0), 1.5), "sợ lửa: nhận sát thương lửa x1,5")
+	_check(is_equal_approx(a.hurtbox.resistances.get(DamageInfo.Type.FIRE, 1.0), 1.0), "không sợ lửa: sát thương lửa x1,0")
 	a.fade_to(1.0, 0.0)
 	var body_a := a.skeleton.get_node("ShadowWolfBody") as MeshInstance3D
 	var body_b := b.skeleton.get_node("ShadowWolfBody") as MeshInstance3D
@@ -242,14 +242,15 @@ func _t_fire() -> void:
 	await _frames(2)
 	_aim_mouse_at(w.global_position + Vector3.UP * 0.6)
 	Input.action_press(&"skill_fire")
-	var fled := await _wait_until(func() -> bool: return w.state_machine.current_state.name == &"WolfFlee", 60)
+	var hit := await _wait_until(func() -> bool: return w.health.current_health < hp, 60)
 	Input.action_release(&"skill_fire")
 	var lost := hp - w.health.current_health
-	var d0 := _flat(w.global_position, _player.global_position)
-	await _frames(50)
-	var d1 := _flat(w.global_position, _player.global_position)
-	_check(lost == 2, "phun lửa thật: mất %d máu (1 x 1,5 làm tròn = 2)" % lost)
-	_check(fled and is_zero_approx(w.fade) and d1 > d0 + 1.0, "trúng lửa: hiện rõ, bỏ chạy (%.1f → %.1f m)" % [d0, d1])
+	var fled := false
+	for i: int in range(50):
+		await get_tree().physics_frame
+		fled = fled or w.state_machine.current_state.name == &"WolfFlee"
+	_check(hit and lost == 1, "phun lửa thật: mất %d máu (không sợ lửa: x1,0)" % lost)
+	_check(not fled, "trúng lửa: không bỏ chạy")
 	_cleanup()
 
 
@@ -268,7 +269,7 @@ func _t_torch() -> void:
 		attacked = attacked or s == &"WolfPounce" or s == &"WolfBite"
 		if i > 120:
 			closest = minf(closest, _flat(w.global_position, _player.global_position))
-	_check(not attacked and closest > DATA.light_fear_radius - 1.5, "player cầm đuốc cháy: sói không vồ / cắn, giữ cách %.1f m" % closest)
+	_check(attacked, "player cầm đuốc cháy: sói vẫn vồ / cắn (áp sát %.1f m)" % closest)
 	torch.queue_free()
 	_cleanup()
 

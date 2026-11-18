@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://objects/combat/indicators/aoe_rect_indicator.tscn" id="9_rect"]
 [ext_resource type="Script" path="res://objects/combat/hazards/forge_hammer/forge_hammer.gd" id="1_hammer"]
 [ext_resource type="PackedScene" path="res://objects/combat/indicators/aoe_circle_indicator.tscn" id="2_indicator"]
 [ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="3_damage"]
@@ -41,6 +42,8 @@ script = ExtResource("1_hammer")
 one_shot = true
 
 [node name="Indicator" parent="." instance=ExtResource("2_indicator")]
+
+[node name="RectIndicator" parent="." instance=ExtResource("9_rect")]
 
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)

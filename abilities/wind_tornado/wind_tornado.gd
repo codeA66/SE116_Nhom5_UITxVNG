@@ -1,7 +1,8 @@
 class_name WindTornado
 extends Node3D
 ## Cơn lốc của kỹ năng Lốc xoáy: chạy thẳng theo hướng thả, hút quái trong tầm về tâm, quẹt trúng quái ở gần tâm,
-## đẩy vật nhận gió khác (thuyền, cối xay, đạn) như cú Thổi gió; đi hết quãng đường (hoặc gặp tường) thì nổ.
+## đẩy vật nhận gió khác (thuyền, cối xay, đạn) như cú Thổi gió; đạn có deflect_by_wind() (cầu lửa) thì bị dội ngược;
+## đi hết quãng đường (hoặc gặp tường) thì nổ.
 ## Theo dõi vật vào / ra bằng signal; chỉ chạy _physics_process trong lúc còn sống. Dùng qua ObjectPool.
 
 signal finished
@@ -170,6 +171,10 @@ func _damage(receiver: WindReceiverComponent, amount: int, direction: Vector3) -
 
 
 func _on_receiver_entered(area: Area3D) -> void:
+	# Đạn chịu được gió (cầu lửa Quỷ Xương Lửa...) tự lo việc bị dội ngược: lốc chỉ báo người tạo lốc
+	if _alive and area.has_method(&"deflect_by_wind") and _user is Node3D:
+		area.call(&"deflect_by_wind", _user)
+		return
 	var receiver := area as WindReceiverComponent
 	if receiver and receiver.owner != _user and not receiver in _receivers:
 		_receivers.append(receiver)

@@ -4,7 +4,7 @@ extends Node
 ## Lỗi khi: không tới được điểm trong thời gian cho phép (kẹt tường / bậc), hoặc rơi / chết.
 ## Chạy: godot --path . res://tests/levels/fire_level_3/level_3_walk_test.tscn  (thêm "-- --capture" để chụp lúc lỗi)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 ## Mỗi chặng: điểm (x, y sàn, z). y chỉ dùng để phát hiện rơi.
 const LEGS: Array[Dictionary] = [
@@ -43,7 +43,7 @@ func _ready() -> void:
 		GameState.progress_changed.disconnect(SaveManager.save_game)
 	if GameState.progress_committed.is_connected(SaveManager.save_game):
 		GameState.progress_committed.disconnect(SaveManager.save_game)
-	for flag: StringName in [&"level_3.ignite_chain_barrier", &"level_3.room_2_east_gate", &"level_3.room_2_north_gate", &"level_3.room_3_west_gate", &"level_3.west_gate_south", &"level_3.west_gate_north", &"level_3.room8_west_gate", &"level_3.hub_south_gate", &"level_3.boss_gate", &"level_3.room11_cage_cleared", &"level_3.room12_hostage_rescued", &"level_3.room12_guards", &"level_3.room8_cage_1", &"level_3.room8_cage_2", &"level_3.room8_cage_3", &"level_3.room8_cage_4", &"level_3.room14_cage_west", &"level_3.room14_cage_east", &"level_3.bridge_guards", &"level_3.boss_defeated"]:
+	for flag: StringName in [&"level_3.ignite_chain_barrier", &"level_3.room_2_east_gate", &"level_3.room_2_north_gate", &"level_3.room_3_west_gate", &"level_3.west_gate_south", &"level_3.west_gate_north", &"level_3.room8_west_gate", &"level_3.hub_south_gate", &"level_3.boss_gate", &"level_3.room11_cage_cleared", &"level_3.room12_hostage_rescued", &"level_3.room12_guards", &"level_3.room8_cage_1", &"level_3.room8_cage_2", &"level_3.room8_cage_3", &"level_3.room8_cage_4", &"level_3.room14_cage_west", &"level_3.room14_cage_east", &"level_3.bridge_guards", &"level_3.boss_defeated", &"level_3.west_walk_guards", &"level_3.room13_encounter"]:
 		GameState.set_flag(flag)
 	var level: ZoneRoot = LEVEL.instantiate()
 	level.player_spawned.connect(func(p: Player) -> void: _player = p)
@@ -58,6 +58,10 @@ func _run() -> void:
 		push_error("Player không xuất hiện")
 		get_tree().quit(1)
 		return
+	# Bẫy lửa đuổi trên lối tây (đo riêng ở west_walk_test) phun liên tục khi đi qua: tắt để chỉ đo đường đi
+	var trap := find_child("WestWalkTrap", true, false) as Area3D
+	if trap:
+		trap.monitoring = false
 	var failed: int = 0
 	for leg: Dictionary in LEGS:
 		var ok: bool = await _walk_leg(leg)

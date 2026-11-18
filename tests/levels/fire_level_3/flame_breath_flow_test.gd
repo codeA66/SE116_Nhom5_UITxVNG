@@ -6,7 +6,7 @@ extends Node
 ## 4. Phun lửa vào rào → rào cháy, cháy hết thì tan, tắt va chạm, đi xuống bậc thang vào hầm được.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/flame_breath_flow_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _level: Node
