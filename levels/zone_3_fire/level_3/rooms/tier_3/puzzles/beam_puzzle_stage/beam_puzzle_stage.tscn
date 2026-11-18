@@ -1,0 +1,47 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/beam_puzzle_stage/beam_puzzle_stage.gd" id="stage"]
+
+[sub_resource type="Animation" id="RaiseAnimation"]
+resource_name = "raise"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:reveal_progress")
+tracks/0/interp = 1
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(-2, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="Animation" id="LowerAnimation"]
+resource_name = "lower"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:reveal_progress")
+tracks/0/interp = 1
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(-2, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="StageLibrary"]
+_data = {
+"raise": SubResource("RaiseAnimation"),
+"lower": SubResource("LowerAnimation")
+}
+
+[node name="BeamPuzzleStage" type="Node3D"]
+script = ExtResource("stage")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+callback_mode_process = 0
+playback_auto_capture = false
+libraries = {
+"stage": SubResource("StageLibrary")
+}

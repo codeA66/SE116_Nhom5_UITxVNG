@@ -1,0 +1,1554 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="floor"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="wall"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="low_wall"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="pillar"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/fence_rail_2m.glb" id="fence"]
+
+[ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_torch_standing.tscn" id="torch"]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_00_crucible_heart.gd" id="heart_controller"]
+
+[sub_resource type="StandardMaterial3D" id="Basalt"]
+albedo_color = Color(0.105, 0.065, 0.075, 1)
+metallic = 0
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Copper"]
+albedo_color = Color(0.48, 0.235, 0.08, 1)
+metallic = 0.65
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="RuneGold"]
+albedo_color = Color(0.95, 0.56, 0.18, 1)
+metallic = 0.45
+roughness = 0.8
+emission_enabled = true
+emission = Color(0.95, 0.36, 0.055, 1)
+emission_energy_multiplier = 0.65
+
+[sub_resource type="StandardMaterial3D" id="RuneStone"]
+albedo_color = Color(0.045, 0.032, 0.037, 1)
+metallic = 0
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="FoundationMesh"]
+material = SubResource("Basalt")
+top_radius = 17.318275
+bottom_radius = 17.318275
+height = 2.32
+radial_segments = 8
+rings = 1
+
+[sub_resource type="ConvexPolygonShape3D" id="FoundationShape"]
+points = PackedVector3Array(16, -2, 6.627417, 6.627417, -2, 16, -6.627417, -2, 16, -16, -2, 6.627417, -16, -2, -6.627417, -6.627417, -2, -16, 6.627417, -2, -16, 16, -2, -6.627417, 16, 0.32, 6.627417, 6.627417, 0.32, 16, -6.627417, 0.32, 16, -16, 0.32, 6.627417, -16, 0.32, -6.627417, -6.627417, 0.32, -16, 6.627417, 0.32, -16, 16, 0.32, -6.627417)
+
+[sub_resource type="CylinderMesh" id="PlatformMesh"]
+material = SubResource("Basalt")
+top_radius = 4.329569
+bottom_radius = 4.870765
+height = 0.18
+radial_segments = 8
+rings = 1
+
+[sub_resource type="ConvexPolygonShape3D" id="PlatformShape"]
+points = PackedVector3Array(4.5, 0.32, 1.863961, 1.863961, 0.32, 4.5, -1.863961, 0.32, 4.5, -4.5, 0.32, 1.863961, -4.5, 0.32, -1.863961, -1.863961, 0.32, -4.5, 1.863961, 0.32, -4.5, 4.5, 0.32, -1.863961, 4, 0.5, 1.656854, 1.656854, 0.5, 4, -1.656854, 0.5, 4, -4, 0.5, 1.656854, -4, 0.5, -1.656854, -1.656854, 0.5, -4, 1.656854, 0.5, -4, 4, 0.5, -1.656854)
+
+[sub_resource type="BoxMesh" id="FullHao"]
+material = SubResource("RuneGold")
+size = Vector3(2.5, 0.035, 0.27)
+
+[sub_resource type="BoxMesh" id="HalfHao"]
+material = SubResource("RuneGold")
+size = Vector3(1, 0.035, 0.27)
+
+[sub_resource type="BoxMesh" id="RunePlate"]
+material = SubResource("RuneStone")
+size = Vector3(3.5, 0.04, 3.15)
+
+[sub_resource type="BoxMesh" id="PlateSide"]
+material = SubResource("Copper")
+size = Vector3(0.045, 0.025, 3.15)
+
+[sub_resource type="BoxMesh" id="PlateEnd"]
+material = SubResource("Copper")
+size = Vector3(3.5, 0.025, 0.045)
+
+[sub_resource type="BoxMesh" id="InlayStrip"]
+material = SubResource("Copper")
+size = Vector3(0.065, 0.018, 5.8)
+
+[sub_resource type="BoxMesh" id="PlatformRim"]
+material = SubResource("Copper")
+size = Vector3(3.17, 0.025, 0.07)
+
+[sub_resource type="BoxMesh" id="Lintel"]
+material = SubResource("Basalt")
+size = Vector3(5.8, 0.48, 0.75)
+
+[sub_resource type="BoxShape3D" id="WallShape"]
+size = Vector3(4.627417, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="LowWallShape"]
+size = Vector3(4.627417, 1.25, 0.7)
+
+[sub_resource type="BoxShape3D" id="PostShape"]
+size = Vector3(0.9, 4, 0.9)
+
+[sub_resource type="BoxShape3D" id="LandingShape"]
+size = Vector3(4, 0.32, 4.4)
+
+[sub_resource type="BoxShape3D" id="RailShape"]
+size = Vector3(0.35, 1.25, 4)
+
+[node name="CrucibleHeart" type="Node3D" node_paths=PackedStringArray("seal_symbols")]
+script = ExtResource("heart_controller")
+seal_ids = PackedStringArray("kham", "can_son", "chan", "ton", "ly", "khon", "doai", "can_thien")
+seal_flags = PackedStringArray("level_3.t3_seal_kham", "level_3.t3_seal_can_son", "level_3.t3_seal_chan", "level_3.t3_seal_ton", "level_3.t3_seal_ly", "level_3.t3_seal_khon", "level_3.t3_seal_doai", "level_3.t3_seal_can_thien")
+seal_symbols = [NodePath("FloorTrigrams/KanNorth"), NodePath("FloorTrigrams/GenNorthEast"), NodePath("FloorTrigrams/ZhenEast"), NodePath("FloorTrigrams/XunSouthEast"), NodePath("FloorTrigrams/LiSouth"), NodePath("FloorTrigrams/KunSouthWest"), NodePath("FloorTrigrams/DuiWest"), NodePath("FloorTrigrams/QianNorthWest")]
+editor_description = "Thái Cực Đỉnh: bát giác rộng 32 m, tám cửa rộng 4 m. Bắc = -Z, Đông = +X. Các hào đọc từ tâm nhìn ra cửa. Điểm đặt lò ở CentralPlatform/FurnaceAnchor."
+
+[node name="Architecture" type="Node3D" parent="."]
+
+
+[node name="Foundation" type="MeshInstance3D" parent="Architecture"]
+position = Vector3(0, -0.86, 0)
+mesh = SubResource("FoundationMesh")
+rotation = Vector3(0, 0.392699, 0)
+
+[node name="FloorTiles" type="Node3D" parent="Architecture"]
+
+
+[node name="Tile01" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-14, 0, -2)
+
+
+[node name="Tile02" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-14, 0, 2)
+
+
+[node name="Tile03" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-10, 0, -6)
+
+
+[node name="Tile04" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-10, 0, -2)
+
+
+[node name="Tile05" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-10, 0, 2)
+
+
+[node name="Tile06" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-10, 0, 6)
+
+
+[node name="Tile07" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-6, 0, -10)
+
+
+[node name="Tile08" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-6, 0, -6)
+
+
+[node name="Tile09" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-6, 0, -2)
+
+
+[node name="Tile10" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-6, 0, 2)
+
+
+[node name="Tile11" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-6, 0, 6)
+
+
+[node name="Tile12" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-6, 0, 10)
+
+
+[node name="Tile13" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-2, 0, -14)
+
+
+[node name="Tile14" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-2, 0, -10)
+
+
+[node name="Tile15" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-2, 0, -6)
+
+
+[node name="Tile16" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-2, 0, -2)
+
+
+[node name="Tile17" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-2, 0, 2)
+
+
+[node name="Tile18" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-2, 0, 6)
+
+
+[node name="Tile19" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-2, 0, 10)
+
+
+[node name="Tile20" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(-2, 0, 14)
+
+
+[node name="Tile21" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(2, 0, -14)
+
+
+[node name="Tile22" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(2, 0, -10)
+
+
+[node name="Tile23" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(2, 0, -6)
+
+
+[node name="Tile24" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(2, 0, -2)
+
+
+[node name="Tile25" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(2, 0, 2)
+
+
+[node name="Tile26" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(2, 0, 6)
+
+
+[node name="Tile27" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(2, 0, 10)
+
+
+[node name="Tile28" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(2, 0, 14)
+
+
+[node name="Tile29" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(6, 0, -10)
+
+
+[node name="Tile30" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(6, 0, -6)
+
+
+[node name="Tile31" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(6, 0, -2)
+
+
+[node name="Tile32" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(6, 0, 2)
+
+
+[node name="Tile33" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(6, 0, 6)
+
+
+[node name="Tile34" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(6, 0, 10)
+
+
+[node name="Tile35" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(10, 0, -6)
+
+
+[node name="Tile36" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(10, 0, -2)
+
+
+[node name="Tile37" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(10, 0, 2)
+
+
+[node name="Tile38" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(10, 0, 6)
+
+
+[node name="Tile39" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(14, 0, -2)
+
+
+[node name="Tile40" parent="Architecture/FloorTiles" instance=ExtResource("floor")]
+position = Vector3(14, 0, 2)
+
+
+[node name="Collisions" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Foundation" type="CollisionShape3D" parent="Collisions"]
+position = Vector3(0, 0, 0)
+shape = SubResource("FoundationShape")
+
+
+[node name="CentralPlatform" type="CollisionShape3D" parent="Collisions"]
+position = Vector3(0, 0, 0)
+shape = SubResource("PlatformShape")
+
+
+[node name="CentralPlatform" type="Node3D" parent="."]
+editor_description = "Bệ rộng 8 m, cao hơn sàn 0,18 m; mép vát đi lên được từ tám hướng."
+
+[node name="Dais" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(0, 0.41, 0)
+mesh = SubResource("PlatformMesh")
+rotation = Vector3(0, 0.392699, 0)
+
+[node name="CopperRim1" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(0, 0.518, -3.85)
+mesh = SubResource("PlatformRim")
+rotation = Vector3(0, 0, 0)
+cast_shadow = 0
+
+[node name="CopperRim2" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(2.722361, 0.518, -2.722361)
+mesh = SubResource("PlatformRim")
+rotation = Vector3(0, -0.785398, 0)
+cast_shadow = 0
+
+[node name="CopperRim3" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(3.85, 0.518, 0)
+mesh = SubResource("PlatformRim")
+rotation = Vector3(0, -1.570796, 0)
+cast_shadow = 0
+
+[node name="CopperRim4" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(2.722361, 0.518, 2.722361)
+mesh = SubResource("PlatformRim")
+rotation = Vector3(0, -2.356194, 0)
+cast_shadow = 0
+
+[node name="CopperRim5" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(0, 0.518, 3.85)
+mesh = SubResource("PlatformRim")
+rotation = Vector3(0, -3.141593, 0)
+cast_shadow = 0
+
+[node name="CopperRim6" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(-2.722361, 0.518, 2.722361)
+mesh = SubResource("PlatformRim")
+rotation = Vector3(0, -3.926991, 0)
+cast_shadow = 0
+
+[node name="CopperRim7" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(-3.85, 0.518, 0)
+mesh = SubResource("PlatformRim")
+rotation = Vector3(0, -4.712389, 0)
+cast_shadow = 0
+
+[node name="CopperRim8" type="MeshInstance3D" parent="CentralPlatform"]
+position = Vector3(-2.722361, 0.518, -2.722361)
+mesh = SubResource("PlatformRim")
+rotation = Vector3(0, -5.497787, 0)
+cast_shadow = 0
+
+[node name="FurnaceAnchor" type="Marker3D" parent="CentralPlatform"]
+position = Vector3(0, 0.5, 0)
+gizmo_extents = 2.0
+editor_description = "Gắn scene NPC Lò Bát Quái tại đây. Gốc NPC nằm trên mặt bệ."
+
+[node name="Entrances" type="Node3D" parent="."]
+
+
+[node name="FloorTrigrams" type="Node3D" parent="."]
+
+
+[node name="KanNorth" type="Node3D" parent="Entrances"]
+rotation = Vector3(0, 0, 0)
+editor_description = "Khảm · Thủy. Cửa mở rộng 4 m, điểm nối phòng tại ConnectionAnchor."
+
+[node name="WallLeft" parent="Entrances/KanNorth" instance=ExtResource("wall")]
+position = Vector3(-4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostLeft" parent="Entrances/KanNorth" instance=ExtResource("pillar")]
+position = Vector3(-2.55, 0.32, -16)
+
+
+[node name="WallRight" parent="Entrances/KanNorth" instance=ExtResource("wall")]
+position = Vector3(4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostRight" parent="Entrances/KanNorth" instance=ExtResource("pillar")]
+position = Vector3(2.55, 0.32, -16)
+
+
+[node name="Lintel" type="MeshInstance3D" parent="Entrances/KanNorth"]
+position = Vector3(0, 4.45, -16)
+mesh = SubResource("Lintel")
+
+
+[node name="Landing" parent="Entrances/KanNorth" instance=ExtResource("floor")]
+position = Vector3(0, 0, -18)
+scale = Vector3(1, 1, 1.1)
+
+[node name="RailLeft1" parent="Entrances/KanNorth" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailLeft2" parent="Entrances/KanNorth" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight1" parent="Entrances/KanNorth" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight2" parent="Entrances/KanNorth" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="ConnectionAnchor" type="Marker3D" parent="Entrances/KanNorth"]
+position = Vector3(0, 0.32, -20)
+gizmo_extents = 1.0
+
+[node name="KanNorth" type="Node3D" parent="FloorTrigrams"]
+rotation = Vector3(0, 0, 0)
+editor_description = "Khảm · Thủy. Ba hào từ trên xuống: 010."
+
+[node name="Inlay" type="MeshInstance3D" parent="FloorTrigrams/KanNorth"]
+position = Vector3(0, 0.336, -8)
+mesh = SubResource("InlayStrip")
+
+
+[node name="Plate" type="MeshInstance3D" parent="FloorTrigrams/KanNorth"]
+position = Vector3(0, 0.35, -12.8)
+mesh = SubResource("RunePlate")
+cast_shadow = 0
+
+[node name="BorderSideLeft" type="MeshInstance3D" parent="FloorTrigrams/KanNorth"]
+position = Vector3(-1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndOuter" type="MeshInstance3D" parent="FloorTrigrams/KanNorth"]
+position = Vector3(0, 0.385, -14.35)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="BorderSideRight" type="MeshInstance3D" parent="FloorTrigrams/KanNorth"]
+position = Vector3(1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndInner" type="MeshInstance3D" parent="FloorTrigrams/KanNorth"]
+position = Vector3(0, 0.385, -11.25)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="Hao" type="Node3D" parent="FloorTrigrams/KanNorth"]
+
+
+[node name="Row1Left" type="MeshInstance3D" parent="FloorTrigrams/KanNorth/Hao"]
+position = Vector3(-0.75, 0.395, -13.58)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row1Right" type="MeshInstance3D" parent="FloorTrigrams/KanNorth/Hao"]
+position = Vector3(0.75, 0.395, -13.58)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row2" type="MeshInstance3D" parent="FloorTrigrams/KanNorth/Hao"]
+position = Vector3(0, 0.395, -12.8)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="Row3Left" type="MeshInstance3D" parent="FloorTrigrams/KanNorth/Hao"]
+position = Vector3(-0.75, 0.395, -12.02)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row3Right" type="MeshInstance3D" parent="FloorTrigrams/KanNorth/Hao"]
+position = Vector3(0.75, 0.395, -12.02)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="KanNorth" type="StaticBody3D" parent="Collisions"]
+rotation = Vector3(0, 0, 0)
+
+[node name="WallLeft" type="CollisionShape3D" parent="Collisions/KanNorth"]
+position = Vector3(-4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostLeft" type="CollisionShape3D" parent="Collisions/KanNorth"]
+position = Vector3(-2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailLeft" type="CollisionShape3D" parent="Collisions/KanNorth"]
+position = Vector3(-2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="WallRight" type="CollisionShape3D" parent="Collisions/KanNorth"]
+position = Vector3(4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostRight" type="CollisionShape3D" parent="Collisions/KanNorth"]
+position = Vector3(2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailRight" type="CollisionShape3D" parent="Collisions/KanNorth"]
+position = Vector3(2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="Landing" type="CollisionShape3D" parent="Collisions/KanNorth"]
+position = Vector3(0, 0.16, -18)
+shape = SubResource("LandingShape")
+
+
+[node name="GenNorthEast" type="Node3D" parent="Entrances"]
+rotation = Vector3(0, -0.785398, 0)
+editor_description = "Cấn · Sơn. Cửa mở rộng 4 m, điểm nối phòng tại ConnectionAnchor."
+
+[node name="WallLeft" parent="Entrances/GenNorthEast" instance=ExtResource("wall")]
+position = Vector3(-4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostLeft" parent="Entrances/GenNorthEast" instance=ExtResource("pillar")]
+position = Vector3(-2.55, 0.32, -16)
+
+
+[node name="WallRight" parent="Entrances/GenNorthEast" instance=ExtResource("wall")]
+position = Vector3(4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostRight" parent="Entrances/GenNorthEast" instance=ExtResource("pillar")]
+position = Vector3(2.55, 0.32, -16)
+
+
+[node name="Lintel" type="MeshInstance3D" parent="Entrances/GenNorthEast"]
+position = Vector3(0, 4.45, -16)
+mesh = SubResource("Lintel")
+
+
+[node name="Landing" parent="Entrances/GenNorthEast" instance=ExtResource("floor")]
+position = Vector3(0, 0, -18)
+scale = Vector3(1, 1, 1.1)
+
+[node name="RailLeft1" parent="Entrances/GenNorthEast" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailLeft2" parent="Entrances/GenNorthEast" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight1" parent="Entrances/GenNorthEast" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight2" parent="Entrances/GenNorthEast" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="ConnectionAnchor" type="Marker3D" parent="Entrances/GenNorthEast"]
+position = Vector3(0, 0.32, -20)
+gizmo_extents = 1.0
+
+[node name="GenNorthEast" type="Node3D" parent="FloorTrigrams"]
+rotation = Vector3(0, -0.785398, 0)
+editor_description = "Cấn · Sơn. Ba hào từ trên xuống: 100."
+
+[node name="Inlay" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast"]
+position = Vector3(0, 0.336, -8)
+mesh = SubResource("InlayStrip")
+
+
+[node name="Plate" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast"]
+position = Vector3(0, 0.35, -12.8)
+mesh = SubResource("RunePlate")
+cast_shadow = 0
+
+[node name="BorderSideLeft" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast"]
+position = Vector3(-1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndOuter" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast"]
+position = Vector3(0, 0.385, -14.35)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="BorderSideRight" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast"]
+position = Vector3(1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndInner" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast"]
+position = Vector3(0, 0.385, -11.25)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="Hao" type="Node3D" parent="FloorTrigrams/GenNorthEast"]
+
+
+[node name="Row1" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast/Hao"]
+position = Vector3(0, 0.395, -13.58)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="Row2Left" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast/Hao"]
+position = Vector3(-0.75, 0.395, -12.8)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row2Right" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast/Hao"]
+position = Vector3(0.75, 0.395, -12.8)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row3Left" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast/Hao"]
+position = Vector3(-0.75, 0.395, -12.02)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row3Right" type="MeshInstance3D" parent="FloorTrigrams/GenNorthEast/Hao"]
+position = Vector3(0.75, 0.395, -12.02)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="GenNorthEast" type="StaticBody3D" parent="Collisions"]
+rotation = Vector3(0, -0.785398, 0)
+
+[node name="WallLeft" type="CollisionShape3D" parent="Collisions/GenNorthEast"]
+position = Vector3(-4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostLeft" type="CollisionShape3D" parent="Collisions/GenNorthEast"]
+position = Vector3(-2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailLeft" type="CollisionShape3D" parent="Collisions/GenNorthEast"]
+position = Vector3(-2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="WallRight" type="CollisionShape3D" parent="Collisions/GenNorthEast"]
+position = Vector3(4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostRight" type="CollisionShape3D" parent="Collisions/GenNorthEast"]
+position = Vector3(2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailRight" type="CollisionShape3D" parent="Collisions/GenNorthEast"]
+position = Vector3(2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="Landing" type="CollisionShape3D" parent="Collisions/GenNorthEast"]
+position = Vector3(0, 0.16, -18)
+shape = SubResource("LandingShape")
+
+
+[node name="ZhenEast" type="Node3D" parent="Entrances"]
+rotation = Vector3(0, -1.570796, 0)
+editor_description = "Chấn · Lôi. Cửa mở rộng 4 m, điểm nối phòng tại ConnectionAnchor."
+
+[node name="WallLeft" parent="Entrances/ZhenEast" instance=ExtResource("low_wall")]
+position = Vector3(-4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostLeft" parent="Entrances/ZhenEast" instance=ExtResource("pillar")]
+position = Vector3(-2.55, 0.32, -16)
+scale = Vector3(1, 0.5, 1)
+
+[node name="WallRight" parent="Entrances/ZhenEast" instance=ExtResource("low_wall")]
+position = Vector3(4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostRight" parent="Entrances/ZhenEast" instance=ExtResource("pillar")]
+position = Vector3(2.55, 0.32, -16)
+scale = Vector3(1, 0.5, 1)
+
+[node name="Landing" parent="Entrances/ZhenEast" instance=ExtResource("floor")]
+position = Vector3(0, 0, -18)
+scale = Vector3(1, 1, 1.1)
+
+[node name="RailLeft1" parent="Entrances/ZhenEast" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailLeft2" parent="Entrances/ZhenEast" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight1" parent="Entrances/ZhenEast" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight2" parent="Entrances/ZhenEast" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="ConnectionAnchor" type="Marker3D" parent="Entrances/ZhenEast"]
+position = Vector3(0, 0.32, -20)
+gizmo_extents = 1.0
+
+[node name="ZhenEast" type="Node3D" parent="FloorTrigrams"]
+rotation = Vector3(0, -1.570796, 0)
+editor_description = "Chấn · Lôi. Ba hào từ trên xuống: 001."
+
+[node name="Inlay" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast"]
+position = Vector3(0, 0.336, -8)
+mesh = SubResource("InlayStrip")
+
+
+[node name="Plate" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast"]
+position = Vector3(0, 0.35, -12.8)
+mesh = SubResource("RunePlate")
+cast_shadow = 0
+
+[node name="BorderSideLeft" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast"]
+position = Vector3(-1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndOuter" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast"]
+position = Vector3(0, 0.385, -14.35)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="BorderSideRight" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast"]
+position = Vector3(1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndInner" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast"]
+position = Vector3(0, 0.385, -11.25)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="Hao" type="Node3D" parent="FloorTrigrams/ZhenEast"]
+
+
+[node name="Row1Left" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast/Hao"]
+position = Vector3(-0.75, 0.395, -13.58)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row1Right" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast/Hao"]
+position = Vector3(0.75, 0.395, -13.58)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row2Left" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast/Hao"]
+position = Vector3(-0.75, 0.395, -12.8)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row2Right" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast/Hao"]
+position = Vector3(0.75, 0.395, -12.8)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row3" type="MeshInstance3D" parent="FloorTrigrams/ZhenEast/Hao"]
+position = Vector3(0, 0.395, -12.02)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="ZhenEast" type="StaticBody3D" parent="Collisions"]
+rotation = Vector3(0, -1.570796, 0)
+
+[node name="WallLeft" type="CollisionShape3D" parent="Collisions/ZhenEast"]
+position = Vector3(-4.313708, 0.945, -16)
+shape = SubResource("LowWallShape")
+
+
+[node name="PostLeft" type="CollisionShape3D" parent="Collisions/ZhenEast"]
+position = Vector3(-2.55, 1.32, -16)
+shape = SubResource("PostShape")
+scale = Vector3(1, 0.5, 1)
+
+[node name="RailLeft" type="CollisionShape3D" parent="Collisions/ZhenEast"]
+position = Vector3(-2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="WallRight" type="CollisionShape3D" parent="Collisions/ZhenEast"]
+position = Vector3(4.313708, 0.945, -16)
+shape = SubResource("LowWallShape")
+
+
+[node name="PostRight" type="CollisionShape3D" parent="Collisions/ZhenEast"]
+position = Vector3(2.55, 1.32, -16)
+shape = SubResource("PostShape")
+scale = Vector3(1, 0.5, 1)
+
+[node name="RailRight" type="CollisionShape3D" parent="Collisions/ZhenEast"]
+position = Vector3(2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="Landing" type="CollisionShape3D" parent="Collisions/ZhenEast"]
+position = Vector3(0, 0.16, -18)
+shape = SubResource("LandingShape")
+
+
+[node name="XunSouthEast" type="Node3D" parent="Entrances"]
+rotation = Vector3(0, -2.356194, 0)
+editor_description = "Tốn · Phong. Cửa mở rộng 4 m, điểm nối phòng tại ConnectionAnchor."
+
+[node name="WallLeft" parent="Entrances/XunSouthEast" instance=ExtResource("low_wall")]
+position = Vector3(-4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostLeft" parent="Entrances/XunSouthEast" instance=ExtResource("pillar")]
+position = Vector3(-2.55, 0.32, -16)
+scale = Vector3(1, 0.5, 1)
+
+[node name="WallRight" parent="Entrances/XunSouthEast" instance=ExtResource("low_wall")]
+position = Vector3(4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostRight" parent="Entrances/XunSouthEast" instance=ExtResource("pillar")]
+position = Vector3(2.55, 0.32, -16)
+scale = Vector3(1, 0.5, 1)
+
+[node name="Landing" parent="Entrances/XunSouthEast" instance=ExtResource("floor")]
+position = Vector3(0, 0, -18)
+scale = Vector3(1, 1, 1.1)
+
+[node name="RailLeft1" parent="Entrances/XunSouthEast" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailLeft2" parent="Entrances/XunSouthEast" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight1" parent="Entrances/XunSouthEast" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight2" parent="Entrances/XunSouthEast" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="ConnectionAnchor" type="Marker3D" parent="Entrances/XunSouthEast"]
+position = Vector3(0, 0.32, -20)
+gizmo_extents = 1.0
+
+[node name="XunSouthEast" type="Node3D" parent="FloorTrigrams"]
+rotation = Vector3(0, -2.356194, 0)
+editor_description = "Tốn · Phong. Ba hào từ trên xuống: 110."
+
+[node name="Inlay" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast"]
+position = Vector3(0, 0.336, -8)
+mesh = SubResource("InlayStrip")
+
+
+[node name="Plate" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast"]
+position = Vector3(0, 0.35, -12.8)
+mesh = SubResource("RunePlate")
+cast_shadow = 0
+
+[node name="BorderSideLeft" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast"]
+position = Vector3(-1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndOuter" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast"]
+position = Vector3(0, 0.385, -14.35)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="BorderSideRight" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast"]
+position = Vector3(1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndInner" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast"]
+position = Vector3(0, 0.385, -11.25)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="Hao" type="Node3D" parent="FloorTrigrams/XunSouthEast"]
+
+
+[node name="Row1" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast/Hao"]
+position = Vector3(0, 0.395, -13.58)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="Row2" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast/Hao"]
+position = Vector3(0, 0.395, -12.8)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="Row3Left" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast/Hao"]
+position = Vector3(-0.75, 0.395, -12.02)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row3Right" type="MeshInstance3D" parent="FloorTrigrams/XunSouthEast/Hao"]
+position = Vector3(0.75, 0.395, -12.02)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="XunSouthEast" type="StaticBody3D" parent="Collisions"]
+rotation = Vector3(0, -2.356194, 0)
+
+[node name="WallLeft" type="CollisionShape3D" parent="Collisions/XunSouthEast"]
+position = Vector3(-4.313708, 0.945, -16)
+shape = SubResource("LowWallShape")
+
+
+[node name="PostLeft" type="CollisionShape3D" parent="Collisions/XunSouthEast"]
+position = Vector3(-2.55, 1.32, -16)
+shape = SubResource("PostShape")
+scale = Vector3(1, 0.5, 1)
+
+[node name="RailLeft" type="CollisionShape3D" parent="Collisions/XunSouthEast"]
+position = Vector3(-2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="WallRight" type="CollisionShape3D" parent="Collisions/XunSouthEast"]
+position = Vector3(4.313708, 0.945, -16)
+shape = SubResource("LowWallShape")
+
+
+[node name="PostRight" type="CollisionShape3D" parent="Collisions/XunSouthEast"]
+position = Vector3(2.55, 1.32, -16)
+shape = SubResource("PostShape")
+scale = Vector3(1, 0.5, 1)
+
+[node name="RailRight" type="CollisionShape3D" parent="Collisions/XunSouthEast"]
+position = Vector3(2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="Landing" type="CollisionShape3D" parent="Collisions/XunSouthEast"]
+position = Vector3(0, 0.16, -18)
+shape = SubResource("LandingShape")
+
+
+[node name="LiSouth" type="Node3D" parent="Entrances"]
+rotation = Vector3(0, -3.141593, 0)
+editor_description = "Ly · Hỏa. Cửa mở rộng 4 m, điểm nối phòng tại ConnectionAnchor."
+
+[node name="WallLeft" parent="Entrances/LiSouth" instance=ExtResource("low_wall")]
+position = Vector3(-4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostLeft" parent="Entrances/LiSouth" instance=ExtResource("pillar")]
+position = Vector3(-2.55, 0.32, -16)
+scale = Vector3(1, 0.5, 1)
+
+[node name="WallRight" parent="Entrances/LiSouth" instance=ExtResource("low_wall")]
+position = Vector3(4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostRight" parent="Entrances/LiSouth" instance=ExtResource("pillar")]
+position = Vector3(2.55, 0.32, -16)
+scale = Vector3(1, 0.5, 1)
+
+[node name="Landing" parent="Entrances/LiSouth" instance=ExtResource("floor")]
+position = Vector3(0, 0, -18)
+scale = Vector3(1, 1, 1.1)
+
+[node name="RailLeft1" parent="Entrances/LiSouth" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailLeft2" parent="Entrances/LiSouth" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight1" parent="Entrances/LiSouth" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight2" parent="Entrances/LiSouth" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="ConnectionAnchor" type="Marker3D" parent="Entrances/LiSouth"]
+position = Vector3(0, 0.32, -20)
+gizmo_extents = 1.0
+
+[node name="LiSouth" type="Node3D" parent="FloorTrigrams"]
+rotation = Vector3(0, -3.141593, 0)
+editor_description = "Ly · Hỏa. Ba hào từ trên xuống: 101."
+
+[node name="Inlay" type="MeshInstance3D" parent="FloorTrigrams/LiSouth"]
+position = Vector3(0, 0.336, -8)
+mesh = SubResource("InlayStrip")
+
+
+[node name="Plate" type="MeshInstance3D" parent="FloorTrigrams/LiSouth"]
+position = Vector3(0, 0.35, -12.8)
+mesh = SubResource("RunePlate")
+cast_shadow = 0
+
+[node name="BorderSideLeft" type="MeshInstance3D" parent="FloorTrigrams/LiSouth"]
+position = Vector3(-1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndOuter" type="MeshInstance3D" parent="FloorTrigrams/LiSouth"]
+position = Vector3(0, 0.385, -14.35)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="BorderSideRight" type="MeshInstance3D" parent="FloorTrigrams/LiSouth"]
+position = Vector3(1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndInner" type="MeshInstance3D" parent="FloorTrigrams/LiSouth"]
+position = Vector3(0, 0.385, -11.25)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="Hao" type="Node3D" parent="FloorTrigrams/LiSouth"]
+
+
+[node name="Row1" type="MeshInstance3D" parent="FloorTrigrams/LiSouth/Hao"]
+position = Vector3(0, 0.395, -13.58)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="Row2Left" type="MeshInstance3D" parent="FloorTrigrams/LiSouth/Hao"]
+position = Vector3(-0.75, 0.395, -12.8)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row2Right" type="MeshInstance3D" parent="FloorTrigrams/LiSouth/Hao"]
+position = Vector3(0.75, 0.395, -12.8)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row3" type="MeshInstance3D" parent="FloorTrigrams/LiSouth/Hao"]
+position = Vector3(0, 0.395, -12.02)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="LiSouth" type="StaticBody3D" parent="Collisions"]
+rotation = Vector3(0, -3.141593, 0)
+
+[node name="WallLeft" type="CollisionShape3D" parent="Collisions/LiSouth"]
+position = Vector3(-4.313708, 0.945, -16)
+shape = SubResource("LowWallShape")
+
+
+[node name="PostLeft" type="CollisionShape3D" parent="Collisions/LiSouth"]
+position = Vector3(-2.55, 1.32, -16)
+shape = SubResource("PostShape")
+scale = Vector3(1, 0.5, 1)
+
+[node name="RailLeft" type="CollisionShape3D" parent="Collisions/LiSouth"]
+position = Vector3(-2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="WallRight" type="CollisionShape3D" parent="Collisions/LiSouth"]
+position = Vector3(4.313708, 0.945, -16)
+shape = SubResource("LowWallShape")
+
+
+[node name="PostRight" type="CollisionShape3D" parent="Collisions/LiSouth"]
+position = Vector3(2.55, 1.32, -16)
+shape = SubResource("PostShape")
+scale = Vector3(1, 0.5, 1)
+
+[node name="RailRight" type="CollisionShape3D" parent="Collisions/LiSouth"]
+position = Vector3(2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="Landing" type="CollisionShape3D" parent="Collisions/LiSouth"]
+position = Vector3(0, 0.16, -18)
+shape = SubResource("LandingShape")
+
+
+[node name="KunSouthWest" type="Node3D" parent="Entrances"]
+rotation = Vector3(0, -3.926991, 0)
+editor_description = "Khôn · Địa. Cửa mở rộng 4 m, điểm nối phòng tại ConnectionAnchor."
+
+[node name="WallLeft" parent="Entrances/KunSouthWest" instance=ExtResource("wall")]
+position = Vector3(-4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostLeft" parent="Entrances/KunSouthWest" instance=ExtResource("pillar")]
+position = Vector3(-2.55, 0.32, -16)
+
+
+[node name="WallRight" parent="Entrances/KunSouthWest" instance=ExtResource("wall")]
+position = Vector3(4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostRight" parent="Entrances/KunSouthWest" instance=ExtResource("pillar")]
+position = Vector3(2.55, 0.32, -16)
+
+
+[node name="Lintel" type="MeshInstance3D" parent="Entrances/KunSouthWest"]
+position = Vector3(0, 4.45, -16)
+mesh = SubResource("Lintel")
+
+
+[node name="Landing" parent="Entrances/KunSouthWest" instance=ExtResource("floor")]
+position = Vector3(0, 0, -18)
+scale = Vector3(1, 1, 1.1)
+
+[node name="RailLeft1" parent="Entrances/KunSouthWest" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailLeft2" parent="Entrances/KunSouthWest" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight1" parent="Entrances/KunSouthWest" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight2" parent="Entrances/KunSouthWest" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="ConnectionAnchor" type="Marker3D" parent="Entrances/KunSouthWest"]
+position = Vector3(0, 0.32, -20)
+gizmo_extents = 1.0
+
+[node name="KunSouthWest" type="Node3D" parent="FloorTrigrams"]
+rotation = Vector3(0, -3.926991, 0)
+editor_description = "Khôn · Địa. Ba hào từ trên xuống: 000."
+
+[node name="Inlay" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest"]
+position = Vector3(0, 0.336, -8)
+mesh = SubResource("InlayStrip")
+
+
+[node name="Plate" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest"]
+position = Vector3(0, 0.35, -12.8)
+mesh = SubResource("RunePlate")
+cast_shadow = 0
+
+[node name="BorderSideLeft" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest"]
+position = Vector3(-1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndOuter" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest"]
+position = Vector3(0, 0.385, -14.35)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="BorderSideRight" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest"]
+position = Vector3(1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndInner" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest"]
+position = Vector3(0, 0.385, -11.25)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="Hao" type="Node3D" parent="FloorTrigrams/KunSouthWest"]
+
+
+[node name="Row1Left" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest/Hao"]
+position = Vector3(-0.75, 0.395, -13.58)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row1Right" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest/Hao"]
+position = Vector3(0.75, 0.395, -13.58)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row2Left" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest/Hao"]
+position = Vector3(-0.75, 0.395, -12.8)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row2Right" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest/Hao"]
+position = Vector3(0.75, 0.395, -12.8)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row3Left" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest/Hao"]
+position = Vector3(-0.75, 0.395, -12.02)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row3Right" type="MeshInstance3D" parent="FloorTrigrams/KunSouthWest/Hao"]
+position = Vector3(0.75, 0.395, -12.02)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="KunSouthWest" type="StaticBody3D" parent="Collisions"]
+rotation = Vector3(0, -3.926991, 0)
+
+[node name="WallLeft" type="CollisionShape3D" parent="Collisions/KunSouthWest"]
+position = Vector3(-4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostLeft" type="CollisionShape3D" parent="Collisions/KunSouthWest"]
+position = Vector3(-2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailLeft" type="CollisionShape3D" parent="Collisions/KunSouthWest"]
+position = Vector3(-2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="WallRight" type="CollisionShape3D" parent="Collisions/KunSouthWest"]
+position = Vector3(4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostRight" type="CollisionShape3D" parent="Collisions/KunSouthWest"]
+position = Vector3(2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailRight" type="CollisionShape3D" parent="Collisions/KunSouthWest"]
+position = Vector3(2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="Landing" type="CollisionShape3D" parent="Collisions/KunSouthWest"]
+position = Vector3(0, 0.16, -18)
+shape = SubResource("LandingShape")
+
+
+[node name="DuiWest" type="Node3D" parent="Entrances"]
+rotation = Vector3(0, -4.712389, 0)
+editor_description = "Đoài · Trạch. Cửa mở rộng 4 m, điểm nối phòng tại ConnectionAnchor."
+
+[node name="WallLeft" parent="Entrances/DuiWest" instance=ExtResource("wall")]
+position = Vector3(-4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostLeft" parent="Entrances/DuiWest" instance=ExtResource("pillar")]
+position = Vector3(-2.55, 0.32, -16)
+
+
+[node name="WallRight" parent="Entrances/DuiWest" instance=ExtResource("wall")]
+position = Vector3(4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostRight" parent="Entrances/DuiWest" instance=ExtResource("pillar")]
+position = Vector3(2.55, 0.32, -16)
+
+
+[node name="Lintel" type="MeshInstance3D" parent="Entrances/DuiWest"]
+position = Vector3(0, 4.45, -16)
+mesh = SubResource("Lintel")
+
+
+[node name="Landing" parent="Entrances/DuiWest" instance=ExtResource("floor")]
+position = Vector3(0, 0, -18)
+scale = Vector3(1, 1, 1.1)
+
+[node name="RailLeft1" parent="Entrances/DuiWest" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailLeft2" parent="Entrances/DuiWest" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight1" parent="Entrances/DuiWest" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight2" parent="Entrances/DuiWest" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="ConnectionAnchor" type="Marker3D" parent="Entrances/DuiWest"]
+position = Vector3(0, 0.32, -20)
+gizmo_extents = 1.0
+
+[node name="DuiWest" type="Node3D" parent="FloorTrigrams"]
+rotation = Vector3(0, -4.712389, 0)
+editor_description = "Đoài · Trạch. Ba hào từ trên xuống: 011."
+
+[node name="Inlay" type="MeshInstance3D" parent="FloorTrigrams/DuiWest"]
+position = Vector3(0, 0.336, -8)
+mesh = SubResource("InlayStrip")
+
+
+[node name="Plate" type="MeshInstance3D" parent="FloorTrigrams/DuiWest"]
+position = Vector3(0, 0.35, -12.8)
+mesh = SubResource("RunePlate")
+cast_shadow = 0
+
+[node name="BorderSideLeft" type="MeshInstance3D" parent="FloorTrigrams/DuiWest"]
+position = Vector3(-1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndOuter" type="MeshInstance3D" parent="FloorTrigrams/DuiWest"]
+position = Vector3(0, 0.385, -14.35)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="BorderSideRight" type="MeshInstance3D" parent="FloorTrigrams/DuiWest"]
+position = Vector3(1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndInner" type="MeshInstance3D" parent="FloorTrigrams/DuiWest"]
+position = Vector3(0, 0.385, -11.25)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="Hao" type="Node3D" parent="FloorTrigrams/DuiWest"]
+
+
+[node name="Row1Left" type="MeshInstance3D" parent="FloorTrigrams/DuiWest/Hao"]
+position = Vector3(-0.75, 0.395, -13.58)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row1Right" type="MeshInstance3D" parent="FloorTrigrams/DuiWest/Hao"]
+position = Vector3(0.75, 0.395, -13.58)
+mesh = SubResource("HalfHao")
+cast_shadow = 0
+
+[node name="Row2" type="MeshInstance3D" parent="FloorTrigrams/DuiWest/Hao"]
+position = Vector3(0, 0.395, -12.8)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="Row3" type="MeshInstance3D" parent="FloorTrigrams/DuiWest/Hao"]
+position = Vector3(0, 0.395, -12.02)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="DuiWest" type="StaticBody3D" parent="Collisions"]
+rotation = Vector3(0, -4.712389, 0)
+
+[node name="WallLeft" type="CollisionShape3D" parent="Collisions/DuiWest"]
+position = Vector3(-4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostLeft" type="CollisionShape3D" parent="Collisions/DuiWest"]
+position = Vector3(-2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailLeft" type="CollisionShape3D" parent="Collisions/DuiWest"]
+position = Vector3(-2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="WallRight" type="CollisionShape3D" parent="Collisions/DuiWest"]
+position = Vector3(4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostRight" type="CollisionShape3D" parent="Collisions/DuiWest"]
+position = Vector3(2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailRight" type="CollisionShape3D" parent="Collisions/DuiWest"]
+position = Vector3(2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="Landing" type="CollisionShape3D" parent="Collisions/DuiWest"]
+position = Vector3(0, 0.16, -18)
+shape = SubResource("LandingShape")
+
+
+[node name="QianNorthWest" type="Node3D" parent="Entrances"]
+rotation = Vector3(0, -5.497787, 0)
+editor_description = "Càn · Thiên. Cửa mở rộng 4 m, điểm nối phòng tại ConnectionAnchor."
+
+[node name="WallLeft" parent="Entrances/QianNorthWest" instance=ExtResource("wall")]
+position = Vector3(-4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostLeft" parent="Entrances/QianNorthWest" instance=ExtResource("pillar")]
+position = Vector3(-2.55, 0.32, -16)
+
+
+[node name="WallRight" parent="Entrances/QianNorthWest" instance=ExtResource("wall")]
+position = Vector3(4.313708, 0.32, -16)
+scale = Vector3(1.156854, 1, 1)
+
+[node name="PostRight" parent="Entrances/QianNorthWest" instance=ExtResource("pillar")]
+position = Vector3(2.55, 0.32, -16)
+
+
+[node name="Lintel" type="MeshInstance3D" parent="Entrances/QianNorthWest"]
+position = Vector3(0, 4.45, -16)
+mesh = SubResource("Lintel")
+
+
+[node name="Landing" parent="Entrances/QianNorthWest" instance=ExtResource("floor")]
+position = Vector3(0, 0, -18)
+scale = Vector3(1, 1, 1.1)
+
+[node name="RailLeft1" parent="Entrances/QianNorthWest" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailLeft2" parent="Entrances/QianNorthWest" instance=ExtResource("fence")]
+position = Vector3(-2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight1" parent="Entrances/QianNorthWest" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -17)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="RailRight2" parent="Entrances/QianNorthWest" instance=ExtResource("fence")]
+position = Vector3(2.1, 0.32, -19)
+rotation = Vector3(0, 1.570796, 0)
+
+[node name="ConnectionAnchor" type="Marker3D" parent="Entrances/QianNorthWest"]
+position = Vector3(0, 0.32, -20)
+gizmo_extents = 1.0
+
+[node name="QianNorthWest" type="Node3D" parent="FloorTrigrams"]
+rotation = Vector3(0, -5.497787, 0)
+editor_description = "Càn · Thiên. Ba hào từ trên xuống: 111."
+
+[node name="Inlay" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest"]
+position = Vector3(0, 0.336, -8)
+mesh = SubResource("InlayStrip")
+
+
+[node name="Plate" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest"]
+position = Vector3(0, 0.35, -12.8)
+mesh = SubResource("RunePlate")
+cast_shadow = 0
+
+[node name="BorderSideLeft" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest"]
+position = Vector3(-1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndOuter" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest"]
+position = Vector3(0, 0.385, -14.35)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="BorderSideRight" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest"]
+position = Vector3(1.725, 0.385, -12.8)
+mesh = SubResource("PlateSide")
+cast_shadow = 0
+
+[node name="BorderEndInner" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest"]
+position = Vector3(0, 0.385, -11.25)
+mesh = SubResource("PlateEnd")
+cast_shadow = 0
+
+[node name="Hao" type="Node3D" parent="FloorTrigrams/QianNorthWest"]
+
+
+[node name="Row1" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest/Hao"]
+position = Vector3(0, 0.395, -13.58)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="Row2" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest/Hao"]
+position = Vector3(0, 0.395, -12.8)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="Row3" type="MeshInstance3D" parent="FloorTrigrams/QianNorthWest/Hao"]
+position = Vector3(0, 0.395, -12.02)
+mesh = SubResource("FullHao")
+cast_shadow = 0
+
+[node name="QianNorthWest" type="StaticBody3D" parent="Collisions"]
+rotation = Vector3(0, -5.497787, 0)
+
+[node name="WallLeft" type="CollisionShape3D" parent="Collisions/QianNorthWest"]
+position = Vector3(-4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostLeft" type="CollisionShape3D" parent="Collisions/QianNorthWest"]
+position = Vector3(-2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailLeft" type="CollisionShape3D" parent="Collisions/QianNorthWest"]
+position = Vector3(-2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="WallRight" type="CollisionShape3D" parent="Collisions/QianNorthWest"]
+position = Vector3(4.313708, 2.32, -16)
+shape = SubResource("WallShape")
+
+
+[node name="PostRight" type="CollisionShape3D" parent="Collisions/QianNorthWest"]
+position = Vector3(2.55, 2.32, -16)
+shape = SubResource("PostShape")
+
+
+[node name="RailRight" type="CollisionShape3D" parent="Collisions/QianNorthWest"]
+position = Vector3(2.1, 0.945, -18)
+shape = SubResource("RailShape")
+
+
+[node name="Landing" type="CollisionShape3D" parent="Collisions/QianNorthWest"]
+position = Vector3(0, 0.16, -18)
+shape = SubResource("LandingShape")
+
+
+
+[node name="PerimeterTorches" type="Node3D" parent="."]
+
+[node name="Torch1" parent="PerimeterTorches" instance=ExtResource("torch")]
+position = Vector3(15.79834, 0.32, 6.543887)
+light_energy = 1.6
+
+[node name="Torch2" parent="PerimeterTorches" instance=ExtResource("torch")]
+position = Vector3(6.543887, 0.32, 15.79834)
+light_energy = 1.6
+
+[node name="Torch3" parent="PerimeterTorches" instance=ExtResource("torch")]
+position = Vector3(-6.543887, 0.32, 15.79834)
+light_energy = 1.6
+
+[node name="Torch4" parent="PerimeterTorches" instance=ExtResource("torch")]
+position = Vector3(-15.79834, 0.32, 6.543887)
+light_energy = 1.6
+
+[node name="Torch5" parent="PerimeterTorches" instance=ExtResource("torch")]
+position = Vector3(-15.79834, 0.32, -6.543887)
+light_energy = 1.6
+
+[node name="Torch6" parent="PerimeterTorches" instance=ExtResource("torch")]
+position = Vector3(-6.543887, 0.32, -15.79834)
+light_energy = 1.6
+
+[node name="Torch7" parent="PerimeterTorches" instance=ExtResource("torch")]
+position = Vector3(6.543887, 0.32, -15.79834)
+light_energy = 1.6
+
+[node name="Torch8" parent="PerimeterTorches" instance=ExtResource("torch")]
+position = Vector3(15.79834, 0.32, -6.543887)
+light_energy = 1.6

@@ -67,11 +67,15 @@
 [ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="area_title_scene"]
 [ext_resource type="Resource" path="res://resources/world/zones/areas/fire/tier_2.tres" id="tier_2_area"]
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="tier2_spawn_script"]
+[ext_resource type="Script" path="res://objects/core/portal/portal.gd" id="tier3_route_portal"]
 [ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="2_a7umj"]
 
 [ext_resource type="PackedScene" path="res://objects/combat/hazards/forge_hammer/forge_hammer.tscn" id="forge_hammer_scene"]
 [ext_resource type="PackedScene" path="res://objects/combat/hazards/laser_statue/laser_statue.tscn" id="laser_statue_scene"]
 [ext_resource type="Resource" path="res://resources/combat/hazards/laser_statue_room08.tres" id="laser_statue_room08_data"]
+[sub_resource type="BoxShape3D" id="Tier3RouteTrigger"]
+size = Vector3(3.4, 2.4, 1.0)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n3gf7"]
 shading_mode = 0
 disable_fog = true
@@ -861,6 +865,27 @@ script = ExtResource("flag_reveal_script")
 flag = &"level_3.t2_boss_defeated"
 [node name="Tier3PortalFrame" parent="Tier2Fights/Tier3PortalReveal" instance=ExtResource("vortex_visual_scene")]
 transform = Transform3D(-1, 0, -0, 0, 1, 0, 0, 0, -1, 386, 28.32, -8.5)
+
+[node name="Tier3RoutePortal" type="Node3D" parent="Tier2Fights/Tier3PortalReveal"]
+position = Vector3(386, 28.32, -8.5)
+rotation = Vector3(0, 3.14159265, 0)
+script = ExtResource("tier3_route_portal")
+portal_id = &"tier3_route"
+target_zone = "res://levels/zone_3_fire/level_3/rooms/tier_3/tier_3_walkthrough.tscn"
+target_portal_id = &"start"
+
+[node name="Trigger" type="Area3D" parent="Tier2Fights/Tier3PortalReveal/Tier3RoutePortal"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tier2Fights/Tier3PortalReveal/Tier3RoutePortal/Trigger"]
+position = Vector3(0, 1.2, 0)
+shape = SubResource("Tier3RouteTrigger")
+
+[node name="Arrival" type="Marker3D" parent="Tier2Fights/Tier3PortalReveal/Tier3RoutePortal"]
+position = Vector3(0, 0.08, -2.5)
+script = ExtResource("tier2_spawn_script")
 [node name="Tier2Links" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -206, -4.32, -50.6)
 [node name="ArrivalCheckpoint" parent="Tier2Links" instance=ExtResource("fire_checkpoint_scene")]

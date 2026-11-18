@@ -1,0 +1,1091 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="floor"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/fence_rail_2m.glb" id="rail"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="wall"]
+
+[ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_torch_standing.tscn" id="torch"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/altar.glb" id="altar"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/gate_frame_4m.glb" id="frame"]
+
+[sub_resource type="StandardMaterial3D" id="TrigramBronze"]
+albedo_color = Color(0.72, 0.38, 0.14, 1)
+emission_enabled = true
+emission = Color(0.52, 0.17, 0.025, 1)
+emission_energy_multiplier = 0.45
+
+[sub_resource type="BoxMesh" id="TrigramMesh"]
+material = SubResource("TrigramBronze")
+
+[sub_resource type="BoxShape3D" id="Box1"]
+size = Vector3(28.02, 0.32, 28.02)
+
+[sub_resource type="BoxShape3D" id="Box2"]
+size = Vector3(12, 1.25, 0.68)
+
+[sub_resource type="BoxShape3D" id="Box3"]
+size = Vector3(0.68, 1.25, 12)
+
+[sub_resource type="BoxShape3D" id="Box4"]
+size = Vector3(4.02, 0.32, 14.02)
+
+[sub_resource type="BoxShape3D" id="Box5"]
+size = Vector3(0.34, 1.25, 14)
+
+[sub_resource type="BoxShape3D" id="Box6"]
+size = Vector3(14.02, 0.32, 4.02)
+
+[sub_resource type="BoxShape3D" id="Box7"]
+size = Vector3(14, 1.25, 0.34)
+
+[sub_resource type="BoxShape3D" id="Box8"]
+size = Vector3(7, 1.25, 0.34)
+
+[sub_resource type="BoxShape3D" id="Box9"]
+size = Vector3(3, 1.25, 0.34)
+
+[sub_resource type="BoxShape3D" id="Box10"]
+size = Vector3(4.02, 0.32, 6.02)
+
+[sub_resource type="BoxShape3D" id="Box11"]
+size = Vector3(0.34, 1.25, 6)
+
+[sub_resource type="BoxShape3D" id="Box12"]
+size = Vector3(8.02, 0.32, 7.02)
+
+[sub_resource type="BoxShape3D" id="Box13"]
+size = Vector3(0.34, 1.25, 7)
+
+[sub_resource type="BoxShape3D" id="Box14"]
+size = Vector3(8, 1.25, 0.34)
+
+[sub_resource type="BoxShape3D" id="Box15"]
+size = Vector3(2, 1.25, 0.34)
+
+[node name="Tier3WalkthroughConnectors" type="Node3D"]
+
+[node name="Hub" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="Hub"]
+position = Vector3(0, 0.16, 0)
+shape = SubResource("Box1")
+
+[node name="Tile1_1" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-12, 0, -12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile1_2" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-12, 0, -8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile1_3" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-12, 0, -4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile1_4" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-12, 0, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile1_5" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-12, 0, 4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile1_6" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-12, 0, 8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile1_7" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-12, 0, 12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile2_1" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-8, 0, -12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile2_2" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-8, 0, -8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile2_3" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-8, 0, -4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile2_4" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-8, 0, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile2_5" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-8, 0, 4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile2_6" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-8, 0, 8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile2_7" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-8, 0, 12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile3_1" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-4, 0, -12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile3_2" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-4, 0, -8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile3_3" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-4, 0, -4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile3_4" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-4, 0, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile3_5" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-4, 0, 4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile3_6" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-4, 0, 8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile3_7" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(-4, 0, 12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile4_1" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(0, 0, -12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile4_2" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(0, 0, -8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile4_3" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(0, 0, -4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile4_4" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(0, 0, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile4_5" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(0, 0, 4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile4_6" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(0, 0, 8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile4_7" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(0, 0, 12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile5_1" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(4, 0, -12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile5_2" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(4, 0, -8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile5_3" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(4, 0, -4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile5_4" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(4, 0, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile5_5" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(4, 0, 4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile5_6" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(4, 0, 8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile5_7" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(4, 0, 12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile6_1" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(8, 0, -12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile6_2" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(8, 0, -8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile6_3" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(8, 0, -4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile6_4" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(8, 0, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile6_5" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(8, 0, 4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile6_6" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(8, 0, 8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile6_7" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(8, 0, 12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile7_1" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(12, 0, -12)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile7_2" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(12, 0, -8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile7_3" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(12, 0, -4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile7_4" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(12, 0, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile7_5" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(12, 0, 4)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile7_6" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(12, 0, 8)
+scale = Vector3(1, 1, 1)
+
+[node name="Tile7_7" parent="Hub" instance=ExtResource("floor")]
+position = Vector3(12, 0, 12)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearAXCollision" type="CollisionShape3D" parent="Hub"]
+position = Vector3(-8, 0.945, -13.85)
+shape = SubResource("Box2")
+
+[node name="WallNearAX1" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-12, 0.32, -13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearAX2" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-8, 0.32, -13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearAX3" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-4, 0.32, -13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearAZCollision" type="CollisionShape3D" parent="Hub"]
+position = Vector3(-13.85, 0.945, -8)
+shape = SubResource("Box3")
+
+[node name="WallNearAZ1" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-13.85, 0.32, -12)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearAZ2" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-13.85, 0.32, -8)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearAZ3" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-13.85, 0.32, -4)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearBXCollision" type="CollisionShape3D" parent="Hub"]
+position = Vector3(8, 0.945, -13.85)
+shape = SubResource("Box2")
+
+[node name="WallNearBX1" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(4, 0.32, -13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearBX2" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(8, 0.32, -13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearBX3" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(12, 0.32, -13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearBZCollision" type="CollisionShape3D" parent="Hub"]
+position = Vector3(-13.85, 0.945, 8)
+shape = SubResource("Box3")
+
+[node name="WallNearBZ1" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-13.85, 0.32, 4)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearBZ2" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-13.85, 0.32, 8)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallNearBZ3" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-13.85, 0.32, 12)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarAXCollision" type="CollisionShape3D" parent="Hub"]
+position = Vector3(-8, 0.945, 13.85)
+shape = SubResource("Box2")
+
+[node name="WallFarAX1" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-12, 0.32, 13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarAX2" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-8, 0.32, 13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarAX3" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(-4, 0.32, 13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarAZCollision" type="CollisionShape3D" parent="Hub"]
+position = Vector3(13.85, 0.945, -8)
+shape = SubResource("Box3")
+
+[node name="WallFarAZ1" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(13.85, 0.32, -12)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarAZ2" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(13.85, 0.32, -8)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarAZ3" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(13.85, 0.32, -4)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarBXCollision" type="CollisionShape3D" parent="Hub"]
+position = Vector3(8, 0.945, 13.85)
+shape = SubResource("Box2")
+
+[node name="WallFarBX1" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(4, 0.32, 13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarBX2" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(8, 0.32, 13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarBX3" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(12, 0.32, 13.85)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarBZCollision" type="CollisionShape3D" parent="Hub"]
+position = Vector3(13.85, 0.945, 8)
+shape = SubResource("Box3")
+
+[node name="WallFarBZ1" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(13.85, 0.32, 4)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarBZ2" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(13.85, 0.32, 8)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="WallFarBZ3" parent="Hub" instance=ExtResource("wall")]
+position = Vector3(13.85, 0.32, 12)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="NorthWestLamp" parent="Hub" instance=ExtResource("torch")]
+position = Vector3(-9, 0.32, -9)
+
+[node name="NorthEastLamp" parent="Hub" instance=ExtResource("torch")]
+position = Vector3(9, 0.32, -9)
+
+[node name="SouthWestLamp" parent="Hub" instance=ExtResource("torch")]
+position = Vector3(-9, 0.32, 9)
+
+[node name="SouthEastLamp" parent="Hub" instance=ExtResource("torch")]
+position = Vector3(9, 0.32, 9)
+
+[node name="CentralAltar" parent="Hub" instance=ExtResource("altar")]
+position = Vector3(0, 0.32, 0)
+scale = Vector3(0.57, 0.57, 0.57)
+
+[node name="LyMark" type="Node3D" parent="Hub"]
+position = Vector3(0, 0.36, 10)
+rotation = Vector3(0, 0, 0)
+
+[node name="Row1" type="MeshInstance3D" parent="Hub/LyMark"]
+position = Vector3(0, 0, -0.42)
+scale = Vector3(1.72, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row2Left" type="MeshInstance3D" parent="Hub/LyMark"]
+position = Vector3(-0.5, 0, 0)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row2Right" type="MeshInstance3D" parent="Hub/LyMark"]
+position = Vector3(0.5, 0, 0)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row3" type="MeshInstance3D" parent="Hub/LyMark"]
+position = Vector3(0, 0, 0.42)
+scale = Vector3(1.72, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="KhamMark" type="Node3D" parent="Hub"]
+position = Vector3(0, 0.36, -10)
+rotation = Vector3(0, 3.14159, 0)
+
+[node name="Row1Left" type="MeshInstance3D" parent="Hub/KhamMark"]
+position = Vector3(-0.5, 0, -0.42)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row1Right" type="MeshInstance3D" parent="Hub/KhamMark"]
+position = Vector3(0.5, 0, -0.42)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row2" type="MeshInstance3D" parent="Hub/KhamMark"]
+position = Vector3(0, 0, 0)
+scale = Vector3(1.72, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row3Left" type="MeshInstance3D" parent="Hub/KhamMark"]
+position = Vector3(-0.5, 0, 0.42)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row3Right" type="MeshInstance3D" parent="Hub/KhamMark"]
+position = Vector3(0.5, 0, 0.42)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="TonMark" type="Node3D" parent="Hub"]
+position = Vector3(-10, 0.36, 0)
+rotation = Vector3(0, -1.5708, 0)
+
+[node name="Row1" type="MeshInstance3D" parent="Hub/TonMark"]
+position = Vector3(0, 0, -0.42)
+scale = Vector3(1.72, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row2" type="MeshInstance3D" parent="Hub/TonMark"]
+position = Vector3(0, 0, 0)
+scale = Vector3(1.72, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row3Left" type="MeshInstance3D" parent="Hub/TonMark"]
+position = Vector3(-0.5, 0, 0.42)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row3Right" type="MeshInstance3D" parent="Hub/TonMark"]
+position = Vector3(0.5, 0, 0.42)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="ChanMark" type="Node3D" parent="Hub"]
+position = Vector3(10, 0.36, 0)
+rotation = Vector3(0, 1.5708, 0)
+
+[node name="Row1Left" type="MeshInstance3D" parent="Hub/ChanMark"]
+position = Vector3(-0.5, 0, -0.42)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row1Right" type="MeshInstance3D" parent="Hub/ChanMark"]
+position = Vector3(0.5, 0, -0.42)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row2Left" type="MeshInstance3D" parent="Hub/ChanMark"]
+position = Vector3(-0.5, 0, 0)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row2Right" type="MeshInstance3D" parent="Hub/ChanMark"]
+position = Vector3(0.5, 0, 0)
+scale = Vector3(0.69, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="Row3" type="MeshInstance3D" parent="Hub/ChanMark"]
+position = Vector3(0, 0, 0.42)
+scale = Vector3(1.72, 0.034, 0.19)
+cast_shadow = 0
+mesh = SubResource("TrigramMesh")
+
+[node name="South" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="South"]
+position = Vector3(0, 0.16, 21)
+shape = SubResource("Box4")
+
+[node name="Tile1_1" parent="South" instance=ExtResource("floor")]
+position = Vector3(0, 0, 15.75)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile1_2" parent="South" instance=ExtResource("floor")]
+position = Vector3(0, 0, 19.25)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile1_3" parent="South" instance=ExtResource("floor")]
+position = Vector3(0, 0, 22.75)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile1_4" parent="South" instance=ExtResource("floor")]
+position = Vector3(0, 0, 26.25)
+scale = Vector3(1, 1, 0.875)
+
+[node name="RailACollision" type="CollisionShape3D" parent="South"]
+position = Vector3(-1.83, 0.945, 21)
+shape = SubResource("Box5")
+
+[node name="RailA1" parent="South" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, 15)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA2" parent="South" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, 17)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA3" parent="South" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, 19)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA4" parent="South" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, 21)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA5" parent="South" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, 23)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA6" parent="South" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, 25)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA7" parent="South" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, 27)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailBCollision" type="CollisionShape3D" parent="South"]
+position = Vector3(1.83, 0.945, 21)
+shape = SubResource("Box5")
+
+[node name="RailB1" parent="South" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, 15)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB2" parent="South" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, 17)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB3" parent="South" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, 19)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB4" parent="South" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, 21)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB5" parent="South" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, 23)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB6" parent="South" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, 25)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB7" parent="South" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, 27)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="North" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="North"]
+position = Vector3(0, 0.16, -21)
+shape = SubResource("Box4")
+
+[node name="Tile1_1" parent="North" instance=ExtResource("floor")]
+position = Vector3(0, 0, -26.25)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile1_2" parent="North" instance=ExtResource("floor")]
+position = Vector3(0, 0, -22.75)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile1_3" parent="North" instance=ExtResource("floor")]
+position = Vector3(0, 0, -19.25)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile1_4" parent="North" instance=ExtResource("floor")]
+position = Vector3(0, 0, -15.75)
+scale = Vector3(1, 1, 0.875)
+
+[node name="RailACollision" type="CollisionShape3D" parent="North"]
+position = Vector3(-1.83, 0.945, -21)
+shape = SubResource("Box5")
+
+[node name="RailA1" parent="North" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, -27)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA2" parent="North" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, -25)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA3" parent="North" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, -23)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA4" parent="North" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, -21)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA5" parent="North" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, -19)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA6" parent="North" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, -17)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA7" parent="North" instance=ExtResource("rail")]
+position = Vector3(-1.83, 0.32, -15)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailBCollision" type="CollisionShape3D" parent="North"]
+position = Vector3(1.83, 0.945, -21)
+shape = SubResource("Box5")
+
+[node name="RailB1" parent="North" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, -27)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB2" parent="North" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, -25)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB3" parent="North" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, -23)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB4" parent="North" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, -21)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB5" parent="North" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, -19)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB6" parent="North" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, -17)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB7" parent="North" instance=ExtResource("rail")]
+position = Vector3(1.83, 0.32, -15)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="West" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="West"]
+position = Vector3(-21, 0.16, 0)
+shape = SubResource("Box6")
+
+[node name="Tile1_1" parent="West" instance=ExtResource("floor")]
+position = Vector3(-26.25, 0, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="Tile2_1" parent="West" instance=ExtResource("floor")]
+position = Vector3(-22.75, 0, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="Tile3_1" parent="West" instance=ExtResource("floor")]
+position = Vector3(-19.25, 0, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="Tile4_1" parent="West" instance=ExtResource("floor")]
+position = Vector3(-15.75, 0, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="RailACollision" type="CollisionShape3D" parent="West"]
+position = Vector3(-21, 0.945, -1.83)
+shape = SubResource("Box7")
+
+[node name="RailA1" parent="West" instance=ExtResource("rail")]
+position = Vector3(-27, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA2" parent="West" instance=ExtResource("rail")]
+position = Vector3(-25, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA3" parent="West" instance=ExtResource("rail")]
+position = Vector3(-23, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA4" parent="West" instance=ExtResource("rail")]
+position = Vector3(-21, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA5" parent="West" instance=ExtResource("rail")]
+position = Vector3(-19, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA6" parent="West" instance=ExtResource("rail")]
+position = Vector3(-17, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA7" parent="West" instance=ExtResource("rail")]
+position = Vector3(-15, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailBCollision" type="CollisionShape3D" parent="West"]
+position = Vector3(-21, 0.945, 1.83)
+shape = SubResource("Box7")
+
+[node name="RailB1" parent="West" instance=ExtResource("rail")]
+position = Vector3(-27, 0.32, 1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB2" parent="West" instance=ExtResource("rail")]
+position = Vector3(-25, 0.32, 1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB3" parent="West" instance=ExtResource("rail")]
+position = Vector3(-23, 0.32, 1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB4" parent="West" instance=ExtResource("rail")]
+position = Vector3(-21, 0.32, 1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB5" parent="West" instance=ExtResource("rail")]
+position = Vector3(-19, 0.32, 1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB6" parent="West" instance=ExtResource("rail")]
+position = Vector3(-17, 0.32, 1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB7" parent="West" instance=ExtResource("rail")]
+position = Vector3(-15, 0.32, 1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="East" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="East"]
+position = Vector3(21, 0.16, 0)
+shape = SubResource("Box6")
+
+[node name="Tile1_1" parent="East" instance=ExtResource("floor")]
+position = Vector3(15.75, 0, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="Tile2_1" parent="East" instance=ExtResource("floor")]
+position = Vector3(19.25, 0, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="Tile3_1" parent="East" instance=ExtResource("floor")]
+position = Vector3(22.75, 0, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="Tile4_1" parent="East" instance=ExtResource("floor")]
+position = Vector3(26.25, 0, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="RailACollision" type="CollisionShape3D" parent="East"]
+position = Vector3(21, 0.945, -1.83)
+shape = SubResource("Box7")
+
+[node name="RailA1" parent="East" instance=ExtResource("rail")]
+position = Vector3(15, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA2" parent="East" instance=ExtResource("rail")]
+position = Vector3(17, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA3" parent="East" instance=ExtResource("rail")]
+position = Vector3(19, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA4" parent="East" instance=ExtResource("rail")]
+position = Vector3(21, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA5" parent="East" instance=ExtResource("rail")]
+position = Vector3(23, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA6" parent="East" instance=ExtResource("rail")]
+position = Vector3(25, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA7" parent="East" instance=ExtResource("rail")]
+position = Vector3(27, 0.32, -1.83)
+scale = Vector3(1, 1, 1)
+
+[node name="RailBCollision" type="CollisionShape3D" parent="East"]
+position = Vector3(17.5, 0.945, 1.83)
+shape = SubResource("Box8")
+
+[node name="RailB1" parent="East" instance=ExtResource("rail")]
+position = Vector3(14.875, 0.32, 1.83)
+scale = Vector3(0.875, 1, 1)
+
+[node name="RailB2" parent="East" instance=ExtResource("rail")]
+position = Vector3(16.625, 0.32, 1.83)
+scale = Vector3(0.875, 1, 1)
+
+[node name="RailB3" parent="East" instance=ExtResource("rail")]
+position = Vector3(18.375, 0.32, 1.83)
+scale = Vector3(0.875, 1, 1)
+
+[node name="RailB4" parent="East" instance=ExtResource("rail")]
+position = Vector3(20.125, 0.32, 1.83)
+scale = Vector3(0.875, 1, 1)
+
+[node name="RailCCollision" type="CollisionShape3D" parent="East"]
+position = Vector3(26.5, 0.945, 1.83)
+shape = SubResource("Box9")
+
+[node name="RailC1" parent="East" instance=ExtResource("rail")]
+position = Vector3(25.75, 0.32, 1.83)
+scale = Vector3(0.75, 1, 1)
+
+[node name="RailC2" parent="East" instance=ExtResource("rail")]
+position = Vector3(27.25, 0.32, 1.83)
+scale = Vector3(0.75, 1, 1)
+
+[node name="LyArch" parent="South" instance=ExtResource("frame")]
+position = Vector3(0, 0.32, 18)
+
+[node name="ExitConnector" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="ExitConnector"]
+position = Vector3(23, 0.16, 5)
+shape = SubResource("Box10")
+
+[node name="Tile1_1" parent="ExitConnector" instance=ExtResource("floor")]
+position = Vector3(23, 0, 3.5)
+scale = Vector3(1, 1, 0.75)
+
+[node name="Tile1_2" parent="ExitConnector" instance=ExtResource("floor")]
+position = Vector3(23, 0, 6.5)
+scale = Vector3(1, 1, 0.75)
+
+[node name="RailACollision" type="CollisionShape3D" parent="ExitConnector"]
+position = Vector3(21.17, 0.945, 5)
+shape = SubResource("Box11")
+
+[node name="RailA1" parent="ExitConnector" instance=ExtResource("rail")]
+position = Vector3(21.17, 0.32, 3)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA2" parent="ExitConnector" instance=ExtResource("rail")]
+position = Vector3(21.17, 0.32, 5)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailA3" parent="ExitConnector" instance=ExtResource("rail")]
+position = Vector3(21.17, 0.32, 7)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailBCollision" type="CollisionShape3D" parent="ExitConnector"]
+position = Vector3(24.83, 0.945, 5)
+shape = SubResource("Box11")
+
+[node name="RailB1" parent="ExitConnector" instance=ExtResource("rail")]
+position = Vector3(24.83, 0.32, 3)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB2" parent="ExitConnector" instance=ExtResource("rail")]
+position = Vector3(24.83, 0.32, 5)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="RailB3" parent="ExitConnector" instance=ExtResource("rail")]
+position = Vector3(24.83, 0.32, 7)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(1, 1, 1)
+
+[node name="FinishTerrace" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="FinishTerrace"]
+position = Vector3(23, 0.16, 11.5)
+shape = SubResource("Box12")
+
+[node name="Tile1_1" parent="FinishTerrace" instance=ExtResource("floor")]
+position = Vector3(21, 0, 9.75)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile1_2" parent="FinishTerrace" instance=ExtResource("floor")]
+position = Vector3(21, 0, 13.25)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile2_1" parent="FinishTerrace" instance=ExtResource("floor")]
+position = Vector3(25, 0, 9.75)
+scale = Vector3(1, 1, 0.875)
+
+[node name="Tile2_2" parent="FinishTerrace" instance=ExtResource("floor")]
+position = Vector3(25, 0, 13.25)
+scale = Vector3(1, 1, 0.875)
+
+[node name="WestCollision" type="CollisionShape3D" parent="FinishTerrace"]
+position = Vector3(19.17, 0.945, 11.5)
+shape = SubResource("Box13")
+
+[node name="West1" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(19.17, 0.32, 8.875)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="West2" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(19.17, 0.32, 10.625)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="West3" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(19.17, 0.32, 12.375)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="West4" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(19.17, 0.32, 14.125)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="EastCollision" type="CollisionShape3D" parent="FinishTerrace"]
+position = Vector3(26.83, 0.945, 11.5)
+shape = SubResource("Box13")
+
+[node name="East1" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(26.83, 0.32, 8.875)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="East2" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(26.83, 0.32, 10.625)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="East3" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(26.83, 0.32, 12.375)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="East4" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(26.83, 0.32, 14.125)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.875, 1, 1)
+
+[node name="SouthCollision" type="CollisionShape3D" parent="FinishTerrace"]
+position = Vector3(23, 0.945, 14.83)
+shape = SubResource("Box14")
+
+[node name="South1" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(20, 0.32, 14.83)
+scale = Vector3(1, 1, 1)
+
+[node name="South2" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(22, 0.32, 14.83)
+scale = Vector3(1, 1, 1)
+
+[node name="South3" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(24, 0.32, 14.83)
+scale = Vector3(1, 1, 1)
+
+[node name="South4" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(26, 0.32, 14.83)
+scale = Vector3(1, 1, 1)
+
+[node name="NorthACollision" type="CollisionShape3D" parent="FinishTerrace"]
+position = Vector3(20, 0.945, 8.17)
+shape = SubResource("Box15")
+
+[node name="NorthA1" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(20, 0.32, 8.17)
+scale = Vector3(1, 1, 1)
+
+[node name="NorthBCollision" type="CollisionShape3D" parent="FinishTerrace"]
+position = Vector3(26, 0.945, 8.17)
+shape = SubResource("Box15")
+
+[node name="NorthB1" parent="FinishTerrace" instance=ExtResource("rail")]
+position = Vector3(26, 0.32, 8.17)
+scale = Vector3(1, 1, 1)

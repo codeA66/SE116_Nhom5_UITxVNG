@@ -1,0 +1,75 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_arrow_launcher/ton_arrow_launcher.gd" id="script"]
+[ext_resource type="Script" path="res://components/combat/health/health_component.gd" id="health"]
+[ext_resource type="Script" path="res://components/combat/hurtbox/hurtbox_component.gd" id="hurt"]
+
+[sub_resource type="StandardMaterial3D" id="Stone"]
+albedo_color = Color(0.14, 0.085, 0.059, 1)
+
+[sub_resource type="StandardMaterial3D" id="Bronze"]
+albedo_color = Color(0.36, 0.19, 0.078, 1)
+metallic = 0.65
+[sub_resource type="StandardMaterial3D" id="Fire"]
+albedo_color = Color(1, 0.42, 0.05, 1)
+shading_mode = 0
+[sub_resource type="BoxMesh" id="Base"]
+size = Vector3(1.18, 0.62, 1.16)
+material = SubResource("Stone")
+
+[sub_resource type="BoxMesh" id="Rail"]
+size = Vector3(0.44, 0.24, 1.45)
+material = SubResource("Bronze")
+
+[sub_resource type="BoxMesh" id="Bow"]
+size = Vector3(1.62, 0.13, 0.18)
+material = SubResource("Bronze")
+
+[sub_resource type="BoxMesh" id="Bolt"]
+size = Vector3(0.06, 0.06, 0.67)
+material = SubResource("Fire")
+
+[sub_resource type="BoxShape3D" id="Target"]
+size = Vector3(1.42, 1.7, 1.36)
+
+[node name="TonArrowLauncher" type="Node3D"]
+script = ExtResource("script")
+arrow_mesh = SubResource("Bolt")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("health")
+max_health = 3
+
+[node name="HurtboxComponent" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+script = ExtResource("hurt")
+health = NodePath("../Health")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("Target")
+
+[node name="Machine" type="Node3D" parent="."]
+
+[node name="Base" type="MeshInstance3D" parent="Machine"]
+position = Vector3(0, 0.31, 0)
+mesh = SubResource("Base")
+
+[node name="Rail" type="MeshInstance3D" parent="Machine"]
+position = Vector3(0, 0.83, 0)
+mesh = SubResource("Rail")
+
+[node name="Bow" type="MeshInstance3D" parent="Machine"]
+position = Vector3(0, 0.89, 0.54)
+mesh = SubResource("Bow")
+
+[node name="Warning" type="OmniLight3D" parent="Machine"]
+position = Vector3(0, 1.1, 0.61)
+light_color = Color(1, 0.49, 0.18, 1)
+light_energy = 2.7
+omni_range = 4.5
+
+[node name="Muzzle" type="Marker3D" parent="Machine"]
+position = Vector3(0, 0.89, 0.91)

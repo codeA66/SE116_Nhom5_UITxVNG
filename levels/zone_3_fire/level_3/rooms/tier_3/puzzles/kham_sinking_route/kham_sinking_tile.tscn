@@ -1,0 +1,5 @@
+[gd_scene format=3]
+[ext_resource type="PackedScene" path="res://objects/traversal/crumbling_floor/crumbling_floor.tscn" id="base"]
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/kham_sinking_route/kham_sinking_tile.gd" id="script"]
+[node name="KhamSinkingTile" instance=ExtResource("base")]
+script = ExtResource("script")

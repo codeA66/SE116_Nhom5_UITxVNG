@@ -22,6 +22,7 @@ const GROUP := &"hurtbox"
 var invulnerable: bool = false
 
 var _invincible_timer: float = 0.0
+var _hit_interceptors: Array[Callable] = []
 
 
 func _ready() -> void:
@@ -53,13 +54,27 @@ func is_alive() -> bool:
 	return health == null or not health.is_dead()
 
 
+## Trả true từ callback để nhận xử lý đòn hợp lệ trước khi trừ máu và phát hurt.
+func add_hit_interceptor(interceptor: Callable) -> void:
+	if interceptor.is_valid() and not _hit_interceptors.has(interceptor):
+		_hit_interceptors.append(interceptor)
+
+
+func remove_hit_interceptor(interceptor: Callable) -> void:
+	_hit_interceptors.erase(interceptor)
+
+
 ## Trả về true nếu đòn thực sự được tính (không bị bất tử chặn, mục tiêu còn sống)
 func receive_hit(info: DamageInfo) -> bool:
 	if invulnerable or not is_alive() or (is_invincible() and not info.ignores_invincibility):
 		return false
+	var damage_taken := _resolve_damage(info)
+	if damage_taken > 0:
+		for interceptor: Callable in _hit_interceptors:
+			if interceptor.is_valid() and interceptor.call(info):
+				return true
 	# Lấy cái dài hơn: đòn xuyên bất tử (tick cháy, bẫy) trúng lúc đang dash không được cắt ngắn bất tử của dash
 	_invincible_timer = maxf(_invincible_timer, invincibility_time)
-	var damage_taken := _resolve_damage(info)
 	damage_taken = _apply_damage(damage_taken)
 	hurt.emit(info, damage_taken)
 	return true

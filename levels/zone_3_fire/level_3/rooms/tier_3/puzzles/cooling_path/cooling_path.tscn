@@ -1,0 +1,15 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/cooling_path/cooling_path.gd" id="script"]
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(3, 0.8, 8)
+[node name="CoolingPath" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("script")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.6, 0)
+shape = SubResource("shape")
+[node name="HeatTimer" type="Timer" parent="."]
+one_shot = true
+process_callback = 0

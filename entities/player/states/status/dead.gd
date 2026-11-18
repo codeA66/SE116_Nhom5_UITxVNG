@@ -1,6 +1,6 @@
 extends PlayerState
 ## Chết: (nếu chết vì bẫy) nháy đỏ trước, rồi animation ngã, đứng yên, chờ rồi hồi sinh tại checkpoint với đầy máu.
-## Không chuyển sang state khác: hồi sinh là tải lại khu, player mới sẽ bắt đầu từ Idle.
+## Phòng có hồi sinh riêng có thể đặt player về điểm đầu sau animation ngã.
 
 @export var respawn_delay: float = 1.5
 ## Độ hãm vận tốc còn lại lúc ngã (m/s mỗi giây)
@@ -35,8 +35,9 @@ func physics_update(delta: float) -> void:
 		_start_fall()
 	if _elapsed >= _flash_time + respawn_delay and not _respawn_requested:
 		_respawn_requested = true
-		GameState.reset_player_health()
-		SceneManager.respawn_at_checkpoint()
+		if not player.request_local_respawn():
+			GameState.reset_player_health()
+			SceneManager.respawn_at_checkpoint()
 
 
 func _start_fall() -> void:
