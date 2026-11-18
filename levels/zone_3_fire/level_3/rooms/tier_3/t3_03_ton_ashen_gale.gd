@@ -8,8 +8,10 @@ signal seal_released(seal_id: StringName)
 const SEAL_ID: StringName = &"ton"
 const SEAL_FLAG: StringName = &"level_3.t3_seal_ton"
 const DEFAULT_DATA: TonPuzzleData = preload("res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_puzzle_data.tres")
+const TorchTrap = preload("res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_torch_trap.gd")
 
 @export var data: TonPuzzleData = DEFAULT_DATA
+@export var seal_flag: StringName = SEAL_FLAG
 
 var _player: Player
 var _stations: Array[TonFlameStation] = []
@@ -24,8 +26,9 @@ var _reset_pending: bool = false
 @onready var _restart: Marker3D = $Restart
 @onready var _presence: Area3D = $Presence
 @onready var _fall: Area3D = $Fall
-@onready var _shortcut: StaticBody3D = $ShortcutGate
+@onready var _required_torch: TonFlameStation = $Stations/ReturnTorch
 @onready var _entry_gate: StaticBody3D = $EntryGate
+@onready var _torch_trap: TorchTrap = $FalseTrailTrap
 
 
 func _ready() -> void:
@@ -84,6 +87,8 @@ func _can_transfer(player: Player, station: TonFlameStation) -> bool:
 		return false
 	if station.role == TonFlameStation.Role.SOURCE:
 		return not _flame.is_carried_by(player)
+	if station.role == TonFlameStation.Role.SEAL and not _required_torch.is_lit():
+		return false
 	return _flame.is_carried_by(player) and not station.is_lit()
 
 
@@ -97,15 +102,16 @@ func _on_transferred(player: Player, station: TonFlameStation) -> void:
 			set_physics_process(true)
 		TonFlameStation.Role.TORCH:
 			station.set_lit(true)
+			if station == _torch_trap.torch:
+				_torch_trap.arm()
 		TonFlameStation.Role.SEAL:
 			_complete = true
 			_flame.clear()
 			for screen: TonWindScreen in _screens:
 				screen.reset(false)
-			_set_gate(_shortcut, false)
 			set_physics_process(false)
 			station.set_lit(true)
-			GameState.set_flag(SEAL_FLAG)
+			GameState.set_flag(seal_flag)
 			activated.emit()
 			seal_released.emit(SEAL_ID)
 
@@ -168,20 +174,19 @@ func _reset_attempt() -> void:
 	_gust = false
 	_warning = false
 	_flame.clear()
+	_torch_trap.reset()
 	for screen: TonWindScreen in _screens:
 		screen.reset(false)
 	for station: TonFlameStation in _stations:
 		station.set_lit(station.role == TonFlameStation.Role.SOURCE)
 	_set_gate(_entry_gate, true)
-	_set_gate(_shortcut, true)
 
 
 func _restore_progress() -> void:
-	_complete = GameState.has_flag(SEAL_FLAG)
+	_complete = GameState.has_flag(seal_flag)
 	_reset_attempt()
 	if _complete:
 		_set_gate(_entry_gate, false)
-		_set_gate(_shortcut, false)
 		for station: TonFlameStation in _stations:
 			station.set_lit(true)
 

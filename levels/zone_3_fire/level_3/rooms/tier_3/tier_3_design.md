@@ -441,16 +441,16 @@ Khảm hiện nối và chơi thử qua preview; chưa tích hợp vào tuyến 
 
 ### 5.1. Vị trí và bố cục hiện tại
 
-- Phòng nối với cửa Đông Nam của Thái Cực Đỉnh trong `crucible_heart_preview.tscn`. Gốc phòng ở `(14.142136, 0, 14.142136)` và quay 45° quanh trục Y so với sảnh trung tâm.
+- Phòng nối với cửa Đông Nam của Thái Cực Đỉnh trong `crucible_heart_preview.tscn`. Trong preview hiện tại, gốc phòng ở `(25.455844, 0, 25.455844)` và quay 45° quanh trục Y so với sảnh trung tâm.
 - Từ tiền sảnh, tuyến chính đi theo local +Z qua cụm gió 1, rẽ +X qua cụm 2 rồi tiếp tục +Z qua cụm 3. Cả tuyến đi bộ hoặc chạy được.
-- Ở chiếu nghỉ sau cụm 1, nhánh đi thẳng theo +Z dẫn tới một đuốc ở cuối đường cụt. Tuyến chính rẽ sang cầu ngang.
-- Sau cụm 3, cầu dài bên phải dẫn tới cầu ngang về tiền sảnh. Bệ giải ấn nằm trên cầu ngang. Cổng lối tắt ở phía tiền sảnh khóa đường tiếp cận bệ từ đầu phòng.
+- Ở chiếu nghỉ sau cụm 1, nhánh đi thẳng theo +Z dẫn tới đuốc bẫy ở cuối đường cụt. Tuyến chính rẽ sang cầu ngang.
+- Sau cụm 3, cầu dài bên phải có cụm gió 4, hai bình phong và hốc trú sau tường. Đuốc trong hốc là điều kiện bắt buộc của bệ. Đường lên bệ dốc về cầu ngang trên cao, có mép xuống một chiều về tiền sảnh.
 - Phòng dùng khoảng tối để làm nổi bật tàn đỏ của đuốc, ánh sáng của đuốc đã thắp và hướng gió. Thử thách hiện dùng gió và vực. Máy bắn tên đã được gỡ khỏi phòng.
 
 ### 5.2. Gimmick đã triển khai
 
 - Bấm **truyền lửa** tại nguồn để mở cửa vào tuyến. Lửa bay theo player, không tự hao và vẫn được giữ khi châm đuốc dọc đường. Đuốc đã thắp chỉ chiếu sáng và giữ sáng tới hết lượt.
-- Ba cụm gió dùng một chu kỳ. Mũi tên sát sàn hiện ở cuối thời gian lặng để báo hướng. Vệt tro dài và sáng xuất hiện khi gió thổi.
+- Bốn cụm gió dùng một chu kỳ. Mũi tên sát sàn hiện ở cuối thời gian lặng để báo hướng. Vệt tro dài và sáng xuất hiện khi gió thổi.
 - Bình phong tự qua lại ngang với từng luồng. Khi player đứng sau phần chắn, bình phong chặn lực đẩy và phơi gió. Khi đứng trong gió, độ phơi tăng dần, lửa lập lòe rồi tắt khi chạm ngưỡng. Khi được che hoặc rời gió, độ phơi giảm dần.
 - Đòn không có lửa cộng độ phơi ngay cả khi trú. Đòn vũ khí ép lửa và kỹ năng lửa trong danh sách cấu hình không cộng phơi. Roll đang thực hiện dập lửa ngay.
 - Hết lửa hoặc rơi vực đưa player về đầu phòng với đầy máu. Đuốc, nhịp gió và vị trí bình phong về trạng thái đầu lượt.
@@ -467,9 +467,11 @@ Tọa độ dưới đây là local của scene phòng. Hướng gió cũng tín
 | `First` | `(0, 1.24, 16.85)` | Cụm 1, thổi theo +X |
 | `Bend` | `(9, 1.24, 25.25)` | Cụm 2, thổi theo −Z |
 | `Final` | `(17, 1.24, 38.5)` | Cụm 3, thổi theo −X |
-| `FalseTrailTorch` | `(-0.12, 0.32, 51.35)` | Đuốc ở cuối nhánh cụt |
-| `Seal` | `(8.15, 0.32, 5)` | Bệ giải ấn tại dấu X đỏ trên sơ đồ |
-| `ShortcutGate` | `(3.1, 1.65, 5)` | Mở lối từ bệ về tiền sảnh sau khi giải ấn |
+| `FalseTrailTorch` | `(-0.12, 0.32, 51.35)` | Đuốc bẫy ở cuối nhánh cụt |
+| `CornerTorch` | `(25.45, 0.32, 50.55)` | Đuốc X cam soi đoạn cầu dọc ở góc dưới |
+| `Return` | `(25.45, 1.24, 27.4)` | Cụm 4, thổi theo +X. Hai bình phong xuất phát lệch 1,45 giây |
+| `Seal` | `(8.15, 2.45, 5)` | Bệ giải ấn trên lối hồi có ký hiệu Tốn tự phát sáng |
+| `ReturnTorch` | `(27, 0.32, 26.2)` | Đuốc bắt buộc sau tường che trên cầu dọc |
 
 ### 5.4. Walkthrough cho người chơi
 
@@ -479,29 +481,29 @@ Từ cửa Đông Nam, tới đuốc nguồn đã cháy và bấm **truyền l�
 
 #### Bước 2 — Vượt cụm đầu và đọc chỗ rẽ
 
-Nhìn mũi tên báo hướng, nương theo phía khuất của bình phong và tiến khi gió lặng. Sau cụm đầu, rẽ qua cầu ngang. Nếu đi thẳng đến đuốc đường cụt, có thể châm đuốc rồi quay lại chiếu nghỉ.
+Nhìn mũi tên báo hướng, nương theo phía khuất của bình phong và tiến khi gió lặng. Sau cụm đầu, rẽ qua cầu ngang. Nếu thắp đuốc cuối nhánh cụt, cả mảng sàn dưới đuốc rung trong 2,7 giây rồi sập. Chạy ngược về phần sàn cố định trước khi hết thời gian. Rơi khỏi mảng sàn này đặt lại phòng.
 
 #### Bước 3 — Qua hai cụm còn lại
 
-Ở cụm 2, quan sát lại hướng gió để chọn đúng phía bình phong. Tạm dừng tại khoảng sàn an toàn nếu lửa đang lập lòe. Canh nhịp để vượt cụm 3 rồi đi theo cầu dài bên phải tới cầu ngang.
+Ở cụm 2, quan sát lại hướng gió để chọn đúng phía bình phong. Tạm dừng tại khoảng sàn an toàn nếu lửa đang lập lòe. Canh nhịp vượt cụm 3, sau đó rẽ qua cầu dài bên phải vào cụm 4. Nương theo hai bình phong. Ở giữa cầu, đi vòng vào phía khuất của tường và thắp đuốc bắt buộc. Tiếp tục tới dốc dẫn lên cầu ngang.
 
 #### Bước 4 — Giải ấn và trở về
 
-Giữ lửa tới bệ trên cầu ngang, bấm **truyền lửa**, rồi đi qua cổng vừa mở để về tiền sảnh và Thái Cực Đỉnh.
+Giữ lửa tới bệ trên cầu ngang, bấm **truyền lửa**, rồi đi tới mép lối hồi và bước xuống tiền sảnh để về Thái Cực Đỉnh.
 
 ### 5.5. Đáp án cho biên tập và debug
 
 | Kiểm tra | Kết quả mong đợi |
 |---|---|
-| Mang lửa và thắp đuốc đường cụt | Đuốc sáng, player giữ lửa, chưa có cờ giải ấn |
-| Đi vào cầu ngang từ tiền sảnh trước khi giải | Va chạm cổng chặn đường tới bệ |
-| Vòng đủ tuyến và thắp bệ | Bệ sáng, gió dừng và cổng về mở |
+| Mang lửa và thắp đuốc đường cụt | Cả mảng sàn rung rồi sập. Nếu kịp chạy thoát, player giữ lửa |
+| Đi vào cầu ngang từ tiền sảnh trước khi giải | Chênh cao chặn chiều đi ngược tới bệ |
+| Vòng đủ tuyến và thắp bệ | Nếu đuốc bắt buộc đã thắp, bệ sáng và gió dừng |
 | Làm tắt lửa trước khi giải | Player hồi đầy máu ở đầu phòng và phải nhận lửa lại |
 
 ### 5.6. Tiến độ và liên kết với lò
 
 - Phòng ghi cờ `level_3.t3_seal_ton` vào `GameState` khi bệ được thắp, sau đó phát `activated` và `seal_released(&"ton")`.
-- Trung tâm đọc cờ để cập nhật ký hiệu và tiến độ tám ấn. Nạp lại cờ đã hoàn thành sẽ mở cổng, bật sáng đuốc và giữ gió ở trạng thái tắt.
+- Trung tâm đọc cờ để cập nhật ký hiệu và tiến độ tám ấn. Nạp lại cờ đã hoàn thành sẽ mở cửa vào tuyến, bật sáng đuốc và giữ gió ở trạng thái tắt.
 - Reset thử thách trước khi hoàn thành chỉ đặt lại các thành phần trong phòng Tốn và trạng thái player. Thao tác này không ghi thêm checkpoint.
 
 ### 5.7. Các thành phần và thông số
@@ -511,13 +513,19 @@ Giữ lửa tới bệ trên cầu ngang, bấm **truyền lửa**, rồi đi qu
 | `t3_03_ton_ashen_gale.gd` | Một nhịp gió dùng chung, trạng thái cổng, reset lượt và tiến độ |
 | `puzzles/ton_puzzle_data.tres` | Lặng 1,8 giây, báo trước trong 0,45 giây cuối, thổi 4,2 giây |
 | `puzzles/ton_carried_flame/` | Lửa bay theo, lập lòe và tắt. Ngưỡng phơi 1,6, bắt đầu báo ở 45%, hồi 0,65 mỗi giây, đòn không lửa cộng 0,55 |
-| `puzzles/ton_flame_station/` | Nguồn, đuốc và bệ dùng chung tương tác. Đèn khi thắp có năng lượng 5,2 và tầm 10,5 m |
-| `puzzles/ton_wind_screen/` | Vùng gió, bình phong, mũi tên và vệt tro. Cụm 1/2/3 có hành trình 8/8/11 m và tốc độ bình phong 2,6/2,2/2,7 m/s |
+| `puzzles/ton_flame_station/` | Nguồn, đuốc và bệ dùng chung tương tác. Đèn khi thắp có năng lượng 6,5 và tầm 15 m. Tàn đuốc tự phát sáng. Lửa đi theo chiếu tới 9 m |
+| `puzzles/ton_wind_screen/` | Vùng gió, bình phong, mũi tên và vệt tro. Cụm 1/2/3 có hành trình 8/8/11 m và tốc độ bình phong 2,6/2,2/2,7 m/s. Cụm 4 dài 37,2 m, bình phong chạy 3,6 m/s |
 | `entities/player/player.gd` | Phát tín hiệu `combat_action_committed` để phòng tính phơi cho đòn đã thực sự tung |
 
 ### 5.8. Đã kiểm tra và phần chưa làm
 
-Đã chạy thử trên Godot 4.7.2 bằng input di chuyển. Tuyến đi qua cả ba cụm, rẽ vào đường cụt, thắp đuốc, quay lại cầu và giải ấn ở vị trí mới. Đã đo va chạm cổng trước và sau khi giải, kiểm tra nạp lại tiến độ và xem ánh đuốc, mũi tên, vệt tro qua camera preview. Vùng hình ảnh gió đã được kiểm tra với hai kích thước lệch và rất nhỏ/rất lớn. Mục tiêu 2–3 phút vẫn cần đo qua lượt chơi với người mới.
+Các đuốc được đánh dấu dùng nhóm đèn cục bộ bố trí theo hình dạng của tuyến. Đuốc ngã rẽ đầu soi hai nhánh tạo thành chữ L. Đuốc cụm 2, đuốc sau tường và đuốc X cam soi các dải dọc. Hai góc quay vào cầu bên phải đã được bổ sung mặt sàn. Bẫy `puzzles/ton_torch_trap.gd` làm rơi cả mảng 5,7 × 12,8 m và hoàn nguyên cùng lượt thử.
+
+Đã kiểm tra chạy bộ thoát bẫy, đứng lại để rơi và reset, đi qua hai phần sàn lấp góc, và việc nhóm đèn chỉ bật khi thắp đúng đuốc. Đã xem cả bốn vùng sáng qua camera game.
+
+Lượt trước đã kiểm thử ba cụm đầu và nhánh cụt trên Godot 4.7.2, đồng thời xem ánh đuốc, mũi tên và vệt tro qua camera. Mục tiêu 2–3 phút vẫn cần đo qua lượt chơi với người mới.
+
+Lượt cập nhật cầu dọc đã kiểm tra bằng input di chuyển cả hai nửa của cụm 4, lối vòng qua tường tới đuốc và dốc lên bệ. Đã xác nhận không thể đi ngược từ tiền sảnh lên lối hồi, bệ chỉ nhận lửa sau khi đuốc bắt buộc sáng, player bước xuống được và ánh sáng phục hồi khi ra khỏi vùng tối. Đã xem tàn đuốc trước và sau khi thắp cùng ký hiệu Tốn bằng camera game.
 
 ## 6. Phòng 4–8 — Thiết kế và hiện trạng
 

@@ -1,0 +1,171 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/chan_hammer/chan_hammer.gd" id="1"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/impact/shockwave_ring.gdshader" id="ring"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="forge_pillar"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/pedestal_001.glb" id="anvil_pedestal"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/rock_small_003.glb" id="meteorite"]
+
+[sub_resource type="StandardMaterial3D" id="Metal"]
+albedo_color = Color(0.29, 0.26, 0.29, 1)
+metallic = 0.56
+roughness = 0.63
+
+[sub_resource type="StandardMaterial3D" id="ForgedBronze"]
+albedo_color = Color(0.43, 0.25, 0.15, 1)
+metallic = 0.65
+roughness = 0.49
+
+[sub_resource type="StandardMaterial3D" id="Coil"]
+albedo_color = Color(0.33, 0.44, 0.96, 1)
+emission_enabled = true
+emission = Color(0.21, 0.28, 1, 1)
+emission_energy_multiplier = 1.6
+
+[sub_resource type="BoxMesh" id="AnvilTop"]
+size = Vector3(1.5, 0.24, 1.08)
+material = SubResource("Metal")
+
+[sub_resource type="BoxMesh" id="HammerHead"]
+size = Vector3(1.65, 0.62, 1.18)
+material = SubResource("Metal")
+
+[sub_resource type="BoxMesh" id="Rod"]
+size = Vector3(0.28, 2.2, 0.28)
+material = SubResource("Metal")
+
+[sub_resource type="BoxMesh" id="Beam"]
+size = Vector3(2.72, 0.47, 0.68)
+material = SubResource("Metal")
+
+[sub_resource type="BoxMesh" id="HammerBand"]
+size = Vector3(0.16, 0.64, 1.2)
+material = SubResource("ForgedBronze")
+
+[sub_resource type="BoxMesh" id="BeamBand"]
+size = Vector3(0.24, 0.50, 0.70)
+material = SubResource("ForgedBronze")
+
+[sub_resource type="BoxMesh" id="Bolt"]
+size = Vector3(1.38, 0.13, 0.035)
+material = SubResource("Coil")
+
+[sub_resource type="BoxShape3D" id="FootCollision"]
+size = Vector3(1.7, 0.9, 1.3)
+
+[sub_resource type="PlaneMesh" id="WavePlane"]
+size = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="Wave"]
+resource_local_to_scene = true
+shader = ExtResource("ring")
+shader_parameter/radius = 0.0
+shader_parameter/plane_size = 2.0
+shader_parameter/max_radius = 1.0
+shader_parameter/band_width = 0.26
+shader_parameter/wave_color = Color(0.40, 0.25, 1.0, 1)
+shader_parameter/front_color = Color(0.63, 0.91, 1, 1)
+shader_parameter/preview = false
+shader_parameter/preview_progress = 0.58
+
+[sub_resource type="ShaderMaterial" id="Telegraph"]
+resource_local_to_scene = true
+shader = ExtResource("ring")
+shader_parameter/radius = 1.0
+shader_parameter/plane_size = 2.0
+shader_parameter/max_radius = 1.0
+shader_parameter/band_width = 0.26
+shader_parameter/wave_color = Color(0.40, 0.25, 1.0, 1)
+shader_parameter/front_color = Color(0.63, 0.91, 1, 1)
+shader_parameter/preview = true
+shader_parameter/preview_progress = 0.58
+
+[sub_resource type="AudioStreamWAV" id="HammerStrike"]
+format = 1
+mix_rate = 8000
+data = PackedByteArray("AAA8G9IT1i8oJxMlBzUEI1AtWBYVFBc4Wgv27jDcO71n1LvaYeh+7D7hTw7SB7TwpgDH8xcOACt/KG0hK/nU/dT+Ptno5LHemuH0BdoD1/0W51bqqhHdDUoj5jP1I7k5jjTyGG39nOb7/fX5/O+o9FjOSMuc2LrL5c2K0VT2ixZ7F5IomxMQB8ollSUzI4Qe1xybJKALWf7X5bzEBOCi8b/vefRh7+b6pfq5/NwF9/X6DwQxoSbiHDgG3fbv8q7s8/Ni4ufhe/8H9uHqaOVZ4JP1sQuyJPslyxmlLgUq6BRND3n/eAGCC8sM6f0Q2XnWmdujz+HbHuI26h8E6hItFAsAfv+CF4MZGiQuKLwV9RMzEPwAbOe91yLqrPFw9nX/Bu0Y6Qv4L/8BAdQA4hVHJTQibCNbCtjxTfmX/Qb6dvAe74DzKeqF67vkS9bm7OYJ0RYFGnoXexreFWQXNxk8BiQJ/BhiEvkBUOxL3uDYr90A7cfnqOjK/70FPgLp/lX9cgaYFeUoLyQnEDURpQvq+8fz4uow6tzynP9T/WHnBOd38gr2MgNQDJsPoBgfItYflgel+sYB8gAKBPoDffRJ6/vrX+wY4dvbxO5P/t4K+hZTDr0Fngw+FnYVQg79E54WTw85C673b+Ca4PXryfHc7qfxVPco9p79tf8S9y4BwRbRIdAdXhS5DFUBf/8XAVPzQu9m+tz9nfY17Ibnlecz8xgIIAsNCToUURnvE7wLAgWOAR0FyRCZCxj3HvDK7QvoIefd6JHs9vWoB5QO8QHG/tIGxAuKE3oYqhSxD9EQwQ1g+Wnqqex370j11voE9bDtX/Ha+sb5APiUBO0PfBeQHZoUogQCAGoFQwT3+9r7yftm99X3PvFo5LTlB/bbA84GFQrkDDsK9w3gD3QGswMVDfcSvwsOAOT1wep36vHxHu8n7Vb3UgHfAW/+hv0c/fwErRX1GBcRoA/xDqoHZv7D9/bxKvIp/Xb/cvPT7T7wvvKt99v+PgN5B0ITTRn0DfIDigMFBCwGPggCA5L5Afib+R/wpucW7Af0m/2lB3cI5QE0AqkKqwvABx8LVg5yDsMOtwZS9mftDfLq9YPzRvXC95P3/vtN/tb4fPgKBbMRsRNgEgkPKgfcBHQF7f289kb6GwA4/c32q/Hc68Du5PpDAAEA2AXkDYsOqwp3B4IChAK3C+oNbgQe/X76GPal8dfwxe+X8Vf9CAa7AUT9cP/UAv8GugzgDckKbA24D7wFkfl79Tj1T/e2+1L71PQg9Az6t/nT9ln7ywILCqARbxKJCTUD/AU1BkcBAQC4/7L9z/1i+7PxQOt+8Y76Dv7CAcoEaQTuBjsKYgaKAQQGNA2dDCAIFALt+OT0evdI9irySfUK/W7/VP5r/ZT6evzWBogNuQvNCr0MaQraBFgANvrD9m38/AD7+wX2OfVZ9SD2Pfrz/Iv+uQYOD8wMTgYYBOQDcQQyB5UGcAA3/tL/8vrr8tHwO/PG9x//ZQMdAIT+mAPoBfcDEgX0B8MJTAySC1MC8/iW+EX6jviF+Kz5Z/lo+zH+Kfsv9y38NQWRCZILvQv1B7QFnwZXA638N/xwAJcAvP0u+l30GfJp9xb8+PuA/gkFJQi1B7YGDgPfAN0FnwqlB8YC9QAT/gH6GPh69XzzyPhSAKwAbf1s/dL+lADjBHYHOwYwCGMMygkTAhr9Aftq+gX9e/6H+ib4AfuW+734+viE/OYARAfZC9AIBQS9BL8FMgOgAXkBXQCSAN8AXvsK9AT0avjz+nn9PgDGADECpwULBeIAvwHoBiIJlghkBtUAH/w//L/7uPcK90n7+P1N/hr+nvs4+hv/MwUYBvUFWAjZCKEGTAQGAI/7/PwdAQ8A+ftQ+l/5Z/ju+UD7IPsc/0MGaAiGBa0DDwO1ArUE/gX8AtwAPALUAEv7efet9of3lPv3/07/gf3y/2kCpwGhAWgD7wSiBxsKrwb4/4f90/19/Iz75fth+/T7Z/54/XD5yfmt/pACOQUmBy0GqgS1BQ0FgwBL/lgAiQHOAEL/T/t595D4c/tK+7b7pf/7AioErgTtAj8A9wE3BoQGIQQwA9cBJ/9g/Qn7yPep+Iv9nP8T/n79zP0h/oYA/gK9Ap8DfgerCCMFeQEc/179Mf7d/xT+l/uO/H79h/ss+gf7xfywAIUFBAZcAzIDWwRWAxMC6gE1AUwBpwKmADP7nPjR+fX6KPwg/tT+e/8zAkkDvADH/4MCAgUSBkYG2gM9AGX/R/9i/C76ofuT/Vr+0P51/SP7bPxuABYCSAIpBL4FigXxBNUCEP8n/rYAYwFD/9H90/xx+4H7/vsS+wv8pQD4A5UDrAIyAooBgwIsBDIDjgF7AukCEgDP/Oz62vkq+0n+8/6b/XT+aQBkAAUAzwCdAW4DegaPBvECcQAcACH//f3X/T79/vyq/hH/Uvy7+on88P4BATEDsgP8At8DlwRBAtr/TABaAYoBXwFw/xr8L/t9/E/8qPtc/c//TgGDAkUCNAAOAMQCMgRxAyQD2wJ7AVkA6P77+6b66Pz8/qL+I/4T/sT9s/58AKMAtQBLA6oF8QQEA1EBhf8x/2MA6/8D/vj91v7g/WL89/sL/Kz9MQERAx4CygHGAqgC4QG6AUIBGAFwAokCf/+t/EH8XPyT/KP9Mf5U/gkArAGiAEH/NQDxATkDYAT/A+YB7wANAW//Jv33/On9i/4+/+f+9/xy/HP+5v8bAD4B0QJ4A90DZQMCAVL/XwBuAaEAt/8Q/+f9Zf1//X783vsH/tgAogGDAWUB1AAPAWUCdgJjAc8B2gL0AfP/Pv6k/E788P3t/iT+K/5x/8v/eP+x/+z/twAQA5kEVQOeAS0BkgCc/0L/uP4W/u7+2/+F/q/8wvzK/e7+lwCXAWwBCgI3A4ICuABaAOkARQGzATUBFP+g/fD9yf3T/Bv9cP6T/8sAZgFHAG3/tgAhAiwCNgJzAvsBeAHmAPb+Cv15/d3+C//H/rL+Qf5a/mn/sP9Z/5wAwgJmA9QCAgK2AO3/hwCrAHj//v6Z/1j/Tf6S/fL8Ev38/uMA7gC0AGsBvQFmAVEBCAGwAJABgAJZAU//ZP4C/q/9Cv5a/jH+//56AHEAXf9d/zwAIwFRAugCDAJTAY0B8ABB/2v+mf7g/nP/tP+O/n39Iv4S/zD/r//KAJMBSwK8AqwBJQA7AA8B8AB7AC4Acf/c/tf+H/78/Hn9Of88AIcAtQBlAEMAGQGPAfcAAgH4ARwCPAEuANX+2P1X/iH/xP50/iH/kv9p/2v/Xf9w/8QAcQKFAqoBXgEZAXQAHAC3/wT/N/8ZAMP/a/7U/f79X/5Q/z0AVQCrAMIB+gH+AGoAkADIAEYBiAGHAEj/Iv8L/zb+0P1F/t/+vf+YAEQAa//F/8IAEQE1AZcBmQF9AX4BkADv/nT+Gf9e/0P/P//p/qn+Kv9z/wX/Wf/CAL8B6wHHARsBWACBANIAMwCk//L/DQCD//D+Pf6s/Vb+rf8bAAIAdwDpAN4A4ADCAGAAvQC5Aa0BkgDD/0z/zv6+/tz+lP7A/sP/MwCd/0j/j//+/84AoQGFARsBWAFYAWQAiP9P/0f/lf8GAJH/nP6M/gb/Df8j/7v/UADyALABiQGKADUAqwDMAKAAjQAwAL3/tP9a/1T+9/29/oL/4v8xACEA6P9RANMAlABrAAoBiQFgAfEAIAAj//z+cP9Q/+7+Lv+L/4X/f/9j/yD/nf/ZAHEBMwEXAQ8BugB8AEIAr/+A/xcARACJ/+T+rv6c/vj+mf/C/9//ogA2Ad8AagBaAGYAuAAyAfEAJQDe/9j/Tf+8/rD+2v5K/wYAKgCZ/4D/CwBZAHkAzQD7AAwBTwEaARMAWP94/6T/mf+g/3H/If9K/4j/M/8J/7j/iQD1AC4BAQF6AGkAtAB3AAAAEwBGABcAyf9M/5v+iv4//7D/q//q/08AagB+AIIANAA2AOcATgHnAGYADgCf/2b/ZP8e//L+eP/9/83/ev92/5H/9/+kAN4AsQDhACYByQAtANn/qP+1/xYADgBu/x//Sv9G/yr/Yf+w/xUAvwANAZcANABiAIwAgQCKAGwAIwAeAAsAYP/E/ub+UP+X/+H/9//J/+7/VgBNABcAYQDaAAMB+wCmAPP/kf+8/7j/ZP9j/53/qP+o/5n/Sf9F//P/kgCmAKsAxACpAIkAdQAVAML/BwBZABUAof9a/x3/Hv9x/5T/jf/2/4kAlQBWADsALgBNALcA1QBxADIAOQD0/3z/QP8p/0L/uf8JAMX/jP/E//v/DwBEAHUAjgDZAAQBjQDw/8//3P/S/9n/yf+I/4T/s/+E/zT/Y//g/0IAlACvAG0ASgB/AHoAKQAaAEQAQwAqAO//Z/8M/0j/lv+X/6//9P8ZADQATQAgAPf/UQDFAMMAiwBdABUA2f/M/5j/Tv91/9z/5f+y/5n/iv+l/xAAWwBSAG4AvwC9AGsAKADx/9f/DwA1AOb/lv+Z/5L/a/9r/4X/rv8eAIoAdAAsADMAUgBUAGMAZQA+ADsATwD9/3X/S/9r/43/v//i/8n/yf8OACIA9f8GAFUAjwC0ALAAUgDz//T/+f++/6D/uf/F/8v/zP+S/1v/m/8MADgASwBvAHQAbABxAEMA9P/+/0MAQAAEAM//lP9u/4n/n/+I/6z/FQBIADcAJgATABEAUgCNAG4ARABQAD0A8/+2/4n/cf+l//D/4v+v/7v/2v/i//3/HwAwAGcAsACaADkACAADAPb/+P/4/87/uf/X/8n/gf9w/6T/4f8lAFoASgAsAEsAYAA0ABoALwA9AEAANQDo/4n/gf+o/6j/qP/O/+z/BAAkABUA5/8BAFYAewBwAGQAQgAWAAkA6/+n/5j/0v/v/9n/xP8=")
+
+[node name="ChanHammer" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Anvil" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Foot" type="CollisionShape3D" parent="Anvil"]
+position = Vector3(0, 0.45, 0)
+shape = SubResource("FootCollision")
+
+[node name="AnvilBase" parent="Anvil" instance=ExtResource("anvil_pedestal")]
+scale = Vector3(0.9, 1.26, 0.65)
+
+[node name="AnvilTop" type="MeshInstance3D" parent="Anvil"]
+position = Vector3(0, 0.78, 0)
+mesh = SubResource("AnvilTop")
+
+[node name="Meteorite" parent="Anvil" instance=ExtResource("meteorite")]
+position = Vector3(0.16, 0.87, -0.06)
+rotation = Vector3(0, 0.68, 0)
+scale = Vector3(0.48, 0.18, 0.4)
+
+[node name="Trestle" parent="Anvil" instance=ExtResource("forge_pillar")]
+position = Vector3(0, 0, 1.02)
+scale = Vector3(0.67, 0.96, 0.73)
+
+[node name="Beam" type="MeshInstance3D" parent="Anvil"]
+position = Vector3(0, 4.55, 0.43)
+mesh = SubResource("Beam")
+
+[node name="LeftClamp" type="MeshInstance3D" parent="Anvil"]
+position = Vector3(-1.13, 4.55, 0.43)
+mesh = SubResource("BeamBand")
+
+[node name="RightClamp" type="MeshInstance3D" parent="Anvil"]
+position = Vector3(1.13, 4.55, 0.43)
+mesh = SubResource("BeamBand")
+
+[node name="Head" type="Node3D" parent="."]
+position = Vector3(0, 1.22, 0)
+
+[node name="HammerHead" type="MeshInstance3D" parent="Head"]
+position = Vector3(0, 0, 0)
+mesh = SubResource("HammerHead")
+
+[node name="LeftBand" type="MeshInstance3D" parent="Head"]
+position = Vector3(-0.63, 0, 0)
+mesh = SubResource("HammerBand")
+
+[node name="RightBand" type="MeshInstance3D" parent="Head"]
+position = Vector3(0.63, 0, 0)
+mesh = SubResource("HammerBand")
+
+[node name="Rod" type="MeshInstance3D" parent="Head"]
+position = Vector3(0, 1.25, 0)
+mesh = SubResource("Rod")
+
+[node name="Bolt" type="MeshInstance3D" parent="Head"]
+position = Vector3(0, -0.08, -0.6)
+mesh = SubResource("Bolt")
+
+[node name="Cycle" type="Timer" parent="."]
+process_callback = 0
+one_shot = true
+
+[node name="Impact" type="AudioStreamPlayer3D" parent="."]
+stream = SubResource("HammerStrike")
+volume_db = -12.0
+unit_size = 8.0
+max_distance = 18.0
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.055, 0)
+visible = false
+cast_shadow = 0
+material_override = SubResource("Wave")
+mesh = SubResource("WavePlane")
+
+[node name="Warning" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.055, 0)
+visible = false
+cast_shadow = 0
+material_override = SubResource("Telegraph")
+mesh = SubResource("WavePlane")

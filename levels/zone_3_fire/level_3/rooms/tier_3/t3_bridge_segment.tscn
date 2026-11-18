@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/bridge_4m.glb" id="stone_deck"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/fence_rail_2m.glb" id="iron_rail"]
+
+[sub_resource type="BoxShape3D" id="DeckShape"]
+size = Vector3(3, 0.32, 4.02)
+
+[sub_resource type="BoxShape3D" id="RailShape"]
+size = Vector3(0.3, 1.25, 4.02)
+
+[node name="Tier3BridgeSegment" type="StaticBody3D"]
+editor_description = "Đoạn cầu 4 m dọc trục Z. Mặt sàn y = 0,32 m; collider dài dư 1 cm ở mỗi đầu để kín mối nối."
+collision_mask = 0
+
+[node name="Deck" parent="." instance=ExtResource("stone_deck")]
+
+[node name="DeckCollision" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.16, 0)
+shape = SubResource("DeckShape")
+
+[node name="LeftRailCollision" type="CollisionShape3D" parent="."]
+position = Vector3(-1.35, 0.945, 0)
+shape = SubResource("RailShape")
+
+[node name="RightRailCollision" type="CollisionShape3D" parent="."]
+position = Vector3(1.35, 0.945, 0)
+shape = SubResource("RailShape")
+
+[node name="LeftRailNear" parent="." instance=ExtResource("iron_rail")]
+position = Vector3(-1.35, 0.32, -1)
+rotation = Vector3(0, 1.57079633, 0)
+
+[node name="LeftRailFar" parent="." instance=ExtResource("iron_rail")]
+position = Vector3(-1.35, 0.32, 1)
+rotation = Vector3(0, 1.57079633, 0)
+
+[node name="RightRailNear" parent="." instance=ExtResource("iron_rail")]
+position = Vector3(1.35, 0.32, -1)
+rotation = Vector3(0, 1.57079633, 0)
+
+[node name="RightRailFar" parent="." instance=ExtResource("iron_rail")]
+position = Vector3(1.35, 0.32, 1)
+rotation = Vector3(0, 1.57079633, 0)
+
+[node name="NearAnchor" type="Marker3D" parent="."]
+position = Vector3(0, 0.32, -2)
+
+[node name="FarAnchor" type="Marker3D" parent="."]
+position = Vector3(0, 0.32, 2)

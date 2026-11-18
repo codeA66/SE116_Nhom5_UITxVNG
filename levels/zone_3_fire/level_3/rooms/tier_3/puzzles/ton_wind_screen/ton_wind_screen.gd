@@ -2,10 +2,14 @@ class_name TonWindScreen
 extends WindZone
 ## Mặt chắn chạy ngang luồng. Chỉ điểm ở sau mặt chắn mới khuất gió.
 
-@export_range(0.1, 25.0, 0.1) var travel: float = 10.0
+@export_range(0.1, 40.0, 0.1) var travel: float = 10.0
 @export_range(0.1, 10.0, 0.1) var screen_speed: float = 2.5
 @export_range(0.0, 20.0, 0.1) var replacement_time: float = 3.0
 @export var reverse_path: bool = false
+@export_range(0.0, 5.0, 0.05) var paired_screen_delay: float = 0.0
+@export var screen_home_offset: Vector3 = Vector3.ZERO
+@export var paired_track_offset: float = 0.35
+@export var fixed_cover: AABB
 
 var _travelling: bool = false
 var _gusting: bool = false
@@ -13,6 +17,8 @@ var _intact: bool = true
 var _distance: float = 0.0
 var _replacement_left: float = 0.0
 var _screen_home: Vector3
+var _paired_screen: AnimatableBody3D
+var _track_time: float = 0.0
 
 @onready var _screen: AnimatableBody3D = $Screen
 @onready var _screen_shape: BoxShape3D = $Screen/CollisionShape3D.shape as BoxShape3D
@@ -23,7 +29,11 @@ var _screen_home: Vector3
 
 func _ready() -> void:
 	super()
-	_screen_home = _screen.position
+	_screen_home = _screen.position + screen_home_offset
+	if paired_screen_delay > 0.0:
+		_paired_screen = _screen.duplicate() as AnimatableBody3D
+		_paired_screen.name = &"PairedScreen"
+		add_child(_paired_screen)
 	_sync_wind_visuals()
 	configuration_changed.connect(_sync_wind_visuals)
 	reset(false)
@@ -36,7 +46,11 @@ func get_wind_at(world_position: Vector3) -> Vector3:
 	var half := size.abs() * 0.5
 	if absf(local.x) > half.x or absf(local.y) > half.y or absf(local.z) > half.z:
 		return Vector3.ZERO
-	if _intact and _is_sheltered(local):
+	if fixed_cover.has_volume() and _is_behind(local, fixed_cover.get_center(), fixed_cover.size * 0.5):
+		return Vector3.ZERO
+	if _intact and _is_behind(local, _screen.position, _screen_shape.size * 0.5):
+		return Vector3.ZERO
+	if _paired_screen and _paired_screen.visible and _is_behind(local, _paired_screen.position, _screen_shape.size * 0.5):
 		return Vector3.ZERO
 	return -global_basis.z.normalized() * maxf(data.strength, 0.0)
 
@@ -50,6 +64,7 @@ func update_gust(gusting: bool, warning: bool) -> void:
 func reset(running: bool) -> void:
 	_travelling = running
 	_distance = 0.0
+	_track_time = 0.0
 	_replacement_left = 0.0
 	_place_screen()
 	_set_intact(true)
@@ -78,14 +93,26 @@ func _physics_process(delta: float) -> void:
 		_set_intact(true)
 		return
 	var span := maxf(travel, 0.01)
+	_track_time += delta
 	_distance = fposmod(_distance + maxf(screen_speed, 0.0) * delta, 2.0 * span)
 	_place_screen()
 
 
 func _place_screen() -> void:
+	_screen.position = _screen_home + Vector3.RIGHT * _track_offset(_distance)
+	if _paired_screen:
+		var launched := _track_time >= paired_screen_delay
+		if _paired_screen.visible != launched:
+			_paired_screen.visible = launched
+			_paired_screen.collision_layer = _screen.collision_layer if launched else 0
+		_paired_screen.position = _screen_home + Vector3(
+			_track_offset(maxf(_track_time - paired_screen_delay, 0.0) * screen_speed), 0.0, paired_track_offset)
+
+
+func _track_offset(distance: float) -> float:
 	var span := maxf(travel, 0.01)
-	var offset := span - absf(span - _distance)
-	_screen.position = _screen_home + Vector3.RIGHT * (span - offset if reverse_path else offset)
+	var offset := span - absf(span - fposmod(distance, 2.0 * span))
+	return span - offset if reverse_path else offset
 
 
 func _set_intact(intact: bool) -> void:
@@ -94,9 +121,8 @@ func _set_intact(intact: bool) -> void:
 	_screen.collision_layer = 256 if intact else 0
 
 
-func _is_sheltered(point: Vector3) -> bool:
-	var relative := point - _screen.position
-	var half := _screen_shape.size * 0.5
+func _is_behind(point: Vector3, cover_center: Vector3, half: Vector3) -> bool:
+	var relative := point - cover_center
 	return relative.z <= -half.z and absf(relative.x) <= half.x and absf(relative.y) <= half.y
 
 

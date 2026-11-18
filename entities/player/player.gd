@@ -93,6 +93,7 @@ var _blink_time_left: float = 0.0
 var _blink_clock: float = 0.0
 ## Lần chết này có nháy đỏ trước không (state Dead đọc một lần)
 var _lethal_flash_pending: bool = false
+var _local_respawn: Callable
 var _flash_material: StandardMaterial3D
 var _model_meshes: Array[MeshInstance3D] = []
 var _flash_tween: Tween
@@ -671,6 +672,32 @@ func start_wind_blast() -> WindBlastData:
 	var data := start_skill(WindBlastData.ID) as WindBlastData
 	wind_blast_cooldown_started.emit(_skill_cooldowns[WindBlastData.ID])
 	return data
+
+
+func register_local_respawn(handler: Callable) -> void:
+	_local_respawn = handler
+
+
+func unregister_local_respawn(handler: Callable) -> void:
+	if _local_respawn == handler:
+		_local_respawn = Callable()
+
+
+func request_local_respawn() -> bool:
+	if not _local_respawn.is_valid():
+		return false
+	_local_respawn.call_deferred(self)
+	return true
+
+
+func revive_locally(target_position: Vector3, facing: Vector3) -> void:
+	health.heal_full()
+	teleport(target_position, facing)
+	_hurtbox.set_invincible(recovery_invincibility)
+
+
+func receive_environment_hit(info: DamageInfo) -> bool:
+	return _hurtbox.receive_hit(info)
 
 
 ## Dịch chuyển kèm đặt lại chỗ an toàn và camera (cổng, hồi sinh)

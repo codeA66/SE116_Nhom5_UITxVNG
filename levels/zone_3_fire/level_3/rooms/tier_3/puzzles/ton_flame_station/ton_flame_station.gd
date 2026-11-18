@@ -7,6 +7,7 @@ signal used(player: Player, station: TonFlameStation)
 enum Role { SOURCE, TORCH, SEAL }
 
 @export var role: Role = Role.TORCH
+@export var shaped_lights: Node3D
 
 @onready var _interaction: InteractableComponent = $Interactable
 @onready var _flame: MeshInstance3D = $Flame
@@ -30,7 +31,9 @@ func is_lit() -> bool:
 
 func set_lit(lit: bool) -> void:
 	_flame.visible = lit
-	_light.visible = lit
+	_light.visible = lit and shaped_lights == null
+	if shaped_lights:
+		shaped_lights.visible = lit
 	if lit and not _feedback.is_burning:
 		_feedback.start_quiet()
 	elif not lit:

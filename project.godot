@@ -26,6 +26,7 @@ SceneManager="*res://autoload/scene_manager.gd"
 Settings="*res://autoload/settings_manager.gd"
 PauseMenu="*res://ui/menus/pause/pause_menu.tscn"
 AreaTitle="*res://ui/area_title/area_title.tscn"
+MCPRuntimeServer="*res://addons/godot_mcp_toolkit/runtime/mcp_runtime_server.gd"
 
 [display]
 
@@ -38,6 +39,10 @@ mouse_cursor/custom_image_hotspot=Vector2(2, 2)
 [dotnet]
 
 project/assembly_name="SE116"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_mcp_toolkit/plugin.cfg")
 
 [filesystem]
 

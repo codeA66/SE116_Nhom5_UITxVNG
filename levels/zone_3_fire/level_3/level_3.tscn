@@ -84,6 +84,8 @@
 [ext_resource type="PackedScene" path="res://objects/core/encounter/boss_fight/boss_fight.tscn" id="boss_fight_scene"]
 [ext_resource type="PackedScene" path="res://entities/bosses/boss_1/boss_1.tscn" id="boss_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/portal/vortex/vortex_portal_visual.tscn" id="vortex_visual_scene"]
+[ext_resource type="Script" path="res://objects/core/portal/portal.gd" id="tier3_route_portal"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="tier3_route_spawn"]
 
 [ext_resource type="PackedScene" path="res://objects/core/encounter/final_trial/final_trial.tscn" id="final_trial_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/encounter/final_trial/trial_seal.tscn" id="trial_seal_scene"]
@@ -147,6 +149,9 @@
 [ext_resource type="PackedScene" path="res://objects/gates/stone_gate/key_lock.tscn" id="key_lock_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/key/key_drop.tscn" id="key_drop_scene"]
 [ext_resource type="PackedScene" path="res://objects/gates/red_key_door/red_key_pickup.tscn" id="red_key_pickup_scene"]
+
+[sub_resource type="BoxShape3D" id="Tier3RouteTrigger"]
+size = Vector3(3.4, 2.4, 1.0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n3gf7"]
 shading_mode = 0
@@ -1605,6 +1610,27 @@ flag = &"level_3.t2_boss_defeated"
 
 [node name="Tier3PortalFrame" parent="Tier2Fights/Tier3PortalReveal" instance=ExtResource("vortex_visual_scene")]
 transform = Transform3D(-1.0, 0.0, -0.00000008742278, 0.0, 1.0, 0.0, 0.00000008742278, 0.0, -1.0, 256.0, 28.3199996948242, 1.5)
+
+[node name="Tier3RoutePortal" type="Node3D" parent="Tier2Fights/Tier3PortalReveal"]
+position = Vector3(256, 28.32, 1.5)
+rotation = Vector3(0, 3.14159265, 0)
+script = ExtResource("tier3_route_portal")
+portal_id = &"tier3_route"
+target_zone = "res://levels/zone_3_fire/level_3/rooms/tier_3/tier_3_walkthrough.tscn"
+target_portal_id = &"start"
+
+[node name="Trigger" type="Area3D" parent="Tier2Fights/Tier3PortalReveal/Tier3RoutePortal"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tier2Fights/Tier3PortalReveal/Tier3RoutePortal/Trigger"]
+position = Vector3(0, 1.2, 0)
+shape = SubResource("Tier3RouteTrigger")
+
+[node name="Arrival" type="Marker3D" parent="Tier2Fights/Tier3PortalReveal/Tier3RoutePortal"]
+position = Vector3(0, 0.08, -2.5)
+script = ExtResource("tier3_route_spawn")
 
 [node name="TowerGateSource" type="Node" parent="Tier2Fights"]
 script = ExtResource("flag_source_script")

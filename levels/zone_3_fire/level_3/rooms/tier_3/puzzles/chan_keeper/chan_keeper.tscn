@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/shield_bearer/shield_bearer.tscn" id="base"]
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/chan_keeper/chan_armor_guard.gd" id="guard"]
+
+[sub_resource type="StandardMaterial3D" id="Armor"]
+albedo_color = Color(0.4, 0.39, 1, 1)
+shading_mode = 0
+
+[sub_resource type="TorusMesh" id="ArmorRing"]
+material = SubResource("Armor")
+inner_radius = 0.77
+outer_radius = 0.83
+rings = 24
+ring_segments = 8
+
+[node name="ChanKeeper" instance=ExtResource("base")]
+
+[node name="ForgeArmor" type="Node" parent="HurtboxComponent" index="2" node_paths=PackedStringArray("armor_indicator")]
+script = ExtResource("guard")
+armor_indicator = NodePath("../../Model/ForgeArmorGlow")
+
+[node name="ForgeArmorGlow" type="MeshInstance3D" parent="Model" index="8"]
+position = Vector3(0, 0.14, 0)
+mesh = SubResource("ArmorRing")
+cast_shadow = 0
