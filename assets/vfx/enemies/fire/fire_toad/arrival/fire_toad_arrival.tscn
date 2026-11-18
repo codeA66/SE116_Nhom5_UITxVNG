@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/enemies/fire/fire_toad/arrival/fire_toad_arrival.gd" id="1_arrival"]
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_vfx/arrival/rift.gdshader" id="2_rift"]
+
+[sub_resource type="ShaderMaterial" id="RiftMaterial"]
+resource_local_to_scene = true
+shader = ExtResource("2_rift")
+
+[sub_resource type="QuadMesh" id="RiftMesh"]
+size = Vector2(9.0, 5.55)
+
+[node name="FireToadArrival" type="Node3D"]
+visible = false
+top_level = true
+script = ExtResource("1_arrival")
+
+[node name="Rift" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("RiftMesh")
+material_override = SubResource("RiftMaterial")

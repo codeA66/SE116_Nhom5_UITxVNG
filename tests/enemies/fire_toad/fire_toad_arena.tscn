@@ -1,0 +1,270 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_zone"]
+[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="3_spawn"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/sword.tres" id="5_sword"]
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="6_wind"]
+[ext_resource type="Resource" path="res://abilities/flame_breath/flame_breath.tres" id="9_fire"]
+[ext_resource type="Script" path="res://tests/enemies/fire_toad/fire_toad_arena.gd" id="4_sandbox"]
+[ext_resource type="PackedScene" path="res://entities/bosses/fire_toad/fire_toad.tscn" id="10_toad"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/bow.tres" id="7_bow"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/fire_toad_solo.tres" id="11_solo"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/fire_toad_duo.tres" id="12_duo"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/court/fire_toad_court.gd" id="13_court"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/court/fire_toad_wave.gd" id="14_wave"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+sky_top_color = Color(0.32, 0.4, 0.55, 1)
+sky_horizon_color = Color(0.55, 0.58, 0.62, 1)
+ground_bottom_color = Color(0.12, 0.12, 0.14, 1)
+ground_horizon_color = Color(0.55, 0.58, 0.62, 1)
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+ambient_light_energy = 0.6
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="ArenaMat"]
+albedo_color = Color(0.28, 0.2, 0.18, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="RimMat"]
+albedo_color = Color(0.2, 0.14, 0.12, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="LavaSeaMat"]
+shading_mode = 0
+albedo_color = Color(0.45, 0.1, 0.04, 1)
+
+[sub_resource type="BoxMesh" id="ArenaMesh"]
+material = SubResource("ArenaMat")
+size = Vector3(20, 1, 20)
+
+[sub_resource type="BoxShape3D" id="ArenaShape"]
+size = Vector3(20, 1, 20)
+
+[sub_resource type="BoxMesh" id="PadMesh"]
+material = SubResource("RimMat")
+size = Vector3(3.5, 1, 3.5)
+
+[sub_resource type="BoxShape3D" id="PadShape"]
+size = Vector3(3.5, 1, 3.5)
+
+[sub_resource type="BoxMesh" id="PerchMesh"]
+material = SubResource("RimMat")
+size = Vector3(1.6, 1.2, 1.6)
+
+[sub_resource type="BoxShape3D" id="PerchShape"]
+size = Vector3(1.6, 1.2, 1.6)
+
+[sub_resource type="BoxMesh" id="LedgeMesh"]
+material = SubResource("RimMat")
+size = Vector3(22, 0.8, 3)
+
+[sub_resource type="BoxShape3D" id="LedgeShape"]
+size = Vector3(22, 0.8, 3)
+
+[sub_resource type="Resource" id="WaveLead"]
+script = ExtResource("14_wave")
+toads = Array[NodePath]([NodePath("../FireToad")])
+
+[sub_resource type="Resource" id="WavePair"]
+script = ExtResource("14_wave")
+toads = Array[NodePath]([NodePath("../FireToadLeft"), NodePath("../FireToadRight")])
+
+[sub_resource type="PlaneMesh" id="LavaSeaMesh"]
+material = SubResource("LavaSeaMat")
+size = Vector2(80, 80)
+
+[node name="FireToadArena" type="Node3D"]
+script = ExtResource("1_zone")
+shader_warmup = null
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8660254, -0.38302222, 0.32139382, 0, 0.6427876, 0.76604444, -0.5, -0.66341394, 0.5566704, 0, 10, 0)
+light_energy = 0.8
+shadow_enabled = true
+
+[node name="LavaSea" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+cast_shadow = 0
+mesh = SubResource("LavaSeaMesh")
+
+[node name="Arena" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Arena"]
+mesh = SubResource("ArenaMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Arena"]
+shape = SubResource("ArenaShape")
+
+[node name="ArenaCenter" type="Marker3D" parent="."]
+
+[node name="PadNorth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -15)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PadNorth"]
+mesh = SubResource("PadMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PadNorth"]
+shape = SubResource("PadShape")
+
+[node name="Top" type="Marker3D" parent="PadNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="PadEast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PadEast"]
+mesh = SubResource("PadMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PadEast"]
+shape = SubResource("PadShape")
+
+[node name="Top" type="Marker3D" parent="PadEast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="PadSouth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 15)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PadSouth"]
+mesh = SubResource("PadMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PadSouth"]
+shape = SubResource("PadShape")
+
+[node name="Top" type="Marker3D" parent="PadSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="PadWest" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PadWest"]
+mesh = SubResource("PadMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PadWest"]
+shape = SubResource("PadShape")
+
+[node name="Top" type="Marker3D" parent="PadWest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="PerchNE" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 0.6, -11.6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchNE"]
+mesh = SubResource("PerchMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchNE"]
+shape = SubResource("PerchShape")
+
+[node name="Top" type="Marker3D" parent="PerchNE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="PerchNW" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6, 0.6, -11.6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchNW"]
+mesh = SubResource("PerchMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchNW"]
+shape = SubResource("PerchShape")
+
+[node name="Top" type="Marker3D" parent="PerchNW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="PerchSE" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 0.6, 11.6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchSE"]
+mesh = SubResource("PerchMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchSE"]
+shape = SubResource("PerchShape")
+
+[node name="Top" type="Marker3D" parent="PerchSE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="PerchSW" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6, 0.6, 11.6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchSW"]
+mesh = SubResource("PerchMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchSW"]
+shape = SubResource("PerchShape")
+
+[node name="Top" type="Marker3D" parent="PerchSW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="Start" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6)
+script = ExtResource("3_spawn")
+spawn_id = &"start"
+
+[node name="Sandbox" type="Node" parent="."]
+script = ExtResource("4_sandbox")
+weapons = Array[Resource]([ExtResource("5_sword"), ExtResource("7_bow")])
+abilities = Array[Resource]([ExtResource("6_wind"), ExtResource("9_fire")])
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+
+[node name="ThroneLedge" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -11.5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ThroneLedge"]
+mesh = SubResource("LedgeMesh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ThroneLedge"]
+shape = SubResource("LedgeShape")
+
+[node name="ThroneLeft" type="Marker3D" parent="ThroneLedge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.4, 0)
+
+[node name="ThroneMid" type="Marker3D" parent="ThroneLedge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+
+[node name="ThroneRight" type="Marker3D" parent="ThroneLedge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.4, 0)
+
+[node name="FireToadLeft" parent="." node_paths=PackedStringArray("arena_center", "outer_platforms", "throne") instance=ExtResource("10_toad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.8, -11.5)
+data = ExtResource("12_duo")
+arena_center = NodePath("../ArenaCenter")
+outer_platforms = [NodePath("../PadNorth/Top"), NodePath("../PadEast/Top"), NodePath("../PadSouth/Top"), NodePath("../PadWest/Top")]
+throne = NodePath("../ThroneLedge/ThroneLeft")
+home_offset = Vector2(-5, 0)
+
+[node name="FireToad" parent="." node_paths=PackedStringArray("arena_center", "outer_platforms", "throne") instance=ExtResource("10_toad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -11.5)
+data = ExtResource("11_solo")
+arena_center = NodePath("../ArenaCenter")
+outer_platforms = [NodePath("../PadNorth/Top"), NodePath("../PadEast/Top"), NodePath("../PadSouth/Top"), NodePath("../PadWest/Top")]
+throne = NodePath("../ThroneLedge/ThroneMid")
+home_offset = Vector2(0, 0)
+
+[node name="FireToadRight" parent="." node_paths=PackedStringArray("arena_center", "outer_platforms", "throne") instance=ExtResource("10_toad")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.8, -11.5)
+data = ExtResource("12_duo")
+arena_center = NodePath("../ArenaCenter")
+outer_platforms = [NodePath("../PadNorth/Top"), NodePath("../PadEast/Top"), NodePath("../PadSouth/Top"), NodePath("../PadWest/Top")]
+throne = NodePath("../ThroneLedge/ThroneRight")
+home_offset = Vector2(5, 0)
+
+[node name="FireToadCourt" type="Node" parent="."]
+script = ExtResource("13_court")
+waves = Array[ExtResource("14_wave")]([SubResource("WaveLead"), SubResource("WavePair")])
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+arena_center = NodePath("../ArenaCenter")
+outer_platforms = [NodePath("../PadNorth/Top"), NodePath("../PadEast/Top"), NodePath("../PadSouth/Top"), NodePath("../PadWest/Top")]
+sentinel_perches = [NodePath("../PerchNE/Top"), NodePath("../PerchNW/Top"), NodePath("../PerchSE/Top"), NodePath("../PerchSW/Top")]

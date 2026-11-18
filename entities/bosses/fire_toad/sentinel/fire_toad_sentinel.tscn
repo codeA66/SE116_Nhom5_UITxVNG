@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_spider/fire_spider.tscn" id="1_spider"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/fire_toad_sentinel.tres" id="2_data"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/sentinel/spider_perch.gd" id="3_perch"]
+
+[node name="FireToadSentinel" instance=ExtResource("1_spider")]
+data = ExtResource("2_data")
+chase_state = &"SpiderPerch"
+
+[node name="SpiderPerch" type="Node" parent="StateMachine"]
+script = ExtResource("3_perch")
+
+[node name="LootDropComponent" parent="."]
+drop_table = null

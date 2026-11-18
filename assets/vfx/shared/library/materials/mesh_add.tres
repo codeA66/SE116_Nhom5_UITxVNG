@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/combat/vfx_library/mesh/mesh_vfx_add.gdshader" id="1"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/materials/neutral_ramp.tres" id="2"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/glow/soft_round.tres" id="3"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/noise/streak.png" id="4"]
+
+[resource]
+shader = ExtResource("1")
+shader_parameter/palette_atlas = ExtResource("2")
+shader_parameter/shape_mask = ExtResource("3")
+shader_parameter/erosion_noise = ExtResource("4")
+shader_parameter/intensity = 1.12

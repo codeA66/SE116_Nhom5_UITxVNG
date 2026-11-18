@@ -3,7 +3,7 @@ extends Node
 
 const WindTrial := preload("res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.gd")
 const WindChallenge := preload("res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.gd")
-const CHARM: CharmData = preload("res://resources/player/items/charms/challenge_charm.tres")
+const CHARM: CharmData = preload("res://resources/player/items/charms/swift_slash_charm.tres")
 const TrialGrille := preload("res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/grille/trial_grille.gd")
 const LEVEL := "res://levels/zone_1_wind/level_1/level_1.tscn"
 const TIER := ^"Rooms/Tier1"

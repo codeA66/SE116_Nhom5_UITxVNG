@@ -15,6 +15,8 @@ extends Resource
 @export var spark_scale: float = 1.0
 ## Độ cao điểm trúng so với chân (m)
 @export var hit_height: float = 0.9
+## Điểm chạm giúp tia không bị khuất sâu trong thân mục tiêu lớn.
+@export var use_hit_contact: bool = false
 ## Kéo hướng bắn lệch lên trên (0 = đúng hướng đẩy lùi) cho bùng đẹp hơn
 @export var upward_bias: float = 0.25
 ## Đòn có lực đẩy từ mức này trở lên (hoặc đòn kết liễu) tính là đòn mạnh: nhiều nét lực, 2 vòng sóng
@@ -29,6 +31,8 @@ extends Resource
 @export var blood_scale: float = 1.0
 ## Hướng phun lệch lên trên so với hướng đòn
 @export var blood_upward_bias: float = 0.4
+## Mục tiêu có thể đứng trên bệ hay bay cần dò sàn riêng.
+@export_flags_3d_physics var blood_floor_mask: int = 0
 
 @export_group("Squash")
 ## Vận tốc "tiếp đất" giả đưa vào SquashStretch (m/s): càng lớn càng dẹt

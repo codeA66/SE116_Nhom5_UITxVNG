@@ -122,14 +122,17 @@ func _physics_process(delta: float) -> void:
 		if float(target["fraction"]) <= ray_fraction:
 			result = target
 	if not result.is_empty():
+		var hit_position: Vector3 = result["position"]
 		var collider := result["collider"] as Node
 		var hurtbox := collider as HurtboxComponent
 		if hurtbox == null and collider:
 			hurtbox = collider.get_node_or_null(^"HurtboxComponent") as HurtboxComponent
 		if hurtbox:
 			var source: Node = _source if is_instance_valid(_source) else null
-			hurtbox.receive_hit(DamageInfo.new(_damage, _attack.damage_type, _velocity.normalized() * _attack.knockback, source))
-		var hit_position: Vector3 = result["position"]
+			var flight_direction: Vector3 = _velocity.normalized()
+			var info: DamageInfo = DamageInfo.new(_damage, _attack.damage_type, flight_direction * _attack.knockback, source)
+			info.set_contact(hit_position, flight_direction)
+			hurtbox.receive_hit(info)
 		# Lùi một chút khỏi điểm trúng để vật nở ra (hố hút) không lọt vào trong tường
 		impacted.emit(hit_position - _velocity.normalized() * 0.3, _velocity.normalized())
 		_traveled += global_position.distance_to(hit_position)

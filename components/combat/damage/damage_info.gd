@@ -12,6 +12,10 @@ var knockback: Vector3
 var source: Node
 ## Hướng đòn (ngang, đã chuẩn hóa), tách khỏi knockback: đòn không đẩy vẫn có hướng cho hiệu ứng văng
 var direction: Vector3
+## So với hướng knockback, thông tin này vẫn có khi đòn chạm nhưng không đẩy.
+var has_contact: bool = false
+var contact_position: Vector3
+var contact_direction: Vector3
 ## Đòn gây ra cú đánh (null nếu nguồn không phải AttackData: bẫy, sóng...). Hiệu ứng trúng đọc kiểu chém từ đây
 var attack: AttackData
 ## Bỏ qua bất tử của mục tiêu (bẫy môi trường: dash hay vừa bị đánh cũng không đi xuyên được)
@@ -26,3 +30,9 @@ func _init(p_amount: int = 1, p_type: Type = Type.PHYSICAL, p_knockback: Vector3
 	knockback = p_knockback
 	source = p_source
 	direction = Vector3(p_knockback.x, 0.0, p_knockback.z).normalized()
+
+
+func set_contact(world_position: Vector3, incoming_direction: Vector3) -> void:
+	has_contact = true
+	contact_position = world_position
+	contact_direction = incoming_direction.normalized()

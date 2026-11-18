@@ -69,6 +69,20 @@ func get_total_created() -> int:
 	return _total_created
 
 
+## Tạo sẵn cho đủ count đối tượng (tính cả đang dùng). Dùng khi pool khởi tạo với initial_size 0 và chỉ cần đồ khi
+## chủ bắt đầu hoạt động (boss ngồi chờ chưa đánh không giữ đồ, tiết kiệm bộ nhớ / ô instance uniform của shader)
+func reserve(count: int) -> void:
+	while _free.size() + _active.size() < count:
+		_free.append(_create())
+
+
+## Xoá các đối tượng đang rảnh (đang dùng thì giữ, nhả về sau vẫn dùng được). Chủ ngừng hoạt động thì gọi
+func trim() -> void:
+	for node in _free:
+		node.queue_free()
+	_free.clear()
+
+
 ## Đối tượng lấy ra lâu nhất (để tái dùng khi đặt trần số lượng); null nếu không có
 func get_oldest_active() -> Node:
 	return null if _active.is_empty() else _active[0]

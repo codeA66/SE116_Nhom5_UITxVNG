@@ -1,0 +1,209 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/enemies/fire/fire_toad/rain/falling_fireball_vfx.gd" id="script"]
+
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/fire/fire_toad/impact/fire_toad_impact_vfx.tscn" id="impact"]
+
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_pool.gdshader" id="decal"]
+
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_vfx/mesh/mesh_vfx_add.gdshader" id="add"]
+
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_vfx/particle/particle_vfx.gdshader" id="particle"]
+
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/glow/soft_round.tres" id="soft"]
+
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/decals/ring.png" id="ring"]
+
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/noise/streak.png" id="noise"]
+
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/sparks/needle.png" id="needle"]
+
+[ext_resource type="Shader" path="res://assets/shaders/fire/fire_toad_vfx/mesh/mesh_vfx.gdshader" id="alpha"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/decals/cracks.png" id="cracks"]
+
+[sub_resource type="Gradient" id="HeatColors"]
+offsets = PackedFloat32Array(0, 0.3, 0.68, 1)
+colors = PackedColorArray(0.22, 0.018, 0.026, 0.8, 0.83, 0.12, 0.034, 1, 1, 0.38, 0.10, 1, 1, 0.965, 0.74, 1)
+
+[sub_resource type="GradientTexture2D" id="HeatRamp"]
+gradient = SubResource("HeatColors")
+width = 128
+height = 1
+
+[sub_resource type="ShaderMaterial" id="FieldMat"]
+resource_local_to_scene = true
+shader = ExtResource("decal")
+shader_parameter/effect_profile = 2
+shader_parameter/decal_mask = ExtResource("ring")
+shader_parameter/decal_color = Color(0.96, 0.25, 0.09, 1)
+
+[sub_resource type="ShaderMaterial" id="RimMat"]
+shader = ExtResource("decal")
+shader_parameter/effect_profile = 1
+shader_parameter/decal_mask = ExtResource("ring")
+shader_parameter/decal_color = Color(1, 0.49, 0.10, 0.8)
+
+[sub_resource type="ShaderMaterial" id="FlareMat"]
+shader = ExtResource("add")
+shader_parameter/palette_atlas = SubResource("HeatRamp")
+shader_parameter/shape_mask = ExtResource("soft")
+shader_parameter/erosion_noise = ExtResource("noise")
+shader_parameter/intensity = 1.75
+shader_parameter/noise_influence = 0.28
+
+[sub_resource type="ShaderMaterial" id="CrackMat"]
+render_priority = 1
+shader = ExtResource("alpha")
+shader_parameter/palette_atlas = SubResource("HeatRamp")
+shader_parameter/shape_mask = ExtResource("cracks")
+shader_parameter/erosion_noise = ExtResource("noise")
+shader_parameter/mask_tiling = Vector2(2, 1)
+shader_parameter/repeat_shape = true
+shader_parameter/intensity = 1.8
+
+[sub_resource type="StandardMaterial3D" id="OutlineColor"]
+shading_mode = 0
+albedo_color = Color(0.18, 0.026, 0.026, 1)
+
+[sub_resource type="StandardMaterial3D" id="OrbShellMat"]
+shading_mode = 0
+albedo_color = Color(0.32, 0.063, 0.049, 1)
+
+[sub_resource type="StandardMaterial3D" id="OrbCoreMat"]
+shading_mode = 0
+albedo_color = Color(1, 0.82, 0.37, 1)
+
+[sub_resource type="ShaderMaterial" id="TrailMat"]
+shader = ExtResource("particle")
+shader_parameter/palette_atlas = SubResource("HeatRamp")
+shader_parameter/shape_mask = ExtResource("needle")
+shader_parameter/erosion_noise = ExtResource("noise")
+shader_parameter/intensity = 1.5
+shader_parameter/erosion_start = 0.21
+
+[sub_resource type="PlaneMesh" id="Disc"]
+size = Vector2(2, 2)
+subdivide_width = 0
+subdivide_depth = 0
+
+[sub_resource type="QuadMesh" id="TrailMesh"]
+size = Vector2(0.41, 0.97)
+material = SubResource("TrailMat")
+
+[sub_resource type="TorusMesh" id="OutlineMesh"]
+material = SubResource("OutlineColor")
+inner_radius = 0.95
+outer_radius = 1.0
+rings = 48
+ring_segments = 4
+
+[sub_resource type="StandardMaterial3D" id="WarningEdgeMat"]
+shading_mode = 0
+albedo_color = Color(1, 0.45, 0.11, 1)
+
+[sub_resource type="TorusMesh" id="WarningEdgeMesh"]
+material = SubResource("WarningEdgeMat")
+inner_radius = 0.961
+outer_radius = 0.991
+rings = 48
+ring_segments = 4
+
+[sub_resource type="SphereMesh" id="OrbShell"]
+radius = 0.49
+height = 1.12
+radial_segments = 8
+rings = 4
+material = SubResource("OrbShellMat")
+
+[sub_resource type="SphereMesh" id="OrbCore"]
+radius = 0.37
+height = 0.7
+radial_segments = 10
+rings = 5
+material = SubResource("OrbCoreMat")
+
+[sub_resource type="CylinderMesh" id="TailMesh"]
+top_radius = 0.017
+bottom_radius = 0.46
+height = 4.3
+radial_segments = 9
+rings = 1
+
+[sub_resource type="ParticleProcessMaterial" id="TrailProcess"]
+emission_shape = 1
+emission_sphere_radius = 0.33
+direction = Vector3(0, 1, 0)
+spread = 26.0
+gravity = Vector3(0, 3, 0)
+initial_velocity_min = 1.4
+initial_velocity_max = 3.5
+angle_min = -12.0
+angle_max = 12.0
+scale_min = 0.72
+scale_max = 1.32
+
+[node name="FallingFireballVfx" type="Node3D"]
+visible = false
+script = ExtResource("script")
+
+[node name="Warning" type="Node3D" parent="."]
+visible = false
+
+[node name="Outline" type="MeshInstance3D" parent="Warning"]
+cast_shadow = 0
+mesh = SubResource("OutlineMesh")
+
+[node name="Edge" type="MeshInstance3D" parent="Warning"]
+cast_shadow = 0
+mesh = SubResource("WarningEdgeMesh")
+position = Vector3(0, 0.033, 0)
+
+[node name="Field" type="MeshInstance3D" parent="Warning"]
+cast_shadow = 0
+mesh = SubResource("Disc")
+material_override = SubResource("FieldMat")
+position = Vector3(0, 0.015, 0)
+
+[node name="Rim" type="MeshInstance3D" parent="Warning"]
+cast_shadow = 0
+mesh = SubResource("Disc")
+material_override = SubResource("RimMat")
+position = Vector3(0, 0.032, 0)
+
+[node name="Falling" type="Node3D" parent="."]
+visible = false
+
+[node name="Shell" type="MeshInstance3D" parent="Falling"]
+cast_shadow = 0
+mesh = SubResource("OrbShell")
+position = Vector3(0, 0.1, 0)
+
+[node name="Crust" type="MeshInstance3D" parent="Falling"]
+cast_shadow = 0
+mesh = SubResource("OrbShell")
+material_override = SubResource("CrackMat")
+scale = Vector3(1.025, 1.015, 1.025)
+position = Vector3(0, 0.1, 0)
+
+[node name="Core" type="MeshInstance3D" parent="Falling"]
+cast_shadow = 0
+mesh = SubResource("OrbCore")
+position = Vector3(0, -0.24, 0)
+
+[node name="Tail" type="MeshInstance3D" parent="Falling"]
+cast_shadow = 0
+mesh = SubResource("TailMesh")
+material_override = SubResource("FlareMat")
+position = Vector3(0, 2.27, 0)
+
+[node name="Trail" type="GPUParticles3D" parent="Falling"]
+visible = false
+cast_shadow = 0
+emitting = false
+amount = 12
+lifetime = 0.26
+visibility_aabb = AABB(-18, -18, -18, 36, 36, 36)
+process_material = SubResource("TrailProcess")
+draw_pass_1 = SubResource("TrailMesh")
+
+[node name="Impact" parent="." instance=ExtResource("impact")]
