@@ -1,0 +1,58 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_emitter/laser_emitter.gd" id="1_emitter"]
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_emitter/laser_timing.gd" id="2_timing"]
+[ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="3_damage"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/laser_statue/laser_statue.glb" id="4_statue"]
+[ext_resource type="PackedScene" path="res://assets/vfx/shared/laser/laser_vfx.tscn" id="5_vfx"]
+
+[sub_resource type="Resource" id="DefaultTiming"]
+script = ExtResource("2_timing")
+
+[sub_resource type="BoxShape3D" id="DamageShape"]
+resource_local_to_scene = true
+size = Vector3(0.22, 0.44, 1)
+
+[sub_resource type="BoxShape3D" id="BodyShape"]
+size = Vector3(0.7, 1.55, 0.7)
+
+[node name="LaserEmitter" type="Node3D"]
+script = ExtResource("1_emitter")
+timing = SubResource("DefaultTiming")
+
+[node name="Body" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775, 0)
+shape = SubResource("BodyShape")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="LaserStatue" parent="Model" instance=ExtResource("4_statue")]
+
+[node name="Muzzle" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, -0.4)
+
+[node name="Ray" type="RayCast3D" parent="Muzzle"]
+enabled = false
+target_position = Vector3(0, 0, -30)
+collision_mask = 1
+
+[node name="LaserVfx" parent="Muzzle" instance=ExtResource("5_vfx")]
+
+[node name="DamageArea" type="Area3D" parent="Muzzle"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("3_damage")
+knockback = 3.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Muzzle/DamageArea"]
+shape = SubResource("DamageShape")
+
+[node name="PhaseTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="OnSound" type="AudioStreamPlayer3D" parent="."]
+bus = &"SFX"
+
+[connection signal="vfx_phase_changed" from="." to="Muzzle/LaserVfx" method="apply_phase"]

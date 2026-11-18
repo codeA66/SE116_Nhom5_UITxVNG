@@ -3,7 +3,7 @@ extends BossState
 ## State tử trận của Boss.
 
 func enter(_previous: StringName) -> void:
-	boss.play_anim(&"Dying")
+	boss.play_action(&"Death")
 	boss.on_death()
 
 

@@ -23,12 +23,13 @@
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_26_treasure.scn" id="21_1w4y3"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_27_boss_gate.scn" id="22_1stda"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2a_wind_court.scn" id="23_1asvm"]
-[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2b_puzzle_court.scn" id="24_y68c7"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2b_laser_court.tscn" id="24_y68c7"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2c_key_shrine.scn" id="25_w3hun"]
 [ext_resource type="PackedScene" path="res://levels/_base/tier_zone.tscn" id="26_t5yoq"]
 [ext_resource type="Environment" uid="uid://djoxdkrdij57e" path="res://levels/zone_1_wind/level_1/lighting/wind_palace_dd_environment.tres" id="27_go2tw"]
 [ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient/ambient_wind.tscn" id="28_riknd"]
 [ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_1.tres" id="area_tier_1"]
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/lighting/room_dimmer.gd" id="room_dimmer"]
 [ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_2.tres" id="area_tier_2"]
 [ext_resource type="Resource" path="res://resources/world/zones/areas/wind/tier_3.tres" id="area_tier_3"]
 [ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="area_title_trigger"]
@@ -49,6 +50,10 @@
 [ext_resource type="Script" uid="uid://dsy4kssiihtpf" path="res://objects/core/spawn_point/spawn_point.gd" id="trial_legacy_spawn"]
 [ext_resource type="PackedScene" path="res://objects/gates/stone_gate/stone_gate.tscn" id="trial_stone_gate"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_1_wind_walk.tscn" id="trial_walk"]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/key/key_drop.tscn" id="bear_seal_drop"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/wind_seal_upgrade.tscn" id="wind_seal_pickup"]
+[ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint_hint/checkpoint_hint.tscn" id="checkpoint_hint"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_11p2m"]
 render_priority = -1
@@ -149,6 +154,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18)
 [node name="Room02Foyer" parent="Rooms/Tier1" unique_id=646146326 instance=ExtResource("8_kxfex")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -2)
 
+[node name="CheckpointHint" parent="Rooms/Tier1/Room02Foyer/Checkpoint" instance=ExtResource("checkpoint_hint")]
+
 [node name="Room03BannerCorridor" parent="Rooms/Tier1" unique_id=964583276 instance=ExtResource("9_ujoiv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, -2)
 
@@ -159,7 +166,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -56)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -44)
 
 [node name="WindShrine" parent="Rooms/Tier1/Room05InnerGarden" index="4" unique_id=2095574590]
-arrival_spawn_id = &"level_1.wind_book_arrival"
+arrival_spawn_id = &""
 
 [node name="Room051WindWalk" parent="Rooms/Tier1" unique_id=1826966948 instance=ExtResource("trial_walk")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 3.6, -58)
@@ -204,6 +211,22 @@ shape = SubResource("BoxShape3D_1stda")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.8, 5.4, -0.9)
 script = ExtResource("trial_legacy_spawn")
 spawn_id = &"level_1.wind_trial_exit"
+
+[node name="RoomDimmer" type="Node" parent="Rooms/Tier1/Room051WindWalk"]
+script = ExtResource("room_dimmer")
+brightness = 0.6
+
+[node name="RoomDimmer" type="Node" parent="Rooms/Tier1/Room052WindTrial"]
+script = ExtResource("room_dimmer")
+brightness = 0.6
+
+[node name="RoomDimmer" type="Node" parent="Rooms/Tier1/Room053WindChallenge"]
+script = ExtResource("room_dimmer")
+brightness = 0.6
+
+[node name="RoomDimmer" type="Node" parent="Rooms/Tier1/Room06TowerBase"]
+script = ExtResource("room_dimmer")
+brightness = 0.6
 
 [node name="Room07SailStorage" parent="Rooms/Tier1" unique_id=1035599555 instance=ExtResource("13_hja6v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -76)
@@ -252,13 +275,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -202)
 [node name="T2Room26Treasure" parent="Rooms/Tier2" unique_id=142655249 instance=ExtResource("21_1w4y3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38, 0, -204)
 
+[node name="BearSealDrop" parent="Rooms/Tier2/T2Room26Treasure" node_paths=PackedStringArray("encounter") instance=ExtResource("bear_seal_drop")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 19.62, -1)
+encounter = NodePath("../BearFight")
+key_scene = ExtResource("wind_seal_pickup")
+key_id = &"level_1.bear_wind_seal"
+
+[node name="BearFightExitWarp" parent="Rooms/Tier2/T2Room26Treasure"]
+unlock_flag = &"level_1.bear_wind_seal"
+
 [node name="T2Room27BossGate" parent="Rooms/Tier2" unique_id=1058173484 instance=ExtResource("22_1stda")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -224)
 
 [node name="T2Room2aWindCourt" parent="Rooms/Tier2" unique_id=70577257 instance=ExtResource("23_1asvm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -152)
 
-[node name="T2Room2bPuzzleCourt" parent="Rooms/Tier2" unique_id=1564931690 instance=ExtResource("24_y68c7")]
+[node name="T2Room2bLaserCourt" parent="Rooms/Tier2" unique_id=1564931690 instance=ExtResource("24_y68c7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -176)
 
 [node name="T2Room2cKeyShrine" parent="Rooms/Tier2" unique_id=1187230685 instance=ExtResource("25_w3hun")]
@@ -316,6 +348,10 @@ hide_when_inside = [NodePath("../Rooms/Tier1"), NodePath("../Rooms/Tier2")]
 [node name="Shape" parent="Tier3Zone" index="0"]
 shape = SubResource("Tier3ZoneShape")
 
+[node name="WindTrialGateCheckpoint" parent="." instance=ExtResource("tier3_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3.6, -57.2)
+checkpoint_id = &"level_1.wind_trial_gate"
+
 [node name="Tier3EntryCheckpoint" parent="." unique_id=2090428911 instance=ExtResource("tier3_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -263)
 checkpoint_id = &"level_1.tier3_entry"
@@ -359,6 +395,8 @@ area = ExtResource("area_tier_3")
 [editable path="Rooms/Tier1/Room06TowerBase"]
 [editable path="Rooms/Tier1/Room06TowerBase/TowerFight"]
 [editable path="Rooms/Tier1/Room09GrandStair"]
+[editable path="Rooms/Tier1/Room02Foyer"]
+[editable path="Rooms/Tier2/T2Room26Treasure"]
 [editable path="SecretZone"]
 [editable path="Tier2Zone"]
 [editable path="Tier1Zone"]

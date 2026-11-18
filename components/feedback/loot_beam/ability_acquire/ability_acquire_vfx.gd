@@ -137,9 +137,14 @@ func _go(phase_name: StringName) -> void:
 ## Dọn trước rồi mới báo người gọi xóa pickup.
 func _finish() -> void:
 	if not _active: return
+	var tutorial: TutorialData = null
+	if context.committed and context.ability != null:
+		tutorial = GameState.TUTORIALS.get_tutorial(context.ability.id)
 	_cleanup()
 	finished.emit()
-	GameState.unlock_tutorial(&"inventory")
+	if tutorial != null and tutorial.show_after_acquire:
+		GameState.tutorial_unlocked.emit(tutorial)
+	GameState.unlock_tutorial(&"inventory", false)
 ## Không dùng tween/timer chạy tiếp sau lượt; mọi thứ được trả đồng bộ.
 func _cleanup() -> void:
 	_active = false

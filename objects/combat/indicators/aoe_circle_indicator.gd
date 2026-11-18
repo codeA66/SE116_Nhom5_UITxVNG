@@ -5,7 +5,6 @@ extends Node3D
 ## và vòng nạp đầy dần bên trong để người chơi căn thời gian né/nhảy.
 ## Hiệu năng: top_level để không phụ thuộc cha, set_physics_process(false) khi tắt.
 
-@export var default_radius: float = 3.5
 @export var fill_color: Color = Color(1.0, 0.15, 0.08, 0.35)
 @export var border_color: Color = Color(1.0, 0.28, 0.1, 0.85)
 
@@ -32,7 +31,10 @@ func _ready() -> void:
 			_border_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			_border_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 			_border_mat.albedo_color = border_color
-			_border.material_override = _border_mat
+		else:
+			_border_mat = _border_mat.duplicate() as StandardMaterial3D
+		_border_mat.albedo_color = border_color
+		_border.material_override = _border_mat
 	
 	if _fill:
 		_fill_mat = _fill.get_active_material(0) as StandardMaterial3D
@@ -42,12 +44,15 @@ func _ready() -> void:
 			_fill_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			_fill_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 			_fill_mat.albedo_color = fill_color
-			_fill.material_override = _fill_mat
+		else:
+			_fill_mat = _fill_mat.duplicate() as StandardMaterial3D
+		_fill_mat.albedo_color = fill_color
+		_fill.material_override = _fill_mat
 
 
 ## Kích hoạt hiển thị chỉ thị tại vị trí đích trên sàn với bán kính và thời gian nạp
 func show_indicator(target_pos: Vector3, radius: float, duration: float) -> void:
-	_target_radius = radius
+	_target_radius = maxf(radius, 0.001)
 	_duration = maxf(duration, 0.01)
 	_timer = 0.0
 	
@@ -65,6 +70,10 @@ func show_indicator(target_pos: Vector3, radius: float, duration: float) -> void
 
 
 ## Ẩn chỉ thị khi đòn đánh đã va chạm đất
+func update_target(target_pos: Vector3) -> void:
+	global_position = target_pos + Vector3.UP * 0.02
+
+
 func hide_indicator() -> void:
 	visible = false
 	set_physics_process(false)

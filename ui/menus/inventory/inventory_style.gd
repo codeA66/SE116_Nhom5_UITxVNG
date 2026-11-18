@@ -68,6 +68,38 @@ extends Resource
 ## Thẻ nguyên tố lóe sáng khi vừa lên cấp
 @export var level_flash_time: float = 0.9
 
+@export_group("Trang Bùa")
+@export var charm_panel: StyleBox
+@export var charm_column_gap: int = 42
+@export var charm_detail_width: float = 360.0
+@export var charm_art_size: Vector2 = Vector2(144, 112)
+@export var charm_title_lines: int = 3
+@export var charm_section_gap: int = 10
+@export var charm_tile_gap: int = 12
+@export var charm_grid_inset: int = 11
+@export var charm_notch_radius: float = 7.0
+@export var charm_notch_step: float = 24.0
+@export var charm_socket_fill: Color = Color("#182229")
+@export var charm_socket_edge: Color = Color("#44515a")
+@export var charm_preview_color: Color = Color("#e9c986")
+@export var charm_border_width: float = 1.5
+@export var charm_refusal_hold: float = 1.6
+
+@export_group("Văn bản trang Bùa")
+@export var charm_capacity_text: String
+@export var charm_collection_text: String
+@export var charm_empty_slot_text: String
+@export var charm_empty_slot_description: String
+@export var charm_hidden_text: String
+@export var charm_hidden_description: String
+@export var charm_cost_text: String
+@export var charm_effect_text: String
+@export var charm_station_text: String
+@export var charm_refusal_text: String
+@export var charm_equip_text: String
+@export var charm_remove_text: String
+@export var charm_equipped_text: String
+
 @export_group("Âm thanh")
 ## Để trống = chưa có file
 @export var sound_open: AudioStream

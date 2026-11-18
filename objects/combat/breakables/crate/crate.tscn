@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://objects/combat/breakables/breakable.tscn" id="1_base"]
+[ext_resource type="Resource" path="res://resources/combat/breakables/crate.tres" id="2_data"]
+[ext_resource type="PackedScene" path="res://assets/models/shared/breakables/crate_debris.glb" id="3_pieces"]
+
+[node name="Crate" instance=ExtResource("1_base")]
+data = ExtResource("2_data")
+use_debris_as_visual = true
+debris_parts_root = NodePath("Debris/Pieces")
+damage_parts = Array[NodePath]([NodePath("Debris/Pieces/FrontPanel"), NodePath("Debris/Pieces/Lid")])
+
+[node name="Pieces" parent="Debris" instance=ExtResource("3_pieces")]

@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/ability/skill_upgrade_pickup.gd" id="1_pickup"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/ability_acquire_vfx.tscn" id="3_acquisition"]
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="4_skill"]
+[ext_resource type="Resource" path="res://resources/player/items/upgrades/wind_seal.tres" id="5_seal"]
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 1.6
+
+[node name="WindSealUpgrade" type="Node3D"]
+script = ExtResource("1_pickup")
+skill = ExtResource("4_skill")
+item = ExtResource("5_seal")
+spin_speed = 0.0
+
+[node name="Visual" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2_interact")
+prompt_text = "NHẶT"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Range")
+
+[node name="AbilityAcquireVfx" parent="." node_paths=PackedStringArray("source_visual") instance=ExtResource("3_acquisition")]
+source_visual = NodePath("../Visual")

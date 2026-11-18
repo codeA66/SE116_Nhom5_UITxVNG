@@ -31,6 +31,7 @@ Tài liệu này là quy tắc bắt buộc cho Claude khi làm việc trong pro
 4. Không commit / push git khi chưa được yêu cầu.
 5. Không tự cài plugin, addon hay tải asset khi chưa được yêu cầu.
 6. Không dùng cú pháp Godot 3 (`KinematicBody`, `yield`, `export var`, `onready var`, `move_and_slide(velocity)`...).
+7. **Bản export release:** trước khi viết script `@tool`, gọi hàm chỉ có trong editor (`_get_configuration_warnings()`, class `Editor*`...), sửa cấu hình export hay sửa lỗi "editor chạy được nhưng bản export hỏng", BẮT BUỘC đọc [docs/export_release_rules.md](docs/export_release_rules.md). Lỗi export phải tái hiện trên bản release thật rồi mới sửa, không đoán.
 
 ## 3. Cấu trúc thư mục (tổ chức theo tính năng)
 

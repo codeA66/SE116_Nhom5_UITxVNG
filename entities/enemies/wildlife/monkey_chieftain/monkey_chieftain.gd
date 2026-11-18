@@ -18,6 +18,27 @@ var _buff_applied: bool = false
 @onready var peel_boost: ChieftainPeelBoost = $PeelResponse
 @onready var pathfinder: ChieftainPathfinder = $Pathfinder
 
+func _ready() -> void:
+	super()
+	state_machine.state_changed.connect(_clear_push_on_attack)
+
+func _clear_push_on_attack(_previous: StringName, _current: StringName) -> void:
+	if wind_receiver and _is_committed_to_attack():
+		wind_receiver.clear_push()
+
+func resists_knockback() -> bool:
+	return _is_committed_to_attack() or super()
+
+func _on_wind_pushed(impulse: Vector3) -> void:
+	if _is_committed_to_attack():
+		wind_receiver.clear_push()
+		return
+	super(impulse)
+
+func _is_committed_to_attack() -> bool:
+	var state := state_machine.current_state
+	return state != null and (state is WildSkillAttack or state.name in [&"Attack", &"Display"])
+
 func move_toward_direction(direction: Vector3, delta: float) -> void:
 	var chasing: bool = state_machine.current_state != null and state_machine.current_state.name in [chase_state,&"Watch"]
 	super(pathfinder.steer(direction) if chasing else direction,delta)

@@ -77,12 +77,12 @@ func _fixture() -> PlayerProgress:
 
 
 func _elements() -> ElementsPage:
-	return _menu.get_node("Body/Pages/InventoryPages/ElementsPage") as ElementsPage
+	return _menu.get_node("Body/Columns/Pages/TabPages/ElementsPage") as ElementsPage
 
 
 func _detail_text() -> String:
 	var parts := PackedStringArray()
-	for label in _menu.get_node("Body/Detail").find_children("*", "Label", true, false):
+	for label in _menu.get_node("Body/Columns/Detail").find_children("*", "Label", true, false):
 		if (label as Label).is_visible_in_tree():
 			parts.append((label as Label).text)
 	return " | ".join(parts)
@@ -92,14 +92,25 @@ func _focused() -> Control:
 	return get_viewport().gui_get_focus_owner()
 
 
+## Bấm E (trang sau) tới khi tới trang kiểu page_type; thứ tự trang Tab: Bùa, Vật phẩm, Nguyên tố (vòng tròn)
+func _go_to(page_type: Variant) -> void:
+	for _i: int in range(4):
+		if is_instance_of(_menu.get_current_page(), page_type):
+			return
+		await _action(&"menu_next_page")
+		await _wait(0.3)
+
+
 func _uc1_open() -> void:
 	await _key(KEY_TAB)
-	_check(_menu.visible and _menu.get_current_page() is ElementsPage, "UC1: Tab mở màn, trang Nguyên tố")
+	_check(_menu.visible and _menu.get_current_page() is CharmsPage, "UC1: Tab mở màn, trang đầu là Bùa")
+	await _go_to(ElementsPage)
+	_check(_menu.get_current_page() is ElementsPage, "UC1: E tới trang Nguyên tố")
 	var card := _focused() as ElementCard
 	_check(card != null and card.element.id == &"wind", "UC1: con trỏ ở thẻ Gió (%s)" % _focused())
 	var text := _detail_text()
 	_check(text.contains("Thổi gió") and text.contains("Cấp 1 / 3"), "UC1: chi tiết có tên + cấp ('%s')" % text.left(120))
-	_check(text.contains("LỘ TRÌNH NÂNG CẤP") and text.contains("Ấn Gió   0 / 2") and text.contains("Thổi gió III"), "UC1: chi tiết có lộ trình nâng cấp + vật phẩm cần ('%s')" % text.left(260))
+	_check(text.contains("LỘ TRÌNH NÂNG CẤP") and text.contains("Ấn Gió   0 / 1") and text.contains("Thổi gió III"), "UC1: chi tiết có lộ trình nâng cấp + vật phẩm cần ('%s')" % text.left(260))
 	await _shot("elements")
 
 
@@ -161,9 +172,9 @@ func _uc6_pages() -> void:
 	for page: MenuPage in _menu._available_pages():
 		titles.append(page.page_title)
 	_check(titles.has("Bùa"), "UC6: trang Bùa luôn hiện kể cả chưa có bùa (%s)" % ", ".join(titles))
-	await _action(&"menu_next_page")
-	await _wait(0.3)
-	_check(_menu.get_current_page() is ItemsPage, "UC6: C -> trang Vật phẩm")
+	_check(titles.size() == 3, "UC6: màn Tab chỉ có 3 trang Bùa, Vật phẩm, Nguyên tố (%s)" % ", ".join(titles))
+	await _go_to(ItemsPage)
+	_check(_menu.get_current_page() is ItemsPage, "UC6: E -> trang Vật phẩm")
 	var tiles := (_menu.get_current_page() as ItemsPage)._tiles
 	var names := PackedStringArray()
 	for tile: ItemTile in tiles:
@@ -173,7 +184,8 @@ func _uc6_pages() -> void:
 	await _shot("items")
 	await _action(&"menu_prev_page")
 	await _wait(0.3)
-	_check(_menu.get_current_page() is ElementsPage, "UC6: Z -> về Nguyên tố")
+	_check(_menu.get_current_page() is CharmsPage, "UC6: Q -> lùi về Bùa")
+	await _go_to(ElementsPage)
 
 
 ## Bùa thử chỉ có trong test (không vào danh mục thật); dùng lại icon có sẵn để thấy hình
@@ -189,26 +201,22 @@ func _make_charm(id: StringName, title: String, cost: int, icon_path: String = "
 	return charm
 
 
-func _charms_page() -> CharmsPage:
-	return _menu.get_node("Body/Pages/CharmsPage") as CharmsPage
-
-
 func _uc7_charms() -> void:
-	# Chưa có bùa nào (danh mục thật đang trống): trang vẫn hiện, có ô trống + dòng "chưa có bùa"
-	await _action(&"menu_next_page")
-	await _action(&"menu_next_page")
+	var original_catalog: Array[CharmData] = GameState.ITEMS.charms.duplicate()
+	GameState.ITEMS.charms.clear()
+	GameState.charms_changed.emit()
+	await _go_to(CharmsPage)
 	await _wait(0.4)
 	var page := _menu.get_current_page() as CharmsPage
-	_check(page != null, "UC7: C C -> trang Bùa (%s)" % _menu.get_current_page())
+	_check(page != null, "UC7: E -> trang Bùa (%s)" % _menu.get_current_page())
 	if page == null:
+		GameState.ITEMS.charms.assign(original_catalog)
 		return
-	# Danh mục thật có thể đã có bùa (chưa sở hữu): dòng "chưa có bùa" chỉ hiện khi danh mục rỗng
-	var base_count: int = GameState.ITEMS.charms.size()
-	_check(page._empty.visible == (base_count == 0) and page._equipped_tiles.size() == 1 and page._equipped_tiles[0].mode == CharmTile.Mode.EMPTY_SLOT, "UC7: chưa có bùa -> 1 ô trống (danh mục thật %d bùa)" % base_count)
+	_check(page._empty.visible and page._equipped_tiles.size() == 1 and page._equipped_tiles[0].mode == CharmTile.Mode.EMPTY_SLOT, "UC7: chưa có bùa -> dòng trống + 1 ô trống")
 	_check(page._notch_label.text == "Ô KHẮC  0 / 3", "UC7: ô khắc 0 / 3 ('%s')" % page._notch_label.text)
 	await _shot("charms_empty")
 	var light := _make_charm(&"test_light", "Lông Vũ Thử", 1, "res://ui/hud/icons/wind.svg")
-	var heavy := _make_charm(&"test_heavy", "Tim Bão Thử", 3, "res://ui/hud/icons/fire.svg")
+	var heavy := _make_charm(&"test_heavy", "Tim Bão Thử", 6, "res://ui/hud/icons/fire.svg")
 	var mid := _make_charm(&"test_mid", "Lưỡi Gió Thử", 2, "res://ui/hud/icons/sword.svg")
 	var hidden := _make_charm(&"test_hidden", "Bùa Giấu Thử", 1)
 	for charm: CharmData in [light, heavy, mid, hidden]:
@@ -216,24 +224,26 @@ func _uc7_charms() -> void:
 	for charm: CharmData in [light, heavy, mid]:
 		GameState.add_charm(charm)
 	await _frames(3)
-	_check(page._grid_tiles.size() == base_count + 4, "UC7: lưới đủ %d ô theo danh mục (%d)" % [base_count + 4, page._grid_tiles.size()])
-	_check(page._collection_heading.text == "BỘ SƯU TẬP  3 / %d" % (base_count + 4), "UC7: tiêu đề bộ sưu tập ('%s')" % page._collection_heading.text)
-	# Ô tìm theo id: bùa thật trong danh mục đứng trước bùa thử
-	var light_tile := page._find_tile(page._grid_tiles, &"test_light")
-	var heavy_tile := page._find_tile(page._grid_tiles, &"test_heavy")
-	var hidden_tile := page._find_tile(page._grid_tiles, &"test_hidden")
-	hidden_tile.grab_focus()
+	_check(page._grid_tiles.size() == 4, "UC7: lưới đủ 4 ô theo danh mục (%d)" % page._grid_tiles.size())
+	_check(page._collection_heading.text == "BỘ SƯU TẬP  3 / 4", "UC7: tiêu đề bộ sưu tập ('%s')" % page._collection_heading.text)
+	page._grid_tiles[3].grab_focus()
 	await _frames(2)
-	_check(not hidden_tile.owned and _detail_text().contains("???"), "UC7: bùa chưa tìm thấy -> bóng tối '???'")
+	_check(not page._grid_tiles[3].owned and _detail_text().contains("Bùa chưa tìm thấy"), "UC7: ô chìm giữ kín bùa chưa tìm thấy")
 	# Ngoài khu đổi bùa: rung + trạng thái đỏ, không đeo
-	light_tile.grab_focus()
+	page._grid_tiles[0].grab_focus()
 	await _frames(2)
 	await _action(&"ui_accept")
 	_check(not GameState.is_charm_equipped(&"test_light"), "UC7: ngoài khu đổi bùa -> không đeo được")
-	_check(light_tile._shake > 0.0 or (light_tile._fx_tween != null and light_tile._fx_tween.is_running()), "UC7: ô rung khi bị từ chối")
+	var refusal_tween: Tween = page._grid_tiles[0]._fx_tween
+	_check(page._grid_tiles[0]._shake > 0.0 or (refusal_tween != null and refusal_tween.is_running()), "UC7: ô rung khi bị từ chối")
 	_check(page._status.get_theme_color(&"font_color") == _menu.style.warning and page._status.text.contains("khu đổi bùa"), "UC7: dòng trạng thái đỏ ghi lý do")
 	GameState.enter_charm_station()
 	await _wait(0.4)
+	_check(page._notches._preview_cost == 1, "UC7: chọn bùa 1 ô xem trước chi phí")
+	await _key(KEY_D)
+	_check(_focused() == page._grid_tiles[1], "UC7: D chuyển sang bùa kế bên")
+	await _key(KEY_LEFT)
+	_check(_focused() == page._grid_tiles[0], "UC7: mũi tên trái về bùa trước")
 	await _action(&"ui_accept")
 	_check(GameState.is_charm_equipped(&"test_light") and GameState.get_used_notches() == 1, "UC7: trong khu -> đeo bùa 1 ô")
 	await _frames(3)
@@ -244,24 +254,24 @@ func _uc7_charms() -> void:
 	_check(worn != null and worn.modulate.a == 1.0, "UC7: ô đang đeo hiện bùa vừa đeo")
 	_check(is_equal_approx(page._notches.used, 1.0), "UC7: hạt ô khắc sáng lên 1 (%.2f)" % page._notches.used)
 	await _shot("charms_equipped")
-	# Bùa 3 ô khi còn 2 ô: từ chối
-	heavy_tile.grab_focus()
+	# Bùa nhiều ô để kiểm tra hàng ô khắc không sinh thêm hạt khi thiếu chỗ.
+	page._grid_tiles[1].grab_focus()
 	await _frames(2)
 	await _action(&"ui_accept")
-	_check(not GameState.is_charm_equipped(&"test_heavy") and page._status.text.contains("Không đủ ô khắc"), "UC7: bùa 3 ô báo thiếu ô khắc")
+	_check(not GameState.is_charm_equipped(&"test_heavy") and page._status.text.contains("Không đủ ô khắc"), "UC7: bùa 6 ô báo thiếu ô khắc")
 	# Tháo từ hàng đang đeo: con trỏ về ô của bùa đó trong lưới
 	worn.grab_focus()
 	await _frames(2)
 	await _action(&"ui_accept")
 	await _frames(3)
 	_check(not GameState.is_charm_equipped(&"test_light"), "UC7: tháo bùa từ hàng đang đeo")
-	_check(get_viewport().gui_get_focus_owner() == page._find_tile(page._grid_tiles, &"test_light"), "UC7: tháo xong con trỏ về ô bùa trong lưới")
+	_check(get_viewport().gui_get_focus_owner() == page._grid_tiles[0], "UC7: tháo xong con trỏ về ô bùa trong lưới")
 	await _wait(_menu.style.charm_fly_time + 0.3)
 	_check(not page._ghost.visible and is_equal_approx(page._notches.used, 0.0), "UC7: bay về xong, ô khắc tắt hết")
 	GameState.exit_charm_station()
-	for charm: CharmData in [light, heavy, mid, hidden]:
-		GameState.ITEMS.charms.erase(charm)
+	GameState.ITEMS.charms.assign(original_catalog)
 	GameState.progress.charms.clear()
+	GameState.charms_changed.emit()
 
 
 func _uc8_upgrade() -> void:
@@ -269,14 +279,14 @@ func _uc8_upgrade() -> void:
 	var seal := load(SEAL) as ItemData
 	_check(GameState.can_upgrade_ability(wind), "UC8: đủ 2 Ấn Gió -> nâng cấp được")
 	_check(GameState.upgrade_ability(wind) and GameState.get_ability_level(wind) == 2, "UC8: lên cấp 2")
-	_check(GameState.get_item_count(seal) == 0, "UC8: Ấn Gió bị lấy đi (còn %d)" % GameState.get_item_count(seal))
+	_check(GameState.get_item_count(seal) == 1, "UC8: cấp 2 tốn 1 Ấn Gió (còn %d / 2)" % GameState.get_item_count(seal))
 	_check(not GameState.upgrade_ability(wind) and GameState.get_ability_level(wind) == 2, "UC8: thiếu Ấn Gió -> không lên cấp 3")
 	_check(wind.get_level_name(2) == "Lốc xoáy", "UC8: tên cấp 2 = '%s'" % wind.get_level_name(2))
 	_menu.close()
 	await _wait(0.3)
 	await _key(KEY_TAB)
 	await _wait(0.3)
-	# Màn mở lại đúng trang xem lần trước: về trang Nguyên tố như người chơi bấm Z
+	# Màn mở lại đúng trang xem lần trước: về trang Nguyên tố như người chơi bấm Q
 	for attempt in 3:
 		if _menu.get_current_page() is ElementsPage:
 			break
@@ -288,7 +298,7 @@ func _uc8_upgrade() -> void:
 	card.grab_focus()
 	await _frames(2)
 	var text := _detail_text()
-	_check(text.contains("ĐANG DÙNG") and text.contains("ĐÃ MỞ") and text.contains("Ấn Gió   0 / 3"), "UC8: lộ trình: cấp II đang dùng, cấp I đã mở, cấp III cần 3 Ấn ('%s')" % text.left(300))
+	_check(text.contains("ĐANG DÙNG") and text.contains("ĐÃ MỞ") and text.contains("Ấn Gió   1 / 3"), "UC8: lộ trình: cấp II đang dùng, cấp I đã mở, cấp III cần 3 Ấn (đang có 1) ('%s')" % text.left(300))
 	await _shot("upgrade_path")
 	_menu.close()
 	await _wait(0.3)
@@ -330,15 +340,17 @@ func _uc10_extreme() -> void:
 	await _wait(0.3)
 	var cards := _elements()._cards
 	_check(cards.size() > 0 and not cards[0].owned, "UC10: chưa có nguyên tố -> thẻ '???'")
-	await _action(&"menu_next_page")
-	await _wait(0.3)
+	await _go_to(ItemsPage)
 	var page := _menu.get_current_page() as ItemsPage
 	_check(page != null and page._tiles.size() == 12, "UC10: 12 loại vật phẩm hiện đủ")
 	await _shot("items_many")
 	# Bùa cực đoan: 30 bùa, 12 ô khắc, đeo kín, tên rất dài
+	var original_catalog: Array[CharmData] = GameState.ITEMS.charms.duplicate()
+	GameState.ITEMS.charms.clear()
 	var many: Array[CharmData] = []
 	for index in 30:
 		var charm := _make_charm(StringName("test_many_%d" % index), "Bùa thử có cái tên rất rất dài số %d" % index, 1 + index % 3, "res://ui/hud/icons/wind.svg" if index % 2 == 0 else "")
+		charm.description = "Một đoạn mô tả rất dài để xem phần tác dụng có cuộn được và giữ nguyên bố cục. ".repeat(24)
 		GameState.ITEMS.charms.append(charm)
 		many.append(charm)
 		GameState.add_charm(charm)
@@ -346,12 +358,10 @@ func _uc10_extreme() -> void:
 	GameState.enter_charm_station()
 	for index in 6:
 		GameState.equip_charm(many[index * 2].id)
-	await _action(&"menu_next_page")
+	await _go_to(CharmsPage)
 	await _wait(0.5)
 	var charms := _menu.get_current_page() as CharmsPage
-	# Cộng cả bùa thật đang có trong danh mục
-	var expected_tiles: int = GameState.ITEMS.charms.size()
-	_check(charms != null and charms._grid_tiles.size() == expected_tiles, "UC10: 30 bùa thử (+ bùa thật) hiện đủ trong lưới (%d / %d)" % [charms._grid_tiles.size() if charms else -1, expected_tiles])
+	_check(charms != null and charms._grid_tiles.size() == 30, "UC10: 30 bùa hiện đủ trong lưới")
 	if charms:
 		var used := GameState.get_used_notches()
 		_check(charms._notch_label.text == "Ô KHẮC  %d / 12" % used, "UC10: 12 ô khắc ('%s')" % charms._notch_label.text)
@@ -364,13 +374,15 @@ func _uc10_extreme() -> void:
 		var last_rect := charms._grid_tiles[29].get_global_rect()
 		_check(scroll_rect.encloses(last_rect), "UC10: chọn bùa cuối -> tự cuộn tới, thấy trọn ô (%s trong %s)" % [last_rect, scroll_rect])
 		var row_rect := charms._equipped_row.get_global_rect()
-		_check(row_rect.end.x <= _menu.get_node("Body/Detail").get_global_rect().position.x, "UC10: hàng đang đeo không đè lên bảng chi tiết")
+		var equipped_view: Rect2 = charms._equipped_scroll.get_global_rect()
+		var detail: Rect2 = _menu.get_node("Body/Columns/Detail").get_global_rect()
+		_check(row_rect.position.x < equipped_view.end.x and equipped_view.end.x <= detail.position.x, "UC10: vùng hàng đang đeo không đè lên bảng chi tiết")
 	await _shot("charms_many")
 	GameState.exit_charm_station()
-	for charm: CharmData in many:
-		GameState.ITEMS.charms.erase(charm)
+	GameState.ITEMS.charms.assign(original_catalog)
 	GameState.progress.charms.clear()
 	GameState.progress.equipped_charms.clear()
+	GameState.charms_changed.emit()
 	for item: ItemData in extras:
 		GameState.ITEMS.items.erase(item)
 	_menu.close()
@@ -386,6 +398,7 @@ func _key(code: Key) -> void:
 		Input.parse_input_event(event)
 		await get_tree().process_frame
 	await _frames(2)
+
 
 
 func _action(action: StringName) -> void:

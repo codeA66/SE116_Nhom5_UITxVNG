@@ -4,13 +4,20 @@ extends Node3D
 
 signal finished
 
-const MagmaHazardScript = preload("res://entities/bosses/boss_1/hazards/magma_spike/magma_hazard.gd")
-
-@export var spoke_count: int = 8
+@export_range(1, 64) var spoke_count: int = 8:
+	set(value):
+		spoke_count = clampi(value, 1, 64)
+		if is_node_ready() and not _rebuild_pending:
+			_rebuild_pending = true
+			_rebuild.call_deferred()
 @export var magma_hazard_scene: PackedScene
 
 var _spikes: Array[Node3D] = []
 var _active_count: int = 0
+var _running: bool = false
+var _rebuild_pending: bool = false
+var _fill_material: StandardMaterial3D
+var _line_material: StandardMaterial3D
 
 var _telegraph_container: Node3D = null
 var _telegraph_pivots: Array[Node3D] = []
@@ -91,8 +98,10 @@ func _build_telegraphs() -> void:
 	var wedge_mesh := _create_wedge_mesh()
 	var outline_mesh := _create_wedge_outline()
 	
-	for i: int in spoke_count:
-		var angle: float = float(i) * (TAU / float(spoke_count))
+	_fill_material = _make_material(Color(1.0, 0.28, 0.05, 0.35))
+	_line_material = _make_material(Color(1.0, 0.15, 0.02, 0.85))
+	for i: int in _spikes.size():
+		var angle: float = float(i) * (TAU / float(maxi(_spikes.size(), 1)))
 		var facing: Vector3 = Vector3(cos(angle), 0.0, sin(angle)).normalized()
 		
 		var pivot := Node3D.new()
@@ -107,12 +116,7 @@ func _build_telegraphs() -> void:
 		fill.mesh = wedge_mesh
 		fill.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		
-		var fill_mat := StandardMaterial3D.new()
-		fill_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		fill_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		fill_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-		fill_mat.albedo_color = Color(1.0, 0.28, 0.05, 0.35)
-		fill.material_override = fill_mat
+		fill.material_override = _fill_material
 		pivot.add_child(fill)
 		_telegraph_fills.append(fill)
 		
@@ -122,12 +126,7 @@ func _build_telegraphs() -> void:
 		line.mesh = outline_mesh
 		line.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		
-		var line_mat := StandardMaterial3D.new()
-		line_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		line_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		line_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-		line_mat.albedo_color = Color(1.0, 0.15, 0.02, 0.85)
-		line.material_override = line_mat
+		line.material_override = _line_material
 		pivot.add_child(line)
 		_telegraph_lines.append(line)
 
@@ -185,19 +184,12 @@ func _update_telegraph(progress: float) -> void:
 		pivot.scale.z = maxf(eased_p, 0.01)
 		pivot.scale.x = lerpf(0.4, 1.0, eased_p)
 	
-	for fill: MeshInstance3D in _telegraph_fills:
-		var mat := fill.material_override as StandardMaterial3D
-		if mat:
-			mat.albedo_color.a = lerpf(0.2, 0.55, eased_p)
-	
-	for line: MeshInstance3D in _telegraph_lines:
-		var mat := line.material_override as StandardMaterial3D
-		if mat:
-			mat.albedo_color.a = lerpf(0.5, 0.95, eased_p)
+	_fill_material.albedo_color.a = lerpf(0.2, 0.55, eased_p)
+	_line_material.albedo_color.a = lerpf(0.5, 0.95, eased_p)
 
 
 func launch(origin: Vector3, attack_data: AttackData) -> void:
-	hide_telegraph()
+	cancel()
 	if _spikes.is_empty():
 		_build_spokes()
 	
@@ -205,9 +197,10 @@ func launch(origin: Vector3, attack_data: AttackData) -> void:
 	var floor_pos := _find_floor(origin)
 	global_position = floor_pos
 	_active_count = _spikes.size()
+	_running = _active_count > 0
 	
 	for i: int in _spikes.size():
-		var angle: float = float(i) * (TAU / float(spoke_count))
+		var angle: float = float(i) * (TAU / float(maxi(_spikes.size(), 1)))
 		var facing: Vector3 = Vector3(cos(angle), 0.0, sin(angle)).normalized()
 		if _spikes[i].has_method(&"start"):
 			_spikes[i].call(&"start", attack_data, floor_pos, facing)
@@ -215,14 +208,52 @@ func launch(origin: Vector3, attack_data: AttackData) -> void:
 
 func cancel() -> void:
 	hide_telegraph()
-	for spike: Node3D in _spikes:
-		if spike.has_method(&"cancel"):
-			spike.call(&"cancel")
+	var was_running: bool = _running
+	_running = false
 	_active_count = 0
-	finished.emit()
+	for spike: Node3D in _spikes:
+		spike.call(&"cancel")
+	if was_running:
+		finished.emit()
+
+
+func is_active() -> bool:
+	return _running
+
+
+func get_spoke_count() -> int:
+	return _spikes.size()
 
 
 func _on_spoke_finished() -> void:
+	if not _running:
+		return
 	_active_count = maxi(_active_count - 1, 0)
 	if _active_count == 0:
+		_running = false
 		finished.emit()
+
+
+func _make_material(color: Color) -> StandardMaterial3D:
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	material.albedo_color = color
+	return material
+
+
+func _rebuild() -> void:
+	_rebuild_pending = false
+	cancel()
+	for spike: Node3D in _spikes:
+		spike.free()
+	_spikes.clear()
+	_telegraph_pivots.clear()
+	_telegraph_fills.clear()
+	_telegraph_lines.clear()
+	if _telegraph_container:
+		_telegraph_container.free()
+		_telegraph_container = null
+	_build_spokes()
+	_build_telegraphs()

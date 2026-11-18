@@ -10,6 +10,8 @@ extends Pickup
 		update_configuration_warnings()
 @export_range(1, 99) var amount: int = 1
 @export var beam_color: Color = Color("a6e0ef")
+## Bài hướng dẫn mở ra khi nhặt (ví dụ Ấn Gió -> cách nâng cấp kỹ năng). Trống = chỉ nhận vật phẩm
+@export var tutorial: TutorialData
 ## Cỡ biểu tượng vật phẩm lơ lửng (m)
 @export var icon_size: float = 0.7
 
@@ -41,3 +43,5 @@ func _can_be_picked_by(interactor: Node3D) -> bool:
 
 func _give_to(_interactor: Node3D) -> void:
 	GameState.add_item(item, amount)
+	if tutorial:
+		GameState.unlock_tutorial(tutorial)

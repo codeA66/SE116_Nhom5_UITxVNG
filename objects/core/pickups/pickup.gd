@@ -34,6 +34,12 @@ func _process(delta: float) -> void:
 	_visual.rotate_y(spin_speed * delta)
 
 
+## Lớp con ghi đè: lý do cấu hình sai (rỗng = đúng). Khai báo ở đây vì hàm gốc của Node chỉ có trong editor / bản debug:
+## không khai báo thì bản export release không biên dịch được script này (mọi vật nhặt mất script)
+func _get_configuration_warnings() -> PackedStringArray:
+	return PackedStringArray()
+
+
 ## Lớp con ghi đè: thêm model riêng vào visual (để trống nếu scene đã có sẵn model)
 func _build_visual(_visual_root: Node3D) -> void:
 	pass

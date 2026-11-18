@@ -171,6 +171,6 @@ wait_for_cutscene = NodePath("../IntroCutscene")
 tutorial = ExtResource("24_tut_movement")
 tutorials = Array[ExtResource("25_jxn7q")]([ExtResource("24_tut_movement"), ExtResource("25_tut_dash")])
 wait_for_cutscene = NodePath("../IntroCutscene")
-delay_after_cutscene = 4.0
+delay_after_cutscene = 0.0
 
 [connection signal="combat_ready" from="." to="AreaTitleTrigger" method="announce"]

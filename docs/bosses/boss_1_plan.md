@@ -1,4 +1,8 @@
-# Kế hoạch Thiết kế Boss 1: "Dị Thú Tha Hoá" (Mutant Boss - Map Gió)
+# Kế hoạch Thiết kế Boss 1: "Ngưu Vương Huyết Diệm" (Crimson Minotaur - Map Gió)
+
+Cập nhật moveset: đã bỏ Normal Attack 1/2 và toàn bộ Melee; các mô tả quét tay/combo bên dưới thuộc thiết kế cũ. Thư viện gameplay dùng Idle, Walk, Charge, FireballCast, JumpSlam, Roar, MagmaStomp, Death.
+
+Cập nhật triển khai 2026-11-16: boss mặc định 50 HP; phá khiên về Idle; hệ số damage phase 3 áp dụng toàn bộ moveset; chết dọn đạn và hazard. Thông số và kết quả kiểm tra hiện tại xem assets/models/bosses/boss_1/boss_profile/README.md. Các mô tả hiệu ứng/ý tưởng khác bên dưới là kế hoạch thiết kế, chưa đồng nghĩa đã triển khai.
 
 Tài liệu đặc tả kỹ thuật và kế hoạch triển khai Boss đầu tiên cho `levels/zone_1_wind/level_1/level_1.tscn` (tại `T2Room27BossGate`).
 
@@ -6,16 +10,16 @@ Tài liệu đặc tả kỹ thuật và kế hoạch triển khai Boss đầu t
 
 ## 1. Tổng quan & Ý tưởng Thiết kế
 
-- **Tên Boss:** Dị Thú Tha Hoá (*Corrupted Mutant*).
+- **Tên Boss:** Ngưu Vương Huyết Diệm (*Crimson Minotaur*).
 - **Vị trí xuất hiện:** Cuối Level 1, khu vực `BossEntry` của `T2Room27BossGate` (hoặc đấu trường riêng kết nối qua cổng).
 - **Mục tiêu gameplay:** 
   - Là bài kiểm tra tổng hợp kỹ năng của người chơi ở Level 1: né đòn quét kiếm bằng Dash, né sóng chấn bằng Jump, và đặc biệt là **dùng Kỹ năng Gió (E) để phản đòn cầu lửa phá khiên bất tử**.
 - **Triết lý hiển thị (Diegetic Design):** 
   - **Không dùng thanh máu Boss trên HUD.** Toàn bộ trạng thái trận đấu (lượng máu tương đối, trạng thái khiên bất tử, số tầng khiên còn lại, cơ hội phản đòn) được thể hiện $100\%$ qua **dấu hiệu thị giác (Visual Cues)** trên chính thân Boss và đấu trường.
-- **Máu tối đa:** 20 HP (Foxy đánh kiếm thường = 1 sát thương / nhát, chém kết liễu = 2 sát thương, tên bắn = 1).
+- **Máu tối đa:** 50 HP (Foxy đánh kiếm thường = 1 sát thương / nhát, chém kết liễu = 2 sát thương, tên bắn = 1).
 - **Đặc điểm thể chất & Cơ chế I-Frames (Khung bất tử khi nhận đòn):**
   - Kích thước: Capsule bán kính `0.85 m`, chiều cao `3.0 m` (to gấp 1.7 lần Player Foxy).
-  - Kháng khựng đòn (Super Armor): Không bị khựng giật khi bị chém thường, chỉ bị choáng khi bị cầu lửa dội ngược phá vỡ khiên.
+  - Kháng khựng đòn (Super Armor): Không bị khựng giật khi bị chém thường, phá khiên xong trở lại Idle.
   - **Cơ chế I-Frames theo Phase (chống người chơi spam combo):**
     - **Phase 1 (100% → 50%) & Phase 2 (50% → 20%):** Boss có `invincibility_time = 0.6s` trên `HurtboxComponent`. Sau mỗi nhát chém trúng, Boss chớp đỏ và bất tử 0.6s, ngăn Foxy chém liên hoàn cả combo 3 nhát trong một nhịp.
     - **Phase Cuối (< 20% HP):** **Tắt I-Frames hoàn toàn** (`invincibility_time = 0.0s`). Đổi lại, Boss trở nên **cực kỳ hung hãn** (tốc độ di chuyển nhanh, xuất chiêu dồn dập). Nếu người chơi né thành công và tìm được sơ hở, có thể dồn trọn combo kết liễu Boss ngay lập tức!
@@ -45,11 +49,11 @@ Vì game không dùng thanh máu, người chơi nhận biết trạng thái c�
 - **Phản hồi khi người chơi cố đánh vào khiên:**
   - Kiếm/tên chạm vào quả cầu khiên lập tức bật ngược tia lửa kim loại (`CombatFx.spawn_hit_spark`) kèm âm thanh "keng" đanh thép. Boss không hề xi nhê, không nhận sát thương.
 - **Hiển thị số tầng khiên theo màu sắc và độ đậm nhạt:**
-  - **Ở mốc 50% (Khiên 1 tầng):** Quả cầu khiên hiện lên với độ đậm màu vừa phải. Khi bị cầu lửa dội ngược trúng $\to$ Quả cầu khiên vỡ/tắt ngay lập tức, Boss bị choáng (Stunned) gục xuống trong 2.5 giây.
+  - **Ở mốc 50% (Khiên 1 tầng):** Quả cầu khiên hiện lên với độ đậm màu vừa phải. Khi bị cầu lửa dội ngược trúng $\to$ Quả cầu khiên vỡ/tắt ngay lập tức, Boss trở về Idle ngay sau khi phá hết khiên.
   - **Ở mốc 20% (Khiên 2 tầng cường hoá):** 
     + *Ban đầu (2 tầng):* Quả cầu khiên hiện lên với **màu sắc đậm, rõ nét** (Alpha ~0.65).
     + *Trúng cầu lửa lần 1 (Bị nứt/suy yếu):* Quả cầu khiên **nhạt màu hẳn đi** (Alpha giảm xuống ~0.25, đổi sang sắc thái mờ ảo) để báo hiệu khiên đã bị nứt/giảm còn 1 tầng!
-    + *Trúng cầu lửa lần 2 (Vỡ khiên):* Quả cầu khiên biến mất hoàn toàn $\to$ Boss kiệt sức choáng 3.0 giây, mở màn cho Phase Cuối hung hãn!
+    + *Trúng cầu lửa lần 2 (Vỡ khiên):* Quả cầu khiên biến mất hoàn toàn $\to$ Boss trở lại Idle, mở màn cho Phase Cuối hung hãn!
 
 ---
 
@@ -62,7 +66,7 @@ Vì game không dùng thanh máu, người chơi nhận biết trạng thái c�
   - Cự ly xa ($> 5.0\text{ m}$): Tung cú nhảy vồ dậm đất (`Jump Attack`), khi tiếp đất sinh ra vòng sóng chấn mặt đất (`GroundShockwave`), buộc người chơi phải canh thời điểm bấm Nhảy hoặc Dash qua vành sóng.
 
 ### Bước ngoặt 1: Mốc 50% HP (Bật Khiên Tầng 1 - Cần 1 lần phản cầu)
-- **Kích hoạt:** Máu bị khóa cứng ở mốc $50\%$ (10 HP), Boss lập tức ngắt đòn đang đánh, lùi lại và phát animation `Buff` (gồng nộ).
+- **Kích hoạt:** Máu bị khóa cứng ở mốc $50\%$ (25 HP), Boss lập tức ngắt đòn đang đánh, lùi lại và phát animation `Buff` (gồng nộ).
 - **Trạng thái:**
   - Bật lớp giáp bất tử (`is_invulnerable = true`, `shield_stacks = 1`) có hiệu ứng quả cầu năng lượng bọc quanh thân.
   - Trong trạng thái này, mọi đòn chém hoặc bắn tên của người chơi đều bật ra vô hiệu.
@@ -71,7 +75,7 @@ Vì game không dùng thanh máu, người chơi nhận biết trạng thái c�
 - **Khắc chế:**
   - Người chơi đứng đón hướng bay của cầu lửa, canh thời điểm nhấn **Skill Gió (E)**.
   - Luồng gió đẩy ngược quả cầu $180^\circ$ bay thẳng về phía Boss.
-  - Cầu lửa trúng Boss $\to$ Khiên nổ tung (`shield_stacks = 0`), Boss bị choáng (Stunned) gục xuống trong 2.5 giây.
+  - Cầu lửa trúng Boss $\to$ Khiên nổ tung (`shield_stacks = 0`), Boss trở về Idle ngay sau khi phá hết khiên.
   - Mở khóa máu $\to$ Người chơi dồn sát thương tiếp.
 
 ### Giai đoạn 2: 50% → 20% HP (Cuồng nộ tăng tốc)
@@ -139,7 +143,7 @@ Vì game không dùng thanh máu, người chơi nhận biết trạng thái c�
 - [ ] **Khóa máu hoạt động chuẩn xác:** Dùng Foxy chém liên tục, máu dừng chính xác ở mốc 10 HP (50%) và 4 HP (20%), không bị mất thêm máu do spam kiếm.
 - [ ] **Khiên bất tử kích hoạt:** Khi có khiên, đòn chém thường và tên bắn đều không làm mất máu Boss.
 - [ ] **Kỹ năng Gió E phản cầu lửa:** Bấm E trước quả cầu lửa $\to$ quả cầu đổi hướng bay thẳng vào Boss $\to$ nổ khiên $\to$ giảm đúng số stack (`shield_stacks`).
-- [ ] **Phá khiên gây choáng:** Khi stack khiên về 0 $\to$ Boss chuyển sang state Stunned đúng thời gian (2.5s / 3.0s) rồi mới hoạt động lại.
+- [ ] **Phá khiên:** Khi stack khiên về 0, boss trở lại Idle theo thiết kế đã chốt ngày 2026-11-16.
 - [ ] **Sóng chấn né được:** Cú nhảy dậm đất `Jump Attack` phát sóng chấn $\to$ Foxy đứng yên bị trúng đòn; Foxy nhảy lên hoặc dash qua thì né thành công.
 - [ ] **Không rò rỉ bộ nhớ (Object Pool):** Cầu lửa sinh ra và nổ/xóa không làm tăng node vô tận trong SceneTree.
 - [ ] **Animation mượt mà:** Khớp với các clip có sẵn, không bị biến dạng đầu/cổ/hông.

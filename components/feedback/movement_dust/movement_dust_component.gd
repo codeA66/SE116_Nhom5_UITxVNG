@@ -1,6 +1,7 @@
 class_name MovementDustComponent
 extends Node3D
-## Bụi dưới chân: phụt đều khi đang chạy trên đất, bung một nắm ra sau lưng khi vừa vào state lướt (dash...).
+## Bụi dưới chân: phụt đều khi đang chạy trên đất, bung một nắm ra sau lưng khi vừa vào state lướt (dash...),
+## và để lại vệt bụi dọc đường trong suốt state lướt (kiểu Death's Door: nhìn vệt bụi là đọc được quãng lộn).
 ## Nghe state_changed của StateMachine nên chỉ chạy _physics_process lúc đang ở state chạy.
 ## Tên state cấu hình bằng @export: gắn cho quái / boss chỉ cần đổi danh sách, không sửa code.
 
@@ -10,11 +11,14 @@ extends Node3D
 @export var run_states: Array[StringName] = [&"Run"]
 ## State bung bụi một lần lúc vừa vào (chỉ khi đang đứng trên đất)
 @export var burst_states: Array[StringName] = [&"Dash"]
+## State để lại vệt bụi dọc đường suốt thời gian ở trong state (chỉ khi vào state lúc đang đứng trên đất)
+@export var trail_states: Array[StringName] = [&"Dash"]
 ## Tốc độ ngang tối thiểu (m/s) mới có bụi chạy: vừa nhích chân hay đang phanh thì không phụt bụi
 @export var min_run_speed: float = 2.5
 
 @onready var _run_dust: GPUParticles3D = $RunDust
 @onready var _burst_dust: GPUParticles3D = $BurstDust
+@onready var _trail_dust: GPUParticles3D = $TrailDust
 
 
 func _ready() -> void:
@@ -40,6 +44,8 @@ func _on_state_changed(_from: StringName, to: StringName) -> void:
 		_run_dust.emitting = false
 	if to in burst_states and body.is_on_floor():
 		_play_burst()
+	# Hạt bụi vệt ở toạ độ thế giới (không local_coords) nên nằm lại trên đường đã lộn
+	_trail_dust.emitting = to in trail_states and body.is_on_floor()
 
 
 func _play_burst() -> void:

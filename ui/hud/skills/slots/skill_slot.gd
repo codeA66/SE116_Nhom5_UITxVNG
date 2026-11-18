@@ -267,7 +267,7 @@ func _binding_label(event: InputEvent) -> String:
 	return event.as_text()
 ## Tất cả dữ liệu đường bao/glyph đã có; nền tối giúp nét ngà không lẫn sàn sáng.
 func _draw() -> void:
-	if style == null or _points.size()<3: return
+	if not _available or style == null or _points.size()<3: return
 	var center: Vector2 = get_center()
 	if style.skill_input_tiles:
 		_draw_input_tile(center)
@@ -276,20 +276,18 @@ func _draw() -> void:
 		_draw_shared_slot(center)
 		return
 	draw_colored_polygon(_points,style.skill_selected_fill if selected else style.skill_fill)
-	if _available:
-		draw_colored_polygon(_bevel,Color(_accent,0.14 if selected else 0.08))
-		draw_colored_polygon(_top_gem,Color(_accent,0.95 if selected else 0.72))
-		draw_polyline(_inner,Color(style.gold,0.54 if selected else 0.30),style.stroke_width(),true)
+	draw_colored_polygon(_bevel,Color(_accent,0.14 if selected else 0.08))
+	draw_colored_polygon(_top_gem,Color(_accent,0.95 if selected else 0.72))
+	draw_polyline(_inner,Color(style.gold,0.54 if selected else 0.30),style.stroke_width(),true)
 	draw_polyline(_outline,style.ink,style.stroke_width()*2.6,true)
-	draw_polyline(_outline,style.ivory if selected else (style.gold if _available else style.muted),style.skill_active_line if selected else style.stroke_width(),true)
-	if _available:
-		var tint: Color = _accent if highlighted else _accent.lerp(style.muted,0.65)
-		_draw_icon(center,tint)
-		if is_cooling_down() and _cooldown_left/maxf(_cooldown_total,0.001)>0.001:
-			draw_colored_polygon(_sweep,style.skill_cooldown_color)
-			draw_line(center,_sweep[-1],style.skill_cooldown_line,style.stroke_width(),true)
-			_draw_cooldown_number(center)
-	if show_key_badge and _available: _draw_badge()
+	draw_polyline(_outline,style.ivory if selected else style.gold,style.skill_active_line if selected else style.stroke_width(),true)
+	var tint: Color = _accent if highlighted else _accent.lerp(style.muted,0.65)
+	_draw_icon(center,tint)
+	if is_cooling_down() and _cooldown_left/maxf(_cooldown_total,0.001)>0.001:
+		draw_colored_polygon(_sweep,style.skill_cooldown_color)
+		draw_line(center,_sweep[-1],style.skill_cooldown_line,style.stroke_width(),true)
+		_draw_cooldown_number(center)
+	if show_key_badge: _draw_badge()
 	_draw_extra(center)
 ## Giữ biểu tượng riêng để nền chung và khung rời dùng cùng dữ liệu.
 func _draw_icon(center: Vector2,tint: Color) -> void:
@@ -303,9 +301,7 @@ func _draw_input_tile(center: Vector2) -> void:
 	var flash: float = clampf(_press_left/maxf(style.skill_press_time,style.minimum_duration),0.0,1.0)
 	if is_cooling_down(): flash = 0.0
 	draw_colored_polygon(_points,style.skill_fill.lerp(style.skill_press_fill,flash))
-	var border: Color = style.skill_tile_border if _available else style.muted
-	draw_polyline(_outline,border.lerp(style.ivory,flash),style.stroke_width(),true)
-	if not _available: return
+	draw_polyline(_outline,style.skill_tile_border.lerp(style.ivory,flash),style.stroke_width(),true)
 	var tint: Color = Color.WHITE.lerp(style.ink,flash*0.85)
 	if is_cooling_down(): tint.a = 0.40
 	_draw_icon(center,tint)
@@ -315,7 +311,6 @@ func _draw_input_tile(center: Vector2) -> void:
 	_draw_extra(center)
 ## Nhãn phím, dấu trang bị và thời gian hồi nằm riêng để giữ silhouette của kỹ năng.
 func _draw_shared_slot(center: Vector2) -> void:
-	if not _available: return
 	var tint: Color = _accent if highlighted else _accent.lerp(style.ink,0.50)
 	var icon_center: Vector2 = center-Vector2.DOWN*radius*0.12
 	_draw_icon(icon_center,tint)

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CharmData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="1"]
+[ext_resource type="Script" path="res://resources/player/items/_base/stat_multiplier_effect.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/charms/swift_slash_charm.png" id="3"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="4"]
+
+[sub_resource type="Resource" id="SwiftSlash"]
+script = ExtResource("2")
+stat = &"melee_attack_speed"
+multiplier = 1.25
+
+[resource]
+script = ExtResource("1")
+id = &"swift_slash_charm"
+display_name = "Bùa Phong Kiếm"
+icon = ExtResource("3")
+notch_cost = 1
+description = "Chém kiếm nhanh hơn 25%."
+lore = "Lưỡi kiếm nhẹ như gió, vung xong đã sẵn nhát kế tiếp."
+effects = Array[ExtResource("4")]([SubResource("SwiftSlash")])

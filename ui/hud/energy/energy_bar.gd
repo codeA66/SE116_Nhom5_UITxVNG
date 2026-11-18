@@ -5,6 +5,7 @@ extends Control
 ## NOTES: không biết Player/GameState; lớp ghép HUD truyền màu nguyên tố vào.
 const Style = preload("res://resources/ui/hud_style.gd")
 const VESSEL_SHADER: Shader = preload("res://ui/hud/energy/shaders/energy_vessel.gdshader")
+const TUTORIAL_CAPTION: String = "Linh lực"
 @export_group("Binding")
 @export var energy: EnergyComponent
 @export var style: Style = preload("res://resources/ui/hud_style.tres")
@@ -35,6 +36,14 @@ var _unit_text: String = ""
 var _unit_text_width: float = 0.0
 var _caption_width: float = 0.0
 var _duration: float = 0.0
+var _flow_direction: float = 0.0
+var _tutorial_attention: float = 0.0
+var _tutorial_tween: Tween
+
+@export_group("Hướng dẫn")
+@export var tutorial_fade_time: float = 0.18
+@export var tutorial_font_size: int = 19
+
 ## Khởi tạo hình trước, chờ component sẵn sàng trước khi đọc giá trị ban đầu.
 func _ready() -> void:
 	mouse_filter = MOUSE_FILTER_IGNORE
@@ -127,8 +136,23 @@ func get_displayed_max() -> int:
 ## Màu đã áp lên bình, không suy ra từ resource của lớp ghép.
 func get_element_color() -> Color:
 	return _tint
+
+
+func set_tutorial_attention(active: bool) -> void:
+	if _tutorial_tween != null:
+		_tutorial_tween.kill()
+	_tutorial_tween = create_tween()
+	_tutorial_tween.tween_method(_set_tutorial_attention, _tutorial_attention, 1.0 if active else 0.0, tutorial_fade_time)
+
+
+func _set_tutorial_attention(value: float) -> void:
+	_tutorial_attention = value
+	queue_redraw()
+
+
 ## Nội suy tỷ lệ để tăng sức chứa giữa lượt không làm mặt chất lỏng nhảy đột ngột.
 func _refresh(current: int, max_value: int) -> void:
+	var previous_units: int = _unit_count
 	_maximum = maxi(max_value,0)
 	_unit_count = clampi(current,0,_maximum)
 	_update_unit_text()
@@ -144,7 +168,8 @@ func _refresh(current: int, max_value: int) -> void:
 		queue_redraw()
 		return
 	_age = 0.0
-	_duration = style.energy_drop_time if _target<_from else style.energy_fill_time
+	_flow_direction = signf(float(_unit_count - previous_units))
+	_duration = style.energy_drop_time if _flow_direction < 0.0 else style.energy_fill_time
 	if _target>=1.0 and _from<_target: _ready_age = 0.0
 	elif _target<1.0: _ready_age = INF
 	set_process(true)
@@ -162,7 +187,14 @@ func _process(delta: float) -> void:
 	_warn_age += delta
 	_ready_age += delta
 	var fill_t: float = clampf(_age/maxf(_duration,0.001),0.0,1.0)
-	_fill_ratio = lerpf(_from,_target,fill_t*fill_t*(3.0-2.0*fill_t))
+	var eased: float = 1.0 - pow(1.0 - fill_t, 3.0) if _flow_direction < 0.0 else smoothstep(0.0, 1.0, fill_t)
+	_fill_ratio = lerpf(_from, _target, eased)
+	# Quán tính mặt nước lắng đúng lúc mực chạm giá trị đích.
+	var slosh: float = _flow_direction * sin(fill_t * TAU) * (1.0 - fill_t)
+	_material.set_shader_parameter(&"slosh", slosh)
+	_material.set_shader_parameter(&"rise_glint", maxf(_flow_direction, 0.0) * sin(fill_t * PI) if fill_t < 1.0 else 0.0)
+	_material.set_shader_parameter(&"flow_progress", fill_t)
+	_material.set_shader_parameter(&"flow_direction", _flow_direction)
 	_pulse = pow(1.0-clampf(_ready_age/maxf(style.energy_full_time,style.minimum_duration),0.0,1.0),2.0)
 	_warning = 1.0-clampf(_warn_age/maxf(style.energy_warn_time,style.minimum_duration),0.0,1.0)
 	if _warn_active:
@@ -190,11 +222,10 @@ func _draw() -> void:
 	var rim: Color = style.gold.lerp(style.damage_color,_warning)
 	if style.energy_frame_texture != null:
 		draw_texture_rect(style.energy_frame_texture,_frame_rect,false)
-		if _warning > 0.0 or _pulse > 0.0:
+		if _warning > 0.0:
 			var vessel: Rect2 = Rect2(_surface.position,_surface.size)
-			var feedback: Color = style.damage_color if _warning > 0.0 else style.ivory
 			draw_arc(vessel.get_center(),vessel.size.y*0.5,0,TAU,style.energy_curve_steps,
-				Color(feedback,maxf(_warning,_pulse)),style.stroke_width(),true)
+				Color(style.damage_color, _warning),style.stroke_width(),true)
 	else:
 		draw_arc(center,radius,0,TAU,style.energy_curve_steps,style.ink,style.stroke_width()*4.0,true)
 		draw_arc(center,radius,PI,TAU,style.energy_curve_steps,Color(rim,clampf(style.energy_inner_rim_opacity+_pulse,0,1)),style.stroke_width(),true)
@@ -218,6 +249,24 @@ func _draw() -> void:
 	if _font != null and size.x >= _caption_width:
 		_draw_caption(style.energy_label,size.y-_pip_band())
 	_draw_units()
+	if _tutorial_attention > 0.0 and _font != null:
+		_draw_tutorial_attention()
+
+
+func _draw_tutorial_attention() -> void:
+	var vessel: Rect2 = Rect2(_surface.position, _surface.size)
+	var ring_radius: float = minf(vessel.size.x, vessel.size.y) * 0.5 + style.stroke_width()
+	draw_arc(vessel.get_center(), ring_radius, 0.0, TAU, style.energy_curve_steps,
+		Color(style.gold, 0.25 * _tutorial_attention), style.stroke_width() * 5.0, true)
+	draw_arc(vessel.get_center(), ring_radius, 0.0, TAU, style.energy_curve_steps,
+		Color(style.ivory, _tutorial_attention), style.stroke_width() * 1.6, true)
+	var baseline: Vector2 = Vector2(0.0, _frame_rect.end.y + _font.get_ascent(tutorial_font_size) + style.stroke_width() * 2.0)
+	var caption: String = tr(TUTORIAL_CAPTION)
+	draw_string_outline(_font, baseline, caption, HORIZONTAL_ALIGNMENT_CENTER, size.x,
+		tutorial_font_size, style.text_outline_size, Color(style.text_outline_color, _tutorial_attention))
+	draw_string(_font, baseline, caption, HORIZONTAL_ALIGNMENT_CENTER, size.x,
+		tutorial_font_size, Color(style.ivory, _tutorial_attention))
+
 ## Đặt dải hạt dưới nhãn để mực trong bình vẫn liền mạch.
 func _pip_band() -> float:
 	return clampf(style.energy_pip_band,0.0,size.y)

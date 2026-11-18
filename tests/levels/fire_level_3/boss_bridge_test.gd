@@ -68,8 +68,16 @@ func _run() -> void:
 	_check(fight.boss != null and fight.boss.get(&"target_player") == _player, "bước vào phòng 10: boss xuất hiện, nhắm player")
 	await _seconds(1.5)
 	await _capture("room10_boss.png")
-	# 4. Hạ boss
-	(fight.boss.get(&"health") as HealthComponent).take_damage(99999)
+	# 4. Hạ boss: Boss 1 khoá máu ở mốc 50% / 20% và dựng khiên, phải phá khiên (nổ / phản cầu lửa) mới đánh tiếp
+	var boss: Boss1 = fight.boss as Boss1
+	for _step: int in range(3):
+		var hit := DamageInfo.new(100000, DamageInfo.Type.PHYSICAL, Vector3.ZERO, null)
+		hit.ignores_invincibility = true
+		boss.hurtbox.receive_hit(hit)
+		await _frames(5)
+		while boss.is_shielded:
+			boss.on_explosion_hit(null)
+			await _frames(5)
 	var t: float = 0.0
 	while not fight.is_defeated and t < 10.0:
 		await get_tree().physics_frame

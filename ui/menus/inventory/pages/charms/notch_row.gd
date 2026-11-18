@@ -1,41 +1,86 @@
 class_name NotchRow
 extends Control
-## Hàng ô khắc của bùa, vẽ thành hạt ngọc tròn: sáng = đang bị bùa chiếm, tối viền mờ = còn trống.
-## animate_to() làm các hạt sáng / tắt lần lượt khi đeo / tháo. Chỉ vẽ lại khi số đổi hoặc đang chạy hiệu ứng.
+## Hiện sức chứa thật và phần dự kiến trên cùng hàng để người chơi thấy còn đeo được bao nhiêu.
 
-const DOT_RADIUS := 7.0
-const DOT_GAP := 24.0
-## Quầng sáng quanh hạt đang dùng, tính theo bán kính
-const GLOW_SCALE := 1.7
+const ARC_STEPS: int = 24
+const GLOW_SCALE: float = 1.6
+const PREVIEW_INSET: float = 0.57
 
 var used: float = 0.0
 var total: int = 0
-var color: Color = Color.WHITE
-var empty_color: Color = Color(1, 1, 1, 0.4)
 
-var _tween: Tween
+var _style: InventoryStyle
+var _target_used: int = 0
+var _preview_cost: int = 0
+var _refusal: float = 0.0
+var _fill_tween: Tween
+var _refusal_tween: Tween
 
 
-func show_notches(used_count: int, total_count: int) -> void:
-	if _tween and _tween.is_valid():
-		_tween.kill()
-	used = float(used_count)
-	total = total_count
-	custom_minimum_size = Vector2(maxf(DOT_GAP * total, DOT_GAP), DOT_RADIUS * 2.0 * GLOW_SCALE)
+func configure(style: InventoryStyle) -> void:
+	_style = style
+	_update_minimum_size()
 	queue_redraw()
 
 
-## Hạt sáng / tắt lần lượt từ số cũ tới số mới, mỗi hạt cách nhau step_time
-func animate_to(used_count: int, step_time: float) -> void:
-	if _tween and _tween.is_valid():
-		_tween.kill()
-	var steps := absf(float(used_count) - used)
-	if steps <= 0.0 or step_time <= 0.0:
-		used = float(used_count)
-		queue_redraw()
+func set_capacity(used_count: int, total_count: int, animate: bool) -> void:
+	var capacity_changed: bool = total != total_count
+	if _target_used == used_count and not capacity_changed:
 		return
-	_tween = create_tween()
-	_tween.tween_method(_set_used, used, float(used_count), step_time * steps)
+	if _fill_tween:
+		_fill_tween.kill()
+	total = total_count
+	_target_used = used_count
+	if capacity_changed:
+		_update_minimum_size()
+	var duration: float = absf(float(used_count) - used) * _style.notch_step_time
+	if not animate or capacity_changed or duration <= 0.0:
+		_set_used(float(used_count))
+		return
+	_fill_tween = create_tween()
+	_fill_tween.tween_method(_set_used, used, float(used_count), duration)
+
+
+func set_preview(cost: int) -> void:
+	if _preview_cost == cost:
+		return
+	_preview_cost = cost
+	queue_redraw()
+
+
+func pulse_refusal() -> void:
+	if _refusal_tween:
+		_refusal_tween.kill()
+	_refusal_tween = create_tween()
+	_refusal_tween.tween_method(_set_refusal, 1.0, 0.0, _style.shake_time)
+
+
+func _draw() -> void:
+	if not _style or total <= 0:
+		return
+	var requested: int = _target_used + _preview_cost
+	var preview_color: Color = _style.warning if requested > total else _style.charm_preview_color
+	var radius: float = _style.charm_notch_radius
+	for index: int in range(total):
+		var center: Vector2 = Vector2(_style.charm_notch_step * (float(index) + 0.5), size.y * 0.5)
+		var fill: float = clampf(used - float(index), 0.0, 1.0)
+		var is_preview: bool = index >= _target_used and index < requested
+		var rim: Color = preview_color if is_preview else _style.charm_socket_edge
+		rim = rim.lerp(_style.warning, _refusal)
+		draw_circle(center, radius, _style.charm_socket_fill, true, -1.0, true)
+		draw_arc(center, radius, 0.0, TAU, ARC_STEPS, rim, _style.charm_border_width, true)
+		if fill > 0.0:
+			var light: Color = _style.ink.lerp(_style.warning, _refusal)
+			draw_circle(center, radius * GLOW_SCALE, Color(light, 0.13 * fill), true, -1.0, true)
+			draw_circle(center, radius * lerpf(0.55, 0.92, fill), Color(light, fill), true, -1.0, true)
+		elif is_preview:
+			draw_arc(center, radius * PREVIEW_INSET, 0.0, TAU, ARC_STEPS, preview_color,
+				_style.charm_border_width, true)
+
+
+func _update_minimum_size() -> void:
+	custom_minimum_size = Vector2(_style.charm_notch_step * float(total),
+		_style.charm_notch_radius * 2.0 * GLOW_SCALE)
 
 
 func _set_used(value: float) -> void:
@@ -43,15 +88,6 @@ func _set_used(value: float) -> void:
 	queue_redraw()
 
 
-func _draw() -> void:
-	var start := size.x * 0.5 - DOT_GAP * float(total - 1) * 0.5
-	for index in total:
-		var center := Vector2(start + DOT_GAP * index, size.y * 0.5)
-		# Hạt đang sáng dở (giữa hiệu ứng) có độ sáng bằng phần lẻ
-		var fill := clampf(used - float(index), 0.0, 1.0)
-		draw_circle(center, DOT_RADIUS, Color(0.0, 0.0, 0.0, 0.45))
-		draw_arc(center, DOT_RADIUS, 0.0, TAU, 24, empty_color, 1.4, true)
-		if fill > 0.0:
-			draw_circle(center, DOT_RADIUS * GLOW_SCALE, Color(color, 0.12 * fill))
-			draw_circle(center, DOT_RADIUS * (0.55 + 0.45 * fill), Color(color, fill))
-			draw_circle(center - Vector2(DOT_RADIUS, DOT_RADIUS) * 0.3, DOT_RADIUS * 0.28, Color(1, 1, 1, 0.55 * fill))
+func _set_refusal(value: float) -> void:
+	_refusal = value
+	queue_redraw()

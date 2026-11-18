@@ -9,12 +9,12 @@ const MIN_RADIUS := 0.001
 
 @export_group("Column")
 ## Chiều cao cột = bán kính hút * hệ số này, kẹp trong [min_height, max_height] để lốc nhỏ vẫn thấy, lốc lớn không cao quá màn
-@export var height_per_radius: float = 1.0
+@export var height_per_radius: float = 1.3
 @export var min_height: float = 1.4
-@export var max_height: float = 4.5
-@export var top_radius_ratio: float = 0.42
+@export var max_height: float = 5.5
+@export var top_radius_ratio: float = 0.55
 @export var min_top_radius: float = 0.35
-@export var max_top_radius: float = 2.2
+@export var max_top_radius: float = 2.8
 ## Tốc độ xoay cơ bản (rad/s); mỗi lớp dải nhân thêm hệ số riêng
 @export var spin_speed: float = 7.0
 @export var wobble: float = 0.06
@@ -158,29 +158,32 @@ static func _build_meshes() -> void:
 	# Dải xoắn chính: từ chân hẹp xoắn lên miệng rộng
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var strand_count := 5
+	var strand_count := 9
 	for i in strand_count:
 		var offset := float(i) / float(strand_count)
-		_add_strand(st, 1.15, 0.0, 1.0, 0.12, 0.3, false, offset, rng.randf(), rng.randf_range(0.9, 1.15), 48)
+		_add_strand(st, 1.7, 0.0, 1.0, 0.16, 0.46, false, offset, rng.randf(), rng.randf_range(0.85, 1.2), 64)
 	_strand_mesh = st.commit()
 	# Vòng xoáy theo tầng: cung dẹt nằm ngang, xoay nhanh hơn thân
 	st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for y: float in [0.2, 0.42, 0.64, 0.84, 0.98]:
-		_add_strand(st, 0.72, y, y, 0.07, 0.09, true, rng.randf(), rng.randf(), rng.randf_range(1.5, 2.0), 32, 1.12)
+	# Vòng dày dần lên miệng: đỉnh lốc đặc, rối như đám mây
+	for y: float in [0.18, 0.36, 0.52, 0.66, 0.78, 0.88, 0.96, 1.02]:
+		_add_strand(st, rng.randf_range(0.6, 0.85), y, y, 0.06 + 0.12 * y, 0.08 + 0.16 * y, true, rng.randf(), rng.randf(), rng.randf_range(1.4, 2.1), 36, rng.randf_range(1.05, 1.2))
 	_ring_mesh = st.commit()
 	# Vệt bụi ngắn bay quanh ngoài thân
 	st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for i in 12:
-		var y0 := rng.randf_range(0.05, 0.8)
+	for i in 22:
+		# Mảnh vụn dồn về chân lốc, bị cuốn sát đất
+		var y0 := pow(rng.randf(), 1.8) * 0.75
 		_add_strand(st, 0.22, y0, y0 + rng.randf_range(0.08, 0.18), 0.025, 0.035, false, rng.randf(), rng.randf(), rng.randf_range(1.2, 1.5), 10, rng.randf_range(1.25, 1.45))
 	_debris_mesh = st.commit()
 
 
 ## Bán kính phễu theo độ cao (0..1): chân hẹp, loe dần lên miệng
 static func _funnel_radius(y: float) -> float:
-	return 0.16 + 0.84 * pow(clampf(y, 0.0, 1.0), 1.3)
+	# Chân hẹp, loe nhanh về miệng như cái kèn
+	return 0.1 + 0.9 * pow(clampf(y, 0.0, 1.0), 1.8)
 
 
 ## Một dải xoắn quanh trục Y. radial_band = dải nằm ngang (bề rộng theo bán kính) thay vì đứng.

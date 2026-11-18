@@ -1,0 +1,90 @@
+[gd_resource type="Resource" script_class="LaserVfxStyle" format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/shared/laser/style/laser_vfx_style.gd" id="1_style"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/laser/beam.gdshader" id="2_beam"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/laser/flare.gdshader" id="3_flare"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/laser/charge.gdshader" id="4_charge"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/laser/textures/beam_noise.tres" id="5_noise"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/laser/textures/soft_glow.tres" id="6_glow"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/laser/textures/star_flare.png" id="7_star"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/laser/textures/spark_streak.png" id="8_spark"]
+
+[sub_resource type="ShaderMaterial" id="BeamMaterial"]
+shader = ExtResource("2_beam")
+shader_parameter/noise_strip = ExtResource("5_noise")
+
+[sub_resource type="ShaderMaterial" id="FlareMaterial"]
+shader = ExtResource("3_flare")
+shader_parameter/soft_glow = ExtResource("6_glow")
+shader_parameter/star_flare = ExtResource("7_star")
+
+[sub_resource type="ShaderMaterial" id="SparkMaterial"]
+shader = ExtResource("3_flare")
+shader_parameter/particle_sprite = true
+shader_parameter/spark_streak = ExtResource("8_spark")
+
+[sub_resource type="ShaderMaterial" id="ChargeMotion"]
+shader = ExtResource("4_charge")
+
+[sub_resource type="Gradient" id="SparkFade"]
+offsets = PackedFloat32Array(0, 0.26, 0.65, 1)
+colors = PackedColorArray(1, 0.81, 0.9, 1, 1, 0.38, 0.55, 0.81, 1, 0.15, 0.32, 0.36, 0.9, 0.1, 0.23, 0)
+
+[sub_resource type="GradientTexture1D" id="SparkRamp"]
+gradient = SubResource("SparkFade")
+width = 64
+
+[sub_resource type="ParticleProcessMaterial" id="MuzzleBurst"]
+direction = Vector3(0, 0, -1)
+spread = 63.0
+initial_velocity_min = 0.9
+initial_velocity_max = 2.35
+gravity = Vector3(0, -2.5, 0)
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 0.13
+scale_max = 0.22
+lifetime_randomness = 0.32
+color_ramp = SubResource("SparkRamp")
+
+[sub_resource type="ParticleProcessMaterial" id="ImpactBurst"]
+direction = Vector3(0, 0, 1)
+spread = 78.0
+initial_velocity_min = 1.1
+initial_velocity_max = 2.9
+gravity = Vector3(0, -2.8, 0)
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 0.15
+scale_max = 0.28
+lifetime_randomness = 0.31
+color_ramp = SubResource("SparkRamp")
+
+[sub_resource type="ParticleProcessMaterial" id="ImpactSparks"]
+direction = Vector3(0, 0, 1)
+spread = 80.0
+initial_velocity_min = 0.7
+initial_velocity_max = 2.15
+gravity = Vector3(0, -2.3, 0)
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 0.11
+scale_max = 0.22
+lifetime_randomness = 0.55
+color = Color(1, 0.83, 0.9, 0.67)
+color_ramp = SubResource("SparkRamp")
+
+[sub_resource type="Curve" id="WarnCurve"]
+_data = [Vector2(0, 0), 0.0, 0.38, 0, 0, Vector2(1, 1), 1.62, 0.0, 0, 0]
+point_count = 2
+
+[resource]
+script = ExtResource("1_style")
+beam_material = SubResource("BeamMaterial")
+flare_material = SubResource("FlareMaterial")
+spark_material = SubResource("SparkMaterial")
+charge_motion = SubResource("ChargeMotion")
+muzzle_burst_motion = SubResource("MuzzleBurst")
+impact_burst_motion = SubResource("ImpactBurst")
+impact_spark_motion = SubResource("ImpactSparks")
+warn_curve = SubResource("WarnCurve")

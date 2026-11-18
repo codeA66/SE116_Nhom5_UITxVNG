@@ -4,6 +4,7 @@ extends Node3D
 
 enum Location { WORLD, CARRIED, OFFERED }
 signal navigation_changed
+signal picked_up(actor: Player)
 
 @export var kind: StringName = &"banana"
 @export var available: bool = true
@@ -80,5 +81,5 @@ func _can_pick_up(actor: Node3D) -> bool:
 
 func _pick_up(actor: Node3D) -> void:
 	var carry := actor.get_node_or_null(^"CarryComponent") as CarryComponent
-	if carry:
-		carry.take(self)
+	if carry and carry.take(self) and actor is Player:
+		picked_up.emit(actor as Player)

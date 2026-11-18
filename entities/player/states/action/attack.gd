@@ -1,8 +1,15 @@
 extends PlayerState
 ## Combo đánh thường. Dữ liệu từng đòn lấy từ player.get_weapon().combo (AttackData).
+## Tốc độ chém (bùa...): mọi mốc trong AttackData tính theo "thời gian đòn"; thời gian đòn chạy nhanh hơn
+## theo hệ số, nên hoạt ảnh, hitbox, cửa sổ combo và cancel đổi cùng tỉ lệ, đòn vẫn khớp hình.
+
+## Chỉ số nhân tốc độ chém cận chiến (StatMultiplierEffect.stat). Cung không dùng
+const MELEE_ATTACK_SPEED := &"melee_attack_speed"
 
 var _combo_index: int = 0
 var _elapsed: float = 0.0
+## Hệ số tốc độ của đòn đang chém (1 = bình thường), chốt ở đầu mỗi đòn
+var _speed: float = 1.0
 var _attack: AttackData
 var _lunge_direction: Vector3 = Vector3.ZERO
 var _hitbox_used: bool = false
@@ -32,7 +39,7 @@ func exit() -> void:
 
 
 func physics_update(delta: float) -> void:
-	_elapsed += delta
+	_elapsed += delta * _speed
 	player.apply_gravity(delta)
 	_apply_movement(delta)
 	_update_hitbox()
@@ -76,6 +83,7 @@ func _start_attack() -> void:
 	if not _weapon.is_ranged():
 		player.hitbox.set_reach(_weapon.attack_range)
 	_elapsed = 0.0
+	_speed = 1.0 if _weapon.is_ranged() else maxf(player.stats.get_multiplier(MELEE_ATTACK_SPEED), 0.01)
 	_hitbox_used = false
 	_recoil_start = -1.0
 	_energy_gained = false
@@ -87,7 +95,7 @@ func _start_attack() -> void:
 		var preferred := player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
 		_lunge_direction = player.find_attack_direction(preferred)
 	player.face_instantly(_lunge_direction)
-	player.play_action(_attack.animation, _attack.anim_speed, _attack.blend_in)
+	player.play_action(_attack.animation, _attack.anim_speed * _speed, _attack.blend_in)
 	_resolve_active_window()
 
 
@@ -120,8 +128,9 @@ func _apply_movement(delta: float) -> void:
 
 
 func _set_horizontal_velocity(horizontal: Vector3) -> void:
-	player.velocity.x = horizontal.x
-	player.velocity.z = horizontal.z
+	# Đòn nhanh hơn thì thời gian lao co lại: nhân vận tốc cùng hệ số để quãng lao / bật lùi giữ nguyên
+	player.velocity.x = horizontal.x * _speed
+	player.velocity.z = horizontal.z * _speed
 
 
 func _update_hitbox() -> void:
@@ -133,9 +142,9 @@ func _update_hitbox() -> void:
 		return
 	var in_window := _elapsed >= _active_start and _elapsed < _active_end
 	if in_window and not _hitbox_used:
-		player.hitbox.activate(_attack, _active_end - _active_start)
+		player.hitbox.activate(_attack, (_active_end - _active_start) / _speed)
 		_hitbox_used = true
-		player.notify_melee_active(_attack, _combo_index, _weapon.combo.size(), _lunge_direction, _active_end - _active_start)
+		player.notify_melee_active(_attack, _combo_index, _weapon.combo.size(), _lunge_direction, (_active_end - _active_start) / _speed)
 	elif not in_window and player.hitbox.is_active():
 		player.hitbox.deactivate()
 

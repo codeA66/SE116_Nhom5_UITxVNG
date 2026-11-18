@@ -1,0 +1,95 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/checkpoint/checkpoint_hint/checkpoint_hint.gd" id="1"]
+
+[sub_resource type="Shader" id="MarkerShader"]
+code = "shader_type spatial;
+render_mode unshaded, cull_disabled, shadows_disabled;
+
+uniform vec4 accent : source_color = vec4(0.67, 0.94, 0.91, 1.0);
+uniform float bob_speed = 3.1;
+
+float stroke(vec2 p, vec2 a, vec2 b, float width) {
+	vec2 ab = b - a;
+	float h = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0);
+	float d = length(p - a - h * ab);
+	return 1.0 - smoothstep(width, width + 0.004, d);
+}
+
+void vertex() {
+	MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
+		INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]
+	);
+}
+
+void fragment() {
+	vec2 p = UV;
+	vec2 aura = (p - vec2(0.5, 0.32)) / vec2(0.51, 0.44);
+	float haze = exp(-3.6 * dot(aura, aura)) * 0.34;
+	float trim = stroke(p, vec2(0.21, 0.51), vec2(0.79, 0.51), 0.002);
+	trim *= smoothstep(0.20, 0.38, p.x) * (1.0 - smoothstep(0.62, 0.80, p.x));
+	vec2 tip = vec2(0.50, 0.81 + 0.029 * sin(TIME * bob_speed));
+	float pointer = max(
+		stroke(p, tip + vec2(-0.045, -0.105), tip, 0.005),
+		stroke(p, tip + vec2(0.045, -0.105), tip, 0.005)
+	);
+	float jewel = 1.0 - smoothstep(0.016, 0.024, abs(p.x - 0.5) + 0.52 * abs(p.y - 0.51));
+	float ink = max(pointer, max(trim * 0.68, jewel * 0.86));
+	ALBEDO = mix(vec3(0.09, 0.20, 0.21), accent.rgb, ink);
+	ALPHA = max(haze, ink * 0.95);
+}"
+
+[sub_resource type="ShaderMaterial" id="MarkerMaterial"]
+shader = SubResource("MarkerShader")
+
+[sub_resource type="QuadMesh" id="MarkerMesh"]
+size = Vector2(3.4, 1.22)
+
+[sub_resource type="Shader" id="RingShader"]
+code = "shader_type spatial;
+render_mode unshaded, cull_disabled, shadows_disabled, blend_add;
+uniform vec4 tint : source_color = vec4(0.35, 0.86, 0.82, 1.0);
+uniform float progress : hint_range(0.0, 1.0) = 0.0;
+void fragment() {
+	float d = length(UV - 0.5);
+	float radius = mix(0.08, 0.47, 1.0 - pow(1.0 - progress, 2.0));
+	float ring = 1.0 - smoothstep(0.009, 0.028, abs(d - radius));
+	float tail = 1.0 - smoothstep(0.005, 0.015, abs(d - radius * 0.79));
+	ALBEDO = tint.rgb;
+	ALPHA = (ring + tail * 0.3) * smoothstep(0.0, 0.09, progress) * pow(1.0 - progress, 1.4);
+}"
+
+[sub_resource type="ShaderMaterial" id="RingMaterial"]
+resource_local_to_scene = true
+shader = SubResource("RingShader")
+
+[sub_resource type="QuadMesh" id="RingMesh"]
+size = Vector2(5.8, 5.8)
+
+[node name="CheckpointHint" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Marker" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.45, 0)
+cast_shadow = 0
+material_override = SubResource("MarkerMaterial")
+mesh = SubResource("MarkerMesh")
+
+[node name="Title" type="Label3D" parent="."]
+position = Vector3(0, 2.71, 0)
+cast_shadow = 0
+billboard = 1
+text = "Checkpoint + Hồi máu"
+font_size = 44
+outline_size = 6
+modulate = Color(0.99, 0.94, 0.82, 1)
+outline_modulate = Color(0.08, 0.13, 0.15, 0.92)
+pixel_size = 0.013
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+visible = false
+position = Vector3(0, 0.075, 0)
+rotation = Vector3(-1.570796, 0, 0)
+cast_shadow = 0
+material_override = SubResource("RingMaterial")
+mesh = SubResource("RingMesh")

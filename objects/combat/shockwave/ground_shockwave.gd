@@ -78,13 +78,17 @@ func launch(origin: Vector3, data: ShockwaveData, source: Node) -> void:
 	_active = true
 	_detect.set_deferred(&"monitoring", true)
 	_collect_initial_targets()
+	_dust.visible = true
 	_dust.restart()
 	set_physics_process(true)
 
 
-func stop() -> void:
+func stop(clear_particles: bool = false) -> void:
 	set_physics_process(false)
 	_ring.visible = false
+	if clear_particles:
+		_dust.emitting = false
+		_dust.visible = false
 	_detect.set_deferred(&"monitoring", false)
 	_clear_targets()
 	if _active:

@@ -15,12 +15,12 @@ base_scale = 2.0
 [sub_resource type="Resource" id="Cost1"]
 script = ExtResource("cost_script")
 item = ExtResource("seal_wind")
-count = 2
+count = 1
 
 [sub_resource type="Resource" id="Upgrade1"]
 script = ExtResource("up_script")
 display_name = "Lốc xoáy"
-description = "Thổi gió hóa thành cơn lốc chạy thẳng: hút kẻ địch vào tâm rồi nổ tung. Tốn 2 ô năng lượng."
+description = "Thổi gió hóa thành cơn lốc chạy thẳng: hút kẻ địch vào tâm rồi nổ tung. Tốn 1 ô năng lượng."
 requirements = Array[ExtResource("cost_script")]([SubResource("Cost1")])
 evolves_into = ExtResource("tornado")
 

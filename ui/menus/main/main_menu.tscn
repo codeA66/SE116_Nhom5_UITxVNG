@@ -26,6 +26,13 @@
 
 [sub_resource type="ShaderMaterial" id="DockMotion"]
 shader = ExtResource("dock_shader")
+shader_parameter/scarf_lift = 0.012
+shader_parameter/banner_sway = 0.009
+shader_parameter/gust_interval = 5.2
+shader_parameter/banner_delay = 0.45
+shader_parameter/fog_strength = 0.11
+shader_parameter/fog_speed = 0.04
+shader_parameter/lantern_strength = 0.085
 
 [sub_resource type="ShaderMaterial" id="Vignette"]
 shader = ExtResource("6_vignette")

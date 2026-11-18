@@ -26,6 +26,13 @@ extends Resource
 ## Thứ tự sắp xếp hiển thị
 @export var order: int = 0
 
+@export_group("Gợi ý trong lúc chơi")
+@export var wait_for_action: bool = false
+@export var completion_state: StringName
+@export var complete_on_bow_shot: bool = false
+@export var completion_skill: StringName
+@export var show_after_acquire: bool = false
+
 
 ## Tạo DetailEntry để đổ sang DetailPanel của màn Tab
 func create_detail_entry() -> DetailEntry:

@@ -1,5 +1,6 @@
 class_name BakaWeapon
 extends Node
+const COUNTER := preload("res://objects/world/monkey_garden/ricochet_range/weapon/range_icon_hud.gd")
 var arena: BananaRicochetRange
 var _player: Player
 var _visual: Node3D
@@ -7,17 +8,14 @@ var _hold: BananaGunHold
 var _hidden: Array[Node3D] = []
 var _active: bool = false
 var _shot_left: float = 0.0
-var _score: Label
-var _ammo: Label
-var _score_tween: Tween
+var _counters: COUNTER
 var _laser: MeshInstance3D
 var _camera: Camera3D
 var _saved_camera: Camera3D
 var _camera_active: bool=false
 func _ready() -> void:
 	_player = get_parent() as Player
-	_visual = arena.get_node("GunPickup/Model").duplicate() as Node3D
-	GardenRewards.fit(_visual)
+	_visual = arena.make_held_gun()
 	_hold = BananaGunHold.new(); _player.model.add_child(_hold); _hold.configure(_player,_visual)
 	for path: String in ["WeaponSocket"]:
 		var object: Node3D = _player.get_node_or_null(path) as Node3D
@@ -26,33 +24,27 @@ func _ready() -> void:
 	if sword: _hidden.append(sword)
 	set_active(true)
 	var hud: CanvasLayer=CanvasLayer.new(); hud.layer=21; add_child(hud)
-	_score=Label.new(); _score.add_theme_font_size_override("font_size",24); _score.mouse_filter=Control.MOUSE_FILTER_IGNORE; hud.add_child(_score); _score.hide()
-	_ammo=Label.new(); _ammo.add_theme_font_size_override("font_size",24); _ammo.modulate=Color.WHITE; _ammo.mouse_filter=Control.MOUSE_FILTER_IGNORE; hud.add_child(_ammo); _ammo.hide()
+	_counters = COUNTER.new()
+	hud.add_child(_counters)
+	_counters.setup(arena.magazine_size, arena.targets.size())
+	_counters.hide()
 	_laser=MeshInstance3D.new(); _laser.mesh=BoxMesh.new(); var mat: StandardMaterial3D=StandardMaterial3D.new(); mat.albedo_color=Color(1,0.02,0.01); mat.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED; _laser.material_override=mat; _laser.top_level=true; _player.add_child(_laser)
-	_camera=Camera3D.new(); _camera.projection=Camera3D.PROJECTION_ORTHOGONAL; _camera.size=30; _player.get_parent().add_child(_camera)
+	_camera = Camera3D.new()
+	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	_camera.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	_camera.size = 30
+	_player.get_parent().add_child(_camera)
 	arena.changed.connect(_changed); _changed(arena.ammo,arena.score)
 func _changed(ammo: int, score: int) -> void:
-	if _score==null: return
-	_score.text=str(score); _ammo.text="Ammo: %d/%d"%[ammo,arena.magazine_size]
-	_score.modulate=[Color.WHITE,Color("fff3a1"),Color("ffd22b"),Color("ff8c20"),Color("ff2424"),Color("ff2424")][mini(score,5)]
-	_score.scale=Vector2.ONE
-	if _score_tween: _score_tween.kill()
-	# Raster ở cỡ chữ thật thay vì phóng lớn texture chữ nhỏ; mép trên giữ nguyên.
-	var size: int=28+score*4
-	var previous: int=_score.get_theme_font_size("font_size")
-	_score_tween=create_tween()
-	_score_tween.tween_method(_set_score_font,previous,size+6,0.12)
-	_score_tween.tween_method(_set_score_font,size+6,size,0.2)
-func _set_score_font(size: int) -> void:
-	_score.add_theme_font_size_override("font_size",size)
-	_score.reset_size()
+	_counters.update_counts(ammo, arena.targets.size() - score)
 func finish() -> void:
-	var was_visible: bool=_score.visible
-	set_active(false); _score.text="5"; _score.visible=was_visible
+	var was_visible := _counters.visible
+	set_active(false)
+	_counters.visible = was_visible
 	_congratulate()
 	GardenCombatEffects.confetti(_player.get_parent() as Node3D,arena.to_global(Vector3(-2,2.5,-13)))
 	get_tree().create_timer(0.6).timeout.connect(func() -> void:
-		_score.hide(); _ammo.hide()
+		_counters.hide()
 		if is_instance_valid(_visual): _visual.queue_free()
 		_laser.hide()
 		if _camera_active and is_instance_valid(_saved_camera): _saved_camera.make_current()
@@ -67,7 +59,9 @@ func set_active(value: bool) -> void:
 	for object: Node3D in _hidden:
 		if is_instance_valid(object):
 			object.visible = not value and (object.name != "Sword" or (_player.get_weapon() != null and _player.get_weapon().slot == WeaponData.Slot.SWORD))
-	if _score: _score.hide(); _ammo.hide(); _laser.visible=value
+	if _counters:
+		_counters.hide()
+		_laser.visible = value
 	set_physics_process(value); set_process_input(value)
 func _physics_process(delta: float) -> void:
 	_shot_left = maxf(_shot_left-delta,0.0)
@@ -90,10 +84,9 @@ func _physics_process(delta: float) -> void:
 	elif _camera_active:
 		_saved_camera.make_current(); _camera_active=false
 	var arrived: bool=_camera_active and _camera.is_current() and _camera.global_position.distance_to(arena.global_position+Vector3(0,29,12))<0.35
-	_score.visible=arrived; _ammo.visible=arrived
+	_counters.visible = arrived
 	if arrived:
-		_score.position=_camera.unproject_position(arena.to_global(Vector3(-3.6,2.7,-13)))-Vector2(_score.size.x*0.5,50)
-		_ammo.position=_camera.unproject_position(arena.to_global(Vector3(3.6,2.7,-13)))-Vector2(_ammo.size.x*0.5,_ammo.size.y)
+		_counters.position = _camera.unproject_position(arena.to_global(Vector3(0, 2.7, -13))) - Vector2(0, 46)
 func _input(event: InputEvent) -> void:
 	if not _active or not _player.controls_enabled or not event.is_action_pressed("attack") or _shot_left > 0: return
 	var carry: CarryComponent = _player.get_node_or_null("CarryComponent") as CarryComponent

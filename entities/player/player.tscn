@@ -56,6 +56,8 @@
 [ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="92_burn"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="93_burnvfx"]
 [ext_resource type="Resource" path="res://resources/combat/fire/burn_lava.tres" id="94_burnlava"]
+[ext_resource type="Script" path="res://entities/player/charms/stat_modifiers.gd" id="95_stats"]
+[ext_resource type="Script" path="res://entities/player/charms/charm_holder.gd" id="96_charms"]
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
 
@@ -149,11 +151,18 @@ use_external_skeleton = true
 external_skeleton = NodePath("../Model/Visual/Foxy/Foxy_Rig/Skeleton3D")
 
 [node name="HealthComponent" parent="."]
-max_health = 5
+max_health = 4
 
 [node name="EnergyComponent" type="Node" parent="."]
 script = ExtResource("38_energy")
 data = ExtResource("39_energydata")
+
+[node name="StatModifiers" type="Node" parent="."]
+script = ExtResource("95_stats")
+
+[node name="CharmHolder" type="Node" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("96_charms")
+player = NodePath("..")
 
 [node name="HurtboxComponent" parent="."]
 collision_layer = 2
@@ -204,7 +213,7 @@ script = ExtResource("6_camrig")
 follow_speed = 5.5
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=68364600]
-transform = Transform3D(1, 0, 0, 0, 0.6427876, 0.76604444, 0, -0.76604444, 0.6427876, 0, 24.51, 20.57)
+transform = Transform3D(1, 0, 0, 0, 0.6427876, 0.76604444, 0, -0.76604444, 0.6427876, 0, 29.11, 24.43)
 current = true
 fov = 30.0
 

@@ -26,6 +26,19 @@ func get_custom_detail_width() -> float:
 	return 0.0
 
 
+## Trang có thể gom hai cột vào một khung bằng style dùng chung.
+func get_body_panel_style() -> StyleBox:
+	return null
+
+
+func get_body_column_gap() -> int:
+	return -1
+
+
+func configure_detail(_panel: DetailPanel) -> void:
+	pass
+
+
 ## Trang có hiện trên thanh tiêu đề không (trang Bùa ẩn tới khi có bùa đầu tiên)
 func is_available() -> bool:
 	return true

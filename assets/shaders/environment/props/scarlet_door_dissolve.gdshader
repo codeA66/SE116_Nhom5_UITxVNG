@@ -2,6 +2,7 @@ shader_type spatial;
 render_mode cull_disabled;
 
 uniform float dissolve : hint_range(0.0, 1.0) = 0.0;
+uniform float panel_half_width = 1.88;
 uniform vec4 edge_color : source_color = vec4(1.0, 0.14, 0.08, 1.0);
 uniform float edge_width : hint_range(0.01, 0.15) = 0.055;
 uniform float edge_energy : hint_range(0.0, 4.0) = 1.8;
@@ -15,22 +16,18 @@ varying vec3 object_position;
 
 #include "res://assets/shaders/environment/props/recolor.gdshaderinc"
 
-float cell_noise(vec3 p) {
-	return fract(sin(dot(p, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
-}
-
 void vertex() {
 	object_position = VERTEX;
 }
 
 void fragment() {
-	float radial = distance(object_position.xy, vec2(0.0, 1.58)) / 3.2;
-	float pattern = radial * 0.72 + cell_noise(floor(object_position * 7.0)) * 0.28;
-	float threshold = dissolve * 1.4 - 0.2;
-	if (pattern < threshold) {
+	// Mép trong lùi theo cùng trục với hai collider của cánh cửa.
+	float edge_distance = abs(object_position.x) / max(panel_half_width, 0.001) - dissolve;
+	if (edge_distance < 0.0) {
 		discard;
 	}
-	float edge = (1.0 - smoothstep(threshold, threshold + edge_width, pattern)) * step(0.01, dissolve);
+	float flicker = 0.78 + 0.22 * sin(object_position.y * 27.0 - TIME * 12.0);
+	float edge = (1.0 - smoothstep(0.0, edge_width * flicker, edge_distance)) * step(0.01, dissolve);
 	vec3 base = recolor_red(COLOR.rgb, recolor_tint.rgb, recolor_strength, recolor_lift);
 	float lum = dot(base, vec3(0.299, 0.587, 0.114));
 	float tint_lum = max(dot(recolor_tint.rgb, vec3(0.299, 0.587, 0.114)), 0.001);

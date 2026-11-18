@@ -68,34 +68,29 @@ func _test_unlock_once() -> void:
 
 
 func _test_popup() -> void:
-	print("\nTest 3: TutorialPopup hiển thị và đóng")
+	print("\nTest 3: Gợi ý Di chuyển → Lướt")
 	var popup: TutorialPopup = POPUP_SCENE.instantiate()
 	add_child(popup)
-	await get_tree().process_frame
-	
-	_assert(not popup.visible, "Popup ban đầu ẩn")
-	
-	# Mở khóa dash để kích hoạt popup
+	var opened: Array[TutorialData] = []
+	popup.popup_opened.connect(func(tutorial: TutorialData) -> void: opened.append(tutorial))
+	popup.show_tutorial(TUTORIAL_DATA)
 	GameState.unlock_tutorial(TUTORIAL_DASH)
-	await get_tree().process_frame
-	
-	_assert(popup.visible, "Popup hiện lên khi có tutorial mới")
+
+	_assert(popup.visible and opened == [TUTORIAL_DATA], "Hiện Di chuyển trước")
 	var key_node: Control = popup.get_first_key_glyph()
-	_assert(key_node != null and key_node.get(&"text") == "Shift", "Tự động lấy đúng phím [Shift] từ InputMap action dash")
-	var art_box: Control = popup.get_node(^"%ArtBox")
-	_assert(not art_box.visible, "ArtBox tự ẩn khi tutorial không có hình ảnh để dồn chữ lên")
-	
-	popup.dismiss()
+	_assert(key_node != null and key_node.get(&"text") == "W", "Hiện đúng phím đầu từ Input Map")
+	popup._on_state_changed(&"Idle", &"Jump")
 	await get_tree().create_timer(0.3).timeout
-	_assert(not popup.visible, "Popup đóng lại sau khi dismiss")
-	
-	# Test nhiều phím trong prompt_template (WASD + H)
-	_assert(TUTORIAL_DATA.get_key_at(0) == "W", "Key 1 là W")
-	_assert(TUTORIAL_DATA.get_key_at(1) == "A", "Key 2 là A")
-	_assert(TUTORIAL_DATA.get_key_at(2) == "S", "Key 3 là S")
-	_assert(TUTORIAL_DATA.get_key_at(3) == "D", "Key 4 là D")
-	_assert(TUTORIAL_DATA.get_key_at(4) == "H", "Key 5 là H")
-	
+	_assert(opened.size() == 1, "Nhảy không bỏ qua gợi ý Di chuyển")
+
+	popup._on_state_changed(&"Idle", &"Run")
+	await get_tree().create_timer(0.3).timeout
+	_assert(opened == [TUTORIAL_DATA, TUTORIAL_DASH], "Đã di chuyển thì hiện Lướt")
+	key_node = popup.get_first_key_glyph()
+	_assert(key_node != null and key_node.get(&"text") == "Shift", "Hiện đúng phím Lướt")
+	popup._on_state_changed(&"Run", &"Dash")
+	await get_tree().create_timer(0.3).timeout
+	_assert(not popup.visible, "Lướt xong thì gợi ý tự ẩn")
 	popup.queue_free()
 
 
@@ -131,7 +126,7 @@ func _test_hub_and_trigger() -> void:
 	_assert(trigger != null, "Tìm thấy IntroTutorialTrigger trong Hub")
 	_assert(trigger.tutorial != null and trigger.tutorial.id == &"movement", "Trigger gán đúng tutorial movement")
 	_assert(trigger.tutorials.size() == 2, "Trigger chứa chuỗi 2 tutorial (movement & dash)")
-	_assert(trigger.delay_after_cutscene == 4.0, "delay_after_cutscene là 4.0 giây theo cấu hình")
+	_assert(is_zero_approx(trigger.delay_after_cutscene), "Hiện gợi ý ngay sau cutscene")
 	_assert(trigger.wait_for_cutscene != null, "Trigger liên kết đúng với IntroCutscene")
 	hub.queue_free()
 
@@ -152,55 +147,51 @@ func _test_new_tutorials_and_skill_acquire() -> void:
 
 
 func _test_category_hierarchy_and_navigation() -> void:
-	print("\nTest 7: Phân cấp menu: Túi Đồ (Tab / Q) vs Hệ Thống (H / E)")
+	print("\nTest 7: Màn Tab (Bùa, Vật phẩm, Nguyên tố; Q / E) và Sổ tay riêng (H)")
 	var menu: InventoryMenu = MENU_SCENE.instantiate()
 	add_child(menu)
 	await get_tree().process_frame
-	
-	# 1. Mở mặc định vào Túi Đồ
-	menu.open(InventoryMenu.Category.INVENTORY)
+
+	# 1. Tab: một tầng trang, không có Sổ tay / Cài đặt / Thoát
+	menu.open(InventoryMenu.Mode.TAB)
 	await get_tree().process_frame
-	_assert(menu.visible, "Menu mở ra ở Túi Đồ")
-	_assert(menu._current_category == InventoryMenu.Category.INVENTORY, "Category hiện tại là INVENTORY")
-	_assert(menu._currency_label.visible, "Tiền Soul Jade hiển thị khi ở Túi Đồ")
-	
-	# Kiểm tra các trang con của Túi Đồ
-	var inv_pages := menu._inventory_pages
-	_assert(inv_pages.size() == 3, "Túi Đồ có đúng 3 trang con (Elements, Items, Charms)")
-	for p: MenuPage in inv_pages:
-		_assert(not (p is TutorialsPage), "TutorialsPage KHÔNG nằm trong Túi Đồ")
-	
-	# 2. Chuyển sang Hệ Thống bằng E (+1)
-	menu._change_category(1)
-	await get_tree().process_frame
-	_assert(menu._current_category == InventoryMenu.Category.SYSTEM, "Chuyển thành công sang category SYSTEM")
-	_assert(not menu._currency_label.visible, "Tiền Soul Jade ẩn khi ở Hệ Thống")
-	
-	# Kiểm tra các trang con của Hệ Thống
-	var sys_pages := menu._system_pages
-	_assert(sys_pages.size() == 3, "Hệ Thống có 3 trang con (Tutorials, Settings, Quit)")
-	_assert(sys_pages[0] is TutorialsPage, "Trang đầu tiên của Hệ Thống là TutorialsPage")
-	
-	# Đổi trang trong Hệ Thống
+	_assert(menu.visible, "Menu mở ra ở màn Tab")
+	_assert(menu._mode == InventoryMenu.Mode.TAB, "Đang ở màn Tab")
+	_assert(menu._currency_label.visible, "Tiền Soul Jade hiển thị ở màn Tab")
+	var tab_pages := menu._tab_pages
+	_assert(tab_pages.size() == 3, "Màn Tab có đúng 3 trang")
+	_assert(tab_pages.size() == 3 and tab_pages[0] is CharmsPage and tab_pages[1] is ItemsPage and tab_pages[2] is ElementsPage,
+		"Thứ tự trang: Bùa, Vật phẩm, Nguyên tố")
+	for p: MenuPage in tab_pages:
+		_assert(not (p is TutorialsPage), "Sổ tay KHÔNG nằm trong vòng trang Tab")
+
+	# 2. Đổi trang trong Tab (E)
+	var before := menu.get_current_page()
 	menu._change_page(1)
 	await get_tree().process_frame
-	_assert(menu.get_current_page() is SettingsPage, "Đổi trang tiếp theo trong Hệ Thống ra SettingsPage")
-	
-	# 3. Phím H mở thẳng vào TutorialsPage
+	_assert(menu.get_current_page() != before and menu._mode == InventoryMenu.Mode.TAB, "E đổi sang trang khác, vẫn ở màn Tab")
+
+	# 3. H khi đang mở Tab: chuyển sang Sổ tay
 	menu.open_to_page_type(TutorialsPage)
 	await get_tree().process_frame
-	_assert(menu._current_category == InventoryMenu.Category.SYSTEM, "Nhảy đúng sang category SYSTEM")
-	_assert(menu.get_current_page() is TutorialsPage, "Trang đang xem là TutorialsPage")
-	
-	# 4. Chuyển ngược lại Túi Đồ bằng Q (-1)
-	menu._change_category(-1)
+	_assert(menu._mode == InventoryMenu.Mode.HELP, "Chuyển sang Sổ tay")
+	_assert(menu.get_current_page() is TutorialsPage, "Trang đang xem là Sổ tay")
+	_assert(not menu._currency_label.visible, "Tiền Soul Jade ẩn ở Sổ tay")
+	_assert(menu._help_pages.size() == 1, "Sổ tay chỉ có trang hướng dẫn (không còn Cài đặt / Thoát)")
+	menu._change_page(1)
 	await get_tree().process_frame
-	_assert(menu._current_category == InventoryMenu.Category.INVENTORY, "Chuyển ngược lại thành công sang INVENTORY")
-	_assert(menu._currency_label.visible, "Tiền Soul Jade hiện lại")
-	
+	_assert(menu.get_current_page() is TutorialsPage, "Q / E ở Sổ tay không nhảy sang trang khác")
+
 	menu.close()
 	await get_tree().create_timer(0.25).timeout
 	_assert(not menu.visible, "Menu đóng thành công")
+
+	# 4. Mở lại bằng Tab: về màn Tab, không kẹt ở Sổ tay
+	menu.open(InventoryMenu.Mode.TAB)
+	await get_tree().process_frame
+	_assert(menu._mode == InventoryMenu.Mode.TAB and not (menu.get_current_page() is TutorialsPage), "Tab mở lại màn đồ, không phải Sổ tay")
+	menu.close()
+	await get_tree().create_timer(0.25).timeout
 	menu.queue_free()
 
 

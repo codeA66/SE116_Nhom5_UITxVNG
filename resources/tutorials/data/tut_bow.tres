@@ -8,7 +8,7 @@ id = &"bow"
 title = "Cung Tên (Tầm Xa)"
 category = "Chiến Đấu"
 input_actions = Array[StringName]([&"aim"])
-prompt_template = "Giữ {key1} để giương cung ngắm bắn, buông chuột để phóng tên."
+prompt_template = "Giữ {key} để ngắm · Thả để bắn"
 summary = "Vũ khí tầm xa luôn sẵn sàng bằng chuột phải, tiêu diệt kẻ thù từ xa và kích hoạt cơ chế bí mật."
 sections = Array[Dictionary]([{
 "heading": "Ngắm bắn chuẩn xác",
@@ -21,3 +21,5 @@ sections = Array[Dictionary]([{
 }])
 lore = "Cây cung uốn từ gỗ dẻo dai giúp chú Cáo tấn công an toàn trước những đối thủ khổng lồ."
 order = 4
+wait_for_action = true
+complete_on_bow_shot = true

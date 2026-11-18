@@ -4,38 +4,41 @@
 [ext_resource type="Script" uid="uid://cfhne3y8brqpf" path="res://entities/bosses/boss_1/boss_1.gd" id="2_script"]
 [ext_resource type="Resource" uid="uid://bxmwovptestn8" path="res://resources/enemies/bosses/boss_1/boss_1_data.tres" id="3_data"]
 [ext_resource type="Resource" path="res://resources/enemies/bosses/boss_1/boss_1_movement.tres" id="4_movement"]
-[ext_resource type="Resource" uid="uid://c4ry1nemhld0m" path="res://resources/enemies/bosses/boss_1/boss_1_melee_attack.tres" id="5_melee_attack"]
 [ext_resource type="Resource" uid="uid://bhe1s3ncd2s8l" path="res://resources/enemies/bosses/boss_1/boss_1_shockwave.tres" id="6_shockwave_data"]
 [ext_resource type="PackedScene" path="res://objects/combat/projectiles/boss_fireball/boss_fireball.tscn" id="7_fireball_scene"]
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="7_udfoe"]
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/shield_bearer/shield_bearer.tscn" id="8_e8xyt"]
 [ext_resource type="PackedScene" uid="uid://obc4uovdwcms" path="res://assets/models/bosses/boss_1/boss_profile/model/boss_1.glb" id="8_model"]
-[ext_resource type="AnimationLibrary" uid="uid://d0152rh1bnn6d" path="res://assets/models/bosses/boss_1/boss_profile/animation/boss_animation_library.tres" id="9_anim_lib"]
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="9_oev2t"]
-[ext_resource type="Script" uid="uid://sx06x8j6a2f6" path="res://components/combat/hitbox/hitbox_component.gd" id="10_hitbox"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/bosses/boss_1/boss_profile/animation/boss_animation_library.tres" id="9_anim_lib"]
 [ext_resource type="PackedScene" path="res://objects/combat/shockwave/ground_shockwave.tscn" id="11_shockwave"]
 [ext_resource type="Script" uid="uid://bhmnvs2kyy801" path="res://entities/bosses/boss_1/states/movement/boss_idle.gd" id="12_idle"]
 [ext_resource type="Script" uid="uid://c72fm7ds1xd52" path="res://entities/bosses/boss_1/states/movement/boss_chase.gd" id="13_chase"]
-[ext_resource type="Script" uid="uid://cfkqte1owsgre" path="res://entities/bosses/boss_1/states/attack/boss_melee.gd" id="14_melee"]
 [ext_resource type="Script" uid="uid://h3b6a6xhboam" path="res://entities/bosses/boss_1/states/attack/boss_jump_slam.gd" id="15_jump_slam"]
 [ext_resource type="Script" uid="uid://dub5a8rufbvjb" path="res://entities/bosses/boss_1/states/attack/boss_buff.gd" id="16_buff"]
 [ext_resource type="Script" uid="uid://c4rbxt8ntfsw7" path="res://entities/bosses/boss_1/states/attack/boss_cast_fireball.gd" id="17_cast_fireball"]
-[ext_resource type="Script" uid="uid://din53nipd8vdg" path="res://entities/bosses/boss_1/states/status/boss_stunned.gd" id="18_stunned"]
 [ext_resource type="Script" uid="uid://dcw3vx1e8jus3" path="res://entities/bosses/boss_1/states/status/boss_dead.gd" id="19_dead"]
 [ext_resource type="Script" uid="uid://s7jerl65hpte" path="res://components/core/object_pool/object_pool.gd" id="20_pool"]
 [ext_resource type="PackedScene" path="res://objects/combat/indicators/aoe_circle_indicator.tscn" id="21_indicator"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/boss_1/boss_profile/vfx/charge_vfx/charge_vfx.tscn" id="crimson_charge_vfx"]
 [ext_resource type="Resource" uid="uid://cy16knn02tkqb" path="res://resources/enemies/bosses/boss_1/boss_1_magma_attack.tres" id="22_magma_attack"]
 [ext_resource type="PackedScene" path="res://entities/bosses/boss_1/hazards/magma_spike/radial_magma_hazard.tscn" id="23_radial_magma"]
 [ext_resource type="Script" uid="uid://doo7idk7m0xsa" path="res://entities/bosses/boss_1/states/attack/boss_magma_stomp.gd" id="24_magma_stomp"]
 [ext_resource type="Resource" path="res://resources/enemies/loot/drop_boss.tres" id="jade_loot_boss"]
 [ext_resource type="Script" path="res://objects/core/pickups/currency/drop/loot_drop_component.gd" id="jade_drop"]
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/states/attack/boss_charge.tscn" id="charge_state"]
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/charge/boss_charge_controller.tscn" id="charge_controller"]
+[ext_resource type="PackedScene" path="res://objects/combat/indicators/charge_lane_indicator.tscn" id="charge_indicator"]
+[ext_resource type="PackedScene" path="res://components/combat/hitbox/swept_hitbox_component.tscn" id="charge_hitbox"]
+[ext_resource type="PackedScene" path="res://components/utility/uniform_scale/uniform_scale_component.tscn" id="size_component"]
 
+[ext_resource type="Script" path="res://entities/bosses/boss_1/phase/boss_phase_controller.gd" id="phase_health"]
+[ext_resource type="Script" path="res://entities/bosses/boss_1/phase/boss_hurtbox.gd" id="phase_hurtbox"]
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/ai/boss_action_selector.tscn" id="selector"]
+
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/minions/boss_minion_controller.tscn" id="minions"]
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/feedback/boss_hit_feedback.tscn" id="feedback"]
+[ext_resource type="PackedScene" path="res://entities/bosses/boss_1/cooldowns/boss_cooldowns.tscn" id="cooldowns"]
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss_body"]
 radius = 0.85
 height = 3.0
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_melee"]
-size = Vector3(2, 2, 2)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_boss_hurtbox"]
 radius = 0.95
@@ -63,24 +66,10 @@ collision_layer = 4
 collision_mask = 1
 script = ExtResource("2_script")
 data = ExtResource("3_data")
-melee_attack_data = ExtResource("5_melee_attack")
 shockwave_data = ExtResource("6_shockwave_data")
 magma_attack_data = ExtResource("22_magma_attack")
-fireball_scene = ExtResource("7_fireball_scene")
-grunt_scene = ExtResource("7_udfoe")
-shield_bearer_scene = ExtResource("8_e8xyt")
-wisp_caster_scene = ExtResource("9_oev2t")
-phase2_grunt_count = 1
-phase2_shield_count = 1
-phase2_caster_count = 0
-phase3_grunt_count = 2
-phase3_shield_count = 1
-phase3_caster_count = 1
-minion_spawn_radius = 4.5
 roar_push_radius = 6.5
 roar_push_force = 14.0
-hit_flash_color = Color(1, 0.15, 0.15, 0.75)
-hit_flash_time = 0.12
 movement = ExtResource("4_movement")
 
 [node name="CollisionShape3D" parent="." index="0"]
@@ -90,25 +79,25 @@ shape = SubResource("CapsuleShape3D_boss_body")
 [node name="BossModel" parent="Model/Visual" index="0" unique_id=1847807142 instance=ExtResource("8_model")]
 transform = Transform3D(2.7, 0, 0, 0, 2.7, 0, 0, 0, 2.7, 0, 0, 0)
 
+[node name="ChargeVFX" parent="Model/Visual" instance=ExtResource("crimson_charge_vfx")]
+scale = Vector3(2.7, 2.7, 2.7)
+animation_player_path = NodePath("../../../AnimationPlayer")
+skeleton_path = NodePath("../BossModel/Armature/Skeleton3D")
+
 [node name="FireballSpawn" type="Marker3D" parent="Model" index="1" unique_id=1101667487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 1.4)
 
-[node name="MeleeHitbox" type="Area3D" parent="Model" index="2" unique_id=91563326]
-collision_layer = 16
-collision_mask = 2
-monitoring = false
-monitorable = false
-script = ExtResource("10_hitbox")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Model/MeleeHitbox" index="0" unique_id=1226506607]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 1.2)
-shape = SubResource("BoxShape3D_melee")
+[node name="ChargeHitbox" parent="Model" instance=ExtResource("charge_hitbox")]
 
 [node name="AnimationPlayer" parent="." index="2"]
 root_node = NodePath("../Model/Visual/BossModel")
 libraries/ = ExtResource("9_anim_lib")
 
+[node name="HealthComponent" parent="." index="3"]
+script = ExtResource("phase_health")
+
 [node name="HurtboxComponent" parent="." index="4"]
+script = ExtResource("phase_hurtbox")
 collision_layer = 4
 
 [node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
@@ -146,14 +135,10 @@ script = ExtResource("12_idle")
 [node name="Chase" type="Node" parent="StateMachine" index="1" unique_id=1292460170]
 script = ExtResource("13_chase")
 
-[node name="Melee" type="Node" parent="StateMachine" index="2" unique_id=247641324]
-script = ExtResource("14_melee")
-telegraph_duration = 1.0
-active_start = 1.35
-active_end = 1.5
-
 [node name="JumpSlam" type="Node" parent="StateMachine" index="3" unique_id=623372893]
 script = ExtResource("15_jump_slam")
+windup_time = 0.5
+impact_time = 1.6
 
 [node name="MagmaStomp" type="Node" parent="StateMachine" index="4" unique_id=987654321]
 script = ExtResource("24_magma_stomp")
@@ -164,15 +149,37 @@ script = ExtResource("16_buff")
 
 [node name="CastFireball" type="Node" parent="StateMachine" index="6" unique_id=1141332380]
 script = ExtResource("17_cast_fireball")
-
-[node name="Stunned" type="Node" parent="StateMachine" index="7" unique_id=2136498122]
-script = ExtResource("18_stunned")
+shoot_time = 1.93
 
 [node name="Dead" type="Node" parent="StateMachine" index="8" unique_id=1509415676]
 script = ExtResource("19_dead")
+
+[node name="Charge" parent="StateMachine" node_paths=PackedStringArray("animation_player", "hitbox", "indicator", "effect") instance=ExtResource("charge_state")]
+animation_player = NodePath("../../AnimationPlayer")
+hitbox = NodePath("../../Model/ChargeHitbox")
+indicator = NodePath("../../ChargeLaneIndicator")
+effect = NodePath("../../Model/Visual/ChargeVFX")
+
+[node name="ChargeLaneIndicator" parent="." instance=ExtResource("charge_indicator")]
+
+[node name="ChargeController" parent="." node_paths=PackedStringArray("charge") instance=ExtResource("charge_controller")]
+charge = NodePath("../StateMachine/Charge")
+
+[node name="Size" parent="." instance=ExtResource("size_component")]
+multiplier = 1.25
 
 [node name="LootDropComponent" type="Node" parent="." node_paths=PackedStringArray("health", "body")]
 script = ExtResource("jade_drop")
 health = NodePath("../HealthComponent")
 body = NodePath("..")
 drop_table = ExtResource("jade_loot_boss")
+
+[node name="ActionSelector" parent="." instance=ExtResource("selector")]
+
+[node name="Minions" parent="." instance=ExtResource("minions")]
+
+[node name="Cooldowns" parent="." instance=ExtResource("cooldowns")]
+
+[node name="HitFeedback" parent="." node_paths=PackedStringArray("body_root", "hurtbox") instance=ExtResource("feedback")]
+body_root = NodePath("../Model/Visual/BossModel")
+hurtbox = NodePath("../HurtboxComponent")

@@ -1,11 +1,13 @@
 [gd_resource type="Resource" script_class="CharmData" format=3]
 
 [ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/ui/charms/challenge_charm.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1")
 id = &"wind_challenge_charm"
 display_name = "Bùa Thử Thách"
+icon = ExtResource("2_icon")
 notch_cost = 1
 description = "Phần thưởng của Phòng Thử Thách Gió. (Bùa tạm: chưa có hiệu ứng.)"
 lore = "Người vượt ba đợt thử thách trong cung điện gió được giữ lại mảnh ngọc này."

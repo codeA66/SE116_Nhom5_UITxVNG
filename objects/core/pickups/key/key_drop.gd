@@ -3,6 +3,7 @@ extends Node3D
 ## Trận đánh thắng thì rơi chìa ở chỗ con quái cuối gục (chớp sáng, vòng sóng, cột sáng để nhìn từ xa cũng thấy).
 ## Nạp lại khi đã thắng mà chưa nhặt: chìa nằm sẵn ở vị trí node này (giữa phòng). Đã nhặt rồi: không làm gì.
 ## Nhiều trận rơi chìa trong một map: mỗi KeyDrop trỏ tới trận của nó bằng tham chiếu, không phát tin chung.
+## Rơi vật phẩm khác (Ấn Gió...) cũng được: key_scene là scene vật nhặt, key_id thành cờ "đã nhặt" (persistent_id của vật).
 
 @export var encounter: Encounter
 @export var key_scene: PackedScene

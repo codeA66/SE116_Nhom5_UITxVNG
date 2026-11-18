@@ -8,7 +8,7 @@ id = &"wind_blast"
 title = "Thổi Gió (Wind Blast)"
 category = "Kỹ Năng"
 input_action = &"skill"
-prompt_template = "Nhấn {key} để phóng luồng gió mạnh."
+prompt_template = "{key} Thổi Gió"
 summary = "Phóng luồng gió đẩy lùi kẻ địch, phản lại đạn đá và kích hoạt các cơ chế cối xay gió."
 sections = Array[Dictionary]([{
 "heading": "Đẩy lùi & Phản đạn",
@@ -19,6 +19,9 @@ sections = Array[Dictionary]([{
 "text": "Thổi gió vào cối xay gió để hạ cầu, đẩy các tảng đá phong ấn hoặc dọn sạch đống đổ nát ngáng đường.",
 "warning": false
 }])
-hint = "[F] Thổi Gió  •  [H] Sổ Hướng Dẫn"
+hint = "[E] Thổi Gió  •  [H] Sổ Hướng Dẫn"
 lore = "Cơn gió hoang dã của Đảo Foxy nay đã quy thuận và hòa làm một với hơi thở của Cáo."
 order = 6
+wait_for_action = true
+completion_skill = &"wind_blast"
+show_after_acquire = true
