@@ -5,7 +5,7 @@ extends Node
 ## 3. Đã mở khóa từ lần chơi trước (cờ ổ khóa): nạp màn thì ổ sáng mở và hai cổng mở sẵn.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/west_gate_key_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _level: Node
 var _player: Player

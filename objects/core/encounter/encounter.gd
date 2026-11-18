@@ -26,6 +26,8 @@ const MIN_TRIGGER_SIZE := 0.5
 @export var enemies_visible_before_start: bool = true
 ## Quái nhắm player ngay khi xuất hiện thay vì chờ cảm biến phát hiện
 @export var aggro_on_start: bool = true
+## Chờ bao lâu (s) sau khi player bước vào vùng mới bắt đầu (vừa dịch chuyển tới, màn còn đang sáng lại). 0 = ngay
+@export_range(0.0, 10.0, 0.1) var start_delay: float = 0.0
 ## Hiệu ứng xuất hiện tại chỗ mỗi con quái (tuỳ chọn). Scene nên tự huỷ khi chạy xong
 @export var spawn_effect: PackedScene
 ## Kích thước vùng kích hoạt (m), hộp đặt giữa đáy tại gốc node. Shape là local_to_scene nên mỗi trận chỉnh riêng
@@ -148,10 +150,18 @@ func _spawn(enemy: Enemy) -> void:
 func _on_body_entered(body: Node3D) -> void:
 	_player = body
 	if _requirement_met():
-		start()
+		_start_after_delay()
 	elif not GameState.progress_changed.is_connected(_on_progress_changed):
 		# Player đứng trong vùng trước khi có cờ (ví dụ đi ngang sân kiếm chưa nhặt): chờ cờ mà không quét mỗi frame
 		GameState.progress_changed.connect(_on_progress_changed)
+
+
+func _start_after_delay() -> void:
+	if start_delay > 0.0:
+		await get_tree().create_timer(start_delay, false).timeout
+		if not is_inside_tree():
+			return
+	start()
 
 
 func _on_body_exited(body: Node3D) -> void:

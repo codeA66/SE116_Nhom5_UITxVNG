@@ -8,7 +8,7 @@ extends Node
 ## 5. Chưa có chìa mà bấm ổ khóa: hộp thoại báo cần chìa. Có chìa: hai cổng tây chìm xuống, đi qua được.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/room2_boss_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _level: Node

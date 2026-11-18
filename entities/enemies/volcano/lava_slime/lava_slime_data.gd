@@ -21,6 +21,13 @@ extends EnemyData
 ## Thời gian ngòi tụt từ đầy về 0 khi không châm (s)
 @export_range(0.05, 10.0, 0.05) var fuse_decay_time: float = 1.5
 
+@export_group("Fuse Flash")
+## Màu lớp phủ nháy khi châm ngòi (alpha = độ đặc)
+@export var flash_color: Color = Color(1, 1, 1, 0.85)
+## Số lần nháy mỗi giây lúc ngòi mới châm và lúc sắp nổ (nhanh dần theo tiến độ ngòi)
+@export_range(0.5, 30.0, 0.5) var flash_rate_start: float = 3.0
+@export_range(0.5, 30.0, 0.5) var flash_rate_end: float = 14.0
+
 @export_group("Explosion")
 ## Bán kính nổ (m)
 @export_range(0.1, 12.0, 0.1) var explosion_radius: float = 2.5

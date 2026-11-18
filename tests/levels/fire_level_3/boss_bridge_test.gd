@@ -4,10 +4,10 @@ extends Node
 ## 2. Chạm mặt cầu: chờ first_delay rồi vòng cảnh báo hiện dưới chân (không chờ đứng yên), rồi lửa phụt (cột lửa shader mới);
 ##    đứng yên thì trúng lửa mất máu; vẫn tiếp tục phun theo nhịp vào chỗ đang đứng.
 ## 3. Phòng 10: chưa vào thì chưa có boss, cổng ra ẩn. Bước vào: boss xuất hiện, nhắm player.
-## 4. Hạ boss: lưu cờ, cổng ra (cổng xoáy có bệ) hiện lên.
+## 4. Hạ boss: lưu cờ, cổng ra (cổng sang tier 2) hiện lên.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/boss_bridge_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _level: Node
@@ -68,10 +68,16 @@ func _run() -> void:
 	_check(fight.boss != null and fight.boss.get(&"target_player") == _player, "bước vào phòng 10: boss xuất hiện, nhắm player")
 	await _seconds(1.5)
 	await _capture("room10_boss.png")
-	# TNT nổ cạnh boss: mất máu bằng sát thương TNT; boss có khiên: nổ phá khiên (như phản cầu lửa)
-	await _tnt_on_boss(fight.boss)
-	# 4. Hạ boss
-	(fight.boss.get(&"health") as HealthComponent).take_damage(99999)
+	# 4. Hạ boss: Boss 1 khoá máu ở mốc 50% / 20% và dựng khiên, phải phá khiên (nổ / phản cầu lửa) mới đánh tiếp
+	var boss: Boss1 = fight.boss as Boss1
+	for _step: int in range(3):
+		var hit := DamageInfo.new(100000, DamageInfo.Type.PHYSICAL, Vector3.ZERO, null)
+		hit.ignores_invincibility = true
+		boss.hurtbox.receive_hit(hit)
+		await _frames(5)
+		while boss.is_shielded:
+			boss.on_explosion_hit(null)
+			await _frames(5)
 	var t: float = 0.0
 	while not fight.is_defeated and t < 10.0:
 		await get_tree().physics_frame
@@ -79,8 +85,8 @@ func _run() -> void:
 	await _frames(10)
 	_check(fight.is_defeated and GameState.has_flag(fight.persistent_id), "hạ boss: lưu cờ (%.1f s)" % t)
 	var exit_portal: Node3D = exit_reveal.get_node_or_null("ExitPortal") as Node3D
-	# Cổng ra là WarpPortal sang tier 2: bệ đỡ nằm trong hình cổng xoáy
-	_check(exit_portal is WarpPortal and exit_portal.get_node_or_null("VortexPortalVisual/Pedestal") != null, "cổng ra phòng 10 hiện lên (cổng xoáy sang tier 2, có bệ đỡ)")
+	# Cổng ra là Portal đổi scene sang tier 2 (levels/zone_3_fire/tier_2/tier_2.tscn)
+	_check(exit_portal is Portal and (exit_portal as Portal).target_zone == "res://levels/zone_3_fire/tier_2/tier_2.tscn", "cổng ra phòng 10 hiện lên (đổi scene sang tier 2)")
 	_player.teleport(Vector3(166, 4.4, 50))
 	await _frames(30)
 	await _capture("room10_exit.png")
@@ -134,42 +140,6 @@ func _capture(file: String) -> void:
 func _frames(n: int) -> void:
 	for _i: int in range(n):
 		await get_tree().physics_frame
-
-
-func _tnt_on_boss(boss: Node3D) -> void:
-	var block: TntBlock = (load("res://objects/combat/hazards/tnt_block/tnt_block.tscn") as PackedScene).instantiate() as TntBlock
-	_level.add_child(block)
-	var health: HealthComponent = boss.get(&"health") as HealthComponent
-	var hurtbox: HurtboxComponent = boss.get(&"hurtbox") as HurtboxComponent
-	_player.teleport(boss.global_position + Vector3(-8, 0.1, 0))
-	# Đứng yên boss để đo đúng một vụ nổ
-	boss.process_mode = Node.PROCESS_MODE_DISABLED
-	hurtbox.process_mode = Node.PROCESS_MODE_ALWAYS
-	await _frames(40)
-	var hp: int = health.current_health
-	block.place(boss.global_position + Vector3(1.2, 0, 0), 0.0, _player)
-	await _frames(2)
-	block.explode()
-	await _frames(5)
-	_check(health.current_health == hp - block.attack.damage, "TNT nổ cạnh boss: mất %d máu (%d → %d / %d)" % [block.attack.damage, hp, health.current_health, health.max_health])
-	# Đo riêng việc phá khiên: nổ sát thương 0 để máu không chạm mốc khoá 50% (boss sẽ tự bật khiên mới)
-	var full_attack: AttackData = block.attack
-	block.attack = full_attack.duplicate() as AttackData
-	block.attack.damage = 0
-	boss.call(&"activate_invulnerable_shield")
-	var stacks: int = boss.get(&"shield_stacks")
-	hp = health.current_health
-	for i: int in range(stacks):
-		await _seconds(1.0)
-		block.place(boss.global_position + Vector3(1.2, 0, 0), 0.0, _player)
-		await _frames(2)
-		block.explode()
-		await _frames(5)
-	_check(not boss.get(&"is_shielded") and health.current_health == hp, "boss có khiên %d lớp: %d vụ nổ phá khiên (máu %d → %d)" % [stacks, stacks, hp, health.current_health])
-	block.attack = full_attack
-	boss.process_mode = Node.PROCESS_MODE_INHERIT
-	hurtbox.process_mode = Node.PROCESS_MODE_INHERIT
-	block.queue_free()
 
 
 func _check(ok: bool, what: String) -> void:

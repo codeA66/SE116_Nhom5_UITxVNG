@@ -36,6 +36,10 @@ extends EnemyData
 @export_range(1, 6) var bite_combo: int = 3
 
 @export_group("Fear")
+## Tắt: player cầm đuốc / đang cháy thì sói vẫn vồ, cắn, rình như thường
+@export var fears_light: bool = true
+## Tắt: trúng lửa không bỏ chạy (chỉ khựng như đòn thường)
+@export var flees_from_fire: bool = true
 ## Hệ số sát thương lửa nhận vào (sợ lửa: > 1)
 @export_range(0.0, 3.0, 0.05) var fire_damage_multiplier: float = 1.5
 ## Trúng lửa: hiện rõ và bỏ chạy trong khoảng này (s)

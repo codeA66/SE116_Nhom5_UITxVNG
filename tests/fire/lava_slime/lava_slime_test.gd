@@ -84,8 +84,8 @@ func _t_load() -> void:
 	var burn := s.get_node(^"BurnableComponent") as BurnableComponent
 	burn.ignite(_player)
 	await _frames(2)
-	_check(is_zero_approx(s.hurtbox.resistances.get(DamageInfo.Type.FIRE, 1.0)) and not burn.is_burning(),
-			"kháng lửa: hệ số 0, châm lửa không cháy")
+	_check(is_equal_approx(s.hurtbox.resistances.get(DamageInfo.Type.FIRE, 1.0), 1.0) and burn.is_burning(),
+			"không miễn lửa: hệ số 1, châm lửa thì cháy")
 	await _capture("slime_idle.png", s.global_position)
 	await _cleanup()
 
@@ -141,9 +141,24 @@ func _t_explode() -> void:
 	await _wait_until(func() -> bool: return float(log["start"]) >= 0.0, 400)
 	var dist_at_fuse := _flat(s.global_position, _player.global_position)
 	var p_before := _player.global_position
+	# Đo nháy trắng thật trên mesh: đếm số lần đổi bật / tắt ở nửa đầu và nửa sau ngòi
+	var body := s.model.find_children("*", "GeometryInstance3D", true, false)[0] as GeometryInstance3D
+	var flash := {"white": false, "first": 0, "second": 0, "last": false}
+	var sample := func() -> void:
+		var mat := body.material_overlay as StandardMaterial3D
+		var on := mat != null
+		if on and mat.albedo_color.is_equal_approx(Color(1, 1, 1, 0.85)):
+			flash["white"] = true
+		if on != bool(flash["last"]):
+			flash["first" if s.fuse < 0.5 else "second"] = int(flash["first" if s.fuse < 0.5 else "second"]) + 1
+			flash["last"] = on
+	get_tree().physics_frame.connect(sample)
 	await _frames(40)
 	await _capture("slime_swell.png", s.global_position)
 	await _wait_until(func() -> bool: return float(log["boom"]) >= 0.0, 200)
+	get_tree().physics_frame.disconnect(sample)
+	_check(bool(flash["white"]), "châm ngòi: phủ lớp trắng lên thân")
+	_check(int(flash["second"]) > int(flash["first"]), "nháy nhanh dần: nửa đầu %d lần đổi, nửa sau %d" % [flash["first"], flash["second"]])
 	await _frames(3)
 	var lost := hp - _player.health.current_health
 	var burn := _player.get_node(^"BurnableComponent") as BurnableComponent
@@ -242,7 +257,7 @@ func _t_fire_resist() -> void:
 	await _frames(60)
 	Input.action_release(&"skill_fire")
 	await _frames(5)
-	_check(s.health.current_health == hp, "phun lửa thật: không mất máu (%d → %d)" % [hp, s.health.current_health])
+	_check(s.health.current_health < hp or s.is_dead(), "phun lửa thật: mất máu (%d → %d)" % [hp, s.health.current_health])
 	await _cleanup()
 
 

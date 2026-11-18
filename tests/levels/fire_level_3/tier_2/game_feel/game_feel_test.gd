@@ -8,7 +8,7 @@ extends Node
 ## Chỉ đo và in số, không sửa gì. Không ghi save thật.
 ## Chạy: godot --headless --path . res://tests/levels/fire_level_3/tier_2/game_feel/game_feel_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_2/tier_2.tscn")
 const FIGHT_TIME_LIMIT: float = 45.0
 
 var _player: Player
@@ -48,7 +48,7 @@ func _ready() -> void:
 	_player.hitbox.hit.connect(func(_t: HurtboxComponent) -> void: _hit_times.append(_now()))
 	await _t_movement()
 	await _t_single_target()
-	await _t_fight_encounter(&"T2DarkForgePack", "bầy 3 sói (06)")
+	await _t_fight_encounter(&"T2DarkForgePack", "2 pháp sư + 2 nhện (06)")
 	await _t_fight_encounter(&"T2HubAmbush", "Hub: 2 Quỷ Xương Lửa + 2 sói")
 	await _t_fight_encounter(&"TowerT1Wolves", "tháp T1: 4 sói")
 	await _t_fight_encounter(&"TowerT2Casters", "tháp T2: 1 Quỷ Xương Lửa + 3 slime")
@@ -65,7 +65,7 @@ func _ready() -> void:
 
 func _t_movement() -> void:
 	print("--- 1. Di chuyển (sàn phẳng phòng 01) ---")
-	_teleport(Vector3(206, 4.42, 55), Vector3.RIGHT)
+	_teleport(Vector3(0, 0.1, 4.4), Vector3.RIGHT)
 	await _frames(20)
 	var speeds: Array[float] = []
 	for _i: int in range(60):
@@ -88,7 +88,7 @@ func _t_movement() -> void:
 	print("INFO dừng hẳn sau %d khung (%.2f s)" % [stop_frames, stop_frames / 60.0])
 	_check(stop_frames > 0 and stop_frames <= 20, "thả phím: dừng trong <= 20 khung (%d)" % stop_frames)
 	# Đảo chiều: đang chạy phải thì quay trái, đo tới khi vận tốc đổi dấu
-	_teleport(Vector3(206, 4.42, 55), Vector3.RIGHT)
+	_teleport(Vector3(0, 0.1, 4.4), Vector3.RIGHT)
 	await _frames(10)
 	for _i: int in range(40):
 		_press_towards(Vector3.RIGHT)
@@ -113,8 +113,8 @@ func _t_single_target() -> void:
 	print("--- 2. Đánh một mục tiêu đứng yên (sói ngủ) ---")
 	var wolf := (load("res://entities/enemies/volcano/shadow_wolf/shadow_wolf.tscn") as PackedScene).instantiate() as Enemy
 	_level.add_child(wolf)
-	_teleport(Vector3(206, 4.42, 55), Vector3.RIGHT)
-	wolf.global_position = Vector3(208.0, 4.42, 55)
+	_teleport(Vector3(0, 0.1, 4.4), Vector3.RIGHT)
+	wolf.global_position = Vector3(2, 0.1, 4.4)
 	await _frames(20)
 	var wolf_start := wolf.global_position
 	var press_t := [0.0]
@@ -179,7 +179,7 @@ func _t_fight_encounter(enc_name: StringName, label: String) -> void:
 	_teleport(enc.global_position + Vector3.UP * 0.1, Vector3.FORWARD)
 	await _frames(int((enc.spawn_interval * 4 + 0.5) * 60.0))
 	await _auto_fight("Encounter " + label, func() -> bool: return enc.is_running() == false and GameState.has_flag(enc.persistent_id))
-	_teleport(Vector3(212, 4.42, 52), Vector3.RIGHT)
+	_teleport(Vector3(6, 0.1, 1.4), Vector3.RIGHT)
 	await _frames(20)
 
 
@@ -189,14 +189,14 @@ func _t_tower_mother() -> void:
 	var ref := [null]
 	fight.started.connect(func(b: Node3D) -> void: ref[0] = b, CONNECT_ONE_SHOT)
 	_player.health.heal_full()
-	_teleport(Vector3(208, 20.42, 10), Vector3.FORWARD)
+	_teleport(Vector3(2, 16.1, -40.6), Vector3.FORWARD)
 	await _frames(20)
 	var mother := ref[0] as SlimeMother
 	if mother == null:
 		_check(false, "Slime Mẹ tầng 4 xuất hiện")
 		return
 	await _auto_fight("Slime Mẹ tầng 4", func() -> bool: return mother.is_dead())
-	_teleport(Vector3(212, 4.42, 52), Vector3.RIGHT)
+	_teleport(Vector3(6, 0.1, 1.4), Vector3.RIGHT)
 	await _frames(20)
 
 
@@ -206,7 +206,7 @@ func _t_boss() -> void:
 	var ref := [null]
 	fight.started.connect(func(b: Node3D) -> void: ref[0] = b, CONNECT_ONE_SHOT)
 	_player.health.heal_full()
-	_teleport(Vector3(256, 28.42, 12), Vector3.FORWARD)
+	_teleport(Vector3(50, 24.1, -38.6), Vector3.FORWARD)
 	await _frames(30)
 	var boss := ref[0] as Boss1
 	if boss == null:
@@ -271,7 +271,7 @@ func _auto_fight(label: String, done: Callable, limit_seconds: float = FIGHT_TIM
 
 func _t_stairs() -> void:
 	print("--- 4. Leo cầu thang phòng 02 -> phòng boss ---")
-	_teleport(Vector3(250, 4.42, 42), Vector3.FORWARD)
+	_teleport(Vector3(44, 0.1, -8.6), Vector3.FORWARD)
 	await _frames(20)
 	var y0 := _player.global_position.y
 	var samples: Array[float] = []

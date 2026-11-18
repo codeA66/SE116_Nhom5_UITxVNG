@@ -1,7 +1,7 @@
 class_name CrackedWall
 extends StaticBody3D
-## Tường đá nứt chắn lối (map Lửa): chém, bắn, phun lửa không vỡ; chỉ vỡ khi bị NỔ (Slime Dung Nham tự nổ, TNT, thùng dầu).
-## Nhận nổ qua hàm on_explosion_hit(source) mà ExplosionComponent / TNT gọi trên chủ hurtbox trước khi gây đòn;
+## Tường đá nứt chắn lối (map Lửa): chém, bắn, phun lửa không vỡ; chỉ vỡ khi bị NỔ (Slime Dung Nham tự nổ, thùng dầu).
+## Nhận nổ qua hàm on_explosion_hit(source) mà ExplosionComponent gọi trên chủ hurtbox trước khi gây đòn;
 ## hurtbox để invulnerable nên đòn thường bị bỏ qua. Vỡ thì nhớ vĩnh viễn (persistent_id).
 ## Hiệu năng: không có _process.
 
@@ -28,7 +28,7 @@ func _ready() -> void:
 	_rubble.visible = false
 
 
-## ExplosionComponent / TNT gọi khi tường nằm trong vùng nổ
+## ExplosionComponent gọi khi tường nằm trong vùng nổ
 func on_explosion_hit(_source: Node) -> void:
 	if is_broken:
 		return

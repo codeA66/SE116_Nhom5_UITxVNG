@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/combat/indicators/aoe_rect_indicator.gd" id="1_script"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_border"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 0.28, 0.1, 0.85)
+
+[sub_resource type="BoxMesh" id="Box_border"]
+material = SubResource("Mat_border")
+size = Vector3(1, 0.006, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_fill"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 0.15, 0.08, 0.35)
+
+[sub_resource type="BoxMesh" id="Box_fill"]
+material = SubResource("Mat_fill")
+size = Vector3(1, 0.005, 1)
+
+[node name="AoeRectIndicator" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Fill" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Box_fill")
+
+[node name="EdgeN" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Box_border")
+
+[node name="EdgeS" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Box_border")
+
+[node name="EdgeE" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Box_border")
+
+[node name="EdgeW" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("Box_border")

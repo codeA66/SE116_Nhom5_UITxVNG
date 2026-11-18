@@ -25,6 +25,12 @@ enum Phase { REST, WARNING, SLAM, HOLD, RISE }
 @export_group("Hình dạng")
 ## Mặt búa (rộng x cao x sâu, m)
 @export var head_size: Vector3 = Vector3(1.8, 0.9, 1.8)
+## Thu nhỏ phần nhìn thấy của mặt búa theo ngang (m, tổng hai mép) để búa xếp sát nhau vẫn có khe nhìn xuống nhân vật.
+## Vùng sát thương vẫn theo head_size, chỉ hình búa nhỏ đi
+@export_range(0.0, 20.0, 0.1) var visual_gap: float = 0.0
+## Cảnh báo dưới sàn bằng khung chữ nhật đúng mặt búa thay cho vòng tròn bao quanh.
+## Bật khi xếp nhiều búa sát nhau: khung khít nhau, không chồng lên nhau
+@export var rect_indicator: bool = false
 ## Độ cao đáy búa khi nhấc lên (m, so với sàn)
 @export_range(0.5, 12.0, 0.1) var raise_height: float = 3.2
 @export_group("Đòn nện")
@@ -41,6 +47,7 @@ var _tween: Tween
 
 @onready var _timer: Timer = $PhaseTimer
 @onready var _indicator: AoeCircleIndicator = $Indicator
+@onready var _rect_indicator: AoeRectIndicator = $RectIndicator
 @onready var _head: Node3D = $Head
 @onready var _head_mesh: MeshInstance3D = $Head/Mesh
 @onready var _damage_area: DamageArea = $DamageArea
@@ -88,7 +95,10 @@ func _enter(next: Phase) -> void:
 	phase = next
 	match next:
 		Phase.WARNING:
-			_indicator.show_indicator(global_position, _footprint_radius(), warning_time)
+			if rect_indicator:
+				_rect_indicator.show_indicator(global_position, Vector2(head_size.x, head_size.z), warning_time)
+			else:
+				_indicator.show_indicator(global_position, _footprint_radius(), warning_time)
 			warned.emit()
 			_timer.start(warning_time)
 		Phase.SLAM:
@@ -96,6 +106,7 @@ func _enter(next: Phase) -> void:
 			_timer.start(slam_time)
 		Phase.HOLD:
 			_indicator.hide_indicator()
+			_rect_indicator.hide_indicator()
 			# set_deferred: đổi shape trong callback vật lý phải hoãn tới cuối frame
 			_damage_shape.set_deferred(&"disabled", false)
 			ScreenShake.add_trauma_at(shake_trauma, global_position, shake_full_radius, shake_max_radius)
@@ -128,7 +139,7 @@ func _footprint_radius() -> float:
 ## Mặt búa + vùng sát thương theo head_size. Mesh con của Head dời lên nửa chiều cao nên Head.y là đáy búa
 func _apply_shape() -> void:
 	var box: BoxMesh = (_head_mesh.mesh as BoxMesh).duplicate() as BoxMesh
-	box.size = head_size
+	box.size = Vector3(maxf(head_size.x - visual_gap, 0.2), head_size.y, maxf(head_size.z - visual_gap, 0.2))
 	_head_mesh.mesh = box
 	_head_mesh.position.y = head_size.y * 0.5
 	var shape: BoxShape3D = (_damage_shape.shape as BoxShape3D).duplicate() as BoxShape3D

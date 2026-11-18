@@ -1,0 +1,69 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="1_enemy"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/soul_mask/soul_mask.gd" id="2_script"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/soul_mask/soul_mask.tres" id="3_data"]
+[ext_resource type="Script" path="res://components/ai/hover/hover_component.gd" id="4_hover"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/soul_mask/soul_mask_hover.tres" id="5_hover_stats"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/soul_mask/soul_mask.glb" id="6_model"]
+[ext_resource type="PackedScene" path="res://entities/enemies/volcano/soul_mask/beam/soul_beam.tscn" id="7_beam"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/soul_mask/states/soul_orbit.gd" id="8_orbit"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/soul_mask/states/soul_charge.gd" id="9_charge"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/soul_mask/states/soul_beam_fire.gd" id="10_fire"]
+[ext_resource type="Script" path="res://entities/enemies/volcano/soul_mask/states/soul_recover.gd" id="11_recover"]
+
+[sub_resource type="CapsuleShape3D" id="Capsule_body"]
+radius = 0.55
+height = 1.5
+
+[sub_resource type="CapsuleShape3D" id="Capsule_hurt"]
+radius = 0.65
+height = 1.7
+
+[node name="SoulMask" instance=ExtResource("1_enemy")]
+script = ExtResource("2_script")
+data = ExtResource("3_data")
+chase_state = &"Orbit"
+attack_state = &"Charge"
+jaw_path = NodePath("Model/Visual/SoulMaskModel/Mask_Jaw")
+muzzle_path = NodePath("Model/Muzzle")
+
+[node name="CollisionShape3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("Capsule_body")
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="SoulMaskModel" parent="Model/Visual" instance=ExtResource("6_model")]
+editor_description = "Model nhìn -Z: xoay 180 độ để mặt trùng hướng +Z của quái."
+transform = Transform3D(-0.85, 0, 0, 0, 0.85, 0, 0, 0, -0.85, 0, -0.5, 0)
+
+[node name="Muzzle" type="Marker3D" parent="Model"]
+editor_description = "Điểm phát tia: giữa miệng."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0.35)
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("Capsule_hurt")
+
+[node name="HoverComponent" type="Node" parent="."]
+script = ExtResource("4_hover")
+stats = ExtResource("5_hover_stats")
+
+[node name="SoulBeam" parent="." instance=ExtResource("7_beam")]
+
+[node name="Orbit" type="Node" parent="StateMachine"]
+script = ExtResource("8_orbit")
+
+[node name="Charge" type="Node" parent="StateMachine"]
+script = ExtResource("9_charge")
+
+[node name="Beam" type="Node" parent="StateMachine"]
+script = ExtResource("10_fire")
+
+[node name="Recover" type="Node" parent="StateMachine"]
+script = ExtResource("11_recover")

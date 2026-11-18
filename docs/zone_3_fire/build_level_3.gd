@@ -31,7 +31,6 @@ const FORGE_SKILL_DATA_SCRIPT: String = "res://abilities/forge/_base/forge_skill
 const FORGE_SHARD_SCENE: String = "res://objects/fire_puzzle/forge_shards/forge_shard.tscn"
 const SHARD_COUNTER_SCENE: String = "res://objects/fire_puzzle/forge_shards/shard_counter.tscn"
 const SHARD_ALTAR_SCENE: String = "res://objects/fire_puzzle/forge_shards/shard_altar.tscn"
-const DARK_TRIAL_SCENE: String = "res://objects/fire_puzzle/dark_trial/dark_trial.tscn"
 const GRAPPLE_RING_SCENE: String = "res://abilities/forge/grapple/ring/grapple_ring.tscn"
 const WOLF_PACK_SCRIPT: String = "res://entities/enemies/volcano/shadow_wolf/wolf_pack.gd"
 const COLD_ZONE_SCRIPT: String = "res://components/elements/cold/cold_zone.gd"
@@ -341,6 +340,11 @@ var _fence_starts: Array[Dictionary] = []
 
 
 func _init() -> void:
+	# "-- --only=t2_t1_forge,t2_t2_anvil": chỉ dựng lại các phòng tier 2 này, không xóa / dựng lại phần khác (level_3.tscn, tier 1)
+	for arg: String in OS.get_cmdline_user_args():
+		if arg.begins_with("--only="):
+			_build_only(arg.trim_prefix("--only=").split(",", false))
+			return
 	for dir: String in ["rooms/", TIER_1_DIR, TIER_2_DIR]:
 		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT + dir))
 		for file: String in DirAccess.get_files_at(OUT + dir):
@@ -372,6 +376,15 @@ func _init() -> void:
 	tier_2.append(conn_2)
 	_save(_build_level({"Tier1": tier_1, "Tier2": tier_2}), OUT + "level_3.tscn")
 	_attach_zone_root(OUT + "level_3.tscn")
+	print("BUILD OK")
+	quit()
+
+
+func _build_only(ids: PackedStringArray) -> void:
+	for room: Dictionary in TIER_2.ROOMS:
+		if str(room.id) in ids:
+			_save(_build_room(room), OUT + TIER_2_DIR + str(room.id) + ".tscn")
+			print("dựng lại ", room.id)
 	print("BUILD OK")
 	quit()
 
@@ -607,7 +620,6 @@ func _decorate(room: Dictionary, g: Node3D, root: Node3D, cx: float, cz: float) 
 			# Phòng boss cuối: cổng ra xuất hiện sau khi hạ boss (logic ẩn/hiện để sau)
 			for p: Vector3 in [Vector3(152, 0, 36), Vector3(172, 0, 36), Vector3(152, 0, 56), Vector3(172, 0, 56)]:
 				_place(g, root, KIT + "fire_pillar.glb", o + p)
-			_place(g, root, INFERNO + "pedestal_big_001.glb", o + Vector3(162, 0, 46), 0.0, "BossDais")
 			# Cổng ra (ROOM10_EXIT_PORTAL) chỉ hiện khi hạ boss: thêm bằng text trong _attach_zone_root
 		"room_11_treasure_south":
 			# Lồng sinh quái + rương (hiện khi dọn xong) thêm bằng text trong _attach_zone_root: ROOM11_*
@@ -1725,6 +1737,7 @@ func _add_tier_2_mechanics(text: String) -> String:
 	text = _add_ice_cave(text)
 	text = _add_forge_skills(text)
 	text = _add_tier_2_fights(text)
+	text = _add_tower_furnace(text)
 	var w: Dictionary = TIER_2.CRACKED_WALL
 	var wp: Vector3 = w.p
 	var wb: Basis = Basis(Vector3.UP, deg_to_rad(float(w.yaw)))
@@ -1900,9 +1913,7 @@ func _add_forge_skills(text: String) -> String:
 [ext_resource type="PackedScene" path="%s" id="shard_counter_scene"]
 [ext_resource type="PackedScene" path="%s" id="shard_altar_scene"]
 [ext_resource type="Resource" path="%s" id="forge_shards_data"]
-[ext_resource type="PackedScene" path="%s" id="dark_trial_scene"]
-[ext_resource type="Resource" path="%s" id="dark_trial_data"]
-' % [FORGE_SHARD_SCENE, SHARD_COUNTER_SCENE, SHARD_ALTAR_SCENE, TIER_2.FORGE_SHARD_DATA, DARK_TRIAL_SCENE, TIER_2.DARK_TRIAL_DATA]
+' % [FORGE_SHARD_SCENE, SHARD_COUNTER_SCENE, SHARD_ALTAR_SCENE, TIER_2.FORGE_SHARD_DATA]
 	text = text.insert(text.find("[sub_resource"), ext + "
 ")
 	text += '
@@ -1933,14 +1944,6 @@ shards = ExtResource("forge_shards_data")
 
 [node name="ShardCounter" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_counter_scene")]
 shards = ExtResource("forge_shards_data")
-
-[node name="DarkTrial" parent="Tier2Mechanics" node_paths=PackedStringArray("altar", "sun", "bounce_light", "world_environment", "suspend_zones") instance=ExtResource("dark_trial_scene")]
-data = ExtResource("dark_trial_data")
-altar = NodePath("../ForgeShards/ShardAltar")
-sun = NodePath("../../FireLighting/SunLight")
-bounce_light = NodePath("../../FireLighting/LavaBounceLight")
-world_environment = NodePath("../../FireLighting/Environment")
-suspend_zones = [NodePath("../Room07Blackout/DarkZone")]
 ' % [altar.x, altar.y, altar.z]
 	text += '
 [node name="GrappleRings" type="Node3D" parent="Tier2Mechanics"]
@@ -1952,6 +1955,27 @@ suspend_zones = [NodePath("../Room07Blackout/DarkZone")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
 ' % [ring[0], r.x, r.y, r.z]
 	return text
+
+
+## Lò cao Hub (bản 2 giai đoạn 4): ngọn lửa trên đỉnh cột bừng lên khi tháp mở (cờ TOWER_FURNACE_FLAG).
+## FlameOnFlag đốt ngay nếu cờ đã có lúc vào khu, nên không dùng FlagReveal (FlagReveal không gọi lại khi cờ có sẵn).
+func _add_tower_furnace(text: String) -> String:
+	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="res://objects/world/cellar/flame_feedback/flame_feedback.tscn" id="furnace_flame_scene"]
+[ext_resource type="Resource" path="res://resources/feedback/flame/wall_torch_flame.tres" id="furnace_flame_data"]
+[ext_resource type="Script" path="res://objects/world/cellar/flame_feedback/flame_on_flag.gd" id="flame_on_flag_script"]
+
+')
+	var f: Vector3 = TIER_2.TOWER_FURNACE_FLAME
+	return text + '
+[node name="FurnaceFlame" parent="Tier2Mechanics" instance=ExtResource("furnace_flame_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
+data = ExtResource("furnace_flame_data")
+
+[node name="FurnaceFlameLink" type="Node" parent="Tier2Mechanics"]
+script = ExtResource("flame_on_flag_script")
+flag = &"%s"
+flame = NodePath("../FurnaceFlame")
+' % [f.x, f.y, f.z, TIER_2.TOWER_FURNACE_FLAG]
 
 
 ## Hang băng: vùng lạnh (ColdZone) + chỗ ấm quanh lửa trại (WarmZone) + rương thưởng
@@ -2094,8 +2118,12 @@ func _add_tier_links(text: String) -> String:
 	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="area_title_scene"]
 [ext_resource type="Resource" path="%s" id="tier_1_area"]
 [ext_resource type="Resource" path="%s" id="tier_2_area"]
-
 ' % [AREA_TITLE_SCENE, TIER_1_AREA_TITLE, TIER_2.AREA_TITLE])
+	# Chữ tầng tháp (bản 2 giai đoạn 4): một AreaData mỗi tầng, tên tầng 1..6
+	for floor_title: Array in TIER_2.TOWER_FLOOR_TITLES:
+		text = text.insert(text.find("[sub_resource"), '[ext_resource type="Resource" path="res://resources/world/zones/areas/fire/tier_2_floor_%d.tres" id="tower_floor_%d_area"]
+' % [floor_title[1], floor_title[1]])
+	text = text.insert(text.find("[sub_resource"), "\n")
 	var ap: Dictionary = TIER_2.ARRIVAL_PORTAL
 	var app: Vector3 = ap.p
 	var apb: Basis = Basis(Vector3.UP, deg_to_rad(float(ap.yaw)))
@@ -2120,6 +2148,17 @@ checkpoint_id = &"%s"
 transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 checkpoint_id = &"%s"
 ' % [cp.name, cpb.x.x, cpb.y.x, cpb.z.x, cpb.x.y, cpb.y.y, cpb.z.y, cpb.x.z, cpb.y.z, cpb.z.z, cpp.x, cpp.y, cpp.z, cp.id]
+	# Vòng truyền tống giữa Hub → T1 (bản 2 giai đoạn 4). Điểm đáp ẩn hình: không có đích nên chỉ làm Arrival
+	for tp: Dictionary in [TIER_2.TOWER_ENTRY_PORTAL, TIER_2.TOWER_LANDING_PORTAL]:
+		var tpp: Vector3 = tp.p
+		var tpb: Basis = Basis(Vector3.UP, deg_to_rad(float(tp.yaw)))
+		var target_line: String = 'target = NodePath("../%s")\n' % tp.target if tp.has("target") else ""
+		var flag_line: String = 'required_flag = &"%s"\n' % tp.flag if tp.has("flag") else ""
+		var hidden_line: String = "visible = false\n" if not tp.has("flag") else ""
+		text += '
+[node name="%s" parent="Tier2Links" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+%s%s%s' % [tp.name, tpb.x.x, tpb.y.x, tpb.z.x, tpb.x.y, tpb.y.y, tpb.z.y, tpb.x.z, tpb.y.z, tpb.z.z, tpp.x, tpp.y, tpp.z, target_line, flag_line, hidden_line]
 	var subs: String = ""
 	var links: String = ""
 	# [tên vùng, biên, nhóm bị ẩn khi ở trong, tên AreaTitle, id AreaData]
@@ -2151,6 +2190,14 @@ shape = SubResource("%sShape")
 area = ExtResource("%s")
 ' % [z[0], c.x, c.y, c.z, z[2], z[0], z[0], z[3], z[4]]
 		links += '[connection signal="player_entered" from="%s" to="AreaTitles/%s" method="announce"]\n' % [z[0], z[3]]
+	# Chữ "Tầng N / 6": mỗi phòng tháp có một AreaTitle, vào phòng thì hiện (RoomFocus zone của phòng phát player_entered)
+	for floor_title: Array in TIER_2.TOWER_FLOOR_TITLES:
+		var floor_name: String = "TowerFloor%d" % floor_title[1]
+		text += '
+[node name="%s" parent="AreaTitles" instance=ExtResource("area_title_scene")]
+area = ExtResource("tower_floor_%d_area")
+' % [floor_name, floor_title[1]]
+		links += '[connection signal="player_entered" from="RoomFocus/%sZone" to="AreaTitles/%s" method="announce"]\n' % [_pascal(str(floor_title[0])), floor_name]
 	# Bộ đếm mảnh vỡ chỉ hiện trong tier 2
 	links += '[connection signal="player_entered" from="Tier2Zone" to="Tier2Mechanics/ForgeShards/ShardCounter" method="show_counter"]\n'
 	links += '[connection signal="player_exited" from="Tier2Zone" to="Tier2Mechanics/ForgeShards/ShardCounter" method="hide_counter"]\n'
