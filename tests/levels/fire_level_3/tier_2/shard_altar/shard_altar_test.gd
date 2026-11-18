@@ -74,8 +74,7 @@ func _t_one_out_of_order(altar: ShardAltar) -> void:
 	await _walk_and_interact()
 	_check(SHARDS.is_placed(2) and SHARDS.placed_count() == 1 and not altar.is_active(), "mang mảnh Nam: đặt 1 mảnh, công tắc chưa sáng")
 	_check(_sockets_visible(altar) == [false, false, true], "mảnh Nam vào đúng hốc của nó (%s)" % str(_sockets_visible(altar)))
-	var counter := _level.get_node(COUNTER_PATH) as ForgeShardCounter
-	_check(counter.get_text() == "Mảnh vỡ 1/3 · đã đặt 1/3", "HUD: \"%s\"" % counter.get_text())
+	_check(_level.get_node_or_null(COUNTER_PATH) == null, "tier 2 không còn bộ đếm mảnh vỡ góc trên bên phải")
 
 
 func _t_rest(altar: ShardAltar) -> void:

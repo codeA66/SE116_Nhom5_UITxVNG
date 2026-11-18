@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="CharmData" format=3]
+[gd_resource type="Resource" script_class="CharmData" format=3 uid="uid://bhusti8cwsgoy"]
 
-[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="1"]
-[ext_resource type="Script" path="res://resources/player/items/_base/stat_bonus_effect.gd" id="2"]
-[ext_resource type="Texture2D" path="res://assets/ui/charms/heart_charm.png" id="3"]
-[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="4"]
+[ext_resource type="Script" uid="uid://b61wl06ayta3m" path="res://resources/player/items/_base/charm_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://oacer65nb5of" path="res://resources/player/items/_base/stat_bonus_effect.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cgl0susi3e7dd" path="res://assets/ui/charms/heart_charm.png" id="3"]
+[ext_resource type="Script" uid="uid://daopkxbwm5bwr" path="res://resources/player/items/_base/charm_effect.gd" id="4"]
 
 [sub_resource type="Resource" id="HeartBonus"]
 script = ExtResource("2")
@@ -15,7 +15,6 @@ script = ExtResource("1")
 id = &"heart_charm"
 display_name = "Bùa Tâm Cáo"
 icon = ExtResource("3")
-notch_cost = 1
 description = "Thêm 2 ô máu."
 lore = "Nhịp tim của cáo già vững như đá, chịu thêm được vài nhát đòn."
 effects = Array[ExtResource("4")]([SubResource("HeartBonus")])

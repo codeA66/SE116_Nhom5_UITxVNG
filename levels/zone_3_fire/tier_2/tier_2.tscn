@@ -54,7 +54,6 @@
 [ext_resource type="PackedScene" path="res://objects/combat/training_dummy/wooden_training_dummy.tscn" id="training_dummy_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/chest/treasure_chest.tscn" id="t2_chest_scene"]
 [ext_resource type="PackedScene" path="res://objects/fire_puzzle/forge_shards/forge_shard.tscn" id="forge_shard_scene"]
-[ext_resource type="PackedScene" path="res://objects/fire_puzzle/forge_shards/shard_counter.tscn" id="shard_counter_scene"]
 [ext_resource type="PackedScene" path="res://objects/fire_puzzle/forge_shards/shard_altar.tscn" id="shard_altar_scene"]
 [ext_resource type="PackedScene" path="res://objects/fire_puzzle/rune_pillar/rune_pillar.tscn" id="rune_pillar_scene"]
 [ext_resource type="Resource" path="res://resources/world/puzzles/forge_shards.tres" id="forge_shards_data"]
@@ -573,8 +572,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 316.0, 0.32, 92.0)
 [node name="ShardAltar" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_altar_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 4.32, 46.0)
 shards = ExtResource("forge_shards_data")
-[node name="ShardCounter" parent="Tier2Mechanics/ForgeShards" instance=ExtResource("shard_counter_scene")]
-shards = ExtResource("forge_shards_data")
 [node name="Room02Hammers" type="Node3D" parent="Tier2Mechanics"]
 editor_description = "Sảnh búa: 12 búa nện mặt 8 x 5,33 m phủ kín sàn 32 x 16 m. Đập theo cột từ tây sang đông: 3 búa cùng cột nện cùng lúc, cột sau trễ 1,35 s (bằng thời gian player chạy hết một cột 8 m), thành làn sóng để chạy theo ngay sau"
 [node name="Hammer01" parent="Tier2Mechanics/Room02Hammers" instance=ExtResource("forge_hammer_scene")]
@@ -734,6 +731,59 @@ persistent_id = &"level_3.t2_hub_gate_east"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 4.32, 64.7)
 sources = [NodePath("../HubGateSource")]
 persistent_id = &"level_3.t2_hub_gate_south"
+[node name="RoomGates" type="Node3D" parent="Tier2Fights"]
+editor_description = "Cổng đá giữa các phòng: chỉ chìm khi dọn xong phòng phía trước"
+[node name="Room04Gate" type="Node3D" parent="Tier2Fights/RoomGates"]
+[node name="TimberSource" type="Node" parent="Tier2Fights/RoomGates/Room04Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_timber_caster"
+[node name="Gate" parent="Tier2Fights/RoomGates/Room04Gate" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 288.7, 8.32, 14)
+editor_description = "Phòng 4 → 5: mở khi hạ xong 4 Đầu Lửa"
+sources = [NodePath("../TimberSource")]
+persistent_id = &"level_3.t2_room04_gate_east"
+[node name="Room05Gate" type="Node3D" parent="Tier2Fights/RoomGates"]
+[node name="CageSpiderSource" type="Node" parent="Tier2Fights/RoomGates/Room05Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_room05_cagespider"
+[node name="CageSlimeSource" type="Node" parent="Tier2Fights/RoomGates/Room05Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_room05_cageslime"
+[node name="Gate" parent="Tier2Fights/RoomGates/Room05Gate" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 320.7, 8.32, 14)
+editor_description = "Phòng 5 → hang băng: mở khi phá xong cả 2 lồng"
+sources = [NodePath("../CageSpiderSource"), NodePath("../CageSlimeSource")]
+persistent_id = &"level_3.t2_room05_gate_east"
+[node name="Room06Gate" type="Node3D" parent="Tier2Fights/RoomGates"]
+[node name="DarkForgeSource" type="Node" parent="Tier2Fights/RoomGates/Room06Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_dark_forge_pack"
+[node name="Gate" parent="Tier2Fights/RoomGates/Room06Gate" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 320.7, 4.32, 50)
+editor_description = "Phòng 6 → 7: mở khi hạ xong 2 Fire Caster + 2 nhện"
+sources = [NodePath("../DarkForgeSource")]
+persistent_id = &"level_3.t2_room06_gate_east"
+[node name="Room08Gate" type="Node3D" parent="Tier2Fights/RoomGates"]
+[node name="CageSource" type="Node" parent="Tier2Fights/RoomGates/Room08Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_room08_cage"
+[node name="StatueNWSource" type="Node" parent="Tier2Fights/RoomGates/Room08Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_room08_statue_nw"
+[node name="StatueNESource" type="Node" parent="Tier2Fights/RoomGates/Room08Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_room08_statue_ne"
+[node name="StatueSWSource" type="Node" parent="Tier2Fights/RoomGates/Room08Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_room08_statue_sw"
+[node name="StatueSESource" type="Node" parent="Tier2Fights/RoomGates/Room08Gate"]
+script = ExtResource("flag_source_script")
+flag = &"level_3.t2_room08_statue_se"
+[node name="Gate" parent="Tier2Fights/RoomGates/Room08Gate" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 292.7, 0.32, 86)
+editor_description = "Phòng 8 → 9: mở khi phá lồng sói và đập vỡ cả 4 tượng laser"
+sources = [NodePath("../CageSource"), NodePath("../StatueNWSource"), NodePath("../StatueNESource"), NodePath("../StatueSWSource"), NodePath("../StatueSESource")]
+persistent_id = &"level_3.t2_room08_gate_east"
 [node name="T2TimberCaster" parent="Tier2Fights" instance=ExtResource("encounter_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 8.31999969482422, 14.0)
 persistent_id = &"level_3.t2_timber_caster"
@@ -901,8 +951,6 @@ shape = SubResource("Tier2ZoneShape")
 [node name="Tier2" parent="AreaTitles" instance=ExtResource("area_title_scene")]
 area = ExtResource("tier_2_area")
 [connection signal="player_entered" from="Tier2Zone" to="AreaTitles/Tier2" method="announce"]
-[connection signal="player_entered" from="Tier2Zone" to="Tier2Mechanics/ForgeShards/ShardCounter" method="show_counter"]
-[connection signal="player_exited" from="Tier2Zone" to="Tier2Mechanics/ForgeShards/ShardCounter" method="hide_counter"]
 
 [editable path="Tier2Fights/T2DarkForgePack"]
 [editable path="Tier2Fights/T2HubAmbush"]

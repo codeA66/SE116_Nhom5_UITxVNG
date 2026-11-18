@@ -53,12 +53,10 @@ func _shard_path(shard_name: String) -> NodePath:
 
 
 func _t_shards() -> void:
-	var counter := _level.get_node(^"Tier2Mechanics/ForgeShards/ShardCounter") as ForgeShardCounter
-	var panel := counter.get_node(^"Panel") as Control
-	# Người chơi đứng trong tier 2 (Hub) thì bộ đếm hiện
+	# Đã bỏ bộ đếm mảnh vỡ góc trên bên phải: tier 2 không còn ForgeShardCounter
 	_player.teleport(Vector3(72, 0.1, -0.6))
 	await _frames(30)
-	_check(panel.visible and counter.get_text() == "Mảnh vỡ 0/3", "vào tier 2: bộ đếm hiện \"%s\"" % counter.get_text())
+	_check(_level.find_children("ShardCounter", "", true, false).is_empty(), "vào tier 2: không có bộ đếm mảnh vỡ")
 	for s: Dictionary in SHARDS:
 		_check(_level.get_node_or_null(_shard_path(s.name)) == null, "%s: chưa hạ xong trận của khu thì mảnh chưa có trong cây" % s.name)
 	var picked: int = 0
@@ -81,11 +79,7 @@ func _t_shards() -> void:
 		await _frames(20)
 		picked += 1
 		_check(GameState.has_flag(s.shard) and not is_instance_valid(shard), "%s: đi tới bấm interact thì nhặt, lưu cờ %s" % [s.name, s.shard])
-		_check(counter.get_text() == "Mảnh vỡ %d/3" % picked, "%s: bộ đếm tăng (\"%s\")" % [s.name, counter.get_text()])
-	# Ra khỏi tier 2 (về tier 1) thì bộ đếm ẩn
-	_player.teleport(Vector3(-148, 0.1, 1.4))
-	await _frames(30)
-	_check(not panel.visible, "ra khỏi tier 2: bộ đếm ẩn")
+	_check(picked == SHARDS.size(), "nhặt đủ %d mảnh" % picked)
 
 
 func _t_checkpoints() -> void:

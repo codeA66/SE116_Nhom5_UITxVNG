@@ -46,8 +46,10 @@ func _ready() -> void:
 	_player.health.heal_full()
 	_fights = _level.get_node(^"Tier2Fights") as Node3D
 	await _t_hub_gates(false)
+	await _t_room_gates_closed()
 	await _t_encounters()
 	await _t_hub_gates(true)
+	await _t_room_gates_open()
 	await _t_tower_fights()
 	await _t_south_shard()
 	await _t_mother_extremes()
@@ -152,6 +154,75 @@ func _t_hub_gates(cleared: bool) -> void:
 	await _frames(20)
 	hub.process_mode = Node.PROCESS_MODE_INHERIT
 	await _frames(5)
+
+
+## Cổng giữa phòng: [tên, các node phải tắt khi đo cổng đóng (để quái không chắn đường)]
+const ROOM_GATES: Array = [
+	["Room04Gate", [^"Tier2Fights/T2TimberCaster"]],
+	["Room05Gate", [^"Tier2Mechanics/Room05Cages"]],
+	["Room06Gate", [^"Tier2Fights/T2DarkForgePack"]],
+	["Room08Gate", [^"Tier2Mechanics/Room08Statues"]],
+]
+
+
+## Chưa dọn phòng: đi bộ thật từ trong phòng về cửa đông thì bị cổng chặn
+func _t_room_gates_closed() -> void:
+	var hurtbox := _player.get_node(^"HurtboxComponent") as HurtboxComponent
+	for g: Array in ROOM_GATES:
+		var gate := _fights.get_node(NodePath("RoomGates/%s/Gate" % g[0])) as StoneGate
+		for path: NodePath in g[1]:
+			_level.get_node(path).process_mode = Node.PROCESS_MODE_DISABLED
+		_check(not gate.is_open, "%s: chưa dọn phòng thì cổng đóng" % g[0])
+		hurtbox.set_invincible(10.0)
+		_teleport(gate.global_position + Vector3(-6, 0.1, 0), Vector3.RIGHT)
+		await _frames(10)
+		for _i: int in range(150):
+			_press_towards(Vector3.RIGHT)
+			await get_tree().physics_frame
+		_release()
+		_check(_player.global_position.x < gate.global_position.x, "%s: đi bộ vào bị cổng chặn (x %.1f, cổng %.1f)" % [g[0], _player.global_position.x, gate.global_position.x])
+		# Ra khỏi phòng trước rồi mới bật lại trận, nếu không trận bắt đầu ngay vì player còn đứng trong vùng
+		_teleport(Vector3(6, 0.1, 1.4), Vector3.RIGHT)
+		await _frames(10)
+		for path: NodePath in g[1]:
+			_level.get_node(path).process_mode = Node.PROCESS_MODE_INHERIT
+	_player.health.heal_full()
+	await _frames(20)
+
+
+## Bật từng cờ: thiếu một cờ thì vẫn đóng; đủ cờ thì cổng chìm và đi qua được
+func _t_room_gates_open() -> void:
+	var hurtbox := _player.get_node(^"HurtboxComponent") as HurtboxComponent
+	for g: Array in ROOM_GATES:
+		var holder := _fights.get_node(NodePath("RoomGates/%s" % g[0]))
+		var gate := holder.get_node(^"Gate") as StoneGate
+		var flags: Array[StringName] = []
+		for c: Node in holder.get_children():
+			if c is FlagSource:
+				flags.append((c as FlagSource).flag)
+		for i: int in range(flags.size() - 1):
+			GameState.set_flag(flags[i])
+		await _frames(30)
+		if flags.size() > 1:
+			_check(not gate.is_open, "%s: còn thiếu %s thì cổng vẫn đóng" % [g[0], flags[-1]])
+		GameState.set_flag(flags[-1])
+		await _frames(150)
+		_check(gate.is_open, "%s: đủ %d cờ thì cổng mở" % [g[0], flags.size()])
+		for path: NodePath in g[1]:
+			_level.get_node(path).process_mode = Node.PROCESS_MODE_DISABLED
+		hurtbox.set_invincible(10.0)
+		_teleport(gate.global_position + Vector3(-6, 0.1, 0), Vector3.RIGHT)
+		await _frames(10)
+		for _i: int in range(150):
+			_press_towards(Vector3.RIGHT)
+			await get_tree().physics_frame
+		_release()
+		_check(_player.global_position.x > gate.global_position.x + 2.0, "%s: đi bộ qua cửa (x %.1f, cổng %.1f)" % [g[0], _player.global_position.x, gate.global_position.x])
+		for path: NodePath in g[1]:
+			_level.get_node(path).process_mode = Node.PROCESS_MODE_INHERIT
+	_player.health.heal_full()
+	_teleport(Vector3(6, 0.1, 1.4), Vector3.RIGHT)
+	await _frames(20)
 
 
 ## Phòng 09: hạ trận sói (_t_encounters) thì ngọc Nam hiện trên trụ rune
