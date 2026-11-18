@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="KhamSinkData" format=3 uid="uid://cm2tyqad74pml"]
+
+[ext_resource type="Script" uid="uid://ckbb3ahc0nlcu" path="res://objects/traversal/crumbling_floor/crumbling_floor_data.gd" id="crumble"]
+[ext_resource type="Script" uid="uid://dthtw3lgkccy7" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/kham_sinking_route/kham_sink_data.gd" id="script"]
+
+[sub_resource type="Resource" id="Crumble"]
+script = ExtResource("crumble")
+crack_time = 0.5
+respawns = false
+shake_amount = 0.035
+
+[resource]
+script = ExtResource("script")
+crumble = SubResource("Crumble")

@@ -1,95 +1,70 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://djrhhr6oyfu2j"]
 
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_00_crucible_heart.tscn" id="room"]
+[ext_resource type="Script" uid="uid://dmwg4kxuamlrs" path="res://entities/player/camera/camera_view_data.gd" id="camera_data"]
+[ext_resource type="Script" uid="uid://bc8v6nbg2gdkj" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="camera_zone"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_02_kham_condenser.tscn" id="kham"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/lighting/fire_lighting.tscn" id="lighting"]
-[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="zone"]
-[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
-[ext_resource type="Script" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="camera_zone"]
-[ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="camera_data"]
-
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_01_li_foundry.tscn" id="li_foundry"]
+[ext_resource type="PackedScene" uid="uid://csx0lkxvku6hr" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_01_li_foundry.tscn" id="li_foundry"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_00_crucible_heart.tscn" id="room"]
+[ext_resource type="Script" uid="uid://dsy4kssiihtpf" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
+[ext_resource type="Script" uid="uid://bw2mjpgi3op5x" path="res://levels/_base/zone_root.gd" id="zone"]
 
 [sub_resource type="Resource" id="CameraView"]
 script = ExtResource("camera_data")
-distance = 46.0
-pitch_degrees = 50.0
-fov = 40.0
+distance = 32.0
 yaw_degrees = 45.0
-
-[sub_resource type="Environment" id="PreviewEnvironment"]
-background_mode = 1
-background_color = Color(0.035, 0.022, 0.028, 1)
-ambient_light_source = 2
-ambient_light_color = Color(0.65, 0.48, 0.42, 1)
-ambient_light_energy = 1.2
-tonemap_mode = 3
-tonemap_exposure = 1.15
 
 [sub_resource type="BoxShape3D" id="EndBarrier"]
 size = Vector3(4.4, 2, 0.3)
 
-[node name="CrucibleHeartPreview" type="Node3D"]
-editor_description = "F6 để đi từ trung tâm qua cửa Nam tới phòng Ly. Camera yaw 45°. Rào các nhánh còn lại chỉ thuộc scene xem thử."
+[node name="CrucibleHeartPreview" type="Node3D" unique_id=377200202]
+editor_description = "F6 từ trung tâm. Cửa Bắc tới bố cục Khảm, cửa Nam tới Ly. Camera theo Map Lửa."
 script = ExtResource("zone")
 shader_warmup = null
 
-[node name="CrucibleHeart" parent="." instance=ExtResource("room")]
+[node name="CrucibleHeart" parent="." unique_id=763896643 instance=ExtResource("room")]
 
-[node name="LiFoundry" parent="." instance=ExtResource("li_foundry")]
-position = Vector3(0, 0, 36)
+[node name="KhamCondenser" parent="." unique_id=85446905 instance=ExtResource("kham")]
+editor_description = "Bản bố cục. Mở crucible_heart_preview.tscn bằng F6 để đi từ cửa Bắc tới Khảm."
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -37)
 
-[node name="FireLighting" parent="." instance=ExtResource("lighting")]
+[node name="LiFoundry" parent="." unique_id=97041872 instance=ExtResource("li_foundry")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
 
-[node name="Environment" parent="FireLighting" index="0"]
-environment = SubResource("PreviewEnvironment")
+[node name="FireLighting" parent="." unique_id=916934404 instance=ExtResource("lighting")]
 
-[node name="SunLight" parent="FireLighting" index="1"]
-light_energy = 1.8
-
-[node name="Start" type="Marker3D" parent="."]
-position = Vector3(0, 0.4, 9)
+[node name="Start" type="Marker3D" parent="." unique_id=56900508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 9)
 script = ExtResource("spawn")
 spawn_id = &"start"
 
-[node name="ZoneCameraView" type="Node" parent="."]
+[node name="ZoneCameraView" type="Node" parent="." unique_id=845713749]
 script = ExtResource("camera_zone")
 view = SubResource("CameraView")
 
-[node name="PreviewBarriers" type="StaticBody3D" parent="."]
-collision_layer = 1
+[node name="PreviewBarriers" type="StaticBody3D" parent="." unique_id=439580214]
 collision_mask = 0
 
-[node name="End1" type="CollisionShape3D" parent="PreviewBarriers"]
-position = Vector3(0, 1.32, -20)
-rotation = Vector3(0, 0, 0)
+[node name="End2" type="CollisionShape3D" parent="PreviewBarriers" unique_id=162650549]
+transform = Transform3D(0.7071069, 0, -0.70710665, 0, 1, 0, 0.70710665, 0, 0.7071069, 14.142136, 1.32, -14.142136)
 shape = SubResource("EndBarrier")
 
-[node name="End2" type="CollisionShape3D" parent="PreviewBarriers"]
-position = Vector3(14.142136, 1.32, -14.142136)
-rotation = Vector3(0, -0.785398, 0)
+[node name="End3" type="CollisionShape3D" parent="PreviewBarriers" unique_id=1504076173]
+transform = Transform3D(3.1391647e-07, 0, -1, 0, 1, 0, 1, 0, 3.1391647e-07, 20, 1.32, 0)
 shape = SubResource("EndBarrier")
 
-[node name="End3" type="CollisionShape3D" parent="PreviewBarriers"]
-position = Vector3(20, 1.32, 0)
-rotation = Vector3(0, -1.570796, 0)
+[node name="End4" type="CollisionShape3D" parent="PreviewBarriers" unique_id=1305295490]
+transform = Transform3D(-0.7071065, 0, -0.7071071, 0, 1, 0, 0.7071071, 0, -0.7071065, 14.142136, 1.32, 14.142136)
 shape = SubResource("EndBarrier")
 
-[node name="End4" type="CollisionShape3D" parent="PreviewBarriers"]
-position = Vector3(14.142136, 1.32, 14.142136)
-rotation = Vector3(0, -2.356194, 0)
+[node name="End6" type="CollisionShape3D" parent="PreviewBarriers" unique_id=1369457546]
+transform = Transform3D(-0.70710665, 0, 0.7071069, 0, 1, 0, -0.7071069, 0, -0.70710665, -14.142136, 1.32, 14.142136)
 shape = SubResource("EndBarrier")
 
-[node name="End6" type="CollisionShape3D" parent="PreviewBarriers"]
-position = Vector3(-14.142136, 1.32, 14.142136)
-rotation = Vector3(0, -3.926991, 0)
+[node name="End7" type="CollisionShape3D" parent="PreviewBarriers" unique_id=1245682787]
+transform = Transform3D(1.1924881e-08, 0, 1, 0, 1, 0, -1, 0, 1.1924881e-08, -20, 1.32, 0)
 shape = SubResource("EndBarrier")
 
-[node name="End7" type="CollisionShape3D" parent="PreviewBarriers"]
-position = Vector3(-20, 1.32, 0)
-rotation = Vector3(0, -4.712389, 0)
-shape = SubResource("EndBarrier")
-
-[node name="End8" type="CollisionShape3D" parent="PreviewBarriers"]
-position = Vector3(-14.142136, 1.32, -14.142136)
-rotation = Vector3(0, -5.497787, 0)
+[node name="End8" type="CollisionShape3D" parent="PreviewBarriers" unique_id=1855599062]
+transform = Transform3D(0.70710665, 0, 0.7071069, 0, 1, 0, -0.7071069, 0, 0.70710665, -14.142136, 1.32, -14.142136)
 shape = SubResource("EndBarrier")

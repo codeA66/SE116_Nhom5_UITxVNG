@@ -1,13 +1,53 @@
 # Tier 3 map Lửa — Lò Bát Quái
 
-Cập nhật ngày 16/11/2026. Tài liệu lưu thiết kế đã thống nhất, hiện trạng triển khai và ý tưởng còn chờ làm.
+Cập nhật ngày 18/11/2026. Tài liệu lưu thiết kế đã thống nhất, hiện trạng triển khai và ý tưởng còn chờ làm.
+
+## Quyết định về nhảy — áp dụng khi thiết kế Tier 3
+
+Người dùng xác nhận ngày 17/11/2026 rằng game hiện không dùng nhảy và dự kiến bỏ cơ chế này trong tương lai. Mọi concept, plan và walkthrough Tier 3 phải có tuyến hoàn thành bằng di chuyển trên mặt đất, cầu hoặc dốc. Các tuyến vượt bệ phải đi bộ/chạy qua được. Phòng Khảm đã dựng theo quyết định này.
+
+## Camera và hướng di chuyển — đọc trước khi thiết kế phòng
+
+Tier 3 sẽ được tích hợp vào Map Lửa `levels/zone_3_fire/level_3/level_3.tscn`. Concept, bố cục phòng và walkthrough dùng cấu hình `Zone3CameraView` của map này làm chuẩn.
+
+| Thông số | Map Lửa — `level_3` |
+|---|---|
+| Khoảng cách tới điểm bám | 32 m |
+| Góc cúi — pitch | 50° |
+| Góc xoay ngang — yaw | 45° |
+| FOV | 30° |
+
+Camera nằm phía Đông Nam so với điểm bám và nhìn chéo xuống về Tây Bắc. Vì vậy, hướng lên màn hình tương ứng Tây Bắc của phòng.
+
+Quy ước tọa độ dùng xuyên suốt sơ đồ và walkthrough là **Bắc = `-Z`, Nam = `+Z`, Đông = `+X`, Tây = `-X`**. Với góc camera này, Bắc hiện về phía trên bên phải màn hình, Đông về phía dưới bên phải, Nam về phía dưới bên trái và Tây về phía trên bên trái.
+
+Player quy đổi input theo hướng camera, chiếu hướng tiến và hướng phải xuống mặt phẳng ngang. Bảng dưới áp dụng khi camera giữ yaw 45°, dùng các phím đang gán trong Input Map.
+
+| Input | Hướng trên màn hình | Hướng trong phòng | Dấu tọa độ `(X, Z)` |
+|---|---|---|---|
+| W | Lên | Tây Bắc | `(-, -)` |
+| D | Phải | Đông Bắc | `(+, -)` |
+| S | Xuống | Đông Nam | `(+, +)` |
+| A | Trái | Tây Nam | `(-, +)` |
+| W + D | Chéo lên phải | Bắc | `(0, -)` |
+| S + D | Chéo xuống phải | Đông | `(+, 0)` |
+| S + A | Chéo xuống trái | Nam | `(0, +)` |
+| W + A | Chéo lên trái | Tây | `(-, 0)` |
+
+Input chéo được chuẩn hóa để giữ cùng tốc độ tối đa với input một hướng. Bảng mô tả hướng điều khiển mong muốn; vận tốc thực tế còn chịu gia tốc, va chạm và trạng thái di chuyển.
+
+Khi lên concept, plan và walkthrough, ghi hướng theo tọa độ phòng kèm mốc địa hình, chẳng hạn “đi tới cửa Bắc có ký hiệu Khảm”. Nếu chỉ dẫn theo màn hình thì ghi rõ “trên/phải màn hình”. Bố trí tuyến đi bộ/chạy, mép bệ, cầu, van và gợi ý tương tác cần được kiểm tra với đầy đủ cấu hình camera Map Lửa ở bảng trên để bảo đảm nhìn thấy đường đi và chỗ đặt chân.
+
+Thông tin trên được đối chiếu từ `Zone3CameraView` trong `level_3.tscn`, `camera_view_data.gd`, `Player.get_move_direction()` và Input Map. Khi đổi yaw ở scene khác, cần quy đổi lại bảng hướng theo camera đang dùng.
+
+Preview đã dùng khoảng cách 32 m, FOV 30°, pitch 50° và yaw 45° theo cấu hình Map Lửa.
 
 ## 1. Nguồn và phạm vi
 
-- Nguồn concept của người dùng: `concept tier 3.txt` trong Downloads, cùng sơ đồ tám nhánh và sơ đồ đường tia của phòng Ly đã gửi trong hội thoại.
+- Nguồn concept của người dùng: `concept tier 3.txt`, cùng sơ đồ tám nhánh và sơ đồ đường tia của phòng Ly đã gửi trong hội thoại.
 - Quyết định bổ sung của người dùng trong hội thoại được ghi vào các mục hiện trạng bên dưới.
-- Phần phòng Ly mô tả scene và logic hiện có. Phòng 2–8 lưu lại ý tưởng từ concept; chưa có scene hay logic thử thách tương ứng.
-- Các luồng dự kiến của phòng 2–8 diễn giải cơ chế trong concept, chưa phải walkthrough đã dựng và kiểm thử. Số lượng vật thể, kích thước, timing, damage và thứ tự thao tác cụ thể còn cần chốt trước khi triển khai.
+- Phòng Ly và Khảm có scene và logic thử thách. Phòng 3–8 lưu lại ý tưởng từ concept.
+- Phần phòng 3–8 mô tả luồng dự kiến. Số lượng vật thể, kích thước, timing, damage và thứ tự thao tác cụ thể còn cần chốt trước khi triển khai.
 - Tất cả nội dung riêng của tier 3 nằm trong `levels/zone_3_fire/level_3/rooms/tier_3/`.
 
 ## 2. Tổng thể tầng 3
@@ -27,6 +67,8 @@ Trình tự mục tiêu đã thống nhất:
 
 NPC, hội thoại, trận áp chế và phần thưởng hiện đều chưa được triển khai. Đã có điểm đặt NPC và signal tiến độ để nối các hệ này về sau.
 
+Quyết định về hồi sinh ngày 17/11/2026 quy định Thái Cực Đỉnh có hai mốc checkpoint. Mốc đầu khi player từ Tier 2 qua Tier 3. Mốc thứ hai sau khi giải đủ tám phòng và chuẩn bị tương tác với Lò. Mỗi phòng tự quản lý thất bại cục bộ theo độ phức tạp. Với Khảm, thất bại ở phase 1 reset phòng về cửa vào; thất bại ở phase 2 đưa player về bệ seal và chỉ reset phase 2. Cả hai giữ nguyên máu. Bệ seal là mốc hồi sinh cục bộ trong phiên chơi, không ghi thêm checkpoint toàn khu. Tiến độ các ấn trong phiên chơi được giữ qua reset cục bộ. Chết thật vẫn khôi phục bản chốt ở checkpoint gần nhất theo luồng hiện tại. Hai mốc checkpoint này còn chờ nối khi tích hợp Tier 3 vào tuyến chính của Map Lửa.
+
 ### 2.2. Phòng trung tâm đã dựng
 
 Scene `t3_00_crucible_heart.tscn`, controller `t3_00_crucible_heart.gd`.
@@ -36,7 +78,7 @@ Scene `t3_00_crucible_heart.tscn`, controller `t3_00_crucible_heart.gd`.
 - Điểm đặt NPC là `CentralPlatform/FurnaceAnchor`, tại `(0, 0.5, 0)` so với gốc phòng.
 - Trước mỗi cửa có ký hiệu ba hào của quẻ tương ứng. Khi cờ hoàn thành được bật, ký hiệu đổi sang màu sáng và phát sáng.
 - Mỗi nhánh có `ConnectionAnchor` để nối phòng. Trong hệ tọa độ của phòng trung tâm, đầu các nhánh cách tâm 20 m.
-- Hiện chỉ phòng Ly được nối và chơi thử trong `crucible_heart_preview.tscn`. Các nhánh khác có rào tạm trong scene preview.
+- Preview nối phòng Ly ở Nam và Khảm ở Bắc. Sáu nhánh còn lại có rào tạm.
 - Chưa tích hợp tier 3 vào tuyến đi hoàn chỉnh của `level_3.tscn`.
 
 ### 2.3. Hướng và số thứ tự phòng
@@ -46,7 +88,7 @@ Quy ước trong scene: Bắc = `-Z`, Nam = `+Z`, Đông = `+X`, Tây = `-X`. B�
 | Số phòng | Quẻ | Hướng từ trung tâm | ID phong ấn | Trạng thái |
 |---|---|---|---|---|
 | 1 | Ly ☲ — Hỏa | Nam | `ly` | Đã dựng và có câu đố hai phase |
-| 2 | Khảm ☵ — Thủy | Bắc | `kham` | Có cửa/ký hiệu; thử thách còn ở concept |
+| 2 | Khảm ☵ — Thủy | Bắc | `kham` | Có van, làm nguội, sàn sập và reset cục bộ |
 | 3 | Tốn ☴ — Phong | Đông Nam | `ton` | Có cửa/ký hiệu; thử thách còn ở concept |
 | 4 | Chấn ☳ — Lôi | Đông | `chan` | Có cửa/ký hiệu; thử thách còn ở concept |
 | 5 | Cấn ☶ — Sơn | Đông Bắc | `can_son` | Có cửa/ký hiệu; thử thách còn ở concept |
@@ -58,9 +100,7 @@ Các cờ trung tâm có dạng `level_3.t3_seal_<id>`.
 
 ### 2.4. Camera và di chuyển
 
-Preview dùng camera yaw 45°, pitch 50°, khoảng cách 46 m, FOV 40°. Input di chuyển được quy đổi theo camera; hướng người chơi thấy khi giữ W không đồng nhất với trục Bắc của sơ đồ.
-
-Khi đọc walkthrough phải dùng hướng trong không gian phòng và các mốc địa hình. Đường đi, cầu, cửa và chỗ đứng tương tác cần kiểm tra bằng camera chơi thực tế; không thay hướng cửa chỉ vì W đi chéo so với trục thế giới. Camera không thay đổi quy ước hướng của tám quẻ.
+Thông số camera, bảng quy đổi input và quy ước viết walkthrough được đặt ở mục **Camera và hướng di chuyển — đọc trước khi thiết kế phòng** ngay đầu tài liệu.
 
 ## 3. Phòng 1 — Ly ☲: Xưởng Đúc Tâm Hỏa
 
@@ -223,21 +263,181 @@ Trước đó đã kiểm tra lặp lại việc tiến sát cửa 1 trong phase
 
 Những mục của concept Ly chưa triển khai: quái Walking Braziers, đạn lửa hình quạt, sàn phun lửa theo nhịp và báo trước 1 giây. Scene có các marker dự phòng nhưng chưa có encounter hoạt động tương ứng. Thuật ngữ dodge-roll trong concept không đồng nghĩa đã thêm một kỹ năng lộn cho player.
 
-## 4. Phòng 2–8 — Ý tưởng lưu từ concept
+## 4. Phòng 2 — Khảm ☵: Hầm Hơi Ngưng Tụ
 
-Tất cả phòng bên dưới mới có cửa và ký hiệu ở trung tâm. Hướng trong mỗi mục lấy từ scene trung tâm hiện tại; vị trí cụ thể, cao độ và layout phòng thử thách chưa chốt. Các cách né, parry, kỹ năng Hàn hay tương tác môi trường được nhắc dưới đây là yêu cầu của concept, cần đối chiếu bộ kỹ năng hiện có trước khi dựng.
+**Tên tiếng Anh:** The Scalding Condenser.
 
-### 4.1. Phòng 2 — Khảm ☵: Hầm Hơi Ngưng Tụ
+**Scene:** `t3_02_kham_condenser.tscn`. **Controller:** `t3_02_kham_condenser.gd`.
 
-**The Scalding Condenser — nhánh Bắc.**
+### 4.1. Vị trí và bố cục hiện tại
 
-- **Không khí:** tối, ẩm và ngột ngạt; hồ làm mát dưới đáy lò bốc hơi sôi, sương trắng đục hạn chế tầm nhìn. Concept tham chiếu cảm giác vùng Quarry trong Tunic.
-- **Gimmick:** đánh vào van xả nước lạnh để ngưng tụ hơi nước, lộ các bệ đá dưới mặt nước sôi. Hơi nóng có ý tưởng làm mờ màn hình và rút máu khi đứng lâu.
-- **Luồng dự kiến:** quan sát khu hơi nước → tìm van → xả lạnh để thấy bệ → vượt hồ theo tuyến vừa lộ → xử lý khu van tiếp theo và chạm mục tiêu phong ấn → mở đường hồi.
-- **Combat/bẫy:** hồn ma tro ẩn trong sương, hiện khi player tới gần hoặc sương tan; ống dẫn xì hơi ngang đường.
-- **Còn cần chốt:** cách đọc đường khi sương dày, thời gian ngưng tụ, tính tồn tại của các bệ, lượng damage và điểm hồi khi rơi.
+- Nằm ở nhánh Bắc của Thái Cực Đỉnh. Trong preview, gốc Khảm là `(0, 0, -37)`; cửa Nam local `(0, 0.32, 17)` trùng đầu nhánh Bắc của trung tâm.
+- Hồ dung nham bao quanh các bệ gạch đá và đường magma. Dùng model Map Lửa; mặt đường chơi chính ở cao độ local `y = 0.32`.
+- Phase 1 gồm bệ A ở cửa vào, bệ B giữa phòng, bệ C ở Tây, cầu vòng cố định C → B và bệ seal ở Bắc.
+- Chạm seal sẽ hạ/ẩn bố cục phase 1, giữ bệ seal và đưa vào bố cục quay về. Không có đường hồi riêng chạy dọc mép Đông như bản layout cũ.
+- Phase 2 gồm hành lang đá từ seal tới D, tuyến đúng D → E → G → bệ cuối/cửa Nam và nhánh bẫy D → F. Cầu magma F → bệ cuối vẫn nối liền, phần sàn bẫy trắng cũ đã bỏ.
+- Sáu đá magma phun hơi nằm ngoài mép đường: hai ở phase 1, bốn ở phase 2. Đá phun không có collider để đứng lên hoặc dùng làm đường tắt; đã thay các hộp xả vàng và vỉ xanh.
+- Bệ A/B/C/D/E/G, bệ seal, cầu vòng và bệ cuối đứng được lâu. Bệ F chỉ sập khi đánh van F. Các đoạn đường magma nguội chia thành ô sập độc lập.
+- Lan can đá ở mép Nam seal/cầu Tây chỉ bật trong phase 2 để chặn roll từ seal thẳng sang E; đường Tây tới D vẫn mở. Không đổi khoảng cách roll hoặc vị trí E/G; cú roll khó từ góc E sang G được giữ lại.
 
-### 4.2. Phòng 3 — Tốn ☴: Hành Lang Bão Tro
+### 4.2. Gimmick đã triển khai
+
+Đánh van để làm nguội đường magma, vượt các ô sắp sập và canh nhịp hơi nóng. Hai phase phải hoàn thành trong một lượt phòng; thất bại ở lượt về chỉ làm lại phase 2.
+
+- **Nhiệt mặt đường:** HOT có gân magma sáng mạnh và gây reset; COLD màu xám, đi được. Trong WARNING, đá đỏ dần và gân sáng dần trong 2 giây trước khi nóng hẳn; giai đoạn này vẫn đi được. Đánh lại van làm nguội và phục hồi các ô đã sập trên nhánh được cấp lạnh.
+- **Sàn sập:** đặt chân lên ô nguội là bắt đầu rung, sau **0,5 giây** mất va chạm và rơi xuống rồi ẩn. Ô chưa chạm còn nguyên; ô đã rơi không tự hồi trong cùng lượt. Không còn vòng tròn vàng dưới chân.
+- **Hơi nóng:** nghỉ → hơi mỏng báo trước → luồng hơi lan ra → phun đầy mới gây hại. Luồng lan trong một tuổi hạt, mặc định **0,8 giây**, chưa gây reset. Sau khi đầy, nguy hiểm kéo dài **1,5 giây**. Dừng vent hoặc đổi phase hủy cả thời điểm gây hại đang chờ.
+- **Dodge roll:** i-frames né được hơi nóng, kể cả lúc luồng vừa chuyển sang gây hại. Nếu hết bất tử mà vẫn ở trong hơi đang phun đầy thì reset; rời vùng hoặc hết nhịp phun sẽ hủy kiểm tra chờ. Quy tắc này không miễn nhiễm magma nóng hay cứu khi rơi mất sàn.
+- **Van F:** một đòn hợp lệ làm bệ mất va chạm ngay; cả sàn và van chìm 5 m trong 0,65 giây. Bẫy không có nhịp báo nứt 0,5 giây như ô đường. Player thực sự rơi xuống dung nham rồi mới reset về seal.
+- **Thất bại cục bộ:** nhận một đòn hợp lệ, chạm đường nóng, trúng hơi hoặc rơi xuống dung nham đều giữ nguyên máu, kể cả khi còn 1 máu. Phase 1 tạo lại phòng và đưa về cửa; phase 2 chỉ tạo lại stage quay về và đưa về seal.
+- **Di chuyển:** đi bộ/chạy và roll; không cần nhảy. Phòng không còn quái truy đuổi, NavigationAgent hoạt động, bùn, tích nhiệt hoặc quái kéo chân.
+
+### 4.3. Mốc bố trí
+
+Tọa độ dưới đây là local so với gốc phòng Khảm. Các van và mốc hồi sinh nằm trên mặt sàn; gốc collider bệ có cao độ riêng.
+
+| Bộ | Vật thể/mốc | Tọa độ local `(x, y, z)` | Vai trò |
+|---|---|---|---|
+| Cửa vào | SouthConnection | `(0, 0.32, 17)` | Nối nhánh Bắc trung tâm |
+| Hồi sinh phase 1 | Start | `(0, 0.32, 15)` | Điểm làm lại từ đầu phòng |
+| Phase 1 | Van A | `(-2, 0.32, 13)` | Làm nguội A → B |
+| Phase 1 | Van B | `(-0.6, 0.32, 0.7)` | Đổi cấp lạnh Tây/Bắc |
+| Phase 1 | Van C | `(-16.8, 0.32, 0.6)` | Xả áp, tắt hơi Bắc, nâng cầu vòng |
+| Hồi sinh phase 2 | Seal | `(3.5, 0.32, -18.7)` | Giữ lại khi làm lại lượt về |
+| Phase 2 | Van D | `(-14.6, 0.32, -4.3)` | Cấp lạnh D → E và D → F |
+| Phase 2 | Van E | `(1.4, 0.32, -10.5)` | Cấp lạnh E → G |
+| Phase 2 | Van F | `(-14.6, 0.32, 6.5)` | Nhánh bẫy; đánh van làm chìm bệ |
+| Phase 2 | Van G | `(12, 0.32, -2.5)` | Cấp lạnh đường về bệ cuối |
+| Phase 2 | Bệ cuối — gốc collider | `(1, 0.08, 14.7)` | Vùng đi tới cửa Nam |
+| Phase 2 | SealRail — gốc collider | `(-1.2, 1.02, -16.4)` | Lan can 18,4 × 1,4 × 0,5 m chặn roll sang E |
+
+### 4.4. Walkthrough cho người chơi
+
+#### Bước 1 — Vào hầm và mở đường tới B
+
+1. Từ trung tâm, qua cửa Bắc có ký hiệu Khảm tới bệ A.
+2. Đánh van A để làm nguội đường tới bệ B; lần đầu đồng thời khởi động hơi Tây theo chu kỳ và hơi Bắc liên tục.
+3. Chạy qua các ô A → B, không đứng chờ trên ô đang rung. Có thể đứng trên bệ B để quan sát.
+
+#### Bước 2 — Xả áp ở C
+
+1. Đánh B lần đầu để cấp lạnh sang Tây; đường Bắc vẫn nóng.
+2. Canh nhịp hoặc roll qua hơi Tây, vượt các ô B → C trước khi sập.
+3. Đánh C để tắt hơi Bắc và nâng cầu vòng cố định.
+4. Qua cầu vòng từ C trở về mép Bắc bệ B. Cầu này không sập theo bước chân.
+
+#### Bước 3 — Tới seal và đổi phase
+
+1. Đánh B lần nữa để chuyển lạnh sang Bắc; nhánh Tây nóng lại.
+2. Đi theo đường Bắc, rẽ tới bệ seal trước khi hết thời gian lạnh/cảnh báo.
+3. Khi C đã xả áp, B đang chọn Bắc và đường Bắc chưa HOT, chạm seal sẽ bắt đầu phase 2.
+4. Sàn cũ tắt va chạm, hạ 4 m trong 0,8 giây rồi ẩn. Bệ seal còn nguyên; bố cục D/E/F/G xuất hiện.
+
+Chạm seal chỉ hoàn thành lượt đi, chưa giải ấn Khảm ở trung tâm.
+
+#### Bước 4 — Giải tuyến quay về
+
+1. Từ seal đi Tây qua cầu đá và xuống hành lang cố định tới D.
+2. Đánh D để mở cả nhánh E và nhánh F. Chọn Đông rồi Bắc qua hơi, rẽ Đông tới bệ E.
+3. Đánh E, đi Nam rồi Đông tới G. Bệ E và G đứng được để quan sát nhịp.
+4. Đánh G để làm nguội đường về và khởi động hai miệng phun. Canh nhịp trên bệ G hoặc dùng roll né hơi; không dừng lâu trên các ô magma nguội.
+5. Đi Nam, rẽ Tây qua miệng phun thứ nhất rồi xuống Nam qua miệng thứ hai tới bệ cuối.
+
+Tuyến đúng: **seal → D → E → G → bệ cuối/cửa Nam**.
+
+Nhánh F là hướng sai: từ D đi Nam tới F vẫn đứng được, nhưng đánh van F sẽ làm cả bệ sập ngay. Nếu rơi, player trở lại seal với phase 1 đã giải và bệ/van F được phục hồi cho lượt thử lại.
+
+#### Bước 5 — Hoàn thành và trở về
+
+1. Qua vùng hoàn thành ở bệ cuối/cửa Nam để giải ấn Khảm.
+2. Các tuyến phase 2 được làm nguội, phục hồi và giữ ổn định; hơi dừng, van và bẫy được vô hiệu hóa.
+3. Đi tiếp về trung tâm; ký hiệu Khảm sáng và tiến độ tăng thêm một ấn.
+4. Nạp lại tiến độ đã hoàn thành đưa phòng thẳng vào bố cục quay về an toàn, không phát lại sự kiện giải ấn.
+
+### 4.5. Đáp án cho biên tập và debug
+
+| Thao tác/mục tiêu | Kết quả |
+|---|---|
+| Đánh A | Làm nguội A → B trong 6 giây; lần đầu bật hơi Tây/Bắc |
+| Đánh B lần lẻ từ đầu lượt | Chọn Tây, làm nguội B → C trong 8 giây; Bắc HOT |
+| Đánh C | Xả áp một lần, tắt hơi Bắc và nâng cầu vòng C → B |
+| Đánh B lần chẵn | Chọn Bắc, làm nguội đường seal trong 8 giây; Tây HOT |
+| Chạm seal | Chỉ đổi phase nếu C đã xả áp, B chọn Bắc và đường Bắc không HOT |
+| Đánh D | Làm nguội/phục hồi D → E và D → F trong 9 giây; bật chu kỳ hơi D → E |
+| Đánh E | Làm nguội/phục hồi E → G trong 9 giây |
+| Đánh F — hướng sai | Làm nguội cầu F → bệ cuối trong 9 giây và bật hơi trên cầu, đồng thời làm sập bệ F ngay |
+| Đánh G | Làm nguội/phục hồi đường về trong 10 giây; bật hai miệng phun trên tuyến |
+| Tới vùng cuối phase 2 | Ghi cờ hoàn thành Khảm, dừng các thử thách |
+
+Thời gian lạnh ở bảng là tổng thời gian đi được, bao gồm 2 giây WARNING đỏ dần cuối kỳ. Đánh lại van phục hồi nhánh tương ứng và bắt đầu lại thời gian lạnh; nhánh đang không được B chọn sẽ HOT ngay.
+
+Trong lượt walkthrough đã đo, tuyến D → E đi trực tiếp được; sau đòn đánh G, chờ khoảng 3 giây trên bệ rồi xuất phát qua tuyến về đã hoàn thành cả hai phase không reset. Đây là nhịp thử theo cấu hình hiện tại, không phải điều kiện bắt buộc; dodge roll cũng né được hơi trong khoảng bất tử.
+
+### 4.6. Tiến độ và liên kết với lò
+
+| Cờ/mốc | Ý nghĩa |
+|---|---|
+| `level_3.t3_seal_kham` | Đã về tới vùng cuối phase 2 và giải ấn Khảm |
+| Seal trong lượt chơi | Mốc hồi sinh cục bộ phase 2, không ghi thêm checkpoint hoặc cờ lưu phase riêng |
+
+- Controller phát `phase_two_started` khi bố cục quay về được bật; `activated` và `seal_released(seal_id)` khi hoàn thành.
+- Trung tâm theo dõi cờ `GameState` để cập nhật ký hiệu và tiến độ tám ấn. Nạp lại phòng đã hoàn thành không phát lại sự kiện giải ấn.
+- Reset cục bộ giữ máu và tiến độ các ấn khác trong phiên. Phase 1 làm lại cả phòng; phase 2 giữ controller/bệ seal và chỉ thay `ReturnStage`.
+- Hurtbox cho phép phòng chặn một đòn hợp lệ trước khi trừ máu, tránh chết/reload toàn scene khi chỉ còn 1 máu. Khi ra khỏi phòng hoặc phòng bị gỡ, bộ chặn được tháo.
+- Đây không phải cơ chế hồi đầy máu khi vào phòng. Hai checkpoint toàn Tier 3 vẫn là quyết định ở mục 2.1, chờ tích hợp vào tuyến chính; mốc seal không thay thế chúng.
+
+### 4.7. Các thành phần và thông số
+
+| Thành phần | Trách nhiệm |
+|---|---|
+| `t3_02_kham_condenser.gd` | Van A/B/C, cầu vòng, đổi phase, reset cục bộ và cờ hoàn thành |
+| `puzzles/strike_valve/` | Nhận đòn player, xoay van, phát signal và ngăn nhiều lần kích trong một đòn |
+| `puzzles/cooling_path/` | Nhiệt HOT/COLD/WARNING/SAFE, đỏ dần, thời gian lạnh và vùng gây reset |
+| `puzzles/kham_sinking_route/` | Chia collider thành ô, tái sử dụng FSM Solid/Cracking/Fallen của `CrumblingFloor` |
+| `puzzles/steam_vent/` | Chu kỳ hơi, đồng bộ lúc phun đầy, né bằng i-frames và tiếp xúc với player |
+| `assets/vfx/fire/hot_steam/` | Đá magma, shader hơi và hai emitter tạo sẵn dùng chung cả hai phase |
+| `puzzles/kham_return_stage/` | Bố cục D/E/F/G, đường về và dữ liệu phase 2 |
+| `puzzles/valve_sink_trap/` | Nghe signal van, tắt va chạm và làm chìm bệ/van F |
+| `components/combat/hurtbox/hurtbox_component.gd` | Bộ chặn đòn hợp lệ trước khi trừ máu cho reset cục bộ |
+
+| Dữ liệu | Thông số hiện tại |
+|---|---|
+| `puzzles/kham_puzzle_data.tres` | A → B lạnh 6 giây, Tây/Bắc 8 giây; WARNING 2 giây; xoay van 0,35 giây; nâng cầu 0,8 giây; hạ phase 1 sâu 4 m trong 0,8 giây |
+| `puzzles/kham_return_stage/kham_return_data.tres` | D/E/F lạnh 9 giây, G 10 giây |
+| `puzzles/kham_sinking_route/kham_sink_data.tres` | Ô mục tiêu 1,8 × 1,8 m, tối đa 128 ô/collider nguồn; rung 0,035 m, sập sau 0,5 giây; không tự hồi |
+| `puzzles/valve_sink_trap/valve_sink_trap_data.tres` | Bệ F mất va chạm ngay, chìm 5 m trong 0,65 giây |
+| `assets/vfx/fire/hot_steam/hot_steam_data.tres` | Luồng 40 hạt, báo trước 8 hạt, tuổi hạt/nhịp lan 0,8 giây; kích thước mây và đá chỉnh qua Resource |
+
+| Nhịp hơi theo chu kỳ | Nghỉ | Báo trước | Lan luồng, an toàn | Phun đầy, nguy hiểm |
+|---|---|---|---|---|
+| Phase 1 — Tây | 1 giây | 0,8 giây | 0,8 giây | 1,5 giây |
+| Phase 2 — D → E, F → cuối, hai miệng tuyến G | 1,5 giây | 0,8 giây | 0,8 giây | 1,5 giây |
+
+Miệng Bắc phase 1 bắt đầu lan luồng ngay khi A khởi động rồi phun liên tục, cho tới khi C tắt. Nhịp lan lấy theo tuổi hạt VFX; đổi tuổi hạt cũng đổi thời điểm bắt đầu gây hại.
+
+Các ô trên cùng tuyến dùng chung material; đỏ dần chạy bằng một tween cho cả tuyến. Ô lành và ô rơi đã ẩn không cập nhật vật lý. Vent chỉ theo dõi hết i-frames khi có player đang bất tử trong luồng; không quét danh sách va chạm mỗi frame. Hạt và node VFX được tạo sẵn, dùng lại theo từng nhịp.
+
+### 4.8. Đã kiểm tra và phần chưa làm
+
+Các lượt kiểm tra đã chạy bằng input, tiếp xúc và va chạm thật; số dưới đây là từng bộ kiểm tra, không cộng các lượt chạy lại thành tổng mới:
+
+- **Dodge roll né hơi:** 12 kiểm tra đạt cả headless và cửa sổ game OpenGL, gồm roll xuyên hơi, hết bất tử trong luồng, hơi bật giữa cú roll, vào hơi khi không roll và hủy xử lý chờ khi dừng vent.
+- **Đỏ dần/sập 0,5 giây:** 11 kiểm tra đạt trong cửa sổ game, đo rung, mất va chạm, chuyển động rơi, hủy chuyển màu bằng van và giữ 1 máu khi reset.
+- **Walkthrough theo nhịp mới:** 10 kiểm tra đạt cho cả hai phase với sàn 0,5 giây, đi trực tiếp D → E và chờ khoảng 3 giây sau đòn G trước khi qua tuyến về; không nhảy, rơi hoặc reset. Chạy thẳng không chờ đã trúng hơi cuối tuyến.
+- **Dữ liệu/sàn/reset:** 23 kiểm tra đạt về collider, ô đã chạm/ô chưa chạm, phục hồi bằng van, reset theo phase, dữ liệu rỗng và nạp lại tiến độ hoàn thành. Bộ này đã chạy sau khi đồng bộ hơi; các lượt đo timing 0,5 giây nằm ở bộ riêng phía trên.
+- **Cấu hình lệch/cực đoan:** trước các lượt chỉnh timing cuối đã thử sàn nhỏ/không vuông/rất lớn, kích thước ô bằng không/âm, giới hạn ô, thời gian nứt 0,05–5 giây; đá phun nhỏ/lớn/không vuông, số hạt và tuổi hạt 0,1–3 giây; bẫy F chìm 0,5–20 m trong 0,05–3 giây.
+- **Bệ F và lan can seal:** đã thử đánh kiếm thật làm chìm bệ/van F, reset riêng phase 2 và phục hồi F; đã đo chặn roll từ nhiều mép seal/cầu Tây với 9/12 m/s, giữ được cú roll khó E → G. Các bộ này thuộc lượt trước khi chỉnh hơi/sàn cuối, không phải xác nhận toàn bộ timing cũ còn nguyên.
+- **Hình ảnh:** đã chụp/kiểm tra hơi mỏng, luồng hơi đầy, đá đỏ dần và lan can trong camera chơi thực tế.
+
+Lỗi `Assertion failed: Khảm cần KhamPuzzleData` trước đây do preview ghi đè `data = null` và `phase_one_platforms = []`; đã bỏ ghi đè và có cấu hình/mốc dự phòng khi export bị xóa. Các lượt mới không còn assertion này. Lỗi deferred `GDScript::ensure` và cảnh báo texture khi thoát OpenGL có sẵn vẫn xuất hiện, chưa xử lý trong phạm vi Khảm.
+
+Khảm hiện nối và chơi thử qua preview; chưa tích hợp vào tuyến hoàn chỉnh `level_3.tscn`. NPC, hai checkpoint toàn tầng, trận áp chế Lò và phần thưởng vẫn chưa được triển khai. Concept cũ về quái truy đuổi/bùn/tích nhiệt/kéo chân đã bỏ, không phải hạng mục chờ làm của phòng. Concept Đoài giữ hướng trụ nam châm/phế kim ở mục phòng Đoài bên dưới.
+
+## 5. Phòng 3–8 — Thiết kế và hiện trạng
+
+Phòng 3–8 hiện có cửa và ký hiệu ở trung tâm, layout thử thách còn cần chốt. Các cơ chế trong phần này là concept, chưa phải walkthrough đã dựng và kiểm thử.
+
+### 5.1. Phòng 3 — Tốn ☴: Hành Lang Bão Tro
 
 **The Ashen Gale — nhánh Đông Nam.**
 
@@ -247,17 +447,17 @@ Tất cả phòng bên dưới mới có cửa và ký hiệu ở trung tâm. H�
 - **Combat/bẫy:** gió đẩy player trượt ra mép vực; địch tầm xa ở đầu gió bắn tên lửa nhanh hơn nhờ gió.
 - **Còn cần chốt:** cách mang lửa, điều kiện đuốc tắt, reset cả phòng hay từng đoạn và lực gió phù hợp điều khiển camera 45°.
 
-### 4.3. Phòng 4 — Chấn ☳: Bệ Rèn Thiên Lôi
+### 5.2. Phòng 4 — Chấn ☳: Bệ Rèn Thiên Lôi
 
 **The Thunder Anvil — nhánh Đông.**
 
 - **Không khí:** búa máy nện khối thiên thạch, điện xanh tím và âm thanh kim loại theo nhịp.
 - **Gimmick:** búa tạo sóng xung kích đồng thời cấp điện cho rãnh đồng. Đẩy khối dẫn điện vào vị trí để nối mạch mở cửa trước khi điện tắt.
 - **Luồng dự kiến:** đọc nhịp búa → nhận biết rãnh đang có điện → đặt khối dẫn đúng đường mạch → canh chu kỳ búa để cấp điện → vượt cửa và xử lý mục tiêu phong ấn → mở đường hồi.
-- **Combat/bẫy:** nhảy hoặc né sóng; dụ địch giáp nặng vào búa hay dòng điện để phá giáp.
+- **Combat/bẫy:** dụ địch giáp nặng vào búa hay dòng điện để phá giáp. Cách tránh sóng cần được chốt theo bộ di chuyển hiện dùng và quyết định về nhảy ở đầu tài liệu.
 - **Còn cần chốt:** quy tắc đẩy khối, trạng thái mạch có lưu giữa chu kỳ không, báo trước búa và khả năng tránh sóng với bộ kỹ năng hiện có.
 
-### 4.4. Phòng 5 — Cấn ☶: Vách Đá Hắc Diện Thạch
+### 5.3. Phòng 5 — Cấn ☶: Vách Đá Hắc Diện Thạch
 
 **The Obsidian Bulwark — nhánh Đông Bắc.**
 
@@ -267,17 +467,29 @@ Tất cả phòng bên dưới mới có cửa và ký hiệu ở trung tâm. H�
 - **Combat/bẫy:** golem ngụy trang trong tường, kích hoạt khi player quay lưng hoặc qua vạch cấm.
 - **Còn cần chốt:** thời gian tích lũy/reset khi bị soi, cách hiển thị vùng nguy hiểm, liên hệ giữa vật che và camera, điều kiện đánh thức golem.
 
-### 4.5. Phòng 6 — Đoài ☱: Đầm Lầy Xỉ Kim Loại
+### 5.4. Phòng 6 — Đoài ☱: Đầm Lầy Xỉ Kim Loại
 
 **The Molten Mire — nhánh Tây.**
 
 - **Không khí:** vùng trũng chứa xỉ quặng sền sệt, bọt khí lưu huỳnh vàng và pháp bảo rèn hỏng.
-- **Gimmick:** xỉ làm chậm và tích tụ Thiêu Đốt. Dùng nguồn Hàn hoặc trụ làm mát để tạo lớp vỏ cứng tạm thời; lớp vỏ sẽ nứt rồi chìm.
-- **Luồng dự kiến:** tìm nguồn làm mát → làm cứng một đoạn bề mặt → vượt qua trước khi vỏ vỡ → chuyển tiếp qua các vùng làm mát tới mục tiêu phong ấn → mở đường hồi.
-- **Combat/bẫy:** quái dạng lỏng trồi lên, kéo chân nếu đứng một chỗ lâu.
-- **Còn cần chốt:** dùng kỹ năng/vũ khí Hàn hay trụ môi trường, thời gian sống của vỏ, khả năng hồi lại đường, ngưỡng Thiêu Đốt và cơ chế kéo chân.
+- **Bản sắc mới:** giải đố sắp xếp địa hình bằng phế kim và lực hút/đẩy. Nhịp chính là quan sát, bố trí rồi đi qua các cầu đã ghép; player có chỗ đứng để suy nghĩ và sửa cách bố trí.
+- **Gimmick chính:** điều khiển các trụ nam châm môi trường để kéo hoặc đẩy khối phế kim tới vị trí ghép cầu. Các mảnh pháp bảo và bản kim loại tạo mặt cầu liền giữa bệ đá; mọi tuyến bắt buộc đều đi bộ hoặc roll qua được, không cần nhảy hay kỹ năng mới của player.
+- **Quy tắc cầu trong concept:** khối đã vào vị trí giữ đường đi ổn định cho tới khi player chủ động đổi cấu hình. Các câu đố sau yêu cầu tái sử dụng khối hoặc phối hợp nhiều trụ để nối các bệ theo thứ tự. Cần có cách thu hồi hoặc trả khối về mốc bố trí để sửa nước đi sai và tránh kẹt phòng.
+- **Vai trò của xỉ:** giữ không khí đầm luyện kim và ranh giới nguy hiểm bên dưới cầu. Đoài không dùng làm nguội xỉ, tích nhiệt hoặc kéo chân làm vòng giải đố chính. Khảm hiện tập trung vào van và các ô đường đi sập sau khi giẫm lên.
+- **Combat/bẫy:** định hướng dùng địch canh bệ thao tác hoặc chiếm một đoạn cầu, tạo tình huống phải xử lý chướng ngại trước khi đổi cấu hình. Khối phế kim đang dịch chuyển cần báo trước vùng quét hoặc kẹp. Không dùng cuộc truy đuổi dài làm áp lực xuyên suốt căn phòng. Loại địch và tương tác chiến đấu với trụ chưa chốt.
+- **Hiện trạng:** mới cập nhật concept; chưa có scene phòng, layout chi tiết hay logic nam châm được dựng và kiểm thử.
 
-### 4.6. Phòng 7 — Càn ☰: Thiên Đỉnh Quang Lộ
+**Luồng dự kiến**
+
+1. Từ bệ vào quan sát trụ đầu và một khối phế kim; điều khiển trụ để ghép cầu đầu tiên và học cách đổi vị trí khối.
+2. Sang bệ tiếp theo, quan sát những điểm ghép cầu có thể nối; chọn trụ cần điều khiển để mở đường tới bệ thao tác kế tiếp.
+3. Tái bố trí các khối đã dùng, phối hợp lực hút/đẩy giữa các trụ để ghép tuyến tới bệ phong ấn. Khi chọn sai, thu hồi khối và thử cách bố trí khác.
+4. Xử lý chướng ngại hoặc địch cục bộ tại các bệ cần thao tác, hoàn thành cấu hình cầu để tiếp cận mục tiêu phong ấn.
+5. Giải mục tiêu rồi mở cấu hình cầu hồi nối về cửa Tây trung tâm. Đường hồi cần được kiểm tra để player không bị khóa bên kia sau khi thay đổi các khối.
+
+**Còn cần chốt:** cách tương tác với trụ; cách chọn hút/đẩy và nhóm khối bị ảnh hưởng; khối chạy theo ray, điểm ghép hay quy tắc nào; hình dạng và số lượng khối; cách thể hiện trạng thái cầu đã khóa; vùng an toàn khi chuyển khối; cách thu hồi; bố cục đường hồi; loại địch và luật hồi sinh cục bộ. Những chi tiết này cần được duyệt trong plan riêng trước khi dựng phòng.
+
+### 5.5. Phòng 7 — Càn ☰: Thiên Đỉnh Quang Lộ
 
 **The Zenith Spire — nhánh Tây Bắc.**
 
@@ -287,7 +499,7 @@ Tất cả phòng bên dưới mới có cửa và ký hiệu ở trung tâm. H�
 - **Combat/bẫy:** thiên binh tha hóa bắn vũ khí ánh sáng trên hành lang hẹp không lan can; concept có yêu cầu parry hoặc né chính xác.
 - **Còn cần chốt:** khả năng đổi góc camera của game, cách đọc cầu khi camera cố định, có yêu cầu parry hay không và cách tránh khóa player khi tắt cầu.
 
-### 4.7. Phòng 8 — Khôn ☷: Hầm Mộ Tro Tàn
+### 5.6. Phòng 8 — Khôn ☷: Hầm Mộ Tro Tàn
 
 **The Cinder Catacombs — nhánh Tây Nam.**
 
@@ -297,15 +509,17 @@ Tất cả phòng bên dưới mới có cửa và ký hiệu ở trung tâm. H�
 - **Combat/bẫy:** đánh vỡ bình tro có thể thả bầy quái nhỏ; địch tinh anh hồi sinh từ tro nếu xác chưa được thanh tẩy bằng lửa thiêng.
 - **Còn cần chốt:** hành động nào dọn được tro, tro có phủ lại không, cơ chế thanh tẩy xác và mức độ bắt buộc của lối ngầm.
 
-## 5. Cách mở scene và tiếp tục phát triển
+## 6. Cách mở scene và tiếp tục phát triển
 
-1. Mở `crucible_heart_preview.tscn` bằng F6 để chạy tuyến trung tâm → Ly → trung tâm. Scene này có spawn, lighting và camera riêng.
+1. Mở `crucible_heart_preview.tscn` bằng F6 để chạy tuyến trung tâm → Ly ở Nam hoặc Khảm ở Bắc → trung tâm. Scene này có spawn, lighting và camera riêng.
 2. Có thể F6 `t3_01_li_foundry.tscn` để thử riêng phòng Ly. Khi phòng được đặt dưới `ZoneRoot`, player nhúng của phòng sẽ được bỏ và dùng player do zone tạo.
 3. Tiến độ được đọc từ `GameState`; checkpoint cũ có thể làm phòng vào thẳng phase 2 hoặc trạng thái đã hoàn thành. Khi kiểm thử từ đầu cần dùng hồ sơ thử trống, không xóa hồ sơ người chơi ngoài ý muốn.
-4. Khi thêm phòng 2–8, dựng vào nhánh có ký hiệu tương ứng, nối cờ `level_3.t3_seal_<id>` đã khai báo tại trung tâm. Chi tiết thử thách phải được chốt riêng trước khi code.
+4. Khi thêm phòng 3–8, dựng vào nhánh có ký hiệu tương ứng, nối cờ `level_3.t3_seal_<id>` đã khai báo tại trung tâm. Chi tiết thử thách phải được chốt riêng trước khi code.
 5. Ưu tiên tái sử dụng asset của project. Chỉ tạo model mới khi thật sự cần theo yêu cầu của người dùng.
 6. Sau tám phong ấn, dùng signal trung tâm để nối trình tự hội thoại, mở lò và trận áp chế. Không coi giải đủ 8/8 là đã thắng trận lò hoặc đã nhận phần thưởng.
 
-## 6. Phạm vi bàn giao Git
+## 7. Phạm vi bàn giao Git
 
 Nhánh `feature/fire-map/tier-3` được tách từ bản `main` trên remote tại thời điểm bàn giao. Phạm vi commit là thư mục `rooms/tier_3`, bao gồm trung tâm, phòng Ly, các component câu đố, preview và tài liệu này. Những thay đổi boss và các chỉnh sửa ngoài tier 3 không nằm trong commit.
+
+Lượt bàn giao Khảm bổ sung scene/controller phòng, các component van/đường lạnh/sàn sập/hơi/bẫy F, cập nhật preview và thiết kế. Có thêm VFX dùng chung tại `assets/vfx/fire/hot_steam/` và bộ chặn đòn trước khi trừ máu trong `components/combat/hurtbox/hurtbox_component.gd`. Các chỉnh sửa cân bằng kỹ năng, charm, giao diện và thư viện navigation không dùng bởi Khảm không thuộc lượt commit này.

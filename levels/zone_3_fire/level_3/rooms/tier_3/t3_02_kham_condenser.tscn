@@ -1,0 +1,1100 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_02_kham_condenser.gd" id="room_controller"]
+
+[ext_resource type="Resource" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/kham_puzzle_data.tres" id="kham_data"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/strike_valve/strike_valve.tscn" id="valve"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/cooling_path/cooling_path.tscn" id="cooling"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/steam_vent/steam_vent.tscn" id="vent"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="fire_floor"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_cracked_4m.glb" id="fire_cracked"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="fire_wall"]
+
+[ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="lava"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/kham_return_stage/kham_return_stage.tscn" id="return_stage"]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/kham_sinking_route/kham_sinking_route.gd" id="sink_route"]
+
+[sub_resource type="BoxShape3D" id="WaterResetShape"]
+size = Vector3(38, 2, 42)
+
+[sub_resource type="StandardMaterial3D" id="Copper"]
+albedo_color = Color(0.35, 0.18, 0.13, 1)
+metallic = 0.65
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Cold"]
+albedo_color = Color(0.15, 0.72, 0.71, 1)
+roughness = 0.77
+emission_enabled = true
+emission = Color(0.15, 0.72, 0.71, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Brass"]
+albedo_color = Color(0.87, 0.55, 0.19, 1)
+roughness = 0.77
+
+[sub_resource type="StandardMaterial3D" id="Seal"]
+albedo_color = Color(0.32, 0.8, 0.91, 1)
+roughness = 0.77
+emission_enabled = true
+emission = Color(0.32, 0.8, 0.91, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Iron"]
+albedo_color = Color(0.09, 0.12, 0.14, 1)
+roughness = 0.77
+
+[sub_resource type="BoxMesh" id="BoxMesh_0"]
+size = Vector3(34, 0.2, 40)
+material = ExtResource("lava")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(0.5, 2.2, 40)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4"]
+size = Vector3(34, 2.2, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6"]
+size = Vector3(18, 2.2, 0.45)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8"]
+size = Vector3(12, 2.2, 0.45)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_10"]
+size = Vector3(6, 0.48, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_12"]
+size = Vector3(3, 0.48, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_14"]
+size = Vector3(6, 0.48, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_16"]
+size = Vector3(5, 0.48, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_18"]
+size = Vector3(2.8, 0.48, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_20"]
+size = Vector3(4.9, 0.48, 2.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_22"]
+size = Vector3(2.8, 0.48, 2.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_24"]
+size = Vector3(6, 0.48, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_25"]
+size = Vector3(0.08, 0.006, 8)
+material = SubResource("Copper")
+
+[sub_resource type="BoxMesh" id="BoxMesh_26"]
+size = Vector3(10, 0.006, 0.08)
+material = SubResource("Copper")
+
+[sub_resource type="BoxMesh" id="BoxMesh_27"]
+size = Vector3(2.75, 0.006, 0.035)
+material = SubResource("Copper")
+
+[sub_resource type="BoxMesh" id="BoxMesh_28"]
+size = Vector3(0.035, 0.006, 2.75)
+material = SubResource("Copper")
+
+[sub_resource type="BoxMesh" id="BoxMesh_29"]
+size = Vector3(2.7, 0.006, 0.035)
+material = SubResource("Copper")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_31"]
+size = Vector3(2.2, 0.24, 3.618895)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_33"]
+size = Vector3(2.2, 0.48, 2.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_35"]
+size = Vector3(10.9, 0.48, 2.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_37"]
+size = Vector3(2.2, 0.48, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_38"]
+size = Vector3(0.1, 0.014, 2.18)
+material = SubResource("Copper")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_47"]
+material = SubResource("Iron")
+top_radius = 0.49
+bottom_radius = 0.49
+height = 0.52
+radial_segments = 12
+rings = 0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_48"]
+material = SubResource("Copper")
+top_radius = 0.16
+bottom_radius = 0.16
+height = 0.5
+radial_segments = 12
+rings = 0
+
+[sub_resource type="TorusMesh" id="TorusMesh_49"]
+material = SubResource("Brass")
+inner_radius = 0.31
+outer_radius = 0.49
+rings = 16
+ring_segments = 8
+
+[sub_resource type="BoxMesh" id="BoxMesh_50"]
+size = Vector3(0.85, 0.09, 0.1)
+material = SubResource("Copper")
+
+[sub_resource type="BoxMesh" id="BoxMesh_51"]
+size = Vector3(0.12, 0.02, 0.35)
+material = SubResource("Cold")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_52"]
+material = SubResource("Copper")
+top_radius = 1.18
+bottom_radius = 1.18
+height = 0.28
+radial_segments = 12
+rings = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_53"]
+size = Vector3(0.56, 0.04, 0.13)
+material = SubResource("Seal")
+
+[sub_resource type="BoxMesh" id="BoxMesh_54"]
+size = Vector3(1.55, 0.04, 0.13)
+material = SubResource("Seal")
+
+[sub_resource type="BoxMesh" id="BoxMesh_55"]
+size = Vector3(0.34, 0.34, 15.4)
+material = SubResource("Copper")
+
+[sub_resource type="BoxMesh" id="BoxMesh_56"]
+size = Vector3(17.8, 0.34, 0.34)
+material = SubResource("Copper")
+
+[sub_resource type="BoxShape3D" id="WestPathShape"]
+size = Vector3(10, 0.8, 3)
+
+[sub_resource type="BoxShape3D" id="NorthPathShape"]
+size = Vector3(2.8, 0.8, 8)
+
+[sub_resource type="BoxShape3D" id="NorthTurnShape"]
+size = Vector3(4.9, 0.8, 2.8)
+
+[sub_resource type="BoxShape3D" id="NorthFinalShape"]
+size = Vector3(2.8, 0.8, 2.4)
+
+[sub_resource type="BoxShape3D" id="RoomShape"]
+size = Vector3(35, 6, 40)
+
+[sub_resource type="BoxShape3D" id="SealShape"]
+size = Vector3(2.2, 1, 2.2)
+
+[sub_resource type="BoxShape3D" id="haz_WestCrust"]
+size = Vector3(4, 0.48, 3)
+
+[node name="KhamCondenser" type="Node3D" node_paths=PackedStringArray("entrance", "phase_one_platforms")]
+editor_description = "Phòng Khảm. Mở crucible_heart_preview.tscn bằng F6 để đi từ cửa Bắc tới thử thách."
+script = ExtResource("room_controller")
+data = ExtResource("kham_data")
+entrance = NodePath("Anchors/Start")
+phase_one_platforms = [NodePath("Route/EntryA"), NodePath("Route/FirstStones"), NodePath("Route/IslandB"), NodePath("Route/WestStones"), NodePath("Route/WestCrust"), NodePath("Route/StationC"), NodePath("Route/NorthStones"), NodePath("Route/NorthTurn"), NodePath("Route/SealApproach"), NodePath("FoldBridge")]
+
+[node name="ReturnStage" parent="." instance=ExtResource("return_stage")]
+
+[node name="Basin" type="Node3D" parent="."]
+
+[node name="CoolingPool" type="MeshInstance3D" parent="Basin"]
+position = Vector3(-3, -0.9, -2)
+mesh = SubResource("BoxMesh_0")
+
+[node name="WestWall" type="StaticBody3D" parent="Basin"]
+position = Vector3(-20, -0.07, -2)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Basin/WestWall"]
+
+[node name="Brick0" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -18)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick1" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -14)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick2" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -10)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick3" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -6)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick4" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -2)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick5" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 2)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick6" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 6)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick7" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 10)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick8" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 14)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick9" parent="Basin/WestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 18)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Collision" type="CollisionShape3D" parent="Basin/WestWall"]
+shape = SubResource("BoxShape3D_2")
+
+[node name="EastWall" type="StaticBody3D" parent="Basin"]
+position = Vector3(14, -0.07, -2)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Basin/EastWall"]
+
+[node name="Brick0" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -18)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick1" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -14)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick2" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -10)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick3" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -6)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick4" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, -2)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick5" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 2)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick6" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 6)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick7" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 10)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick8" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 14)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Brick9" parent="Basin/EastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 18)
+rotation = Vector3(0, 1.570796, 0)
+scale = Vector3(0.985222, 0.55, 0.609756)
+
+[node name="Collision" type="CollisionShape3D" parent="Basin/EastWall"]
+shape = SubResource("BoxShape3D_2")
+
+[node name="NorthWall" type="StaticBody3D" parent="Basin"]
+position = Vector3(-3, -0.07, -22)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Basin/NorthWall"]
+
+[node name="Brick0" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(-15.111111, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Brick1" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(-11.333333, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Brick2" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(-7.555556, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Brick3" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(-3.777778, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Brick4" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Brick5" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(3.777778, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Brick6" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(7.555556, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Brick7" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(11.333333, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Brick8" parent="Basin/NorthWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(15.111111, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.930487, 0.55, 0.609756)
+
+[node name="Collision" type="CollisionShape3D" parent="Basin/NorthWall"]
+shape = SubResource("BoxShape3D_4")
+
+[node name="SouthWestWall" type="StaticBody3D" parent="Basin"]
+position = Vector3(-11, -0.07, 17)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Basin/SouthWestWall"]
+
+[node name="Brick0" parent="Basin/SouthWestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(-7.2, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.8867, 0.55, 0.54878)
+
+[node name="Brick1" parent="Basin/SouthWestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(-3.6, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.8867, 0.55, 0.54878)
+
+[node name="Brick2" parent="Basin/SouthWestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.8867, 0.55, 0.54878)
+
+[node name="Brick3" parent="Basin/SouthWestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(3.6, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.8867, 0.55, 0.54878)
+
+[node name="Brick4" parent="Basin/SouthWestWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(7.2, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.8867, 0.55, 0.54878)
+
+[node name="Collision" type="CollisionShape3D" parent="Basin/SouthWestWall"]
+shape = SubResource("BoxShape3D_6")
+
+[node name="SouthEastWall" type="StaticBody3D" parent="Basin"]
+position = Vector3(8, -0.07, 17)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Basin/SouthEastWall"]
+
+[node name="Brick0" parent="Basin/SouthEastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(-4, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.985222, 0.55, 0.54878)
+
+[node name="Brick1" parent="Basin/SouthEastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(0, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.985222, 0.55, 0.54878)
+
+[node name="Brick2" parent="Basin/SouthEastWall/Surface" instance=ExtResource("fire_wall")]
+position = Vector3(4, -1.1, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.985222, 0.55, 0.54878)
+
+[node name="Collision" type="CollisionShape3D" parent="Basin/SouthEastWall"]
+shape = SubResource("BoxShape3D_8")
+
+[node name="WaterRecovery" type="Area3D" parent="Basin"]
+position = Vector3(-3, -1.9, -2)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Basin/WaterRecovery"]
+shape = SubResource("WaterResetShape")
+
+[node name="Route" type="Node3D" parent="."]
+
+[node name="EntryA" type="StaticBody3D" parent="Route"]
+position = Vector3(0, 0.08, 14)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/EntryA"]
+
+[node name="Tile0_0" parent="Route/EntryA/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(-1.5, -0.24, -1.5)
+scale = Vector3(0.75, 1.5, 0.75)
+
+[node name="Tile0_1" parent="Route/EntryA/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(-1.5, -0.24, 1.5)
+scale = Vector3(0.75, 1.5, 0.75)
+
+[node name="Tile1_0" parent="Route/EntryA/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(1.5, -0.24, -1.5)
+scale = Vector3(0.75, 1.5, 0.75)
+
+[node name="Tile1_1" parent="Route/EntryA/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(1.5, -0.24, 1.5)
+scale = Vector3(0.75, 1.5, 0.75)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/EntryA"]
+shape = SubResource("BoxShape3D_10")
+
+[node name="FirstStones" type="StaticBody3D" parent="Route"]
+position = Vector3(0, 0.08, 7)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/FirstStones"]
+
+[node name="Tile0_0" parent="Route/FirstStones/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(0, -0.24, -2)
+scale = Vector3(0.75, 1.5, 1)
+
+[node name="Tile0_1" parent="Route/FirstStones/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(0, -0.24, 2)
+scale = Vector3(0.75, 1.5, 1)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/FirstStones"]
+shape = SubResource("BoxShape3D_12")
+
+[node name="IslandB" type="StaticBody3D" parent="Route"]
+position = Vector3(0, 0.08, 0)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/IslandB"]
+
+[node name="Tile0_0" parent="Route/IslandB/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(-1.5, -0.24, -1.5)
+scale = Vector3(0.75, 1.5, 0.75)
+
+[node name="Tile0_1" parent="Route/IslandB/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(-1.5, -0.24, 1.5)
+scale = Vector3(0.75, 1.5, 0.75)
+
+[node name="Tile1_0" parent="Route/IslandB/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(1.5, -0.24, -1.5)
+scale = Vector3(0.75, 1.5, 0.75)
+
+[node name="Tile1_1" parent="Route/IslandB/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(1.5, -0.24, 1.5)
+scale = Vector3(0.75, 1.5, 0.75)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/IslandB"]
+shape = SubResource("BoxShape3D_10")
+
+[node name="WestStones" type="StaticBody3D" parent="Route"]
+position = Vector3(-6, 0.08, 0)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/WestStones"]
+
+[node name="Tile0_0" parent="Route/WestStones/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(-2, -0.24, 0)
+scale = Vector3(0.5, 1.5, 0.75)
+
+[node name="Tile1_0" parent="Route/WestStones/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(0, -0.24, 0)
+scale = Vector3(0.5, 1.5, 0.75)
+
+[node name="Tile2_0" parent="Route/WestStones/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(2, -0.24, 0)
+scale = Vector3(0.5, 1.5, 0.75)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/WestStones"]
+shape = SubResource("BoxShape3D_14")
+
+[node name="StationC" type="StaticBody3D" parent="Route"]
+position = Vector3(-15.5, 0.08, 0)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/StationC"]
+
+[node name="Tile0_0" parent="Route/StationC/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(-1.25, -0.24, -1.25)
+scale = Vector3(0.625, 1.5, 0.625)
+
+[node name="Tile0_1" parent="Route/StationC/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(-1.25, -0.24, 1.25)
+scale = Vector3(0.625, 1.5, 0.625)
+
+[node name="Tile1_0" parent="Route/StationC/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(1.25, -0.24, -1.25)
+scale = Vector3(0.625, 1.5, 0.625)
+
+[node name="Tile1_1" parent="Route/StationC/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(1.25, -0.24, 1.25)
+scale = Vector3(0.625, 1.5, 0.625)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/StationC"]
+shape = SubResource("BoxShape3D_16")
+
+[node name="NorthStones" type="StaticBody3D" parent="Route"]
+position = Vector3(1.4, 0.08, -7)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/NorthStones"]
+
+[node name="Tile0_0" parent="Route/NorthStones/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(0, -0.24, -2)
+scale = Vector3(0.7, 1.5, 1)
+
+[node name="Tile0_1" parent="Route/NorthStones/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(0, -0.24, 2)
+scale = Vector3(0.7, 1.5, 1)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/NorthStones"]
+shape = SubResource("BoxShape3D_18")
+
+[node name="NorthTurn" type="StaticBody3D" parent="Route"]
+position = Vector3(2.45, 0.08, -12.4)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/NorthTurn"]
+
+[node name="Tile0_0" parent="Route/NorthTurn/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(-1.225, -0.24, 0)
+scale = Vector3(0.6125, 1.5, 0.7)
+
+[node name="Tile1_0" parent="Route/NorthTurn/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(1.225, -0.24, 0)
+scale = Vector3(0.6125, 1.5, 0.7)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/NorthTurn"]
+shape = SubResource("BoxShape3D_20")
+
+[node name="SealApproach" type="StaticBody3D" parent="Route"]
+position = Vector3(3.5, 0.08, -15)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/SealApproach"]
+
+[node name="Tile0_0" parent="Route/SealApproach/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(0, -0.24, 0)
+scale = Vector3(0.7, 1.5, 0.6)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/SealApproach"]
+shape = SubResource("BoxShape3D_22")
+
+[node name="SealLanding" type="StaticBody3D" parent="Route"]
+position = Vector3(3.5, 0.08, -18.2)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="Route/SealLanding"]
+
+[node name="Tile0_0" parent="Route/SealLanding/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(-1.5, -0.24, 0)
+scale = Vector3(0.75, 1.5, 1)
+
+[node name="Tile1_0" parent="Route/SealLanding/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(1.5, -0.24, 0)
+scale = Vector3(0.75, 1.5, 1)
+
+[node name="Collision" type="CollisionShape3D" parent="Route/SealLanding"]
+shape = SubResource("BoxShape3D_24")
+
+[node name="StoneInlays" type="Node3D" parent="."]
+
+[node name="FirstLeft" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(-1.4, 0.322, 7)
+mesh = SubResource("BoxMesh_25")
+
+[node name="FirstRight" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(1.4, 0.322, 7)
+mesh = SubResource("BoxMesh_25")
+
+[node name="WestLeft" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(-8, 0.322, -1.4)
+mesh = SubResource("BoxMesh_26")
+
+[node name="WestRight" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(-8, 0.322, 1.4)
+mesh = SubResource("BoxMesh_26")
+
+[node name="FirstJoint0" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(0, 0.322, 4)
+mesh = SubResource("BoxMesh_27")
+
+[node name="FirstJoint1" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(0, 0.322, 6)
+mesh = SubResource("BoxMesh_27")
+
+[node name="FirstJoint2" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(0, 0.322, 8)
+mesh = SubResource("BoxMesh_27")
+
+[node name="FirstJoint3" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(0, 0.322, 10)
+mesh = SubResource("BoxMesh_27")
+
+[node name="WestJoint0" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(-4, 0.322, 0)
+mesh = SubResource("BoxMesh_28")
+
+[node name="WestJoint1" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(-6, 0.322, 0)
+mesh = SubResource("BoxMesh_28")
+
+[node name="WestJoint2" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(-8, 0.322, 0)
+mesh = SubResource("BoxMesh_28")
+
+[node name="WestJoint3" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(-10, 0.322, 0)
+mesh = SubResource("BoxMesh_28")
+
+[node name="WestJoint4" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(-12, 0.322, 0)
+mesh = SubResource("BoxMesh_28")
+
+[node name="NorthJoint0" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(1.4, 0.322, -4)
+mesh = SubResource("BoxMesh_29")
+
+[node name="NorthJoint1" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(1.4, 0.322, -5.5)
+mesh = SubResource("BoxMesh_29")
+
+[node name="NorthJoint2" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(1.4, 0.322, -7)
+mesh = SubResource("BoxMesh_29")
+
+[node name="NorthJoint3" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(1.4, 0.322, -8.5)
+mesh = SubResource("BoxMesh_29")
+
+[node name="NorthJoint4" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(1.4, 0.322, -10)
+mesh = SubResource("BoxMesh_29")
+
+[node name="FinalJoint" type="MeshInstance3D" parent="StoneInlays"]
+position = Vector3(3.5, 0.322, -15.1)
+mesh = SubResource("BoxMesh_29")
+
+[node name="FoldBridge" type="Node3D" parent="."]
+
+[node name="HingedRamp" type="StaticBody3D" parent="FoldBridge"]
+position = Vector3(-15.5, 0.663942, -4.280507)
+rotation = Vector3(0.257042, 0, 0)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="FoldBridge/HingedRamp"]
+
+[node name="Tile0_0" parent="FoldBridge/HingedRamp/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(0, -0.12, 0)
+scale = Vector3(0.55, 0.75, 0.904724)
+
+[node name="Collision" type="CollisionShape3D" parent="FoldBridge/HingedRamp"]
+shape = SubResource("BoxShape3D_31")
+
+[node name="HingeLanding" type="StaticBody3D" parent="FoldBridge"]
+position = Vector3(-15.5, 1, -7.1)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="FoldBridge/HingeLanding"]
+
+[node name="Tile0_0" parent="FoldBridge/HingeLanding/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(0, -0.24, 0)
+scale = Vector3(0.55, 1.5, 0.55)
+
+[node name="Collision" type="CollisionShape3D" parent="FoldBridge/HingeLanding"]
+shape = SubResource("BoxShape3D_33")
+
+[node name="RaisedSpan" type="StaticBody3D" parent="FoldBridge"]
+position = Vector3(-8.95, 1, -7.1)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="FoldBridge/RaisedSpan"]
+
+[node name="Tile0_0" parent="FoldBridge/RaisedSpan/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(-3.633333, -0.24, 0)
+scale = Vector3(0.908333, 1.5, 0.55)
+
+[node name="Tile1_0" parent="FoldBridge/RaisedSpan/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(0, -0.24, 0)
+scale = Vector3(0.908333, 1.5, 0.55)
+
+[node name="Tile2_0" parent="FoldBridge/RaisedSpan/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(3.633333, -0.24, 0)
+scale = Vector3(0.908333, 1.5, 0.55)
+
+[node name="Collision" type="CollisionShape3D" parent="FoldBridge/RaisedSpan"]
+shape = SubResource("BoxShape3D_35")
+
+[node name="Corner" type="StaticBody3D" parent="FoldBridge"]
+position = Vector3(-2.4, 1, -7.1)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="FoldBridge/Corner"]
+
+[node name="Tile0_0" parent="FoldBridge/Corner/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(0, -0.24, 0)
+scale = Vector3(0.55, 1.5, 0.55)
+
+[node name="Collision" type="CollisionShape3D" parent="FoldBridge/Corner"]
+shape = SubResource("BoxShape3D_33")
+
+[node name="DropToIslandB" type="StaticBody3D" parent="FoldBridge"]
+position = Vector3(-2.4, 1, -4.5)
+collision_mask = 0
+
+[node name="Surface" type="MeshInstance3D" parent="FoldBridge/DropToIslandB"]
+
+[node name="Tile0_0" parent="FoldBridge/DropToIslandB/Surface" instance=ExtResource("fire_floor")]
+position = Vector3(0, -0.24, 0)
+scale = Vector3(0.55, 1.5, 0.75)
+
+[node name="Collision" type="CollisionShape3D" parent="FoldBridge/DropToIslandB"]
+shape = SubResource("BoxShape3D_37")
+
+[node name="SpanRib0" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-14.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib1" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-13.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib2" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-12.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib3" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-11.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib4" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-10.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib5" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-9.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib6" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-8.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib7" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-7.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib8" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-6.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib9" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-5.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="SpanRib10" type="MeshInstance3D" parent="FoldBridge"]
+position = Vector3(-4.2, 1.241, -7.1)
+mesh = SubResource("BoxMesh_38")
+
+[node name="Landmarks" type="Node3D" parent="."]
+
+[node name="InletA" type="Node3D" parent="Landmarks"]
+
+[node name="Plinth" type="MeshInstance3D" parent="Landmarks/InletA"]
+position = Vector3(-2, 0.58, 13)
+mesh = SubResource("CylinderMesh_47")
+
+[node name="Stem" type="MeshInstance3D" parent="Landmarks/InletA"]
+position = Vector3(-2, 1, 13)
+mesh = SubResource("CylinderMesh_48")
+
+[node name="Handwheel" type="MeshInstance3D" parent="Landmarks/InletA"]
+position = Vector3(-2, 1.26, 13)
+mesh = SubResource("TorusMesh_49")
+
+[node name="Spoke" type="MeshInstance3D" parent="Landmarks/InletA"]
+position = Vector3(-2, 1.26, 13)
+mesh = SubResource("BoxMesh_50")
+
+[node name="Mark0" type="MeshInstance3D" parent="Landmarks/InletA"]
+position = Vector3(-2, 0.33, 13.8)
+mesh = SubResource("BoxMesh_51")
+
+[node name="DiverterB" type="Node3D" parent="Landmarks"]
+
+[node name="Plinth" type="MeshInstance3D" parent="Landmarks/DiverterB"]
+position = Vector3(-0.6, 0.58, 0.7)
+mesh = SubResource("CylinderMesh_47")
+
+[node name="Stem" type="MeshInstance3D" parent="Landmarks/DiverterB"]
+position = Vector3(-0.6, 1, 0.7)
+mesh = SubResource("CylinderMesh_48")
+
+[node name="Handwheel" type="MeshInstance3D" parent="Landmarks/DiverterB"]
+position = Vector3(-0.6, 1.26, 0.7)
+mesh = SubResource("TorusMesh_49")
+
+[node name="Spoke" type="MeshInstance3D" parent="Landmarks/DiverterB"]
+position = Vector3(-0.6, 1.26, 0.7)
+mesh = SubResource("BoxMesh_50")
+
+[node name="Mark0" type="MeshInstance3D" parent="Landmarks/DiverterB"]
+position = Vector3(-0.74, 0.33, 1.5)
+mesh = SubResource("BoxMesh_51")
+
+[node name="Mark1" type="MeshInstance3D" parent="Landmarks/DiverterB"]
+position = Vector3(-0.46, 0.33, 1.5)
+mesh = SubResource("BoxMesh_51")
+
+[node name="ReliefC" type="Node3D" parent="Landmarks"]
+
+[node name="Plinth" type="MeshInstance3D" parent="Landmarks/ReliefC"]
+position = Vector3(-16.8, 0.58, 0.6)
+mesh = SubResource("CylinderMesh_47")
+
+[node name="Stem" type="MeshInstance3D" parent="Landmarks/ReliefC"]
+position = Vector3(-16.8, 1, 0.6)
+mesh = SubResource("CylinderMesh_48")
+
+[node name="Handwheel" type="MeshInstance3D" parent="Landmarks/ReliefC"]
+position = Vector3(-16.8, 1.26, 0.6)
+mesh = SubResource("TorusMesh_49")
+
+[node name="Spoke" type="MeshInstance3D" parent="Landmarks/ReliefC"]
+position = Vector3(-16.8, 1.26, 0.6)
+mesh = SubResource("BoxMesh_50")
+
+[node name="Mark0" type="MeshInstance3D" parent="Landmarks/ReliefC"]
+position = Vector3(-17.08, 0.33, 1.4)
+mesh = SubResource("BoxMesh_51")
+
+[node name="Mark1" type="MeshInstance3D" parent="Landmarks/ReliefC"]
+position = Vector3(-16.8, 0.33, 1.4)
+mesh = SubResource("BoxMesh_51")
+
+[node name="Mark2" type="MeshInstance3D" parent="Landmarks/ReliefC"]
+position = Vector3(-16.52, 0.33, 1.4)
+mesh = SubResource("BoxMesh_51")
+
+[node name="SealBase" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(3.5, 0.46, -18.7)
+mesh = SubResource("CylinderMesh_52")
+
+[node name="SealBar00" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(3.01, 0.61, -19.08)
+mesh = SubResource("BoxMesh_53")
+
+[node name="SealBar01" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(3.99, 0.61, -19.08)
+mesh = SubResource("BoxMesh_53")
+
+[node name="SealMiddle" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(3.5, 0.61, -18.7)
+mesh = SubResource("BoxMesh_54")
+
+[node name="SealBar20" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(3.01, 0.61, -18.32)
+mesh = SubResource("BoxMesh_53")
+
+[node name="SealBar21" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(3.99, 0.61, -18.32)
+mesh = SubResource("BoxMesh_53")
+
+[node name="PressureLineFromC" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(-17.8, -0.15, -7.7)
+mesh = SubResource("BoxMesh_55")
+
+[node name="PressureLineAcrossPool" type="MeshInstance3D" parent="Landmarks"]
+position = Vector3(-8.9, -0.15, -15.4)
+mesh = SubResource("BoxMesh_56")
+
+[node name="Anchors" type="Node3D" parent="."]
+
+[node name="SouthConnection" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.32, 17)
+
+[node name="Start" type="Marker3D" parent="Anchors"]
+position = Vector3(0, 0.32, 15)
+
+[node name="WestJunction" type="Marker3D" parent="Anchors"]
+position = Vector3(-2, 0.32, 0)
+
+[node name="BridgeExit" type="Marker3D" parent="Anchors"]
+position = Vector3(-2.4, 0.32, -2)
+
+[node name="Seal" type="Marker3D" parent="Anchors"]
+position = Vector3(3.5, 0.32, -18.7)
+
+[node name="Valves" type="Node3D" parent="."]
+
+[node name="A" parent="Valves" node_paths=PackedStringArray("wheel") instance=ExtResource("valve")]
+position = Vector3(-2, 0.32, 13)
+wheel = NodePath("../../Landmarks/InletA/Spoke")
+one_shot = false
+
+[node name="B" parent="Valves" node_paths=PackedStringArray("wheel") instance=ExtResource("valve")]
+position = Vector3(-0.6, 0.32, 0.7)
+wheel = NodePath("../../Landmarks/DiverterB/Spoke")
+one_shot = false
+
+[node name="C" parent="Valves" node_paths=PackedStringArray("wheel") instance=ExtResource("valve")]
+position = Vector3(-16.8, 0.32, 0.6)
+wheel = NodePath("../../Landmarks/ReliefC/Spoke")
+one_shot = true
+
+[node name="Paths" type="Node3D" parent="."]
+
+[node name="First" parent="Paths" node_paths=PackedStringArray("surfaces") instance=ExtResource("cooling")]
+position = Vector3(0, 0, 7)
+surfaces = [NodePath("../../Route/FirstStones/Surface")]
+
+[node name="West" parent="Paths" node_paths=PackedStringArray("surfaces") instance=ExtResource("cooling")]
+position = Vector3(-8, 0, 0)
+surfaces = [NodePath("../../Route/WestStones/Surface"), NodePath("../../Route/WestCrust/Surface")]
+
+[node name="North" parent="Paths" node_paths=PackedStringArray("surfaces") instance=ExtResource("cooling")]
+position = Vector3(0, 0, 0)
+surfaces = [NodePath("../../Route/NorthStones/Surface"), NodePath("../../Route/NorthTurn/Surface"), NodePath("../../Route/SealApproach/Surface")]
+
+[node name="CollisionShape3D" parent="Paths/West" index="0"]
+shape = SubResource("WestPathShape")
+
+[node name="CollisionShape3D" parent="Paths/North" index="0"]
+position = Vector3(1.4, 0.6, -7)
+shape = SubResource("NorthPathShape")
+
+[node name="TurnShape" type="CollisionShape3D" parent="Paths/North"]
+position = Vector3(2.45, 0.6, -12.4)
+shape = SubResource("NorthTurnShape")
+
+[node name="FinalShape" type="CollisionShape3D" parent="Paths/North"]
+position = Vector3(3.5, 0.6, -15)
+shape = SubResource("NorthFinalShape")
+
+[node name="Vents" type="Node3D" parent="."]
+
+[node name="West" parent="Vents" instance=ExtResource("vent")]
+position = Vector3(-9, 0.32, 0)
+
+[node name="North" parent="Vents" instance=ExtResource("vent")]
+position = Vector3(3.5, 0.32, -15.4)
+rotation = Vector3(0, 1.570796, 0)
+source_offset = Vector3(0, -1.12, -3.1)
+
+[node name="RoomPresence" type="Area3D" parent="."]
+position = Vector3(-3, 1, -2)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RoomPresence"]
+shape = SubResource("RoomShape")
+
+[node name="SealTrigger" type="Area3D" parent="."]
+position = Vector3(3.5, 0.7, -18.7)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SealTrigger"]
+shape = SubResource("SealShape")
+
+[node name="Hints" type="Node3D" parent="."]
+
+[node name="Entry" type="Label3D" parent="Hints"]
+position = Vector3(0, 2.7, 14)
+billboard = 1
+text = "ĐÁNH VAN LÀM NGUỘI MAGMA\nÔ ĐÃ GIẪM SẼ SẬP · ĐI TIẾP"
+font_size = 40
+pixel_size = 0.008
+no_depth_test = true
+
+[node name="Branch" type="Label3D" parent="Hints"]
+position = Vector3(0, 2.7, 0)
+billboard = 1
+text = "ĐÁNH VAN CHIA DÒNG · TÂY / BẮC"
+font_size = 40
+pixel_size = 0.008
+no_depth_test = true
+
+[node name="Relief" type="Label3D" parent="Hints"]
+position = Vector3(-15.5, 2.7, 0)
+billboard = 1
+text = "ĐÁNH VAN XẢ ÁP · MỞ CẦU HỒI"
+font_size = 40
+pixel_size = 0.008
+no_depth_test = true
+
+[connection signal="body_entered" from="Basin/WaterRecovery" to="." method="_on_water_body_entered"]
+
+[node name="WestCrust" type="StaticBody3D" parent="Route"]
+position = Vector3(-11, 0.08, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Route/WestCrust"]
+shape = SubResource("haz_WestCrust")
+
+[node name="Surface" type="MeshInstance3D" parent="Route/WestCrust"]
+
+[node name="Tile0_0" parent="Route/WestCrust/Surface" instance=ExtResource("fire_cracked")]
+position = Vector3(0, -0.24, 0)
+scale = Vector3(1, 1.5, 0.75)
+
+
+
+[node name="SinkingRoutes" type="Node3D" parent="."]
+
+[node name="First" type="Node3D" parent="SinkingRoutes" node_paths=PackedStringArray("cooling_path", "floor_bodies")]
+script = ExtResource("sink_route")
+cooling_path = NodePath("../../Paths/First")
+floor_bodies = [NodePath("../../Route/FirstStones")]
+
+[node name="West" type="Node3D" parent="SinkingRoutes" node_paths=PackedStringArray("cooling_path", "floor_bodies")]
+script = ExtResource("sink_route")
+cooling_path = NodePath("../../Paths/West")
+floor_bodies = [NodePath("../../Route/WestStones"), NodePath("../../Route/WestCrust")]
+
+[node name="North" type="Node3D" parent="SinkingRoutes" node_paths=PackedStringArray("cooling_path", "floor_bodies")]
+script = ExtResource("sink_route")
+cooling_path = NodePath("../../Paths/North")
+floor_bodies = [NodePath("../../Route/NorthStones"), NodePath("../../Route/NorthTurn"), NodePath("../../Route/SealApproach")]
