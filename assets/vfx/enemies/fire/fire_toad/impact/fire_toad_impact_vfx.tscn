@@ -50,7 +50,7 @@ fill_to = Vector2(1, 0.5)
 [sub_resource type="ShaderMaterial" id="RingMat"]
 resource_local_to_scene = true
 shader = ExtResource("decal")
-shader_parameter/effect_profile = 1
+shader_parameter/effect_profile = 3
 shader_parameter/decal_mask = SubResource("WaveMask")
 shader_parameter/decal_color = Color(1, 0.54, 0.17, 1)
 
@@ -59,14 +59,14 @@ resource_local_to_scene = true
 shader = ExtResource("decal")
 shader_parameter/effect_profile = 1
 shader_parameter/decal_mask = SubResource("WaveMask")
-shader_parameter/decal_color = Color(0.96, 0.27, 0.10, 0.50)
+shader_parameter/decal_color = Color(1, 0.31, 0.07, 0.65)
 
 [sub_resource type="ShaderMaterial" id="FlareMat"]
 resource_local_to_scene = true
 shader = ExtResource("decal")
 shader_parameter/effect_profile = 1
 shader_parameter/decal_mask = ExtResource("soft")
-shader_parameter/decal_color = Color(1, 0.67, 0.29, 0.92)
+shader_parameter/decal_color = Color(1, 0.88, 0.57, 0.95)
 
 [sub_resource type="ShaderMaterial" id="ScorchMat"]
 resource_local_to_scene = true
@@ -95,7 +95,7 @@ shader_parameter/erosion_start = 0.56
 
 [sub_resource type="StandardMaterial3D" id="RockMat"]
 shading_mode = 0
-albedo_color = Color(0.23, 0.091, 0.075, 1)
+albedo_color = Color(0.15, 0.072, 0.058, 1)
 
 [sub_resource type="PlaneMesh" id="Disc"]
 size = Vector2(2, 2)
@@ -107,7 +107,7 @@ size = Vector2(0.27, 0.42)
 material = SubResource("EmberMat")
 
 [sub_resource type="QuadMesh" id="SmokeMesh"]
-size = Vector2(2.30, 2.30)
+size = Vector2(1.8, 1.8)
 material = SubResource("SmokeMat")
 
 [sub_resource type="PrismMesh" id="RockMesh"]
@@ -118,8 +118,8 @@ size = Vector3(0.43, 0.48, 0.32)
 direction = Vector3(0, 1, 0)
 spread = 78.0
 gravity = Vector3(0, -9, 0)
-initial_velocity_min = 4.5
-initial_velocity_max = 10.0
+initial_velocity_min = 3.5
+initial_velocity_max = 8.0
 angle_min = -120.0
 angle_max = 120.0
 scale_max = 1.25
@@ -128,10 +128,10 @@ scale_max = 1.25
 emission_shape = 1
 emission_sphere_radius = 0.28
 direction = Vector3(0, 1, 0)
-spread = 80.0
+spread = 35.0
 gravity = Vector3(0, 1, 0)
-initial_velocity_min = 1.3
-initial_velocity_max = 3.0
+initial_velocity_min = 0.65
+initial_velocity_max = 1.4
 angle_min = -180.0
 angle_max = 180.0
 scale_min = 0.55
@@ -166,18 +166,60 @@ albedo_color = Color(1, 1, 1, 1)
 emission_shape = 6
 emission_ring_axis = Vector3(0, 1, 0)
 emission_ring_height = 0.1
-emission_ring_radius = 0.58
-emission_ring_inner_radius = 0.13
+emission_ring_radius = 0.88
+emission_ring_inner_radius = 0.68
 direction = Vector3(0, 1, 0)
-spread = 66.0
+spread = 32.0
 gravity = Vector3(0, -11, 0)
-initial_velocity_min = 3.1
-initial_velocity_max = 7.0
-scale_min = 0.44
-scale_max = 1.22
+initial_velocity_min = 4.5
+initial_velocity_max = 8.5
+scale_min = 0.55
+scale_max = 1.3
 angle_min = -66.0
 angle_max = 66.0
 color_ramp = SubResource("FlameAgeTex")
+
+[sub_resource type="Gradient" id="DustColors"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(0.16, 0.11, 0.09, 0.0, 0.48, 0.34, 0.23, 0.65, 0.66, 0.51, 0.35, 0.85)
+
+[sub_resource type="GradientTexture2D" id="DustRamp"]
+gradient = SubResource("DustColors")
+width = 128
+height = 1
+
+[sub_resource type="ShaderMaterial" id="DustMat"]
+shader = ExtResource("particle")
+shader_parameter/palette_atlas = SubResource("DustRamp")
+shader_parameter/shape_mask = ExtResource("puff")
+shader_parameter/erosion_noise = ExtResource("noise")
+shader_parameter/atlas_columns = 4
+shader_parameter/atlas_rows = 4
+shader_parameter/atlas_frames = 16
+shader_parameter/erosion_start = 0.12
+shader_parameter/noise_influence = 0.12
+
+[sub_resource type="QuadMesh" id="DustMesh"]
+size = Vector2(1.4, 1.1)
+material = SubResource("DustMat")
+
+[sub_resource type="ParticleProcessMaterial" id="DustProcess"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_radius = 1.55
+emission_ring_inner_radius = 1.25
+emission_ring_height = 0.08
+direction = Vector3(0, 1, 0)
+spread = 10.0
+gravity = Vector3(0, 0.1, 0)
+initial_velocity_min = 0.1
+initial_velocity_max = 0.3
+radial_velocity_min = 1.2
+radial_velocity_max = 2.3
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 0.7
+scale_max = 1.3
 
 [node name="FireToadImpactVfx" type="Node3D"]
 top_level = true
@@ -247,6 +289,7 @@ process_material = SubResource("SmokeProcess")
 draw_pass_1 = SubResource("SmokeMesh")
 one_shot = true
 explosiveness = 0.86
+local_coords = true
 
 [node name="Rocks" type="GPUParticles3D" parent="."]
 visible = false
@@ -259,3 +302,16 @@ process_material = SubResource("RockProcess")
 draw_pass_1 = SubResource("RockMesh")
 one_shot = true
 explosiveness = 1.0
+
+[node name="Dust" type="GPUParticles3D" parent="."]
+visible = false
+cast_shadow = 0
+emitting = false
+amount = 10
+lifetime = 0.6
+local_coords = true
+one_shot = true
+explosiveness = 1.0
+visibility_aabb = AABB(-20, -5, -20, 40, 12, 40)
+process_material = SubResource("DustProcess")
+draw_pass_1 = SubResource("DustMesh")

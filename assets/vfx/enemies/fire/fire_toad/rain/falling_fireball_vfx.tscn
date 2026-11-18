@@ -49,7 +49,8 @@ shader_parameter/palette_atlas = SubResource("HeatRamp")
 shader_parameter/shape_mask = ExtResource("soft")
 shader_parameter/erosion_noise = ExtResource("noise")
 shader_parameter/intensity = 1.75
-shader_parameter/noise_influence = 0.28
+shader_parameter/noise_influence = 0.62
+shader_parameter/noise_scroll = Vector2(0.2, -1.8)
 
 [sub_resource type="ShaderMaterial" id="CrackMat"]
 render_priority = 1
@@ -60,6 +61,7 @@ shader_parameter/erosion_noise = ExtResource("noise")
 shader_parameter/mask_tiling = Vector2(2, 1)
 shader_parameter/repeat_shape = true
 shader_parameter/intensity = 1.8
+shader_parameter/mask_scroll = Vector2(0.18, -0.42)
 
 [sub_resource type="StandardMaterial3D" id="OutlineColor"]
 shading_mode = 0
@@ -67,11 +69,11 @@ albedo_color = Color(0.18, 0.026, 0.026, 1)
 
 [sub_resource type="StandardMaterial3D" id="OrbShellMat"]
 shading_mode = 0
-albedo_color = Color(0.32, 0.063, 0.049, 1)
+albedo_color = Color(0.18, 0.024, 0.018, 1)
 
 [sub_resource type="StandardMaterial3D" id="OrbCoreMat"]
 shading_mode = 0
-albedo_color = Color(1, 0.82, 0.37, 1)
+albedo_color = Color(1, 0.9, 0.48, 1)
 
 [sub_resource type="ShaderMaterial" id="TrailMat"]
 shader = ExtResource("particle")
@@ -87,7 +89,7 @@ subdivide_width = 0
 subdivide_depth = 0
 
 [sub_resource type="QuadMesh" id="TrailMesh"]
-size = Vector2(0.41, 0.97)
+size = Vector2(0.28, 0.85)
 material = SubResource("TrailMat")
 
 [sub_resource type="TorusMesh" id="OutlineMesh"]
@@ -124,8 +126,8 @@ material = SubResource("OrbCoreMat")
 
 [sub_resource type="CylinderMesh" id="TailMesh"]
 top_radius = 0.017
-bottom_radius = 0.46
-height = 4.3
+bottom_radius = 0.36
+height = 4.6
 radial_segments = 9
 rings = 1
 
@@ -200,7 +202,7 @@ position = Vector3(0, 2.27, 0)
 visible = false
 cast_shadow = 0
 emitting = false
-amount = 12
+amount = 10
 lifetime = 0.26
 visibility_aabb = AABB(-18, -18, -18, 36, 36, 36)
 process_material = SubResource("TrailProcess")

@@ -9,6 +9,10 @@ uniform vec4 seam_color : source_color = vec4(1.0, 0.69, 0.17, 1.0);
 uniform vec4 hot_color : source_color = vec4(1.0, 0.94, 0.58, 1.0);
 uniform float flow_speed : hint_range(0.0, 1.0) = 0.12;
 uniform float bubble_cells : hint_range(2.0, 14.0) = 6.0;
+uniform float vein_contrast : hint_range(0.0, 2.0) = 1.15;
+uniform float shock_rays : hint_range(4.0, 24.0) = 12.0;
+uniform float shock_rim_width : hint_range(0.01, 0.1) = 0.035;
+uniform float pressure_turn_speed : hint_range(0.0, 4.0) = 1.4;
 
 uniform float spread : hint_range(0.0, 1.0) = 1.0;
 uniform float cooling : hint_range(0.0, 1.0) = 0.0;
@@ -16,7 +20,7 @@ uniform float opacity : hint_range(0.0, 1.0) = 1.0;
 uniform float heat : hint_range(0.0, 1.0) = 0.0;
 
 // Vòng nổ dùng lại shader để các mesh trong pool không chiếm bảng instance uniform của GLES3.
-uniform int effect_profile : hint_enum("Dung nham", "Dấu sàn", "Vòng báo") = 0;
+uniform int effect_profile : hint_enum("Dung nham", "Dấu sàn", "Vòng báo", "Xung kích", "Nén khí") = 0;
 uniform sampler2D decal_mask : hint_default_white, filter_linear, repeat_disable;
 uniform vec4 decal_color : source_color = vec4(1.0, 0.52, 0.13, 1.0);
 uniform float progress : hint_range(0.0, 1.0) = 0.0;
@@ -47,7 +51,7 @@ vec4 lava_surface(vec2 uv) {
 	float rim_cut = 0.85 + 0.15 * sin(21.0 * atan(axis.y, axis.x + 0.0001) + TIME);
 	vec3 glow_color = mix(seam_color.rgb, hot_color.rgb, heat);
 	vec3 color = mix(magma_color.rgb, crust_color.rgb, plates * 0.82);
-	color = mix(color, glow_color, veins * 0.92);
+	color = mix(color, glow_color, clamp(veins * vein_contrast, 0.0, 1.0));
 	color = mix(crust_color.rgb * (0.76 + 0.42 * stone), color, liquid);
 	color = mix(color, mix(magma_color.rgb, glow_color, 0.56), rim * rim_cut * (0.9 - cooling * 0.57));
 
@@ -65,9 +69,24 @@ vec4 lava_surface(vec2 uv) {
 }
 
 vec4 ground_decal(vec2 uv) {
+	vec2 axis = uv * 2.0 - 1.0;
+	float r = length(axis);
+	if (effect_profile >= 3) {
+		float angle = atan(axis.y, axis.x + 0.0001);
+		float boundary = 1.0 - smoothstep(0.97, 1.0, r);
+		float ring = 1.0 - smoothstep(shock_rim_width, shock_rim_width * 2.0, abs(r - 0.84));
+		float rays = pow(max(0.0, cos(angle * shock_rays)), 18.0);
+		rays *= smoothstep(0.20, 0.6, r) * (1.0 - smoothstep(0.72, 0.96, r));
+		if (effect_profile == 4) {
+			// Các cung bị ngắt giúp đọc hướng nén/phóng mà không che miệng cóc.
+			float arcs = smoothstep(-0.1, 0.4, sin(angle * 3.0 + TIME * pressure_turn_speed));
+			return vec4(decal_color.rgb, ring * arcs * boundary * opacity * decal_color.a);
+		}
+		vec3 color = mix(decal_color.rgb, hot_color.rgb, ring * 0.65);
+		return vec4(color, max(ring, rays * (1.0 - progress) * 0.7) * boundary * opacity * decal_color.a);
+	}
 	float mask = texture(decal_mask, uv).r;
 	if (effect_profile == 2) {
-		float r = length(uv * 2.0 - 1.0);
 		float fill = progress <= 0.0 ? 0.0 : (1.0 - smoothstep(progress * 0.95 - 0.015, progress * 0.95, r)) * 0.34;
 		float outer = smoothstep(0.76, 0.99, mask) * 0.17;
 		return vec4(decal_color.rgb, max(fill, outer) * opacity);

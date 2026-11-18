@@ -5,11 +5,18 @@ enum Kind { RAIN, SLAM, LIFT, LAND, SENTINEL_IN, SENTINEL_OUT, ENRAGE, COLLAPSE 
 
 @export_group("Mặt sàn")
 @export var floor_offset: float = 0.045
-@export var ring_radius_ratio: float = 1.05
+@export_range(0.1, 1.0, 0.01) var ring_radius_ratio: float = 1.0
 @export var scorch_radius_ratio: float = 0.86
 @export var flame_material: Material
 @export_group("Hạt")
 @export_range(0.0, 1.0) var normal_ember_ratio: float = 0.65
+@export_range(0.0, 1.0, 0.01) var rain_smoke_ratio: float = 0.22
+@export_range(0.0, 1.0, 0.01) var rain_ember_ratio: float = 0.4
+@export_range(0.0, 1.0, 0.01) var rain_flame_ratio: float = 0.4
+@export_range(0.01, 2.0, 0.01) var dust_scale_per_radius: float = 0.6
+@export_range(0.0, 1.0, 0.01) var lift_rock_ratio: float = 0.3
+@export_range(0.01, 1.0, 0.01) var flash_end: float = 0.18
+@export_range(0.01, 1.0, 0.01) var echo_delay: float = 0.1
 
 static var _flame_mesh: ArrayMesh
 
@@ -20,6 +27,7 @@ var _hot: bool
 var _has_scorch: bool
 var _has_shock: bool
 var _reach: float
+var _is_lift: bool
 
 @onready var _ring: MeshInstance3D = $Ring
 @onready var _echo: MeshInstance3D = $Echo
@@ -29,6 +37,7 @@ var _reach: float
 @onready var _smoke: GPUParticles3D = $Smoke
 @onready var _rocks: GPUParticles3D = $Rocks
 @onready var _flames: GPUParticles3D = $Flames
+@onready var _dust: GPUParticles3D = $Dust
 @onready var _ring_material: ShaderMaterial = _ring.material_override as ShaderMaterial
 @onready var _echo_material: ShaderMaterial = _echo.material_override as ShaderMaterial
 @onready var _flare_material: ShaderMaterial = _flare.material_override as ShaderMaterial
@@ -62,20 +71,31 @@ func play(world_point: Vector3, radius: float, kind: Kind, hot: bool, duration: 
 	_hot = hot
 	_has_scorch = kind == Kind.RAIN or kind == Kind.SLAM or kind == Kind.LAND
 	_has_shock = _has_scorch or kind == Kind.ENRAGE or kind == Kind.COLLAPSE
-	_reach = 1.35 if kind == Kind.SLAM or kind == Kind.LAND or kind == Kind.ENRAGE else 1.0
+	_reach = 1.0
+	_is_lift = kind == Kind.LIFT
 	visible = true
-	_ring.visible = _has_shock or kind == Kind.LIFT
+	_ring.visible = _has_shock
 	_echo.visible = _has_shock and kind != Kind.RAIN
 	_flare.visible = kind != Kind.SENTINEL_OUT
 	_scorch.visible = _has_scorch
 	_embers.amount_ratio = 1.0 if hot else normal_ember_ratio
+	if kind == Kind.RAIN:
+		_embers.amount_ratio *= rain_ember_ratio
+	_smoke.amount_ratio = rain_smoke_ratio if kind == Kind.RAIN else 1.0
+	_smoke.scale = Vector3.ONE * radius * dust_scale_per_radius
 	_restart(_embers, duration)
 	_restart(_smoke, duration)
+	if kind == Kind.SLAM or kind == Kind.LAND or _is_lift:
+		_dust.scale = Vector3.ONE * radius * dust_scale_per_radius
+		_restart(_dust, duration)
 	if _has_shock:
 		_flames.scale = Vector3.ONE * clampf(radius * 0.68, 0.08, 2.45)
 		_flames.amount_ratio = 1.0 if hot else 0.76
+		if kind == Kind.RAIN:
+			_flames.amount_ratio *= rain_flame_ratio
 		_restart(_flames, duration * 0.86)
-	if kind == Kind.SLAM or kind == Kind.LAND:
+	if kind == Kind.SLAM or kind == Kind.LAND or _is_lift:
+		_rocks.amount_ratio = lift_rock_ratio if _is_lift else 1.0
 		_restart(_rocks, duration)
 	_draw_burst(0.0)
 	set_process(true)
@@ -93,25 +113,30 @@ func reset() -> void:
 	_smoke.emitting = false
 	_rocks.emitting = false
 	_flames.emitting = false
+	_dust.emitting = false
 	_embers.hide()
 	_smoke.hide()
 	_rocks.hide()
 	_flames.hide()
+	_dust.hide()
 
 
 func _draw_burst(progress: float) -> void:
 	var out: float = 1.0 - pow(1.0 - progress, 3.0)
 	var wave: float = 1.0 - smoothstep(0.23, 0.93, progress)
-	var flash: float = 1.0 - smoothstep(0.02, 0.42, progress)
-	var ring_size: float = _radius * lerpf(0.38, ring_radius_ratio * _reach, out)
+	var flash: float = 1.0 - smoothstep(0.0, flash_end, progress)
+	var ring_size: float = _radius * lerpf(0.12, ring_radius_ratio * _reach, out)
 	_ring.scale = Vector3(ring_size, 1.0, ring_size)
 	_ring_material.set_shader_parameter(&"opacity", wave)
-	var echo_size: float = ring_size * 0.73
+	var echo_progress: float = clampf((progress - echo_delay) / maxf(1.0 - echo_delay, 0.001), 0.0, 1.0)
+	var echo_size: float = _radius * (1.0 - pow(1.0 - echo_progress, 3.0))
 	_echo.scale = Vector3(echo_size, 1.0, echo_size)
-	_echo_material.set_shader_parameter(&"opacity", wave)
+	_echo_material.set_shader_parameter(&"opacity", wave * smoothstep(0.0, echo_delay, progress))
 	var flare_size: float = _radius * lerpf(0.35, 1.17, out)
 	_flare.scale = Vector3(flare_size, 1.0, flare_size)
 	_flare_material.set_shader_parameter(&"opacity", flash * (1.0 if _hot else 0.75))
+	_ring_material.set_shader_parameter(&"progress", progress)
+	_echo_material.set_shader_parameter(&"progress", progress)
 	var scorch_size: float = _radius * scorch_radius_ratio
 	_scorch.scale = Vector3(scorch_size, 1.0, scorch_size)
 	_scorch_material.set_shader_parameter(&"opacity", smoothstep(0.02, 0.28, progress) * (1.0 - smoothstep(0.44, 1.0, progress)))
