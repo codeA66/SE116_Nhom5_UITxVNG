@@ -45,7 +45,7 @@ func _resolve(generation: int) -> void:
 		var receiver: WindReceiverComponent = area as WindReceiverComponent
 		if receiver != null and handles(receiver) and receiver not in _pending:
 			_pending.append(receiver)
-	var best: WindReceiverComponent
+	var best: WindReceiverComponent = null
 	var best_entry: float = INF
 	var best_offset: float = INF
 	var world_to_volume: Transform3D = volume.global_transform.affine_inverse()

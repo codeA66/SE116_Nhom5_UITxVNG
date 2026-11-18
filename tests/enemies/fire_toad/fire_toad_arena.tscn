@@ -1,18 +1,22 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://8r4aaabtgqe3"]
 
-[ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="1_zone"]
-[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2_player"]
-[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="3_spawn"]
+[ext_resource type="Script" uid="uid://bw2mjpgi3op5x" path="res://levels/_base/zone_root.gd" id="1_zone"]
+[ext_resource type="PackedScene" uid="uid://ogqrogwu58gt" path="res://entities/player/player.tscn" id="2_player"]
+[ext_resource type="Script" uid="uid://dsy4kssiihtpf" path="res://objects/core/spawn_point/spawn_point.gd" id="3_spawn"]
+[ext_resource type="Script" uid="uid://b51b41dt7yfvw" path="res://tests/enemies/fire_toad/fire_toad_arena.gd" id="4_sandbox"]
 [ext_resource type="Resource" path="res://resources/combat/weapons/sword.tres" id="5_sword"]
-[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="6_wind"]
-[ext_resource type="Resource" path="res://abilities/flame_breath/flame_breath.tres" id="9_fire"]
-[ext_resource type="Script" path="res://tests/enemies/fire_toad/fire_toad_arena.gd" id="4_sandbox"]
+[ext_resource type="Resource" uid="uid://bpnwmld1wx3qe" path="res://abilities/wind_blast/wind_blast.tres" id="6_wind"]
+[ext_resource type="Resource" uid="uid://bgc2p5bkgqoq7" path="res://resources/combat/weapons/bow.tres" id="7_bow"]
+[ext_resource type="Resource" path="res://abilities/dash/dash.tres" id="9_ffnud"]
+[ext_resource type="Resource" uid="uid://bbpu4dp2vnrxy" path="res://abilities/flame_breath/flame_breath.tres" id="9_fire"]
+[ext_resource type="Resource" uid="uid://cnkajx20i5gbp" path="res://resources/player/foxy_animation_markers.tres" id="10_r2u7u"]
 [ext_resource type="PackedScene" path="res://entities/bosses/fire_toad/fire_toad.tscn" id="10_toad"]
-[ext_resource type="Resource" path="res://resources/combat/weapons/bow.tres" id="7_bow"]
+[ext_resource type="Script" uid="uid://cabvd0p6t1m7a" path="res://entities/_base/data/weapon_data.gd" id="11_81c2u"]
 [ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/fire_toad_solo.tres" id="11_solo"]
 [ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/fire_toad_duo.tres" id="12_duo"]
-[ext_resource type="Script" path="res://entities/bosses/fire_toad/court/fire_toad_court.gd" id="13_court"]
-[ext_resource type="Script" path="res://entities/bosses/fire_toad/court/fire_toad_wave.gd" id="14_wave"]
+[ext_resource type="Script" uid="uid://d03fdqw1yxvm7" path="res://entities/bosses/fire_toad/court/fire_toad_court.gd" id="13_court"]
+[ext_resource type="PackedScene" path="res://entities/bosses/fire_toad/sentinel/fire_toad_sentinel.tscn" id="14_6ttm4"]
+[ext_resource type="Script" uid="uid://cfpr7viqnxurw" path="res://entities/bosses/fire_toad/court/fire_toad_wave.gd" id="14_wave"]
 
 [sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
 sky_top_color = Color(0.32, 0.4, 0.55, 1)
@@ -31,17 +35,17 @@ ambient_light_energy = 0.6
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="StandardMaterial3D" id="ArenaMat"]
-albedo_color = Color(0.28, 0.2, 0.18, 1)
-roughness = 0.95
-
-[sub_resource type="StandardMaterial3D" id="RimMat"]
-albedo_color = Color(0.2, 0.14, 0.12, 1)
-roughness = 0.95
-
 [sub_resource type="StandardMaterial3D" id="LavaSeaMat"]
 shading_mode = 0
 albedo_color = Color(0.45, 0.1, 0.04, 1)
+
+[sub_resource type="PlaneMesh" id="LavaSeaMesh"]
+material = SubResource("LavaSeaMat")
+size = Vector2(80, 80)
+
+[sub_resource type="StandardMaterial3D" id="ArenaMat"]
+albedo_color = Color(0.28, 0.2, 0.18, 1)
+roughness = 0.95
 
 [sub_resource type="BoxMesh" id="ArenaMesh"]
 material = SubResource("ArenaMat")
@@ -49,6 +53,10 @@ size = Vector3(20, 1, 20)
 
 [sub_resource type="BoxShape3D" id="ArenaShape"]
 size = Vector3(20, 1, 20)
+
+[sub_resource type="StandardMaterial3D" id="RimMat"]
+albedo_color = Color(0.2, 0.14, 0.12, 1)
+roughness = 0.95
 
 [sub_resource type="BoxMesh" id="PadMesh"]
 material = SubResource("RimMat")
@@ -79,192 +87,277 @@ toads = Array[NodePath]([NodePath("../FireToad")])
 script = ExtResource("14_wave")
 toads = Array[NodePath]([NodePath("../FireToadLeft"), NodePath("../FireToadRight")])
 
-[sub_resource type="PlaneMesh" id="LavaSeaMesh"]
-material = SubResource("LavaSeaMat")
-size = Vector2(80, 80)
-
-[node name="FireToadArena" type="Node3D"]
+[node name="FireToadArena" type="Node3D" unique_id=1919590190]
 script = ExtResource("1_zone")
 shader_warmup = null
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2131610791]
 environment = SubResource("Env")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=312972617]
 transform = Transform3D(0.8660254, -0.38302222, 0.32139382, 0, 0.6427876, 0.76604444, -0.5, -0.66341394, 0.5566704, 0, 10, 0)
 light_energy = 0.8
 shadow_enabled = true
 
-[node name="LavaSea" type="MeshInstance3D" parent="."]
+[node name="LavaSea" type="MeshInstance3D" parent="." unique_id=1607131752]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
 cast_shadow = 0
 mesh = SubResource("LavaSeaMesh")
 
-[node name="Arena" type="StaticBody3D" parent="."]
+[node name="Arena" type="StaticBody3D" parent="." unique_id=825012891]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Arena"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Arena" unique_id=1526791189]
 mesh = SubResource("ArenaMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Arena"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Arena" unique_id=25979463]
 shape = SubResource("ArenaShape")
 
-[node name="ArenaCenter" type="Marker3D" parent="."]
+[node name="ArenaCenter" type="Marker3D" parent="." unique_id=341803591]
 
-[node name="PadNorth" type="StaticBody3D" parent="."]
+[node name="PadNorth" type="StaticBody3D" parent="." unique_id=1944648353]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -15)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PadNorth"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PadNorth" unique_id=1630577873]
 mesh = SubResource("PadMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PadNorth"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PadNorth" unique_id=1447231957]
 shape = SubResource("PadShape")
 
-[node name="Top" type="Marker3D" parent="PadNorth"]
+[node name="Top" type="Marker3D" parent="PadNorth" unique_id=472154525]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
-[node name="PadEast" type="StaticBody3D" parent="."]
+[node name="PadEast" type="StaticBody3D" parent="." unique_id=950234782]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.5, 0)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PadEast"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PadEast" unique_id=1694304407]
 mesh = SubResource("PadMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PadEast"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PadEast" unique_id=182987037]
 shape = SubResource("PadShape")
 
-[node name="Top" type="Marker3D" parent="PadEast"]
+[node name="Top" type="Marker3D" parent="PadEast" unique_id=1972978431]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
-[node name="PadSouth" type="StaticBody3D" parent="."]
+[node name="PadSouth" type="StaticBody3D" parent="." unique_id=1936149705]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 15)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PadSouth"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PadSouth" unique_id=486418941]
 mesh = SubResource("PadMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PadSouth"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PadSouth" unique_id=999074708]
 shape = SubResource("PadShape")
 
-[node name="Top" type="Marker3D" parent="PadSouth"]
+[node name="Top" type="Marker3D" parent="PadSouth" unique_id=701028652]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
-[node name="PadWest" type="StaticBody3D" parent="."]
+[node name="PadWest" type="StaticBody3D" parent="." unique_id=791938324]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.5, 0)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PadWest"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PadWest" unique_id=1270199830]
 mesh = SubResource("PadMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PadWest"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PadWest" unique_id=1141902623]
 shape = SubResource("PadShape")
 
-[node name="Top" type="Marker3D" parent="PadWest"]
+[node name="Top" type="Marker3D" parent="PadWest" unique_id=1025057557]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
-[node name="PerchNE" type="StaticBody3D" parent="."]
+[node name="PerchNE" type="StaticBody3D" parent="." unique_id=1407276752]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 0.6, -11.6)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchNE"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchNE" unique_id=345873439]
 mesh = SubResource("PerchMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchNE"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchNE" unique_id=528074499]
 shape = SubResource("PerchShape")
 
-[node name="Top" type="Marker3D" parent="PerchNE"]
+[node name="Top" type="Marker3D" parent="PerchNE" unique_id=1147366785]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 
-[node name="PerchNW" type="StaticBody3D" parent="."]
+[node name="PerchNW" type="StaticBody3D" parent="." unique_id=127966114]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6, 0.6, -11.6)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchNW"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchNW" unique_id=613916848]
 mesh = SubResource("PerchMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchNW"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchNW" unique_id=1564996895]
 shape = SubResource("PerchShape")
 
-[node name="Top" type="Marker3D" parent="PerchNW"]
+[node name="Top" type="Marker3D" parent="PerchNW" unique_id=575580053]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 
-[node name="PerchSE" type="StaticBody3D" parent="."]
+[node name="PerchSE" type="StaticBody3D" parent="." unique_id=1536988235]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 0.6, 11.6)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchSE"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchSE" unique_id=890713804]
 mesh = SubResource("PerchMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchSE"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchSE" unique_id=231614558]
 shape = SubResource("PerchShape")
 
-[node name="Top" type="Marker3D" parent="PerchSE"]
+[node name="Top" type="Marker3D" parent="PerchSE" unique_id=1917377778]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 
-[node name="PerchSW" type="StaticBody3D" parent="."]
+[node name="PerchSW" type="StaticBody3D" parent="." unique_id=90288020]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6, 0.6, 11.6)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchSW"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PerchSW" unique_id=1628566024]
 mesh = SubResource("PerchMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchSW"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PerchSW" unique_id=565159323]
 shape = SubResource("PerchShape")
 
-[node name="Top" type="Marker3D" parent="PerchSW"]
+[node name="Top" type="Marker3D" parent="PerchSW" unique_id=797679930]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 
-[node name="Start" type="Marker3D" parent="."]
+[node name="Start" type="Marker3D" parent="." unique_id=1208075319]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6)
 script = ExtResource("3_spawn")
 spawn_id = &"start"
 
-[node name="Sandbox" type="Node" parent="."]
+[node name="Sandbox" type="Node" parent="." unique_id=1853347923]
 script = ExtResource("4_sandbox")
 weapons = Array[Resource]([ExtResource("5_sword"), ExtResource("7_bow")])
 abilities = Array[Resource]([ExtResource("6_wind"), ExtResource("9_fire")])
 
-[node name="Player" parent="." instance=ExtResource("2_player")]
+[node name="Player" parent="." unique_id=1869008779 instance=ExtResource("2_player")]
+preview_sword = false
+preview_dash = false
+preview_weapon = ExtResource("5_sword")
+preview_dash_data = ExtResource("9_ffnud")
+skeleton_path = NodePath("Foxy_Rig/Skeleton3D")
+bow_hand_bone = &"hand.L"
+sword_node_name = &"Sword"
+bow_arm_bones = Dictionary[StringName, StringName]({
+&"fore_l": &"forearm.L",
+&"fore_r": &"forearm.R",
+&"hand_l": &"hand.L",
+&"hand_r": &"hand.R",
+&"upper_l": &"upper_arm.L",
+&"upper_r": &"upper_arm.R"
+})
+bow_body_bones = Dictionary[StringName, StringName]({
+&"chest": &"chest",
+&"head": &"head",
+&"neck": &"neck",
+&"spine": &"spine"
+})
+bow_twist_degrees = 0.0
+bow_lean_degrees = 0.0
+bow_head_tilt_degrees = 0.0
+bow_head_turn_degrees = 75.0
+clip_map = Dictionary[StringName, StringName]({
+&"Attack_Backhand": &"Attack_2",
+&"Attack_Finisher": &"Attack_3",
+&"Attack_Horizontal": &"Attack_1",
+&"Rig_Medium_CombatMelee/Melee_1H_Attack_Slice_Horizontal": &"Attack_1",
+&"Rig_Medium_General/Death_A": &"Death",
+&"Rig_Medium_General/Hit_A": &"Hurt",
+&"Rig_Medium_General/PickUp": &"PickUp",
+&"Rig_Medium_MovementAdvanced/Dodge_Forward": &"Dodge_Roll",
+&"Rig_Medium_MovementBasic/Jump_Idle": &"Fall",
+&"Rig_Medium_MovementBasic/Jump_Start": &"Jump"
+})
+loop_clips = Array[StringName]([&"Idle", &"Idle_Sword", &"Run", &"Run_Sword", &"Fall"])
+animation_markers = ExtResource("10_r2u7u")
+dash_clip = &"Dodge_Roll"
+land_clip = &"Land"
+roll_duration = 0.28
+roll_speed = 13.5
+roll_flip = true
+roll_flip_window = Vector2(0.1, 0.9)
+roll_clip_curl = Vector2(0.11111111, 0.33333334)
+roll_clip_recover_start = 0.7777777777777778
+landing_duration = 0.2
+hard_landing_speed = 3.0
+run_reference_speed = 2.4
+min_run_playback = 0.85
+max_run_playback = 1.65
+locomotion_blend = 0.08
+run_playback_response = 12.0
+outline_color = Color(0.17, 0.08, 0.05, 1)
+face_blink_interval = Vector2(2, 4.5)
+face_blink_time = 0.1
+coyote_time = 0.12
+jump_buffer_time = 0.12
+attack_buffer_time = 0.25
+dash_buffer_time = 0.2
+wind_blast_buffer_time = 0.15
+recovery_invincibility = 1.0
+safe_ground_frames = 8
+blink_interval = 0.08
+lethal_flash_color = Color(1, 0.12, 0.1, 0.65)
+lethal_flash_time = 0.4
+soft_lock_range = 4.0
+soft_lock_angle = 60.0
+arrow_pool_size = 4
+combat_weapons = Array[ExtResource("11_81c2u")]([ExtResource("7_bow")])
+bow_stance_degrees = 90.0
 
-[node name="ThroneLedge" type="StaticBody3D" parent="."]
+[node name="ThroneLedge" type="StaticBody3D" parent="." unique_id=635859547]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -11.5)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ThroneLedge"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ThroneLedge" unique_id=1275691898]
 mesh = SubResource("LedgeMesh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ThroneLedge"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ThroneLedge" unique_id=1619903204]
 shape = SubResource("LedgeShape")
 
-[node name="ThroneLeft" type="Marker3D" parent="ThroneLedge"]
+[node name="ThroneLeft" type="Marker3D" parent="ThroneLedge" unique_id=406951219]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.4, 0)
 
-[node name="ThroneMid" type="Marker3D" parent="ThroneLedge"]
+[node name="ThroneMid" type="Marker3D" parent="ThroneLedge" unique_id=1383117305]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 
-[node name="ThroneRight" type="Marker3D" parent="ThroneLedge"]
+[node name="ThroneRight" type="Marker3D" parent="ThroneLedge" unique_id=221375383]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.4, 0)
 
-[node name="FireToadLeft" parent="." node_paths=PackedStringArray("arena_center", "outer_platforms", "throne") instance=ExtResource("10_toad")]
+[node name="FireToadLeft" parent="." unique_id=1664994484 node_paths=PackedStringArray("arena_center", "outer_platforms", "sentinel_perches", "throne") instance=ExtResource("10_toad")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.8, -11.5)
 data = ExtResource("12_duo")
 arena_center = NodePath("../ArenaCenter")
+arena_half_size = 9.0
 outer_platforms = [NodePath("../PadNorth/Top"), NodePath("../PadEast/Top"), NodePath("../PadSouth/Top"), NodePath("../PadWest/Top")]
+sentinel_scene = ExtResource("14_6ttm4")
+sentinel_perches = []
 throne = NodePath("../ThroneLedge/ThroneLeft")
+defeat_state = &"Dead"
 home_offset = Vector2(-5, 0)
+rain_pool_size = 8
+lava_pool_size = 3
+shot_pool_size = 5
 
-[node name="FireToad" parent="." node_paths=PackedStringArray("arena_center", "outer_platforms", "throne") instance=ExtResource("10_toad")]
+[node name="FireToad" parent="." unique_id=1807712255 node_paths=PackedStringArray("arena_center", "outer_platforms", "sentinel_perches", "throne") instance=ExtResource("10_toad")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -11.5)
 data = ExtResource("11_solo")
 arena_center = NodePath("../ArenaCenter")
+arena_half_size = 9.0
 outer_platforms = [NodePath("../PadNorth/Top"), NodePath("../PadEast/Top"), NodePath("../PadSouth/Top"), NodePath("../PadWest/Top")]
+sentinel_scene = ExtResource("14_6ttm4")
+sentinel_perches = []
 throne = NodePath("../ThroneLedge/ThroneMid")
+defeat_state = &"Dead"
 home_offset = Vector2(0, 0)
+rain_pool_size = 8
+lava_pool_size = 3
+shot_pool_size = 5
 
-[node name="FireToadRight" parent="." node_paths=PackedStringArray("arena_center", "outer_platforms", "throne") instance=ExtResource("10_toad")]
+[node name="FireToadRight" parent="." unique_id=381422624 node_paths=PackedStringArray("arena_center", "outer_platforms", "sentinel_perches", "throne") instance=ExtResource("10_toad")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.8, -11.5)
 data = ExtResource("12_duo")
 arena_center = NodePath("../ArenaCenter")
+arena_half_size = 9.0
 outer_platforms = [NodePath("../PadNorth/Top"), NodePath("../PadEast/Top"), NodePath("../PadSouth/Top"), NodePath("../PadWest/Top")]
+sentinel_scene = ExtResource("14_6ttm4")
+sentinel_perches = []
 throne = NodePath("../ThroneLedge/ThroneRight")
+defeat_state = &"Dead"
 home_offset = Vector2(5, 0)
+rain_pool_size = 8
+lava_pool_size = 3
+shot_pool_size = 5
 
-[node name="FireToadCourt" type="Node" parent="."]
+[node name="FireToadCourt" type="Node" parent="." unique_id=663986967]
 script = ExtResource("13_court")
 waves = Array[ExtResource("14_wave")]([SubResource("WaveLead"), SubResource("WavePair")])
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
-arena_center = NodePath("../ArenaCenter")
-outer_platforms = [NodePath("../PadNorth/Top"), NodePath("../PadEast/Top"), NodePath("../PadSouth/Top"), NodePath("../PadWest/Top")]
-sentinel_perches = [NodePath("../PerchNE/Top"), NodePath("../PerchNW/Top"), NodePath("../PerchSE/Top"), NodePath("../PerchSW/Top")]
