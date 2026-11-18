@@ -75,10 +75,15 @@ func receive_hit(info: DamageInfo) -> bool:
 				return true
 	# Lấy cái dài hơn: đòn xuyên bất tử (tick cháy, bẫy) trúng lúc đang dash không được cắt ngắn bất tử của dash
 	_invincible_timer = maxf(_invincible_timer, invincibility_time)
-	if health:
-		health.take_damage(damage_taken)
+	damage_taken = _apply_damage(damage_taken)
 	hurt.emit(info, damage_taken)
 	return true
+
+
+func _apply_damage(amount: int) -> int:
+	if health:
+		health.take_damage(amount)
+	return amount
 
 
 func _resolve_damage(info: DamageInfo) -> int:

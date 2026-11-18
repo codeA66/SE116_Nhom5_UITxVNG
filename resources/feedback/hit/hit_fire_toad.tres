@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="HitFeedbackData" format=3]
+
+[ext_resource type="Script" path="res://components/feedback/hit_feedback/hit_feedback_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+trauma = 0.0
+spark_color = Color(1, 0.74, 0.36, 1)
+spark_scale = 1.65
+hit_height = 1.7
+use_hit_contact = true
+blood_color = Color(0.7215686, 0.2392157, 0.0862745, 1)
+blood_scale = 1.6
+blood_upward_bias = 0.35
+blood_floor_mask = 1

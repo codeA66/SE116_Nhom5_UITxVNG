@@ -1,0 +1,119 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/_base/character.tscn" id="1_base"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/fire_toad.gd" id="2_script"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/fire_toad_data.tres" id="3_data"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/boss_1/boss_1_movement.tres" id="5_movement"]
+[ext_resource type="PackedScene" path="res://objects/combat/indicators/aoe_circle_indicator.tscn" id="6_indicator"]
+[ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="7_pool"]
+[ext_resource type="PackedScene" path="res://entities/bosses/fire_toad/hazards/falling_fireball/falling_fireball.tscn" id="8_rain"]
+[ext_resource type="PackedScene" path="res://entities/bosses/fire_toad/hazards/lava_pool/lava_pool.tscn" id="9_lava"]
+[ext_resource type="PackedScene" path="res://objects/combat/projectiles/boss_fireball/boss_fireball.tscn" id="10_shot"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/movement/fire_toad_idle.gd" id="11_idle"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/attack/fire_toad_fire_rain.gd" id="12_rain"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/attack/fire_toad_web_retreat.gd" id="13_retreat"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/attack/fire_toad_lava_slam.gd" id="14_slam"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/movement/fire_toad_hover.gd" id="15_hover"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/status/fire_toad_dead.gd" id="16_dead"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/status/fire_toad_throne.gd" id="22_throne"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/movement/fire_toad_engage.gd" id="23_engage"]
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/states/status/fire_toad_bow.gd" id="24_bow"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/fire_toad/fire_toad.glb" id="17_model"]
+
+[ext_resource type="PackedScene" path="res://assets/vfx/enemies/fire/fire_toad/boss/fire_toad_vfx.tscn" id="18_fx"]
+
+[ext_resource type="Script" path="res://components/feedback/hit_feedback/hit_feedback_component.gd" id="19_hit"]
+[ext_resource type="Resource" path="res://resources/feedback/hit/hit_fire_toad.tres" id="20_hit_data"]
+[ext_resource type="Resource" path="res://resources/feedback/death/death_fire_toad.tres" id="21_death_data"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 1.3
+height = 3.0
+
+[sub_resource type="CapsuleShape3D" id="HurtShape"]
+radius = 1.5
+height = 3.4
+
+[node name="FireToad" instance=ExtResource("1_base")]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("2_script")
+data = ExtResource("3_data")
+movement = ExtResource("5_movement")
+
+[node name="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BodyShape")
+
+[node name="ToadModel" parent="Model/Visual" instance=ExtResource("17_model")]
+transform = Transform3D(-1.4, 0, 0, 0, 1.4, 0, 0, 0, -1.4, 0, 0, 0)
+
+[node name="Mouth" type="Marker3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.6)
+
+[node name="HurtboxComponent" parent="."]
+collision_layer = 4
+
+[node name="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("HurtShape")
+
+[node name="WindReceiverComponent" parent="."]
+wind_multiplier = 0.0
+
+[node name="SlamIndicator" parent="." instance=ExtResource("6_indicator")]
+
+[node name="HitFeedbackComponent" type="Node" parent="." node_paths=PackedStringArray("hurtbox", "hit_surface")]
+script = ExtResource("19_hit")
+hurtbox = NodePath("../HurtboxComponent")
+hit_surface = NodePath("../HurtboxComponent/CollisionShape3D")
+data = ExtResource("20_hit_data")
+
+[node name="FireToadVfx" parent="." instance=ExtResource("18_fx")]
+death_feedback = ExtResource("21_death_data")
+blood_feedback = ExtResource("20_hit_data")
+
+[node name="RainPool" type="Node" parent="."]
+script = ExtResource("7_pool")
+scene = ExtResource("8_rain")
+initial_size = 0
+
+[node name="LavaPoolPool" type="Node" parent="."]
+script = ExtResource("7_pool")
+scene = ExtResource("9_lava")
+initial_size = 0
+
+[node name="ShotPool" type="Node" parent="."]
+script = ExtResource("7_pool")
+scene = ExtResource("10_shot")
+initial_size = 0
+
+[node name="StateMachine" parent="." node_paths=PackedStringArray("initial_state")]
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("11_idle")
+
+[node name="FireRain" type="Node" parent="StateMachine"]
+script = ExtResource("12_rain")
+
+[node name="WebRetreat" type="Node" parent="StateMachine"]
+script = ExtResource("13_retreat")
+
+[node name="LavaSlam" type="Node" parent="StateMachine"]
+script = ExtResource("14_slam")
+
+[node name="Hover" type="Node" parent="StateMachine"]
+script = ExtResource("15_hover")
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("16_dead")
+
+[node name="Throne" type="Node" parent="StateMachine"]
+script = ExtResource("22_throne")
+
+[node name="Engage" type="Node" parent="StateMachine"]
+script = ExtResource("23_engage")
+
+[node name="Bow" type="Node" parent="StateMachine"]
+script = ExtResource("24_bow")

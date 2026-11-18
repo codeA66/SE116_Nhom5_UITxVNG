@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="FireToadSkills" format=3]
+
+[ext_resource type="Script" path="res://entities/bosses/fire_toad/fire_toad_skills.gd" id="1_skills"]
+
+[resource]
+script = ExtResource("1_skills")
+idle_time = 0.8
+rain_count = 8
+rain_waves = 2
+rain_wave_gap = 0.7
+rain_windup = 0.45
+rain_warn_time = 0.85
+rain_radius = 1.6
+rain_spread = 5.5
+rain_recover = 0.6
+sentinel_count = 0
+sentinel_stagger = 0.5
+retreat_duration = 8.0
+retreat_shot_interval = 1.2
+retreat_shot_count = 5
+retreat_shot_spread = 36.0
+retreat_shot_lead = 1.0
+retreat_hop_interval = 2.0
+slam_count = 4
+lava_radius = 3.8
+lava_lifetime = 5.5
+slam_air_time = 0.75

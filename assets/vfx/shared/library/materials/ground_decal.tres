@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/combat/vfx_library/ground/ground_decal.gdshader" id="1"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/materials/neutral_ramp.tres" id="2"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/decals/ring.png" id="3"]
+
+[resource]
+shader = ExtResource("1")
+shader_parameter/palette_atlas = ExtResource("2")
+shader_parameter/shape_mask = ExtResource("3")
+shader_parameter/field_radius = 0.76

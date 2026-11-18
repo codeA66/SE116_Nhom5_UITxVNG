@@ -23,7 +23,7 @@
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_26_treasure.scn" id="21_1w4y3"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_27_boss_gate.scn" id="22_1stda"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2a_wind_court.scn" id="23_1asvm"]
-[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2b_puzzle_court.scn" id="24_y68c7"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2b_laser_court.tscn" id="24_y68c7"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_2c_key_shrine.scn" id="25_w3hun"]
 [ext_resource type="PackedScene" path="res://levels/_base/tier_zone.tscn" id="26_t5yoq"]
 [ext_resource type="Environment" uid="uid://djoxdkrdij57e" path="res://levels/zone_1_wind/level_1/lighting/wind_palace_dd_environment.tres" id="27_go2tw"]
@@ -290,7 +290,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -224)
 [node name="T2Room2aWindCourt" parent="Rooms/Tier2" unique_id=70577257 instance=ExtResource("23_1asvm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -152)
 
-[node name="T2Room2bPuzzleCourt" parent="Rooms/Tier2" unique_id=1564931690 instance=ExtResource("24_y68c7")]
+[node name="T2Room2bLaserCourt" parent="Rooms/Tier2" unique_id=1564931690 instance=ExtResource("24_y68c7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -176)
 
 [node name="T2Room2cKeyShrine" parent="Rooms/Tier2" unique_id=1187230685 instance=ExtResource("25_w3hun")]

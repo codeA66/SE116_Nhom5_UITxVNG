@@ -42,7 +42,7 @@ func _ready() -> void:
 	set_as_top_level(true)
 	visual.set(&"manual_clock", true)
 	visual.set_process(false)
-	hitbox.hit.connect(_on_hit)
+	hitbox.hit_applied.connect(_on_hit)
 	if wind_receiver:
 		wind_receiver.pushed.connect(_on_wind_pushed)
 	_build_sections()
@@ -59,10 +59,10 @@ func start(attack_data: AttackData, at: Vector3, facing: Vector3) -> void:
 	visible = true
 	_settled.fill(false)
 	for section: CollisionShape3D in _sections:
-		section.disabled = true
+		section.set_deferred(&"disabled", true)
 	if wind_receiver:
 		wind_receiver.enabled = true
-		wind_receiver.monitorable = true
+		wind_receiver.set_deferred(&"monitorable", true)
 	visual.call(&"seek", 0.0)
 	_update_hitbox()
 	set_physics_process(true)
@@ -80,7 +80,7 @@ func pool_released() -> void:
 		hitbox.deactivate()
 	if wind_receiver:
 		wind_receiver.enabled = false
-		wind_receiver.monitorable = false
+		wind_receiver.set_deferred(&"monitorable", false)
 	visual.call(&"seek", -1.0)
 	_settled.fill(false)
 	for section: CollisionShape3D in _sections:
@@ -96,7 +96,7 @@ func cancel() -> void:
 		hitbox.deactivate()
 	if wind_receiver:
 		wind_receiver.enabled = false
-		wind_receiver.monitorable = false
+		wind_receiver.set_deferred(&"monitorable", false)
 	visible = false
 	visual.call(&"seek", -1.0)
 	_settled.fill(false)
@@ -129,7 +129,7 @@ func _build_sections() -> void:
 		_sections.clear()
 		for child in hitbox.get_children():
 			if child is CollisionShape3D:
-				child.disabled = true
+				child.set_deferred(&"disabled", true)
 				_sections.append(child)
 		return
 	
@@ -179,7 +179,7 @@ func _build_sections() -> void:
 		var section: CollisionShape3D = _shape if index == 0 else CollisionShape3D.new()
 		var poly := ConvexPolygonShape3D.new()
 		section.shape = poly
-		section.disabled = true
+		section.set_deferred(&"disabled", true)
 		if index > 0:
 			hitbox.add_child(section)
 		_sections.append(section)
@@ -192,14 +192,14 @@ func _update_hitbox() -> void:
 		var should_enable: bool = (age >= active_start and age < active_end)
 		for section: CollisionShape3D in _sections:
 			if section.disabled == should_enable:
-				section.disabled = not should_enable
+				section.set_deferred(&"disabled", not should_enable)
 		return
 	
 	for index: int in _sections.size():
 		var section: CollisionShape3D = _sections[index]
 		if age >= _deaths[index] or age <= _births[index]:
 			if not section.disabled:
-				section.disabled = true
+				section.set_deferred(&"disabled", true)
 			continue
 		if _settled[index]:
 			continue
@@ -242,8 +242,6 @@ func _update_hitbox() -> void:
 
 func _on_hit(hurtbox: HurtboxComponent) -> void:
 	if knock_up <= 0.0:
-		return
-	if hurtbox.is_invincible():
 		return
 	var body: CharacterBody3D = hurtbox.owner as CharacterBody3D
 	if body != null:

@@ -5,6 +5,8 @@ extends Area3D
 ## Hình va chạm là một hộp (BoxShape3D) hướng về +Z của node cha; set_reach() kéo dài về phía trước.
 
 signal hit(hurtbox: HurtboxComponent)
+## Chỉ phát khi receive_hit chấp nhận đòn, sau khi sát thương và i-frame đã áp dụng.
+signal hit_applied(hurtbox: HurtboxComponent)
 ## Phát khi hitbox bật: vệt chém, âm thanh... bắt đầu theo đòn mà không cần state biết
 signal activated(attack: AttackData)
 ## Phát khi hitbox tắt (hết active frames hoặc bị ngắt giữa chừng): thứ đi kèm đòn (vùng gây cháy...) tắt theo
@@ -93,17 +95,34 @@ func cancel() -> void:
 
 
 func _on_area_entered(area: Area3D) -> void:
-	var hurtbox := area as HurtboxComponent
-	if not _active or hurtbox == null or hurtbox in _already_hit:
-		return
+	try_hit(area as HurtboxComponent)
+
+
+## Dùng chung cho Area và sweep; mỗi mục tiêu chỉ được xét một lần mỗi đòn.
+func try_hit(hurtbox: HurtboxComponent) -> bool:
+	if not _active or attack == null or hurtbox == null or hurtbox in _already_hit:
+		return false
+	if not _can_hit(hurtbox):
+		return false
 	_already_hit.append(hurtbox)
-	# Đẩy ra xa người đánh; không dùng tâm hitbox vì tâm có thể nằm sau mục tiêu
-	var origin := owner as Node3D if owner is Node3D else self
-	var direction := hurtbox.global_position - origin.global_position
-	direction.y = 0.0
-	direction = direction.normalized()
+	var direction: Vector3 = _get_hit_direction(hurtbox)
 	var info := DamageInfo.new(attack.damage, attack.damage_type, direction * attack.knockback, owner)
 	info.direction = direction
 	info.attack = attack
-	hurtbox.receive_hit(info)
+	var accepted: bool = hurtbox.receive_hit(info)
+	if accepted:
+		hit_applied.emit(hurtbox)
 	hit.emit(hurtbox)
+	return accepted
+
+
+func _can_hit(_hurtbox: HurtboxComponent) -> bool:
+	return true
+
+
+func _get_hit_direction(hurtbox: HurtboxComponent) -> Vector3:
+	# Đẩy từ người đánh thay vì tâm hitbox vốn có thể đã vượt mục tiêu.
+	var origin := owner as Node3D if owner is Node3D else self
+	var direction := hurtbox.global_position - origin.global_position
+	direction.y = 0.0
+	return direction.normalized()

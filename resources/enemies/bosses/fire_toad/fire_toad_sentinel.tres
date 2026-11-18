@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="FireSpiderData" format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/volcano/fire_spider/fire_spider_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_spider/fire_spider_movement.tres" id="2_move"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_spider/fire_spider_bite.tres" id="3_bite"]
+[ext_resource type="Resource" path="res://resources/enemies/volcano/fire_spider/fire_spider_pounce.tres" id="4_pounce"]
+[ext_resource type="Resource" path="res://resources/enemies/bosses/fire_toad/fire_toad_sentinel_web.tres" id="5_web"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "Nhện Canh"
+max_health = 3
+movement = ExtResource("2_move")
+detect_range = 40.0
+lose_range = 60.0
+leash_range = 999.0
+attack = ExtResource("3_bite")
+attack_range = 1.7
+hitbox_reach = 1.6
+attack_cooldown = 1.0
+patrol_radius = 0.0
+stun_time = 0.3
+stagger_on_wind = false
+wind_multiplier = 0.0
+pounce_attack = ExtResource("4_pounce")
+pounce_min_range = 999.0
+pounce_max_range = 999.0
+web = ExtResource("5_web")
+web_min_range = 0.0
+web_max_range = 40.0
+web_cooldown = 3.5

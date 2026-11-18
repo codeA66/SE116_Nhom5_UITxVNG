@@ -56,26 +56,8 @@ func physics_update(delta: float) -> void:
 	if _wait_timer > 0.0:
 		return
 	
-	var distance: float = to_player.length()
 	
-	# 1. Nếu đang có khiên bảo vệ, ưu tiên tung cầu lửa để thách thức player
-	if boss.is_shielded and boss.can_cast_fireball():
-		state_machine.transition_to(&"CastFireball")
-		return
-	
-	# 2. Cận chiến nếu player đang ở gần
-	if distance <= boss.data.melee_range and boss.can_melee():
-		state_machine.transition_to(&"Melee")
-		return
-	
-	# 3. Giậm đá Magma nếu player ở cự ly tầm trung
-	if distance >= boss.data.magma_stomp_min_range and distance <= boss.data.magma_stomp_max_range and boss.can_magma_stomp():
-		state_machine.transition_to(&"MagmaStomp")
-		return
-	
-	# 4. Nhảy dậm đất nếu player ở cự ly trung bình/xa
-	if distance >= boss.data.jump_slam_min_range and distance <= boss.data.jump_slam_max_range and boss.can_jump_slam():
-		state_machine.transition_to(&"JumpSlam")
+	if boss.action_selector.try_select():
 		return
 	
 	# 5. Tiếp cận người chơi

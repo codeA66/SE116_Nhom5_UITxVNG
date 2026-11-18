@@ -9,6 +9,7 @@ var _chase_timer: float = 0.0
 
 func enter(_previous: StringName) -> void:
 	boss.play_anim(&"Walk")
+	boss.movement.max_speed = boss.get_current_walk_speed()
 	_chase_timer = max_chase_duration
 
 
@@ -22,34 +23,13 @@ func physics_update(delta: float) -> void:
 	
 	var to_player: Vector3 = player.global_position - boss.global_position
 	to_player.y = 0.0
-	var distance: float = to_player.length()
 	var direction: Vector3 = to_player.normalized()
 	
-	# Cập nhật tốc độ di chuyển theo Phase
-	var current_speed: float = boss.get_current_walk_speed()
-	boss.movement.max_speed = current_speed
 	boss.move_toward_direction(direction, delta)
 	
 	_chase_timer -= delta
 	
-	# Nếu đang có khiên bảo vệ, sẵn sàng tung cầu lửa
-	if boss.is_shielded and boss.can_cast_fireball():
-		state_machine.transition_to(&"CastFireball")
-		return
-	
-	# Đã vào cự ly cận chiến
-	if distance <= boss.data.melee_range and boss.can_melee():
-		state_machine.transition_to(&"Melee")
-		return
-	
-	# Ở tầm giậm đá Magma tỏa tròn
-	if distance >= boss.data.magma_stomp_min_range and distance <= boss.data.magma_stomp_max_range and boss.can_magma_stomp():
-		state_machine.transition_to(&"MagmaStomp")
-		return
-	
-	# Ở tầm nhảy dậm đất
-	if distance >= boss.data.jump_slam_min_range and distance <= boss.data.jump_slam_max_range and boss.can_jump_slam():
-		state_machine.transition_to(&"JumpSlam")
+	if boss.action_selector.try_select():
 		return
 	
 	# Hết thời gian rượt đuổi -> tạm dừng Idle đổi nhịp

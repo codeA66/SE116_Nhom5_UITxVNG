@@ -67,13 +67,20 @@ const ACTION_BLEND: float = 0.05
 @export_group("Dodge Roll")
 ## Dash của Foxy là cú lộn (như bản test gốc): clip Dodge_Roll + lộn 360° quanh bụng.
 ## Thời gian cú lộn (giây); 0 = dùng nguyên duration trong DashData
-@export var roll_duration: float = 0.4
+@export var roll_duration: float = 0.28
 ## Tốc độ lao khi lộn (m/s); 0 = dùng nguyên speed trong DashData
-@export var roll_speed: float = 9.0
+@export var roll_speed: float = 13.5
 ## Bật vòng lộn 360° bằng code (clip Dodge_Roll chỉ có tư thế cuộn người)
 @export var roll_flip: bool = true
-## Khoảng lộn, tính theo tỉ lệ thời gian cú lộn (bản gốc: frame 5 -> 14 trên 18)
-@export var roll_flip_window: Vector2 = Vector2(5.0 / 18.0, 14.0 / 18.0)
+## Khoảng lộn, tính theo tỉ lệ thời gian cú lộn. Phủ gần trọn cú lộn (kiểu Death's Door):
+## xoay hẹp quá thì cáo đứng thẳng rồi vẫn trượt tiếp, nhìn như bị đẩy
+@export var roll_flip_window: Vector2 = Vector2(0.1, 0.9)
+## Đoạn clip Dodge_Roll cáo khom người gọn nhất (tỉ lệ độ dài clip; đã xem từng khung: 2 -> 6 trên 18).
+## Clip được tua sao cho đoạn này trùng đúng roll_flip_window: xoay lúc nào cũng khom tròn.
+## Khung 7 -> 13 của clip là nằm sấp duỗi dài, xoay lúc đó nhìn như khúc gỗ lật nên bỏ qua
+@export var roll_clip_curl: Vector2 = Vector2(2.0 / 18.0, 6.0 / 18.0)
+## Sau vòng xoay, clip nhảy tới đoạn đứng dậy bắt đầu từ tỉ lệ này (khung 14 trên 18)
+@export_range(0.0, 1.0) var roll_clip_recover_start: float = 14.0 / 18.0
 
 @export_group("Landing")
 @export var landing_duration: float = 0.2
@@ -105,6 +112,8 @@ var _foxy_rest: Transform3D
 var _roll_pivot: Vector3 = Vector3.ZERO
 var _roll_time: float = -1.0
 var _roll_length: float = 0.0
+## Độ dài clip lộn (giây); > 0 khi đang tự tua clip theo vòng xoay
+var _roll_clip_length: float = 0.0
 var _roll_source: DashData
 var _roll_data: DashData
 
@@ -167,6 +176,10 @@ func play_action(anim_name: StringName, speed: float = 1.0, blend: float = -1.0)
 		if dash:
 			speed = _clip_length(clip) / maxf(dash.duration, 0.01)
 			_start_roll(dash.duration)
+			if roll_flip:
+				# Clip do _update_roll tua tay theo vòng xoay, không tự chạy
+				_roll_clip_length = _clip_length(clip)
+				speed = 0.0
 	_anim.play(clip, ACTION_BLEND if blend < 0.0 else blend, speed)
 	_anim.seek(0.0, true)
 
@@ -254,13 +267,29 @@ func _update_roll(delta: float) -> void:
 	_roll_time += delta
 	if _roll_time >= _roll_length or state == null or state.name != PlayerState.DASH:
 		_roll_time = -1.0
+		_roll_clip_length = 0.0
 		_foxy_root.transform = _foxy_rest
 		return
 	var t := _roll_time / _roll_length
+	if _roll_clip_length > 0.0:
+		_anim.seek(_roll_clip_time(t) * _roll_clip_length, true)
 	var u := clampf((t - roll_flip_window.x) / maxf(roll_flip_window.y - roll_flip_window.x, 0.01), 0.0, 1.0)
-	var spin := Basis(Vector3.RIGHT, TAU * u * u * (3.0 - 2.0 * u))
+	# Xoay đều tới cuối cú lộn: kiểu nhanh-dần-chậm-dần làm 30% cuối gần như đứng yên, nhìn như cáo đứng dậy rồi trượt
+	var spin := Basis(Vector3.RIGHT, TAU * u)
 	var pivot := _foxy_rest * _roll_pivot
 	_foxy_root.transform = Transform3D(spin, pivot - spin * pivot) * _foxy_rest
+
+
+## Tỉ lệ thời gian cú lộn -> tỉ lệ clip: trước vòng xoay chạy phần chuẩn bị, trong vòng xoay chạy đoạn khom gọn,
+## sau vòng xoay chạy phần đứng dậy (bỏ đoạn nằm duỗi giữa clip)
+func _roll_clip_time(t: float) -> float:
+	var w := roll_flip_window
+	var c := roll_clip_curl
+	if t < w.x:
+		return c.x * t / maxf(w.x, 0.001)
+	if t <= w.y:
+		return lerpf(c.x, c.y, (t - w.x) / maxf(w.y - w.x, 0.001))
+	return lerpf(roll_clip_recover_start, 1.0, (t - w.y) / maxf(1.0 - w.y, 0.001))
 
 
 func _attach_weapon_model(_data: WeaponData) -> void:

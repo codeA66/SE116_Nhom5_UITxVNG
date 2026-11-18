@@ -3,6 +3,9 @@ extends Node
 ## nên bắn liên tục không instantiate() / queue_free() mỗi lần. Hiệu ứng tự nhả về pool khi xong.
 ## Vết máu trên sàn dùng một BloodStains số lượng cố định (vết cũ nhất bị tái dùng).
 
+## Không chọn mặt tường hay thành bệ vì vết máu là mesh nằm ngang.
+const MIN_BLOOD_FLOOR_NORMAL_Y: float = 0.6
+
 @export_group("Hit Spark")
 @export var hit_spark_scene: PackedScene = preload("res://assets/vfx/combat/hit_spark/hit_spark.tscn")
 @export var hit_spark_pool_size: int = 6
@@ -72,9 +75,28 @@ func spawn_death(position: Vector3, color: Color = Color(1.0, 0.5, 0.2), effect_
 
 
 ## Phun máu hình nón theo direction; floor_y: độ cao mặt sàn (để máu rơi xuống đó và để vết)
-func spawn_blood(position: Vector3, direction: Vector3, color: Color, floor_y: float, power: float = 1.0, kill: bool = false) -> void:
-	var fx := _acquire_capped(_blood_pool, max_active_blood) as BloodSpray
-	fx.play(position, direction, color, floor_y, power, kill)
+func spawn_blood(
+	position: Vector3, direction: Vector3, color: Color, floor_y: float, power: float = 1.0,
+	kill: bool = false, droplet_scale: float = 1.0, floor_mask: int = 0
+) -> void:
+	var fx: BloodSpray = _acquire_capped(_blood_pool, max_active_blood) as BloodSpray
+	fx.play(position, direction, color, floor_y, power, kill, droplet_scale, floor_mask)
+
+
+## Dùng trong bước vật lý. Query được giữ lại ở phía VFX để nhiều đòn không tạo query mới.
+func find_blood_floor(
+	space: PhysicsDirectSpaceState3D, ray: PhysicsRayQueryParameters3D, origin: Vector3, depth: float
+) -> Vector3:
+	ray.from = origin
+	ray.to = origin + Vector3.DOWN * depth
+	var hit: Dictionary = space.intersect_ray(ray)
+	if hit.is_empty():
+		return Vector3.INF
+	var normal: Vector3 = hit["normal"]
+	if normal.y < MIN_BLOOD_FLOOR_NORMAL_Y:
+		return Vector3.INF
+	var position: Vector3 = hit["position"]
+	return position
 
 
 ## Mũi tên trúng (tường hay quái): direction là hướng mũi tên bay tới
