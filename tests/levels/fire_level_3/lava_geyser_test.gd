@@ -5,7 +5,7 @@ extends Node
 ## 3. Đứng yên trên quảng trường (ngoài vùng bẫy): không bị phun.
 ## Chạy: godot --headless --path . res://tests/levels/fire_level_3/lava_geyser_test.tscn  (thêm -- --capture để chụp ảnh lúc phụt)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 const BRIDGE_MID: Vector3 = Vector3(42, 4, 68)
 const PLAZA_SPOT: Vector3 = Vector3(58, 4, 52)
 

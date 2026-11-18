@@ -2,7 +2,7 @@
 class_name ItemPickup
 extends Pickup
 ## Vật phẩm đếm theo số lượng nằm trên đất (Ấn Gió, vật liệu nâng cấp...): nhặt là cộng vào túi (trang Vật phẩm của Tab).
-## Thêm loại vật phẩm mới chỉ cần đổi ô Item. Vật phẩm theo cờ (chìa khóa, TNT) dùng KeyPickup / QuickItemPickup.
+## Thêm loại vật phẩm mới chỉ cần đổi ô Item. Vật phẩm theo cờ (chìa khóa) dùng KeyPickup.
 
 @export var item: ItemData:
 	set(value):
@@ -33,7 +33,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if item == null:
 		return ["Chưa gán ItemData vào ô Item."]
 	if not item.owned_flag.is_empty():
-		return ["Vật phẩm này tính theo cờ (owned_flag): dùng KeyPickup / QuickItemPickup."]
+		return ["Vật phẩm này tính theo cờ (owned_flag): dùng KeyPickup."]
 	return []
 
 

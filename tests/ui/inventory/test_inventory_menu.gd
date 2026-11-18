@@ -10,10 +10,9 @@ extends Node
 ## UC5  Esc khi đang cầm nguyên tố chỉ bỏ cầm, không đóng; Esc lần nữa mới đóng.
 ## UC6  C / Z đổi trang: Vật phẩm hiện chìa khóa (theo cờ) và Ấn Gió x2; trang Bùa ẩn khi chưa có bùa.
 ## UC7  Bùa: có bùa thì trang Bùa hiện; ngoài khu đổi bùa không đeo được; trong khu: đeo bùa 1 ô được, bùa 3 ô báo thiếu; tháo được.
-## UC8  NPC nâng cấp: đủ Ấn Gió -> lên cấp 2, vật phẩm bị trừ, tên thành "Thổi gió II", chấm cấp đổi; thiếu thì không đổi.
+## UC8  NPC nâng cấp: đủ Ấn Gió -> lên cấp 2, vật phẩm bị trừ, tên thành "Lốc xoáy", chấm cấp đổi; thiếu thì không đổi.
 ## UC9  Lưu / đọc: vật phẩm, cấp kỹ năng, bùa, bùa đang đeo, số ô khắc giữ nguyên qua to_dict / from_dict.
 ## UC10 Cực đoan: chưa có nguyên tố nào (thẻ "???"), 12 loại vật phẩm, tên vật phẩm rất dài -> không lỗi, vẫn chọn được.
-## UC11 Vật phẩm dùng phím: có TNT thì nằm trong trang Vật phẩm (loại Dụng cụ); Enter chọn dùng (phím T) / bỏ chọn.
 
 const MENU := "res://ui/menus/inventory/inventory_menu.tscn"
 const WIND := "res://abilities/wind_blast/wind_blast.tres"
@@ -60,7 +59,6 @@ func _run() -> void:
 	await _uc8_upgrade()
 	_uc9_save()
 	await _uc10_extreme()
-	await _uc11_quick_items()
 	GameState.replace_progress(saved)
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
@@ -112,7 +110,7 @@ func _uc1_open() -> void:
 	_check(card != null and card.element.id == &"wind", "UC1: con trỏ ở thẻ Gió (%s)" % _focused())
 	var text := _detail_text()
 	_check(text.contains("Thổi gió") and text.contains("Cấp 1 / 3"), "UC1: chi tiết có tên + cấp ('%s')" % text.left(120))
-	_check(text.contains("LỘ TRÌNH NÂNG CẤP") and text.contains("Ấn Gió   0 / 2") and text.contains("Thổi gió III"), "UC1: chi tiết có lộ trình nâng cấp + vật phẩm cần ('%s')" % text.left(260))
+	_check(text.contains("LỘ TRÌNH NÂNG CẤP") and text.contains("Ấn Gió   0 / 1") and text.contains("Thổi gió III"), "UC1: chi tiết có lộ trình nâng cấp + vật phẩm cần ('%s')" % text.left(260))
 	await _shot("elements")
 
 
@@ -281,9 +279,9 @@ func _uc8_upgrade() -> void:
 	var seal := load(SEAL) as ItemData
 	_check(GameState.can_upgrade_ability(wind), "UC8: đủ 2 Ấn Gió -> nâng cấp được")
 	_check(GameState.upgrade_ability(wind) and GameState.get_ability_level(wind) == 2, "UC8: lên cấp 2")
-	_check(GameState.get_item_count(seal) == 0, "UC8: Ấn Gió bị lấy đi (còn %d)" % GameState.get_item_count(seal))
+	_check(GameState.get_item_count(seal) == 1, "UC8: cấp 2 tốn 1 Ấn Gió (còn %d / 2)" % GameState.get_item_count(seal))
 	_check(not GameState.upgrade_ability(wind) and GameState.get_ability_level(wind) == 2, "UC8: thiếu Ấn Gió -> không lên cấp 3")
-	_check(wind.get_level_name(2) == "Thổi gió II", "UC8: tên cấp 2 = '%s'" % wind.get_level_name(2))
+	_check(wind.get_level_name(2) == "Lốc xoáy", "UC8: tên cấp 2 = '%s'" % wind.get_level_name(2))
 	_menu.close()
 	await _wait(0.3)
 	await _key(KEY_TAB)
@@ -300,7 +298,7 @@ func _uc8_upgrade() -> void:
 	card.grab_focus()
 	await _frames(2)
 	var text := _detail_text()
-	_check(text.contains("ĐANG DÙNG") and text.contains("ĐÃ MỞ") and text.contains("Ấn Gió   0 / 3"), "UC8: lộ trình: cấp II đang dùng, cấp I đã mở, cấp III cần 3 Ấn ('%s')" % text.left(300))
+	_check(text.contains("ĐANG DÙNG") and text.contains("ĐÃ MỞ") and text.contains("Ấn Gió   1 / 3"), "UC8: lộ trình: cấp II đang dùng, cấp I đã mở, cấp III cần 3 Ấn (đang có 1) ('%s')" % text.left(300))
 	await _shot("upgrade_path")
 	_menu.close()
 	await _wait(0.3)
@@ -401,46 +399,6 @@ func _key(code: Key) -> void:
 		await get_tree().process_frame
 	await _frames(2)
 
-
-func _uc11_quick_items() -> void:
-	GameState.replace_progress(_fixture())
-	GameState.set_flag(&"level_3.tnt")
-	await _key(KEY_TAB)
-	for _i: int in range(4):
-		if _menu.get_current_page() is ItemsPage:
-			break
-		await _action(&"menu_next_page")
-	var page := _menu.get_current_page() as ItemsPage
-	var tile: ItemTile = null
-	if page:
-		for candidate: ItemTile in page._tiles:
-			if candidate.item.id == &"tnt":
-				tile = candidate
-	_check(tile != null, "UC11: có TNT -> nằm trong trang Vật phẩm")
-	if tile == null:
-		_menu.close()
-		await _frames(40)
-		return
-	tile.grab_focus()
-	await _frames(2)
-	_check(not tile.is_selected_item() and _detail_text().contains("Dụng cụ") and _detail_text().contains("Chưa dùng"), "UC11: TNT chưa chọn dùng, chi tiết ghi loại Dụng cụ ('%s')" % _detail_text().left(80))
-	await _action(&"ui_accept")
-	_check(GameState.get_selected_item() != null and GameState.get_selected_item().id == &"tnt" and tile.is_selected_item() and _detail_text().contains("Đang dùng"), "UC11: Enter -> chọn dùng TNT (phím T), chi tiết cập nhật")
-	await _action(&"ui_accept")
-	_check(GameState.get_selected_item() == null and not tile.is_selected_item(), "UC11: Enter lần nữa -> bỏ chọn")
-	var seal_tile: ItemTile = null
-	for candidate: ItemTile in page._tiles:
-		if candidate.item.id != &"tnt":
-			seal_tile = candidate
-	if seal_tile:
-		seal_tile.grab_focus()
-		await _action(&"ui_accept")
-		_check(GameState.get_selected_item() == null, "UC11: Enter trên vật phẩm thường (%s) không chọn gì" % seal_tile.item.display_name)
-	tile.grab_focus()
-	await _action(&"ui_accept")
-	await _shot("items_tnt")
-	_menu.close()
-	await _frames(40)
 
 
 func _action(action: StringName) -> void:

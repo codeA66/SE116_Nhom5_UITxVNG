@@ -67,7 +67,7 @@ func pounce_ready() -> bool:
 
 ## Mục tiêu đang cầm đuốc cháy hoặc đang bốc cháy
 func is_target_lit() -> bool:
-	if not has_target():
+	if not wolf_data.fears_light or not has_target():
 		return false
 	var torch := HandTorch.find_on(target)
 	if torch and torch.is_lit:
@@ -99,8 +99,8 @@ func fade_to(amount: float, time: float = -1.0) -> void:
 
 func _on_hurt(info: DamageInfo, damage_taken: int) -> void:
 	super(info, damage_taken)
-	# Trúng lửa (phun lửa, cầu lửa, TNT...): hiện rõ và bỏ chạy, thay cho khựng thường
-	if info.type == DamageInfo.Type.FIRE and not is_dead():
+	# Trúng lửa (phun lửa, cầu lửa...): hiện rõ và bỏ chạy, thay cho khựng thường
+	if wolf_data.flees_from_fire and info.type == DamageInfo.Type.FIRE and not is_dead():
 		fade_to(0.0, 0.0)
 		feared.emit()
 		state_machine.transition_to(flee_state)

@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/portal/vortex/warp_portal.gd" id="1_warp"]
+
+[sub_resource type="BoxShape3D" id="TinyShape"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="WarpArrival" type="Node3D"]
+script = ExtResource("1_warp")
+editor_description = "Điểm đáp một chiều: không hình, không target. Player tới Arrival, quay mặt theo trục +Z."
+
+[node name="Trigger" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Trigger"]
+shape = SubResource("TinyShape")
+
+[node name="Arrival" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)

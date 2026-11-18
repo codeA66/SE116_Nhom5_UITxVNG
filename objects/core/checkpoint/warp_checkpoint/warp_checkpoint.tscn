@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/checkpoint/warp_checkpoint/warp_checkpoint.gd" id="1_wcp"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="2_spawn"]
+
+[node name="WarpCheckpoint" type="Node3D"]
+script = ExtResource("1_wcp")
+
+[node name="Spawn" type="Marker3D" parent="."]
+script = ExtResource("2_spawn")

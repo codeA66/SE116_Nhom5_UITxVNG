@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/volcano/soul_mask/beam/soul_beam.gd" id="1_beam"]
+[ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="2_dmg"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_warn"]
+resource_local_to_scene = true
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(1, 0.45, 0.1, 0.35)
+
+[sub_resource type="StandardMaterial3D" id="Mat_core"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_color = Color(1, 0.55, 0.15, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_unit"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape_dmg"]
+resource_local_to_scene = true
+size = Vector3(1.5, 1.5, 16)
+
+[node name="SoulBeam" type="Node3D"]
+script = ExtResource("1_beam")
+
+[node name="Warn" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+material_override = SubResource("Mat_warn")
+mesh = SubResource("BoxMesh_unit")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+material_override = SubResource("Mat_core")
+mesh = SubResource("BoxMesh_unit")
+
+[node name="DamageArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+monitorable = false
+script = ExtResource("2_dmg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageArea"]
+shape = SubResource("BoxShape_dmg")

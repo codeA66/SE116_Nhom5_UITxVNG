@@ -19,7 +19,7 @@ extends EnemyData
 @export_flags_3d_physics var los_mask: int = 1
 
 @export_group("Element")
-## Hệ số sát thương lửa nhận vào (0 = kháng hẳn: phun lửa, cầu lửa, TNT lửa không gây sát thương)
+## Hệ số sát thương lửa nhận vào (0 = kháng hẳn: phun lửa, cầu lửa không gây sát thương)
 @export_range(0.0, 2.0, 0.05) var fire_damage_multiplier: float = 0.0
 ## Không bắt lửa (không cháy âm ỉ, không hiện lửa trên người)
 @export var fire_immune: bool = true

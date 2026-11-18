@@ -25,14 +25,15 @@ const ROOMS: Array[Dictionary] = [
 		"keep": [[330, 46], [330, 50], [330, 54], [346, 38], [346, 42], [350, 38], [350, 42], [354, 38], [354, 42]]},
 	{"id": "t2_08_lava_tide", "r": [264, 76, 292, 100], "y": 0, "exits": {"N": [278], "E": [86]}, "wall": "low"},
 	{"id": "t2_09_wisp_hall", "r": [300, 76, 324, 100], "y": 0, "exits": {"W": [86]}, "wall": "full"},
-	# Tháp xoắn ngang (thiết kế: docs/zone_3_fire/tier_2_tower_design.md): sáu phòng ở góc tây bắc, ngược chiều kim đồng hồ,
-	# mỗi phòng cao hơn phòng trước 4 m. Boss ở phòng cao nhất (t2_t6_summit). Phòng 12 cũ đã bỏ.
-	{"id": "t2_t1_forge", "r": [248, 24, 260, 36], "y": 8, "exits": {"S": [250], "W": [30]}, "wall": "full"},
-	{"id": "t2_t2_anvil", "r": [224, 24, 240, 36], "y": 12, "exits": {"E": [30], "W": [30]}, "wall": "full"},
-	{"id": "t2_t3_crucible", "r": [200, 24, 216, 36], "y": 16, "exits": {"E": [30], "N": [210]}, "wall": "full"},
-	{"id": "t2_t4_chain", "r": [200, 0, 216, 16], "y": 20, "exits": {"S": [210], "E": [6]}, "wall": "full"},
-	{"id": "t2_t5_smelter", "r": [224, 0, 240, 16], "y": 24, "exits": {"W": [6], "E": [6]}, "wall": "full"},
-	{"id": "t2_t6_summit", "r": [248, 0, 264, 16], "y": 28, "exits": {"W": [6]}, "wall": "full"},
+	# Tháp: sáu phòng rời nhau, kín 4 mặt, đi giữa các tầng bằng đĩa dịch chuyển (hiện khi dọn hết quái).
+	# Cỡ tăng chậm 16, 16, 20, 20, 24, 28 m (T6 bằng Hub); mỗi tầng cao hơn tầng trước 4 m. Boss ở t2_t6_summit.
+	# Tọa độ ở đây lệch tier_2.tscn đúng (-172, 0, 0) (tháp đã dời sang đông bằng output/tools/move_tower.gd).
+	{"id": "t2_t1_forge", "r": [220, 24, 236, 40], "y": 8, "exits": {}, "wall": "full"},
+	{"id": "t2_t2_anvil", "r": [248, 24, 264, 40], "y": 12, "exits": {}, "wall": "full"},
+	{"id": "t2_t3_crucible", "r": [276, 24, 296, 44], "y": 16, "exits": {}, "wall": "full"},
+	{"id": "t2_t4_chain", "r": [276, -8, 296, 12], "y": 20, "exits": {}, "wall": "full"},
+	{"id": "t2_t5_smelter", "r": [240, -12, 264, 12], "y": 24, "exits": {}, "wall": "full"},
+	{"id": "t2_t6_summit", "r": [200, -16, 228, 12], "y": 28, "exits": {}, "wall": "full"},
 	{"id": "t2_s_ice_cave", "r": [328, 4, 348, 24], "y": 8, "exits": {"W": [14]}, "wall": "full"},
 ]
 
@@ -110,35 +111,33 @@ const DECOR: Dictionary = {
 		["inferno:pedestal_001", Vector3(316, 0, 92), 0.0, "SkillPedestalSouth"],
 	],
 	"t2_t1_forge": [
-		["kit:torch_standing", Vector3(250, 0, 26), 0.0, ""],
-		["kit:torch_standing", Vector3(258, 0, 26), 0.0, ""],
+		["kit:torch_standing", Vector3(222, 0, 26), 0.0, ""],
+		["kit:torch_standing", Vector3(234, 0, 26), 0.0, ""],
 	],
 	"t2_t2_anvil": [
-		["kit:torch_standing", Vector3(226, 0, 26), 0.0, ""],
-		["kit:torch_standing", Vector3(238, 0, 26), 0.0, ""],
+		["kit:torch_standing", Vector3(250, 0, 26), 0.0, ""],
+		["kit:torch_standing", Vector3(262, 0, 26), 0.0, ""],
 	],
 	"t2_t3_crucible": [
-		["kit:torch_standing", Vector3(202, 0, 26), 0.0, ""],
-		["kit:torch_standing", Vector3(214, 0, 26), 0.0, ""],
+		["kit:torch_standing", Vector3(278, 0, 26), 0.0, ""],
+		["kit:torch_standing", Vector3(294, 0, 26), 0.0, ""],
 	],
 	"t2_t4_chain": [
-		["kit:torch_standing", Vector3(202, 0, 2), 0.0, ""],
-		["kit:torch_standing", Vector3(214, 0, 2), 0.0, ""],
+		["kit:torch_standing", Vector3(278, 0, -6), 0.0, ""],
+		["kit:torch_standing", Vector3(294, 0, -6), 0.0, ""],
 	],
 	"t2_t5_smelter": [
-		["kit:torch_standing", Vector3(226, 0, 2), 0.0, ""],
-		["kit:torch_standing", Vector3(238, 0, 2), 0.0, ""],
+		["kit:torch_standing", Vector3(242, 0, -10), 0.0, ""],
+		["kit:torch_standing", Vector3(262, 0, -10), 0.0, ""],
 	],
 	"t2_t6_summit": [
-		["kit:fire_pillar", Vector3(252, 0, 4), 0.0, ""],
-		["kit:fire_pillar", Vector3(260, 0, 4), 0.0, ""],
-		["kit:fire_pillar", Vector3(252, 0, 12), 0.0, ""],
-		["kit:fire_pillar", Vector3(260, 0, 12), 0.0, ""],
-		["inferno:pedestal_big_001", Vector3(256, 0, 9), 0.0, "BossDais"],
+		["kit:fire_pillar", Vector3(206, 0, -10), 0.0, ""],
+		["kit:fire_pillar", Vector3(222, 0, -10), 0.0, ""],
+		["kit:fire_pillar", Vector3(206, 0, 6), 0.0, ""],
+		["kit:fire_pillar", Vector3(222, 0, 6), 0.0, ""],
 	],
 	"t2_s_ice_cave": [
 		["inferno:crag_001", Vector3(340, 0, 8), 0.0, ""],
-		["inferno:rock_big_003", Vector3(344, 0, 20), 0.0, ""],
 		["kit:campfire_big", Vector3(334, 0, 14), 0.0, "WarmCampfire"],
 	],
 }
@@ -234,8 +233,20 @@ const FORGE_SKILL_FILES: Array[String] = [
 const FORGE_SHARD_DATA: String = "res://resources/world/puzzles/forge_shards.tres"
 ## Bệ công tắc (bản 2 giai đoạn 2): lệch bắc tâm Hub 4 m; vòng truyền tống giai đoạn 4 mở ở tâm Hub (278, 50), trước mặt bệ
 const FORGE_SHARD_ALTAR: Vector3 = Vector3(278, 4.32, 46)
-## Thử thách u tối (bản 2 giai đoạn 3): trụ, đồng hồ, vùng tối nằm trong .tres; vùng tối phòng 07 tạm tắt lúc chạy
-const DARK_TRIAL_DATA: String = "res://resources/world/puzzles/dark_trial.tres"
+## Vòng truyền tống giữa Hub: mở khi đặt đủ 3 mảnh lên bệ (cờ switch_flag); đứng lên tâm bệ là tới điểm đáp T1.
+const TOWER_ENTRY_PORTAL: Dictionary = {"name": "TowerEntryPortal", "p": Vector3(278, 4.32, 50), "yaw": 0.0,
+	"flag": "level_3.t2_shard_switch", "target": "TowerLandingPortal"}
+## Điểm đáp ở T1: cổng không có đích, ẩn hình (chỉ để lấy Arrival). Sát tường bắc phòng T1, mặt về nam
+const TOWER_LANDING_PORTAL: Dictionary = {"name": "TowerLandingPortal", "p": Vector3(254, 8.32, 25.5), "yaw": 0.0}
+## Chữ "Tầng N / 6" khi bước vào từng phòng tháp: [id phòng, số tầng]; tên node = _pascal(id) + "Zone"
+const TOWER_FLOOR_TITLES: Array = [
+	["t2_t1_forge", 1], ["t2_t2_anvil", 2], ["t2_t3_crucible", 3],
+	["t2_t4_chain", 4], ["t2_t5_smelter", 5], ["t2_t6_summit", 6],
+]
+## Lò cao (ForgeFurnace, cột 23,5 m dựng từ glb): ngọn lửa đặt trên đỉnh cột, bừng khi tháp mở.
+## Chiều cao đỉnh tính từ glb (sàn Hub 4 m + 22 m); chưa đo trong game
+const TOWER_FURNACE_FLAME: Vector3 = Vector3(268, 26.2, 40)
+const TOWER_FURNACE_FLAG: String = "level_3.t2_shard_switch"
 const FORGE_SHARDS: Array = [
 	[Vector3(312, 8.86, 4), "NorthShard", "level_3.t2_shard_north", "level_3.t2_slime_hall"],
 	[Vector3(348, 4.86, 41), "EastShard", "level_3.t2_shard_east", "level_3.t2_dark_forge_pack"],
@@ -302,7 +313,7 @@ const TIER_3_PORTAL: Dictionary = {"name": "Tier3PortalFrame", "p": Vector3(256,
 ## Cổng nằm trong phòng, cách tường 0,35 m, yaw 0 cho cửa bắc/nam, 90 cho cửa đông/tây
 const T2_FLAG_GATES: Array[Dictionary] = [
 	{"name": "TowerGate", "p": Vector3(250, 4.32, 44.35), "yaw": 0.0,
-		# Bản 2: lối 02 → T1 đóng tới khi tháp mở (cờ do thử thách u tối đặt, giai đoạn 3-4); vào tháp bằng truyền tống giữa Hub
+		# Bản 2: lối 02 → T1 đóng tới khi tháp mở (chưa có gì đặt cờ này; vào tháp bằng bệ dịch chuyển); vào tháp bằng truyền tống giữa Hub
 		"flags": ["level_3.t2_tower_unlocked"], "id": "level_3.t2_tower_gate"},
 	{"name": "FloorGate1", "p": Vector3(248.35, 8.32, 30), "yaw": 90.0, "flag": "level_3.t2_t1_cleared", "id": "level_3.t2_floor_gate_1"},
 	{"name": "FloorGate2", "p": Vector3(224.35, 12.32, 30), "yaw": 90.0, "flag": "level_3.t2_t2_cleared", "id": "level_3.t2_floor_gate_2"},

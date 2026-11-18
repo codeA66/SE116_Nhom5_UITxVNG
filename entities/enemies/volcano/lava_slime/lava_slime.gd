@@ -19,6 +19,10 @@ var fuse: float = 0.0
 var has_exploded: bool = false
 
 var _fusing: bool = false
+var _flash_material: StandardMaterial3D
+var _flash_meshes: Array[GeometryInstance3D] = []
+var _flash_phase: float = 0.0
+var _flash_on: bool = false
 
 @onready var explosion: ExplosionComponent = $ExplosionComponent
 @onready var _anim_player: AnimationPlayer = $AnimationPlayer
@@ -37,12 +41,15 @@ func _ready() -> void:
 	explosion.radius = slime_data.explosion_radius
 	explosion.ignite_targets = slime_data.explosion_ignites
 	explosion.exploded.connect(func(center: Vector3, hits: int) -> void: exploded.emit(center, hits))
+	_setup_fuse_flash()
 
 
 func _pre_state_update(delta: float) -> void:
 	super(delta)
+	if _fusing:
+		_update_fuse_flash(delta)
 	# Không châm thì ngòi tụt dần (kiểu Creeper)
-	if not _fusing and fuse > 0.0:
+	elif fuse > 0.0:
 		fuse = maxf(fuse - delta / slime_data.fuse_decay_time, 0.0)
 
 
@@ -58,7 +65,9 @@ func get_animation_length(anim_name: StringName) -> float:
 ## Bắt đầu / tiếp tục châm ngòi từ tiến độ hiện tại: clip Swell chạy khớp fuse_time và nhảy tới đúng tiến độ
 func begin_fuse() -> void:
 	_fusing = true
-	set_telegraph(true)
+	# Nháy trắng thay cho telegraph cam chung: lớp cam lẫn vào thân slime cam, người chơi không thấy
+	_flash_phase = 0.0
+	_set_flash(true)
 	if _anim_player.has_animation(ANIM_SWELL):
 		var length := _anim_player.get_animation(ANIM_SWELL).length
 		_anim_player.play(ANIM_SWELL, 0.05, length / slime_data.fuse_time)
@@ -79,7 +88,7 @@ func end_fuse() -> void:
 	if not _fusing:
 		return
 	_fusing = false
-	set_telegraph(false)
+	_set_flash(false)
 	_fuse_sound.stop()
 	if not is_dead() and _anim_player.has_animation(ANIM_DEFLATE):
 		play_action(ANIM_DEFLATE)
@@ -92,8 +101,35 @@ func explode() -> void:
 		return
 	has_exploded = true
 	_fusing = false
-	set_telegraph(false)
+	_set_flash(false)
 	_fuse_sound.stop()
 	explosion.explode(self)
 	model.visible = false
 	_die_now()
+
+
+# ---------- Nháy trắng lúc châm ngòi ----------
+
+## Tạo vật liệu một lần và cache mesh, để lúc nháy không tìm node mỗi frame
+func _setup_fuse_flash() -> void:
+	_flash_material = StandardMaterial3D.new()
+	_flash_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_flash_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_flash_material.albedo_color = slime_data.flash_color
+	for node: Node in model.find_children("*", "GeometryInstance3D", true, false):
+		_flash_meshes.append(node as GeometryInstance3D)
+
+
+## Nhịp nháy tăng theo tiến độ ngòi; chỉ đổi overlay khi bật / tắt đổi trạng thái
+func _update_fuse_flash(delta: float) -> void:
+	_flash_phase += lerpf(slime_data.flash_rate_start, slime_data.flash_rate_end, fuse) * delta
+	_set_flash(fmod(_flash_phase, 1.0) < 0.5)
+
+
+func _set_flash(on: bool) -> void:
+	if on == _flash_on:
+		return
+	_flash_on = on
+	var mat: Material = _flash_material if on else null
+	for mesh: GeometryInstance3D in _flash_meshes:
+		mesh.material_overlay = mat

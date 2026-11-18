@@ -3,7 +3,7 @@ extends Node3D
 ## Vụ nổ dùng chung (quái tự nổ, sau này bẫy / thùng nổ): gọi explode() thì dò hình cầu đúng một lần, mọi
 ## hurtbox trong radius (lọc bằng hurtbox_mask) nhận đòn attack và bị đẩy ra xa tâm; có thể làm mục tiêu
 ## bắt lửa. Hurtbox của chính chủ (owner) được bỏ qua. Chủ hurtbox có on_explosion_hit(source) (boss có khiên)
-## được báo trước khi nhận đòn, giống TNT.
+## được báo trước khi nhận đòn.
 ## Hiệu năng: không có _process; shape / query tạo một lần và dùng lại.
 
 signal exploded(center: Vector3, hit_count: int)

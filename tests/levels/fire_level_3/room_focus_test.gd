@@ -1,6 +1,6 @@
 extends Node
 ## Nhìn phòng kiểu sinh tồn góc trên xuống (va chạm, input và node thật):
-## 1. Biển dung nham một mặt phủ cả map (tier 1 + tier 2). 31 vùng phòng (15 tier 1 + 16 tier 2); phòng tier đang đứng luôn
+## 1. Biển dung nham một mặt phủ cả map. Scene tier 1 có 15 vùng phòng (tier 2 là scene riêng, có RoomFocus riêng); phòng tier đang đứng luôn
 ##    hiện hình (không ẩn hẳn), tier kia ẩn hình do TierZone (như zone 1).
 ## 2. Spawn phòng 1: phòng 1 sáng, 14 phòng khác phủ tối. Có cửa sổ: đo điểm ảnh sàn phòng khác tối đi so với khi bỏ phủ.
 ## 3. Đi bộ thật phòng 6 → hub: trên đường nối giữ phòng 6 sáng; vào hub thì hub sáng, phòng 6 tối.
@@ -11,7 +11,7 @@ extends Node
 ## 6. Cực đoan: shade_alpha 0 / 1 / 5 (kẹp).
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/room_focus_test.tscn (bỏ --headless thêm -- --capture để đo ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _level: Node
@@ -36,8 +36,8 @@ func _run() -> void:
 	var focus: RoomFocus = _level.get_node("RoomFocus") as RoomFocus
 	# 1
 	var sea: MeshInstance3D = _level.get_node_or_null("LavaSea") as MeshInstance3D
-	_check(sea != null and (sea.mesh as PlaneMesh).size == Vector2(376, 112), "biển dung nham một mặt phủ cả map (tier 1 + tier 2)")
-	_check(focus.get_zones().size() == 31, "31 vùng phòng (%d)" % focus.get_zones().size())
+	_check(sea != null and (sea.mesh as PlaneMesh).size == Vector2(193, 127), "biển dung nham một mặt phủ cả map")
+	_check(focus.get_zones().size() == 15, "15 vùng phòng tier 1 (%d)" % focus.get_zones().size())
 	var tier_1: Node = _level.get_node("Rooms/Tier1")
 	var all_shown: bool = true
 	var found: int = 0
@@ -47,8 +47,7 @@ func _run() -> void:
 			found += 1
 		if room != null and tier_1.is_ancestor_of(room):
 			all_shown = all_shown and room.is_visible_in_tree()
-	_check(found == 31 and all_shown and not (_level.get_node("Rooms/Tier2") as Node3D).is_visible_in_tree(),
-			"mọi vùng tìm được phòng; ở tier 1: phòng tier 1 luôn hiện hình, tier 2 ẩn")
+	_check(found == 15 and all_shown, "mọi vùng tìm được phòng; ở tier 1: phòng tier 1 luôn hiện hình")
 	# 2
 	await _seconds(0.5)
 	_check(focus.current != null and focus.current.name == &"Room01SpawnZone" and _lit_rooms(focus) == ["Room01Spawn"], "spawn: phòng 1 sáng, phòng khác tối (sáng: %s)" % ", ".join(_lit_rooms(focus)))

@@ -1,0 +1,58 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/portal/teleport_pad/teleport_pad_visual.gd" id="1_vis"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/warp_altar/teleport_pad.glb" id="2_pad"]
+
+[sub_resource type="StandardMaterial3D" id="RayMat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 2
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="RayMesh"]
+material = SubResource("RayMat")
+size = Vector2(0.05, 0.9)
+
+[sub_resource type="Gradient" id="RayFade"]
+offsets = PackedFloat32Array(0, 0.15, 0.7, 1)
+colors = PackedColorArray(0.5, 0.95, 1, 0, 0.6, 1, 1, 0.9, 0.35, 0.85, 1, 0.6, 0.3, 0.8, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="RayFadeTex"]
+gradient = SubResource("RayFade")
+
+[sub_resource type="ParticleProcessMaterial" id="RayProcess"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.05
+emission_ring_radius = 1.6
+emission_ring_inner_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 2.0
+initial_velocity_min = 1.6
+initial_velocity_max = 3.2
+gravity = Vector3(0, 0, 0)
+scale_min = 0.6
+scale_max = 1.4
+color_ramp = SubResource("RayFadeTex")
+
+[node name="TeleportPadVisual" type="Node3D"]
+script = ExtResource("1_vis")
+
+[node name="Model" parent="." instance=ExtResource("2_pad")]
+
+[node name="Rays" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 40
+lifetime = 1.4
+visibility_aabb = AABB(-2.5, -0.5, -2.5, 5, 6, 5)
+process_material = SubResource("RayProcess")
+draw_pass_1 = SubResource("RayMesh")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+light_color = Color(0.35, 0.9, 1, 1)
+light_energy = 0.0
+omni_range = 6.0

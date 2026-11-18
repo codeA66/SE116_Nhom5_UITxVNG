@@ -1,7 +1,8 @@
 class_name HandTorch
 extends Node3D
 ## Đuốc cầm tay: gậy lấy ở bó gậy, châm ở lửa trại thì cháy burn_time giây (đèn bám theo player).
-## Đang cháy thì chạm vào vật đốt được (đuốc tường, rào gỗ...) sẽ châm lửa cho vật đó. Hết giờ thì tắt, về lửa trại châm lại.
+## Đang cháy thì chạm vào vật đốt được (đuốc tường, rào gỗ...) sẽ châm lửa cho vật đó; không đốt sinh vật (quái, player).
+## Hết giờ thì tắt và mất luôn cây đuốc: muốn có lại thì lấy ở lửa trại / bó gậy.
 ## Gắn vào node Model của player (xoay theo hướng nhìn); không khóa đánh / kỹ năng.
 ## Hiệu năng: đồng hồ cháy là Timer; vùng châm lửa chỉ bật monitoring khi đang cháy, nghe area_entered.
 
@@ -16,16 +17,14 @@ const NODE_NAME: StringName = &"HandTorch"
 @export var light_color: Color = Color(1.0, 0.6, 0.28)
 ## Những giây cuối lửa lập loè mạnh để báo sắp tắt
 @export_range(0.0, 60.0, 0.5) var fade_warning: float = 10.0
-@export_group("Gợi ý khi tắt")
-@export var burned_out_hint: String = "Về lửa trại châm lại"
-@export_range(0.5, 10.0, 0.1) var burned_out_hint_time: float = 3.0
+## Bật thì đuốc châm cả sinh vật (vật đốt được có hurtbox: quái, player, hình nộm); mặc định chỉ châm đồ vật
+@export var ignite_creatures: bool = false
 
 var is_lit: bool = false
 
 var _tween: Tween
 
 @onready var _feedback: FlameFeedback = $FlameFeedback
-@onready var _hint: WorldHint = $BurnOutHint
 @onready var _light: OmniLight3D = $Light
 # Ngọn lửa là node con tên bắt đầu bằng "Flame" trong model (glTF có thể thêm hậu tố)
 @onready var _flame: Node3D = $Model.find_child("Flame*", true, false) as Node3D
@@ -89,9 +88,10 @@ func _on_burned_out() -> void:
 		_tween.kill()
 	_feedback.extinguish()
 	_set_lit_visual(false)
-	if not burned_out_hint.is_empty():
-		_hint.flash(burned_out_hint, burned_out_hint_time)
 	burned_out.emit()
+	# Hết lửa thì bỏ hẳn cây đuốc khỏi tay (gỡ khỏi cây ngay để find_on() trả null trong cùng frame)
+	get_parent().remove_child(self)
+	queue_free()
 
 
 func _set_lit_visual(on: bool) -> void:
@@ -102,5 +102,9 @@ func _set_lit_visual(on: bool) -> void:
 
 
 func _on_area_entered(area: Area3D) -> void:
-	if is_lit and area is BurnableComponent:
-		(area as BurnableComponent).ignite(get_parent())
+	if not is_lit or not (area is BurnableComponent):
+		return
+	var burnable := area as BurnableComponent
+	if burnable.hurtbox != null and not ignite_creatures:
+		return
+	burnable.ignite(get_parent())

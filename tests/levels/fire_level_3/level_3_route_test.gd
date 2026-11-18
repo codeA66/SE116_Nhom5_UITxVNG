@@ -3,7 +3,7 @@ extends Node
 ## (va chạm thật, không rơi xuống dung nham), chụp ảnh bằng camera game, rồi chụp toàn cảnh từ trên xuống.
 ## Chạy: godot --path . res://tests/levels/fire_level_3/level_3_route_test.tscn -- --capture
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 ## Điểm thử (x, y sàn, z) theo tọa độ thế giới; tên dùng cho log và tên ảnh
 const CHECKPOINTS: Array[Dictionary] = [

@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/rune_pillar/rune_pillar.glb" id="1"]
+
+[sub_resource type="CylinderShape3D" id="Shape"]
+height = 1.42
+radius = 0.46
+
+[node name="RunePillar" type="StaticBody3D"]
+editor_description = "Trụ đá khắc rune đặt dưới ngọc rèn (ForgeShard). Đứng riêng ngoài ForgeShard để nhặt ngọc xong trụ vẫn còn"
+
+[node name="Model" parent="." instance=ExtResource("1")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.71, 0)
+shape = SubResource("Shape")

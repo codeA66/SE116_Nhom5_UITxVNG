@@ -4,13 +4,15 @@ extends Node
 ## 2. Lấy gậy ở bó gậy phòng 5 (bấm interact): cầm gậy chưa cháy.
 ## 3. Lại gần lửa trại bấm interact: đuốc cháy, đèn sáng.
 ## 4. Cầm đuốc vẫn đánh được (không bị khóa chiến đấu).
-## 5. Vào phòng 2: mái và tường cao phòng 2 ẩn, phòng 3 vẫn kín; không có quầng sáng tự có, chỉ đèn đuốc.
-## 6. Cầm đuốc đi chạm đuốc tường tắt: đuốc tường bắt lửa.
+## 5. Vào phòng 2: mái và tường cao phòng 2 ẩn, phòng 3 vẫn kín; phòng 2 sáng sẵn (không vùng tối).
+## 6. Cầm đuốc đi chạm đuốc tường tắt (phòng 3): đuốc tường bắt lửa.
 ## 7. Ra khỏi phòng 2: mái phòng 2 hiện lại.
-## 8. Đuốc hết giờ (burn_time rút ngắn): tắt, châm lại ở lửa trại được.
+## 8. Đuốc đang cháy chạm quái: quái KHÔNG bị cháy (đuốc chỉ châm đồ vật).
+## 9. burn_time cực đại (600 s): châm xong vẫn cháy, còn ~600 s.
+## 10. Hết giờ (burn_time 1 s): đuốc tắt và biến mất khỏi tay, không hiện gợi ý; lửa trại hiện LẤY ĐUỐC, lấy lại được.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/hand_torch_test.tscn (-- --capture để chụp ảnh)
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 
 var _player: Player
 var _level: Node
@@ -94,10 +96,10 @@ func _run() -> void:
 	await _frames(70)
 	var carried: OmniLight3D = zone.get_node("CarriedLight")
 	_check(not roof2.visible and not walls2.visible and roof3.visible, "trong phòng 2: mái + tường cao phòng 2 ẩn, phòng 3 vẫn kín")
-	_check(zone.is_dark and not carried.visible and torch.is_lit, "hầm tối, không có quầng sáng tự có, chỉ còn đuốc")
+	_check(not zone.is_dark and not carried.visible and torch.is_lit, "phòng 2 sáng sẵn, không có quầng sáng tự có, đuốc vẫn cháy")
 	await _capture("hand_torch_cellar.png")
 	# 6. Chạm đuốc tường bằng đuốc cầm tay
-	var wall_torch: IgnitableBrazier = _level.get_node("CellarTorches/CellarTorch03") as IgnitableBrazier
+	var wall_torch: IgnitableBrazier = _level.get_node("CellarTorches/CellarTorch07") as IgnitableBrazier
 	_check(not wall_torch.is_lit, "đuốc tường lúc đầu tắt")
 	_player.teleport(wall_torch.global_position + Vector3(2.5, 0.1, 0.0), Vector3.LEFT)
 	await _frames(5)
@@ -109,16 +111,34 @@ func _run() -> void:
 	_player.teleport(Vector3(62, 4.4, 40))
 	await _frames(20)
 	_check(roof2.visible and walls2.visible, "ra khỏi hầm: mái phòng 2 hiện lại")
-	# 8. Hết giờ rồi châm lại
+	# 8. Đuốc không đốt quái
+	var spider: Enemy = _level.get_node("Room2/Room2BossEncounter/Enemies/Spider1") as Enemy
+	var spider_burn: BurnableComponent = spider.get_node("BurnableComponent") as BurnableComponent
+	torch.light_up()
+	spider.process_mode = Node.PROCESS_MODE_DISABLED
+	spider.global_position = torch.global_position + Vector3(0, -0.8, 0)
+	spider_burn.process_mode = Node.PROCESS_MODE_ALWAYS
+	await _frames(30)
+	_check(torch.is_lit and not spider_burn.is_burning(), "đuốc đang cháy chạm quái: quái không bị cháy")
+	# 9. burn_time cực đại
+	torch.burn_time = 600.0
+	torch.light_up()
+	await _frames(60)
+	_check(torch.is_lit and torch.time_left() > 590.0, "burn_time 600 s: vẫn cháy, còn %.0f s" % torch.time_left())
+	# 10. Hết giờ: mất luôn cây đuốc
 	torch.burn_time = 1.0
 	torch.light_up()
 	await _frames(80)
-	_check(not torch.is_lit and not light.visible, "hết giờ cháy thì đuốc tắt")
+	_check(HandTorch.find_on(_player) == null and not is_instance_valid(torch), "hết giờ: đuốc tắt và biến mất khỏi tay")
+	_check(_player.find_child("BurnOutHint", true, false) == null, "hết giờ: không còn dòng gợi ý về lửa trại")
 	_player.teleport(campfire.global_position + Vector3(1.8, 0.1, 0.0), Vector3.LEFT)
 	await _frames(10)
+	var prompt: InteractableComponent = campfire.get_node("InteractableComponent") as InteractableComponent
+	_check(prompt.prompt_text == campfire.take_prompt, "lửa trại hiện '%s'" % prompt.prompt_text)
 	await _press(&"interact")
 	await _frames(5)
-	_check(torch.is_lit, "về lửa trại châm lại được")
+	var again: HandTorch = HandTorch.find_on(_player)
+	_check(again != null and again.is_lit, "lấy lại đuốc ở lửa trại: có đuốc mới đang cháy")
 	_finish()
 
 

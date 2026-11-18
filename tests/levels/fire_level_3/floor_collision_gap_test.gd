@@ -5,7 +5,7 @@ extends Node
 ## nào thấp hơn hoặc trống mà hai phía (cách GAP_PROBE m theo X hoặc Z) đều có mặt ngang nhau thì là khe.
 ## Không cần dựng cảnh chơi. Chạy: godot --headless --path . res://tests/levels/fire_level_3/floor_collision_gap_test.tscn
 
-const LEVEL: PackedScene = preload("res://levels/zone_3_fire/level_3/level_3.tscn")
+const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
 const CELL: float = 0.25
 ## Lệch điểm đo để không trúng đúng đường giáp hai hộp va chạm (tia lọt đúng khe 0 m, không phải khe thật)
 const SAMPLE_SHIFT: float = 0.07
