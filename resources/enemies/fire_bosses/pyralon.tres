@@ -1,0 +1,94 @@
+[gd_resource type="Resource" script_class="PyralonData" format=3 uid="uid://ctl5s2vh6fquy"]
+
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/pyralon_data.gd" id="data"]
+[ext_resource type="Script" uid="uid://1ogi6ru3cdf" path="res://entities/_base/movement_stats.gd" id="movement"]
+[ext_resource type="Script" uid="uid://spirok3yst3w" path="res://entities/enemies/wildlife/_shared/skills/enemy_skill_data.gd" id="skill"]
+[ext_resource type="Script" uid="uid://d3qjqvwn5db3v" path="res://entities/bosses/fire/combat/fire_boss_strike.gd" id="strike"]
+
+[sub_resource type="Resource" id="Motion"]
+script = ExtResource("movement")
+max_speed = 3.7
+
+[sub_resource type="Resource" id="axe_slam"]
+script = ExtResource("strike")
+hitbox_center = Vector3(0, 1.02, 1.82)
+hitbox_size = Vector3(2.65, 2.04, 2.45)
+skill_id = &"axe_slam"
+state = &"PyralonSlam"
+cooldown = 12.0
+maximum_range = 8.0
+windup_end = 2.25
+animation = &"Action_005"
+active_start = 2.25
+active_end = 2.47
+duration = 3.541666
+
+[sub_resource type="Resource" id="axe_sweep"]
+script = ExtResource("strike")
+hitbox_center = Vector3(0, 1.25, 1.18)
+hitbox_size = Vector3(3.45, 2.5, 2.75)
+skill_id = &"axe_sweep"
+state = &"PyralonRearSlash"
+cooldown = 0.0
+maximum_range = 4.0
+windup_end = 1.13
+animation = &"Action_002"
+active_start = 1.13
+active_end = 1.50
+duration = 2.291666
+
+[sub_resource type="Resource" id="axe_sweep_source_b"]
+script = ExtResource("strike")
+hitbox_center = Vector3(0, 1.25, 1.18)
+hitbox_size = Vector3(3.45, 2.5, 2.75)
+automatic = false
+skill_id = &"axe_sweep_source_b"
+cooldown = 1.6
+maximum_range = 2.9
+windup_end = 0.98
+animation = &"Action_003"
+active_start = 1.13
+active_end = 1.56
+duration = 2.291666
+lunge_speed = 2.7
+lunge_time = 0.37
+
+[sub_resource type="Resource" id="wing_barrage"]
+script = ExtResource("strike")
+skill_id = &"wing_barrage"
+state = &"PyralonBarrage"
+cooldown = 10.0
+maximum_range = 42.0
+animation = &"pyralon/WingLaunch"
+melee_enabled = false
+
+[sub_resource type="Resource" id="axe_command"]
+script = ExtResource("strike")
+skill_id = &"axe_command"
+state = &"PyralonCommand"
+cooldown = 0.0
+maximum_range = 42.0
+animation = &"pyralon/AxeSignal"
+melee_enabled = false
+
+[resource]
+script = ExtResource("data")
+idle_animation = &"Idle1"
+walk_animation = &"Action_001"
+run_animation = &"Action_001"
+skills = Array[ExtResource("skill")]([SubResource("axe_slam"), SubResource("axe_sweep"), SubResource("axe_sweep_source_b"), SubResource("wing_barrage"), SubResource("axe_command")])
+advance_on_cooldown = true
+approach_stop_distance = 1.5
+display_name = "Pyralon"
+max_health = 32
+movement = SubResource("Motion")
+detect_range = 38.0
+lose_range = 52.0
+leash_range = 52.0
+attack_range = 2.65
+hitbox_reach = 2.65
+attack_cooldown = 0.9
+patrol_radius = 0.0
+stagger_on_hit = false
+wind_multiplier = 0.0
+stagger_on_wind = false

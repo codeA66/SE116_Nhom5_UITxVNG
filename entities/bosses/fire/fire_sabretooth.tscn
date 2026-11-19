@@ -1,0 +1,176 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/bosses/fire/fire_boss.tscn" id="base"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/fire/fire_sabretooth.glb" id="rig"]
+[ext_resource type="Resource" path="res://resources/enemies/fire_bosses/fire_sabretooth.tres" id="config"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/fire/fire_sabretooth_phase_two.glb" id="flame_model"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/sabretooth_phase.gd" id="phase"]
+[ext_resource type="PackedScene" path="res://objects/world/camera_cutscene/camera_cutscene.tscn" id="cutscene"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/camera_cutscene_data.gd" id="cutscene_data"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/sabretooth.gd" id="tiger"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/animation/sabretooth_motion.gd" id="motion"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/states/sabretooth_rest.gd" id="rest"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/states/sabretooth_hunt.gd" id="hunt"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/states/sabretooth_attack.gd" id="attack"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/states/sabretooth_recovery.gd" id="recovery"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/states/sabretooth_maneuver.gd" id="maneuver"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_one/sabretooth_hunt.gd" id="phase_one_hunt"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_one/sabretooth_turn.gd" id="phase_one_turn"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_one/sabretooth_warning.gd" id="phase_one_warning"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_one/sabretooth_reaction.gd" id="phase_one_reaction"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_transformation.gd" id="phase_two_intro"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_fire_beam.gd" id="phase_two_beam"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_fire_finale.gd" id="phase_two_finale"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/combat/phase_two/sabretooth_fire_vfx.gd" id="fire_vfx"]
+[ext_resource type="Script" path="res://components/combat/damage_area/explosion_component.gd" id="explosion"]
+[ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="blast_data"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/combat/phase_two/sabretooth_death_effect.gd" id="tiger_death_fx"]
+
+[sub_resource type="Resource" id="FinaleAttack"]
+resource_local_to_scene = true
+script = ExtResource("blast_data")
+damage = 1
+damage_type = 1
+knockback = 4.0
+
+[sub_resource type="BoxShape3D" id="Body"]
+size = Vector3(1.48, 1.7, 3.25)
+
+[sub_resource type="Resource" id="TransformationView"]
+resource_local_to_scene = true
+script = ExtResource("cutscene_data")
+travel_time = 0.85
+return_time = 0.9
+shot_offset = Vector3(8.4, 4.7, 9.8)
+look_height = 1.72
+shot_fov = 38.0
+push_in_fov = 34.0
+hold_orbit_degrees = -8.0
+letterbox_ratio = 0.085
+
+[sub_resource type="Gradient" id="EmberColors"]
+offsets = PackedFloat32Array(0, 0.25, 0.7, 1)
+colors = PackedColorArray(0.47, 0.04, 0.002, 0, 1, 0.62, 0.13, 1, 1, 0.24, 0.017, 0.8, 0.65, 0.04, 0.005, 0)
+
+[sub_resource type="StandardMaterial3D" id="EmberMaterial"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="EmberMesh"]
+material = SubResource("EmberMaterial")
+radius = 0.023
+height = 0.092
+radial_segments = 4
+rings = 2
+
+[node name="FireSabretooth" instance=ExtResource("base")]
+script = ExtResource("tiger")
+data = ExtResource("config")
+ground_motion_bone = &"Hips"
+chase_state = &"TigerPhaseOneHunt"
+
+[node name="CollisionShape3D" parent="." index="0"]
+position = Vector3(0, 0.85, 0)
+shape = SubResource("Body")
+
+[node name="Rig" parent="Model/Visual" instance=ExtResource("rig")]
+scale = Vector3(1.22, 1.22, 1.22)
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+position = Vector3(0, 0.85, 0)
+shape = SubResource("Body")
+
+[node name="Motion" type="Node" parent="."]
+script = ExtResource("motion")
+
+[node name="DeathEffectComponent" parent="."]
+script = ExtResource("tiger_death_fx")
+
+[node name="HitFeedbackComponent" parent="."]
+squash_stretch = NodePath("")
+
+[node name="Idle" parent="StateMachine"]
+script = ExtResource("rest")
+
+[node name="TigerHunt" type="Node" parent="StateMachine"]
+script = ExtResource("hunt")
+
+[node name="TigerAttack" type="Node" parent="StateMachine"]
+script = ExtResource("attack")
+
+[node name="TigerRecovery" type="Node" parent="StateMachine"]
+script = ExtResource("recovery")
+
+[node name="TigerManeuver" type="Node" parent="StateMachine"]
+script = ExtResource("maneuver")
+
+[node name="TigerPhaseOneHunt" type="Node" parent="StateMachine"]
+script = ExtResource("phase_one_hunt")
+
+[node name="TigerPhaseOneTurn" type="Node" parent="StateMachine"]
+script = ExtResource("phase_one_turn")
+
+[node name="TigerPhaseOneWarning" type="Node" parent="StateMachine"]
+script = ExtResource("phase_one_warning")
+
+[node name="TigerPhaseOneReaction" type="Node" parent="StateMachine"]
+script = ExtResource("phase_one_reaction")
+
+[node name="TigerTransformation" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_intro")
+
+[node name="TigerFireBeam" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_beam")
+
+[node name="TigerFireFinale" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_finale")
+
+[node name="FireVfx" type="Node3D" parent="."]
+script = ExtResource("fire_vfx")
+
+[node name="FinaleBlast" type="Node3D" parent="."]
+script = ExtResource("explosion")
+attack = SubResource("FinaleAttack")
+radius = 6.0
+hurtbox_mask = 2
+ignite_targets = false
+spawn_burst_effect = false
+burst_scale = 4.0
+
+[node name="Transformation" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("cutscene")]
+data = SubResource("TransformationView")
+focus_target = NodePath("..")
+manual_only = true
+
+[node name="Phase" type="Node3D" parent="." node_paths=PackedStringArray("armored_rig", "animator", "framing")]
+script = ExtResource("phase")
+armored_rig = NodePath("../Model/Visual/Rig")
+flame_model = ExtResource("flame_model")
+animator = NodePath("../AnimationPlayer")
+framing = NodePath("../Transformation")
+
+[node name="Firelight" type="OmniLight3D" parent="Phase"]
+position = Vector3(0, 1.2, 0)
+light_color = Color(1, 0.24, 0.04, 1)
+omni_range = 6.6
+omni_attenuation = 1.6
+
+[node name="Embers" type="CPUParticles3D" parent="Phase"]
+position = Vector3(0, 0.78, 0)
+cast_shadow = 0
+emitting = false
+amount = 52
+lifetime = 1.1
+randomness = 0.88
+mesh = SubResource("EmberMesh")
+emission_shape = 3
+emission_box_extents = Vector3(0.74, 0.33, 1.75)
+direction = Vector3(0, 1, 0)
+spread = 33.0
+gravity = Vector3(0, 2.3, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 2.9
+scale_amount_min = 0.24
+scale_amount_max = 0.93
+color_ramp = SubResource("EmberColors")

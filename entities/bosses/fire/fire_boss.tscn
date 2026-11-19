@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/enemies/_base/enemy.tscn" id="base"]
+[ext_resource type="Script" path="res://entities/bosses/fire/fire_boss.gd" id="boss"]
+[ext_resource type="Script" path="res://entities/bosses/fire/combat/fire_boss_melee.gd" id="melee"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/movement/wild_chase.gd" id="chase"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/movement/wild_watch.gd" id="watch"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/skills/enemy_skill_emitter.gd" id="emitter"]
+
+[node name="FireBoss" instance=ExtResource("base")]
+script = ExtResource("boss")
+chase_state = &"WildChase"
+attack_state = &"SkillAttack"
+
+[node name="Body" parent="Model/Visual" index="0"]
+visible = false
+
+[node name="Eye" parent="Model/Visual" index="1"]
+visible = false
+
+[node name="AnimationPlayer" parent="." index="2"]
+callback_mode_process = 0
+
+[node name="WildChase" type="Node" parent="StateMachine"]
+script = ExtResource("chase")
+
+[node name="Watch" type="Node" parent="StateMachine"]
+script = ExtResource("watch")
+
+[node name="SkillAttack" type="Node" parent="StateMachine"]
+script = ExtResource("melee")
+
+[node name="SkillEmitter" type="Node" parent="."]
+script = ExtResource("emitter")

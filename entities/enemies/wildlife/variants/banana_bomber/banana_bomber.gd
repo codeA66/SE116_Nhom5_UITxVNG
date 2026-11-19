@@ -43,8 +43,7 @@ func _ready() -> void:
 	_bomb_material.roughness = 0.8
 	_banana.material_override = _bomb_material
 	add_child(_banana)
-	var world: Node = self
-	while world.get_parent() != get_tree().root and world.get_parent() != null: world = world.get_parent()
+	var world: Node = get_attack_pool_scope()
 	_pool = world.get_node_or_null("BananaBlastPool") as ObjectPool
 	if _pool == null:
 		_pool = ObjectPool.new(); _pool.name = "BananaBlastPool"; _pool.scene = BLAST; _pool.initial_size = 2

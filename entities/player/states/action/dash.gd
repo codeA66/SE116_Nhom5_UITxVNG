@@ -5,6 +5,7 @@ extends PlayerState
 var _dash: DashData
 var _direction: Vector3 = Vector3.ZERO
 var _elapsed: float = 0.0
+var _terrain_scale: float = 1.0
 
 
 func enter(_previous: StringName) -> void:
@@ -12,6 +13,7 @@ func enter(_previous: StringName) -> void:
 	var input_direction := player.get_move_direction()
 	_direction = player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
 	_elapsed = 0.0
+	_terrain_scale = player.get_terrain_speed()
 	# Dash xuyên qua gió
 	player.external_forces_enabled = false
 	player.face_instantly(_direction)
@@ -47,7 +49,8 @@ func _speed_factor() -> float:
 
 
 func _apply_dash_velocity(factor: float) -> void:
-	player.velocity = _direction * _dash.speed * factor
+	_terrain_scale = minf(_terrain_scale, player.get_terrain_speed())
+	player.velocity = _direction * _dash.speed * factor * _terrain_scale
 
 
 func _apply_exit_velocity() -> void:
@@ -55,4 +58,4 @@ func _apply_exit_velocity() -> void:
 	var move := player.get_move_direction()
 	if _dash.keep_run_speed and not move.is_zero_approx():
 		exit_speed = maxf(exit_speed, player.movement.max_speed * minf(move.length(), 1.0))
-	player.velocity = _direction * exit_speed
+	player.velocity = _direction * exit_speed * player.get_terrain_speed()

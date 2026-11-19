@@ -1,12 +1,12 @@
-[gd_resource type="Resource" script_class="WeaponData" format=3]
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://d0jdvk16wwpd3"]
 
-[ext_resource type="Script" path="res://entities/_base/data/weapon_data.gd" id="1_weapon"]
-[ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="2_attack"]
+[ext_resource type="Script" uid="uid://cabvd0p6t1m7a" path="res://entities/_base/data/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" uid="uid://bco0nr7ogmwo" path="res://entities/_base/data/attack_data.gd" id="2_attack"]
 [ext_resource type="PackedScene" uid="uid://c3prrp3fhlw5a" path="res://assets/characters/kaykit_adventurers/Assets/gltf/sword_1handed.gltf" id="3_model"]
 [ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_1.tres" id="4_slash1"]
 [ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_2.tres" id="5_slash2"]
 [ext_resource type="Resource" path="res://resources/combat/attacks/sword/sword_slash_3.tres" id="6_slash3"]
-[ext_resource type="Texture2D" path="res://ui/hud/icons/sword.svg" id="ui_icon"]
+[ext_resource type="Texture2D" uid="uid://l57hnveyopyu" path="res://ui/hud/icons/sword.svg" id="ui_icon"]
 
 [resource]
 script = ExtResource("1_weapon")
