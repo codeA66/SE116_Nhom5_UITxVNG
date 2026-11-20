@@ -16,7 +16,6 @@
 
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/fire/fire_checkpoint.tscn" id="checkpoint"]
 
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/altar.glb" id="altar"]
 
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/tier_1/lighting/fire_lighting.tscn" id="lighting"]
 
@@ -40,7 +39,8 @@
 
 [ext_resource type="PackedScene" path="res://objects/gates/stone_gate/fire_cellar_gate.tscn" id="gate"]
 
-[ext_resource type="Script" path="res://objects/wind_puzzle/flag_source/flag_source.gd" id="flag_source"]
+
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/tier_3_altar.tscn" id="tier_3_altar"]
 
 [sub_resource type="BoxShape3D" id="CheckpointSpan"]
 size = Vector3(3.92, 1.1, 1.35)
@@ -58,16 +58,13 @@ script = ExtResource("li_data")
 initial_steps = PackedInt32Array(1, 2, 0, 0)
 tutorial_flag = &"level_3.t3_walkthrough_ly_tutorial"
 stage_flags = PackedStringArray("level_3.t3_walkthrough_ly_pedestal")
-completed_flag = &"level_3.t3_walkthrough_ly"
+completed_flag = &"level_3.t3_walkthrough_ly_exit"
 
 [sub_resource type="Resource" id="KhamRoutePuzzle"]
 script = ExtResource("kham_data")
 vent_rest_time = 1.0
 vent_active_time = 1.5
 seal_flag = &"level_3.t3_walkthrough_kham"
-
-[sub_resource type="BoxShape3D" id="Completion"]
-size = Vector3(5.4, 2.2, 3.2)
 
 [sub_resource type="BoxShape3D" id="Fall"]
 size = Vector3(210, 10, 160)
@@ -79,7 +76,6 @@ shader_warmup = null
 
 [node name="Walkthrough" type="Node" parent="."]
 script = ExtResource("route")
-required_flags = Array[StringName]([&"level_3.t3_walkthrough_ly", &"level_3.t3_walkthrough_kham", &"level_3.t3_walkthrough_ton", &"level_3.t3_walkthrough_chan"])
 
 [node name="FireLighting" parent="." instance=ExtResource("lighting")]
 
@@ -96,6 +92,8 @@ held_weapon = ExtResource("sword")
 [node name="LiFoundry" parent="." instance=ExtResource("li")]
 position = Vector3(0, 0, 44)
 puzzle_data = SubResource("LiRoutePuzzle")
+gem_picked_flag = &"level_3.t3_walkthrough_ly_picked"
+legacy_exit_flag = &"level_3.t3_walkthrough_ly"
 
 [node name="KhamCondenser" parent="." instance=ExtResource("kham")]
 position = Vector3(0, 0, -45)
@@ -126,45 +124,42 @@ seal_flag = &"level_3.t3_walkthrough_chan"
 
 [node name="Connectors" parent="." instance=ExtResource("connectors")]
 
+[node name="Finish" type="Node3D" parent="."]
+
+[node name="Altar" parent="Finish" node_paths=PackedStringArray("flames", "next_gates") instance=ExtResource("tier_3_altar")]
+position = Vector3(0, 0.32, 0)
+earned_flags = Array[StringName]([&"level_3.t3_walkthrough_ly_picked", &"level_3.t3_walkthrough_kham", &"level_3.t3_walkthrough_ton", &"level_3.t3_walkthrough_chan"])
+placed_flags = Array[StringName]([&"level_3.t3_walkthrough_ly_placed", &"level_3.t3_walkthrough_kham_placed", &"level_3.t3_walkthrough_ton_placed", &"level_3.t3_walkthrough_chan_placed"])
+flames = [NodePath("../../Connectors/Hub/LyFire"), NodePath("../../Connectors/Hub/KhamFire"), NodePath("../../Connectors/Hub/TonFire"), NodePath("../../Connectors/Hub/ChanFire")]
+next_gates = [NodePath("../../SealedDoors/BeforeKham"), NodePath("../../SealedDoors/BeforeTon"), NodePath("../../SealedDoors/BeforeChan")]
+
+[node name="Complete" type="Marker3D" parent="Finish"]
+position = Vector3(0, 0.4, 3.35)
+rotation = Vector3(0, 3.14159265, 0)
+script = ExtResource("spawn")
+spawn_id = &"complete"
+
 [node name="SealedDoors" type="Node3D" parent="."]
 
-[node name="LySeal" type="Node" parent="SealedDoors"]
-script = ExtResource("flag_source")
-flag = &"level_3.t3_walkthrough_ly"
-
-[node name="BeforeKham" parent="SealedDoors" node_paths=PackedStringArray("sources") instance=ExtResource("gate")]
+[node name="BeforeKham" parent="SealedDoors" instance=ExtResource("gate")]
 position = Vector3(0, 0.32, -18)
-sources = [NodePath("../LySeal")]
 open_time = 0.65
 open_trauma = 0.0
+pressure_mode = true
 
-[node name="KhamSeal" type="Node" parent="SealedDoors"]
-script = ExtResource("flag_source")
-flag = &"level_3.t3_walkthrough_kham"
-
-[node name="BeforeTon" parent="SealedDoors" node_paths=PackedStringArray("sources") instance=ExtResource("gate")]
+[node name="BeforeTon" parent="SealedDoors" instance=ExtResource("gate")]
 position = Vector3(-18, 0.32, 0)
 rotation = Vector3(0, 1.5708, 0)
-sources = [NodePath("../KhamSeal")]
 open_time = 0.65
 open_trauma = 0.0
+pressure_mode = true
 
-[node name="TonSeal" type="Node" parent="SealedDoors"]
-script = ExtResource("flag_source")
-flag = &"level_3.t3_walkthrough_ton"
-
-[node name="BeforeChan" parent="SealedDoors" node_paths=PackedStringArray("sources") instance=ExtResource("gate")]
+[node name="BeforeChan" parent="SealedDoors" instance=ExtResource("gate")]
 position = Vector3(18, 0.32, 0)
 rotation = Vector3(0, 1.5708, 0)
-sources = [NodePath("../TonSeal")]
 open_time = 0.65
 open_trauma = 0.0
-
-[node name="BeforeFinish" parent="SealedDoors" node_paths=PackedStringArray("sources") instance=ExtResource("gate")]
-position = Vector3(23, 0.32, 5)
-sources = [NodePath("../../Walkthrough")]
-open_time = 0.65
-open_trauma = 0.0
+pressure_mode = true
 
 [node name="LiLanding" type="Node3D" parent="."]
 position = Vector3(0, 0, 28)
@@ -234,28 +229,6 @@ position = Vector3(0, 0.4, -4)
 rotation = Vector3(0, 3.14159265, 0)
 script = ExtResource("spawn")
 spawn_id = &"start"
-
-[node name="Finish" type="Node3D" parent="."]
-position = Vector3(23, 0, 11)
-
-[node name="Altar" parent="Finish" instance=ExtResource("altar")]
-position = Vector3(0, 0.32, 2.1)
-scale = Vector3(0.54, 0.54, 0.54)
-
-[node name="Completion" type="Area3D" parent="Finish"]
-position = Vector3(0, 1.25, -1)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Finish/Completion"]
-shape = SubResource("Completion")
-
-[node name="Complete" type="Marker3D" parent="Finish"]
-position = Vector3(0, 0.4, -1)
-rotation = Vector3(0, 3.14159265, 0)
-script = ExtResource("spawn")
-spawn_id = &"complete"
 
 [node name="FallRecovery" type="Area3D" parent="."]
 position = Vector3(-2, -16, 1)
