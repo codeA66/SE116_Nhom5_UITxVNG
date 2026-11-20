@@ -27,6 +27,7 @@ signal shot_reached
 ## Chạy khi node này phát trigger_signal (không tham số) thay vì khi player bước vào vùng. Để trống = dùng vùng kích hoạt
 @export var trigger_source: Node
 @export var trigger_signal: StringName = &"unlock_started"
+@export var manual_only: bool = false
 
 var player: Player
 ## Camera của player lúc bắt đầu (để trả lại khi xong)
@@ -61,7 +62,9 @@ func _ready() -> void:
 		_trigger.monitoring = false
 		set_process(false)
 		return
-	if trigger_source:
+	if manual_only:
+		_trigger.monitoring = false
+	elif trigger_source:
 		_trigger.monitoring = false
 		if trigger_source.has_signal(trigger_signal):
 			trigger_source.connect(trigger_signal, _on_source_triggered, CONNECT_ONE_SHOT)
@@ -114,6 +117,18 @@ func begin(body_player: Player) -> void:
 	camera.make_current()
 	set_process(true)
 	started.emit()
+
+
+func play_for(body_player: Player) -> void:
+	if is_processing() or get_viewport().get_camera_3d() == null:
+		return
+	state_machine.transition_to(CameraCutsceneState.IDLE)
+	(state_machine.current_state as CameraCutsceneState).on_player_entered(body_player)
+
+
+func cancel_playback() -> void:
+	if is_processing():
+		state_machine.transition_to(CameraCutsceneState.DONE)
 
 
 func end() -> void:

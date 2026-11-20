@@ -1,0 +1,65 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/bosses/fire/fire_boss.tscn" id="base"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/fire/war_elephant.glb" id="rig"]
+[ext_resource type="Resource" path="res://resources/enemies/fire_bosses/war_elephant.tres" id="config"]
+[ext_resource type="Script" path="res://entities/bosses/fire/elephant/war_elephant.gd" id="elephant"]
+[ext_resource type="Script" path="res://entities/bosses/fire/elephant/elephant_attack.gd" id="attack"]
+[ext_resource type="Script" path="res://entities/bosses/fire/elephant/elephant_corpse.gd" id="dead"]
+[ext_resource type="Script" path="res://entities/bosses/fire/elephant/elephant_lava.gd" id="lava"]
+[ext_resource type="Script" path="res://entities/bosses/fire/elephant/vfx/elephant_coat.gd" id="coat"]
+[ext_resource type="Script" path="res://entities/enemies/wildlife/_shared/states/movement/wild_display.gd" id="display"]
+[ext_resource type="PackedScene" path="res://objects/world/camera_cutscene/camera_cutscene.tscn" id="cutscene"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/camera_cutscene_data.gd" id="cutscene_data"]
+
+[sub_resource type="BoxShape3D" id="Body"]
+size = Vector3(2.15, 2.4, 3.25)
+
+[sub_resource type="Resource" id="IntroductionView"]
+resource_local_to_scene = true
+script = ExtResource("cutscene_data")
+travel_time = 1.05
+return_time = 1.05
+shot_offset = Vector3(-3.6, 4.8, 11.2)
+look_height = 1.85
+shot_fov = 37.0
+push_in_fov = 34.0
+
+[node name="WarElephant" instance=ExtResource("base")]
+script = ExtResource("elephant")
+data = ExtResource("config")
+ground_motion_bone = &"spine1_hiResSpine1"
+
+[node name="CollisionShape3D" parent="." index="0"]
+position = Vector3(0, 1.2, 0)
+shape = SubResource("Body")
+
+[node name="Rig" parent="Model/Visual" instance=ExtResource("rig")]
+scale = Vector3(0.83, 0.83, 0.83)
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+position = Vector3(0, 1.2, 0)
+shape = SubResource("Body")
+
+[node name="Dead" parent="StateMachine"]
+script = ExtResource("dead")
+
+[node name="DeathEffectComponent" parent="."]
+script = null
+
+[node name="SkillAttack" parent="StateMachine"]
+script = ExtResource("attack")
+
+[node name="Display" type="Node" parent="StateMachine"]
+script = ExtResource("display")
+
+[node name="Lava" type="Node3D" parent="."]
+script = ExtResource("lava")
+
+[node name="Coat" type="Node3D" parent="."]
+script = ExtResource("coat")
+
+[node name="Introduction" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("cutscene")]
+data = SubResource("IntroductionView")
+focus_target = NodePath("..")
+manual_only = true

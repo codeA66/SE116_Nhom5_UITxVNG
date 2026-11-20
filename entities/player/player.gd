@@ -69,6 +69,8 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 ## Tắt khi cutscene / hội thoại: bỏ qua mọi phím (đi, nhảy, đánh, dash, gió, tương tác, đổi vũ khí).
 ## Vật lý vẫn chạy nên đứng trên thuyền / bệ vẫn được chở đi. Đổi bằng set_controls_enabled()
 var controls_enabled: bool = true
+var _terrain_speed_scales: Dictionary[Node, float] = {}
+var _terrain_speed: float = 1.0
 var last_hit: DamageInfo
 ## Vũ khí đang chờ gắn vào tay trong state PickUp
 var pending_weapon: WeaponData
@@ -607,6 +609,24 @@ func start_dash() -> DashData:
 		_air_dashes_used += 1
 	_hurtbox.set_invincible(dash.duration)
 	return dash
+
+
+func set_terrain_speed(source: Node, factor: float) -> void:
+	if factor < 1.0:
+		_terrain_speed_scales[source] = factor
+	else:
+		_terrain_speed_scales.erase(source)
+	_terrain_speed = 1.0
+	for scale_factor: float in _terrain_speed_scales.values():
+		_terrain_speed = minf(_terrain_speed, scale_factor)
+
+
+func get_terrain_speed() -> float:
+	return _terrain_speed
+
+
+func move_toward_direction(direction: Vector3, delta: float) -> void:
+	super(direction * _terrain_speed, delta)
 
 
 ## Kỹ năng chủ động vừa được bấm và dùng được ngay (đã mở khóa, không đang ghép vào vũ khí, có lệnh trong buffer,

@@ -24,6 +24,7 @@ signal exploded(center: Vector3, hit_count: int)
 @export_range(0.0, 100.0, 0.5) var shake_full_radius: float = 8.0
 @export_range(0.0, 200.0, 0.5) var shake_max_radius: float = 20.0
 @export var burst_color: Color = Color(1.0, 0.45, 0.1)
+@export var spawn_burst_effect: bool = true
 @export_range(0.1, 6.0, 0.1) var burst_scale: float = 2.2
 
 var _sphere := SphereShape3D.new()
@@ -42,7 +43,8 @@ func explode(source: Node = null) -> int:
 	var hits := 0
 	if attack != null:
 		hits = _damage_in_radius(center, source if source else owner)
-	CombatFx.spawn_death(center, burst_color, burst_scale)
+	if spawn_burst_effect:
+		CombatFx.spawn_death(center, burst_color, burst_scale)
 	ScreenShake.add_trauma_at(shake_trauma, center, shake_full_radius, shake_max_radius)
 	exploded.emit(center, hits)
 	return hits

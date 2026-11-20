@@ -1,0 +1,159 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/enemies/new_enemy_test/animation_lab/animation_lab.gd" id="lab"]
+[ext_resource type="Script" path="res://tests/enemies/new_enemy_test/animation_lab/animation_lab_menu.gd" id="menu"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interaction"]
+[ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="view"]
+
+[sub_resource type="Resource" id="CameraView"]
+script = ExtResource("view")
+distance = 27.0
+pitch_degrees = 53.0
+yaw_degrees = 0.0
+fov = 32.0
+
+[sub_resource type="StandardMaterial3D" id="Paving"]
+albedo_color = Color(0.20, 0.29, 0.33, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="Walls"]
+albedo_color = Color(0.26, 0.34, 0.37, 1)
+roughness = 0.96
+
+[sub_resource type="StandardMaterial3D" id="Pillar"]
+albedo_color = Color(0.30, 0.52, 0.49, 1)
+metallic = 0.25
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="FloorMesh"]
+material = SubResource("Paving")
+size = Vector3(36, 1, 32)
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(36, 1, 32)
+
+[sub_resource type="BoxMesh" id="LongMesh"]
+material = SubResource("Walls")
+size = Vector3(36, 4, 0.7)
+
+[sub_resource type="BoxShape3D" id="LongShape"]
+size = Vector3(36, 10, 0.7)
+
+[sub_resource type="BoxMesh" id="ShortMesh"]
+material = SubResource("Walls")
+size = Vector3(0.7, 4, 32)
+
+[sub_resource type="BoxShape3D" id="ShortShape"]
+size = Vector3(0.7, 10, 32)
+
+[sub_resource type="CylinderMesh" id="PillarMesh"]
+material = SubResource("Pillar")
+top_radius = 0.42
+bottom_radius = 0.56
+height = 1.65
+radial_segments = 6
+
+[sub_resource type="CylinderShape3D" id="PillarShape"]
+radius = 0.54
+height = 1.65
+
+[sub_resource type="SphereShape3D" id="Reach"]
+radius = 1.6
+
+[node name="AnimationLab" type="Node3D"]
+script = ExtResource("lab")
+camera_view = SubResource("CameraView")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.5, 0)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="NorthWall" type="StaticBody3D" parent="."]
+position = Vector3(0, 2, -15.65)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="NorthWall"]
+mesh = SubResource("LongMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="NorthWall"]
+position = Vector3(0, 3, 0)
+shape = SubResource("LongShape")
+
+[node name="SouthWall" type="StaticBody3D" parent="."]
+position = Vector3(0, 2, 15.65)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="SouthWall"]
+mesh = SubResource("LongMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="SouthWall"]
+position = Vector3(0, 3, 0)
+shape = SubResource("LongShape")
+
+[node name="EastWall" type="StaticBody3D" parent="."]
+position = Vector3(17.65, 2, 0)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="EastWall"]
+mesh = SubResource("ShortMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="EastWall"]
+position = Vector3(0, 3, 0)
+shape = SubResource("ShortShape")
+
+[node name="WestWall" type="StaticBody3D" parent="."]
+position = Vector3(-17.65, 2, 0)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="WestWall"]
+mesh = SubResource("ShortMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="WestWall"]
+position = Vector3(0, 3, 0)
+shape = SubResource("ShortShape")
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+position = Vector3(0, 9, 0)
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("FloorShape")
+
+[node name="EnemySpawn" type="Marker3D" parent="."]
+position = Vector3(0, 0.04, 0)
+
+[node name="Arrival" type="Marker3D" parent="."]
+position = Vector3(0, 0.04, 7.5)
+rotation = Vector3(0, 3.1415927, 0)
+
+[node name="ReturnPillar" type="StaticBody3D" parent="."]
+position = Vector3(0, 0, 13.2)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="ReturnPillar"]
+position = Vector3(0, 0.825, 0)
+mesh = SubResource("PillarMesh")
+
+[node name="Collision" type="CollisionShape3D" parent="ReturnPillar"]
+position = Vector3(0, 0.825, 0)
+shape = SubResource("PillarShape")
+
+[node name="InteractableComponent" type="Area3D" parent="ReturnPillar"]
+position = Vector3(0, 0.8, 0)
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("interaction")
+prompt_text = "Về sân thử"
+prompt_offset = Vector3(0, 1.0, 0)
+
+[node name="Reach" type="CollisionShape3D" parent="ReturnPillar/InteractableComponent"]
+shape = SubResource("Reach")
+
+[node name="Menu" type="CanvasLayer" parent="."]
+script = ExtResource("menu")

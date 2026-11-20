@@ -21,8 +21,7 @@ func _ready() -> void:
 	_held = BoulderVolley.stone()
 	add_child(_held)
 	_held.hide()
-	var world: Node = _actor
-	while world.get_parent() != get_tree().root and world.get_parent() != null: world = world.get_parent()
+	var world: Node = _actor.get_attack_pool_scope()
 	_pool = world.get_node_or_null("ChieftainBoulderPool") as ObjectPool
 	if _pool == null:
 		_pool = ObjectPool.new()

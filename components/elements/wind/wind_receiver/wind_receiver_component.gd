@@ -71,6 +71,11 @@ func push(impulse: Vector3) -> void:
 	pushed.emit(impulse)
 
 
+## Vật nhẹ có thể dùng vị trí trong luồng E để xác định lực ở mép luồng.
+func push_from_blast(impulse: Vector3, _origin: Vector3, _half_width: float) -> void:
+	push(impulse)
+
+
 ## Thay cho body.move_and_slide().
 ## Gió ngang là vận tốc trôi cộng tạm thời (không tích lũy, người chơi vẫn chống lại được);
 ## gió dọc kéo vận tốc đứng về tốc độ gió (nâng lên, lơ lửng khi lực giảm dần).

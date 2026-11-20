@@ -49,7 +49,7 @@ assets/
   characters/  foxy/ + gói KayKit (ngoại lệ)
   materials/
   models/      map_wind/ (wind_kit, wind_palace_v1, tier_3_monkey_garden, ...), map_ice/, map_fire/, map_thunder/,
-               map_temple/, enemies/, bosses/, shared/ (weapons, generated, đồ dùng chung)
+			   map_temple/, enemies/, bosses/, shared/ (weapons, generated, đồ dùng chung)
   shaders/     character/, combat/, environment/, screen/, wind/ (+ ice/, fire/, thunder/)
   vfx/         ambient/, combat/, enemies/, wind/ (+ ice/, fire/, thunder/)
   audio/       music/, sfx/, ambience/
@@ -57,16 +57,16 @@ assets/
 autoload/      game_state, save_manager, scene_manager, combat_fx, ...
 components/    ai/, combat/ (health, hitbox, hurtbox), core/ (state_machine, object_pool), feedback/, utility/, elements/ {wind, fire, ...}
 entities/      _base/ {character, data/}
-               player/ {player, camera/, data/, foxy/, states/{ground, air, action, status}}
-               enemies/ {_base/ (states/{movement, attack, status}), palace/, wildlife/}
-               bosses/ {boss_1/, ..., final_boss/}, npcs/
+			   player/ {player, camera/, data/, foxy/, states/{ground, air, action, status}}
+			   enemies/ {_base/ (states/{movement, attack, status}), palace/, wildlife/}
+			   bosses/ {boss_1/, ..., final_boss/}, npcs/
 levels/        _base/, boot/, zone_1_wind/ (level_1/{rooms/{tier_1, tier_2, tier_3}, lighting, lift}),
-               zone_2_ice/, zone_3_fire/, zone_4_thunder/, temple_center/ (Đền Trung Tâm + Final Boss)
+			   zone_2_ice/, zone_3_fire/, zone_4_thunder/, temple_center/ (Đền Trung Tâm + Final Boss)
 objects/       core/ (checkpoint, pickups, encounter), gates/, traversal/, combat/, world/,
-               wind_puzzle/ (map sau: ice_puzzle/... ; quá 6 thì gom vào puzzles/)
+			   wind_puzzle/ (map sau: ice_puzzle/... ; quá 6 thì gom vào puzzles/)
 resources/     player/, combat/ {attacks/{sword, bow}, weapons, fusion/{wind, fire, ...}, fire}, enemies/, feedback/, world/, vfx/
 ui/            hud/ {health, energy, skills, prompt, icons}, menus/ {main, pause, inventory, settings, game_over},
-               transition/
+			   transition/
 tests/         player/, enemies/, wind/, levels/, kits/
 docs/          tài liệu (Godot bỏ qua nhờ .gdignore)
 ```

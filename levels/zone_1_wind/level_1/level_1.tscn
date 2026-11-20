@@ -89,7 +89,7 @@ size = Vector3(110, 28, 124)
 size = Vector3(120, 18, 158)
 
 [sub_resource type="BoxShape3D" id="Tier3ZoneShape"]
-size = Vector3(200, 50, 160)
+size = Vector3(200, 50, 132)
 
 [sub_resource type="BoxShape3D" id="Tier3VisibilityShape"]
 size = Vector3(260, 90, 250)
@@ -342,7 +342,7 @@ wind_direction = Vector3(0.6, 0, -1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -231.645)
 
 [node name="Tier3Zone" parent="." unique_id=1038946771 node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -310)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -324)
 hide_when_inside = [NodePath("../Rooms/Tier1"), NodePath("../Rooms/Tier2")]
 
 [node name="Shape" parent="Tier3Zone" index="0"]

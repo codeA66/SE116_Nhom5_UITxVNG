@@ -1,0 +1,249 @@
+[gd_resource type="Resource" script_class="SabretoothData" format=3 uid="uid://c8rg05468vorr"]
+
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/sabretooth_data.gd" id="data"]
+[ext_resource type="Script" uid="uid://1ogi6ru3cdf" path="res://entities/_base/movement_stats.gd" id="movement"]
+[ext_resource type="Script" uid="uid://spirok3yst3w" path="res://entities/enemies/wildlife/_shared/skills/enemy_skill_data.gd" id="skill"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/combat/sabretooth_skill.gd" id="strike"]
+
+[sub_resource type="Resource" id="Motion"]
+script = ExtResource("movement")
+max_speed = 6.5
+
+[sub_resource type="Resource" id="pounce"]
+script = ExtResource("strike")
+title = "Vồ xa"
+skill_id = &"pounce"
+state = &"TigerAttack"
+animation = &"Leaper"
+flight_window = Vector2(0.3, 0.467)
+duration = 1.033333
+anticipation = Vector2(0.12, 0.3)
+anticipation_extra = 0.44
+windup_end = 0.3
+active_start = 0.48
+active_end = 0.65
+lunge_window = Vector2(0.3, 0.64)
+lunge_speed = 9
+lunge_time = 0.34
+cooldown = 4.6
+minimum_range = 4
+maximum_range = 8
+recovery_time = 0.72
+follow_bones = Array[StringName]([&"Sabrecat_LeftHand_LHnd_", &"Sabrecat_RightHand_RHnd_"])
+hitbox_center = Vector3(0, 1.1, 3.05)
+hitbox_size = Vector3(2.15, 1.8, 1.7)
+
+[sub_resource type="Resource" id="double_claw"]
+script = ExtResource("strike")
+title = "Vồ hai chân trước"
+skill_id = &"double_claw"
+state = &"TigerAttack"
+animation = &"Attack"
+duration = 1.033333
+anticipation = Vector2(0.07, 0.23)
+anticipation_extra = 0.36
+windup_end = 0.27
+active_start = 0.48
+active_end = 0.65
+lunge_window = Vector2(0.27, 0.62)
+lunge_speed = 4.2
+lunge_time = 0.35
+cooldown = 3.1
+minimum_range = 2.2
+maximum_range = 4.8
+recovery_time = 0.6
+follow_bones = Array[StringName]([&"Sabrecat_LeftHand_LHnd_", &"Sabrecat_RightHand_RHnd_"])
+hitbox_center = Vector3(0, 1.1, 2.95)
+hitbox_size = Vector3(2, 1.7, 1.6)
+
+[sub_resource type="Resource" id="bite"]
+script = ExtResource("strike")
+title = "Cắn bổ xuống"
+skill_id = &"bite"
+state = &"TigerAttack"
+animation = &"Bite"
+duration = 1.833333
+anticipation = Vector2(0.13, 0.53)
+anticipation_extra = 0.34
+windup_end = 0.57
+active_start = 0.63
+active_end = 0.86
+lunge_window = Vector2(0.57, 0.74)
+lunge_speed = 1.2
+lunge_time = 0.17
+cooldown = 2.8
+minimum_range = 0
+maximum_range = 3.8
+recovery_time = 0.48
+follow_bones = Array[StringName]([&"Sabrecat_Head_jaw_"])
+hitbox_center = Vector3(-0.4, 1.15, 3.05)
+hitbox_size = Vector3(1.5, 1.55, 1.45)
+
+[sub_resource type="Resource" id="paw_sweep"]
+script = ExtResource("strike")
+title = "Liên hoàn quạt móng"
+second_anticipation = Vector2(0.68, 0.98)
+second_anticipation_extra = 0.24
+skill_id = &"paw_sweep"
+state = &"TigerAttack"
+animation = &"PawSwatting"
+duration = 2.2
+anticipation = Vector2(0.06, 0.22)
+anticipation_extra = 0.31
+windup_end = 0.23
+active_start = 0.23
+active_end = 0.46
+second_hit = Vector2(1, 1.41)
+lunge_window = Vector2(0, 0)
+lunge_speed = 0
+lunge_time = 0.00
+cooldown = 3.7
+minimum_range = 1.3
+maximum_range = 4.2
+recovery_time = 0.64
+follow_bones = Array[StringName]([&"Sabrecat_RightHand_RHnd_"])
+hitbox_center = Vector3(0, 1.2, 2.65)
+hitbox_size = Vector3(1.8, 1.8, 1.55)
+
+[sub_resource type="Resource" id="snap"]
+script = ExtResource("strike")
+title = "Ngoạm nhanh"
+skill_id = &"snap"
+state = &"TigerAttack"
+animation = &"Snap"
+duration = 2.033333
+anticipation = Vector2(0.37, 0.57)
+anticipation_extra = 0.25
+windup_end = 0.6
+active_start = 0.67
+active_end = 0.85
+lunge_window = Vector2(0.6, 0.78)
+lunge_speed = 1
+lunge_time = 0.18
+cooldown = 2.4
+minimum_range = 0
+maximum_range = 3.7
+recovery_time = 0.44
+follow_bones = Array[StringName]([&"Sabrecat_Head_jaw_"])
+hitbox_center = Vector3(0.1, 1.15, 3)
+hitbox_size = Vector3(1.55, 1.6, 1.45)
+
+[sub_resource type="Resource" id="left_swat"]
+script = ExtResource("strike")
+title = "Quật móng xoay sườn"
+aim_offset_degrees = 72.0
+skill_id = &"left_swat"
+state = &"TigerAttack"
+animation = &"SwatLft"
+duration = 1.2
+anticipation = Vector2(0.27, 0.57)
+anticipation_extra = 0.38
+windup_end = 0.7
+active_start = 0.7
+active_end = 0.92
+lunge_window = Vector2(0, 0)
+lunge_speed = 0
+lunge_time = 0.00
+cooldown = 3.2
+minimum_range = 2.8
+maximum_range = 4.2
+recovery_time = 0.66
+follow_bones = Array[StringName]([&"Sabrecat_LeftHand_LHnd_"])
+hitbox_center = Vector3(-2.3, 1.25, 1.6)
+hitbox_size = Vector3(1.8, 1.8, 1.6)
+
+[sub_resource type="Resource" id="right_swat"]
+script = ExtResource("strike")
+title = "Quật móng xoay sườn phải"
+skill_id = &"right_swat"
+state = &"TigerAttack"
+animation = &"SwatRgt"
+phase_one_only = true
+aim_offset_degrees = -72.0
+duration = 1.2
+anticipation = Vector2(0.27, 0.57)
+anticipation_extra = 0.38
+windup_end = 0.7
+active_start = 0.7
+active_end = 0.92
+cooldown = 3.2
+minimum_range = 2.8
+maximum_range = 4.2
+recovery_time = 0.66
+follow_bones = Array[StringName]([&"Sabrecat_RightHand_RHnd_"])
+hitbox_center = Vector3(2.3, 1.25, 1.6)
+hitbox_size = Vector3(1.8, 1.8, 1.6)
+
+[sub_resource type="Resource" id="raged"]
+script = ExtResource("strike")
+title = "Cuồng nộ quật hai móng"
+skill_id = &"raged"
+state = &"TigerAttack"
+animation = &"Raged"
+follow_authored_yaw = false
+phase_one_only = true
+duration = 2.666667
+anticipation = Vector2(0.57, 0.82)
+anticipation_extra = 0.38
+second_anticipation = Vector2(1.27, 1.44)
+second_anticipation_extra = 0.25
+windup_end = 0.98
+active_start = 0.98
+active_end = 1.2
+second_hit = Vector2(1.53, 1.73)
+cooldown = 4.0
+minimum_range = 0
+maximum_range = 3.8
+recovery_time = 0.55
+follow_bones = Array[StringName]([&"Sabrecat_LeftHand_LHnd_"])
+second_follow_bones = Array[StringName]([&"Sabrecat_RightHand_RHnd_"])
+hitbox_center = Vector3(0, 1.2, 2.8)
+hitbox_size = Vector3(1.8, 1.8, 1.8)
+
+[sub_resource type="Resource" id="fire_beam"]
+script = ExtResource("strike")
+title = "Phase 2: Tia hỏa diễm"
+melee_enabled = false
+skill_id = &"fire_beam"
+state = &"TigerFireBeam"
+animation = &"FireBeam"
+phase_two_only = true
+
+[sub_resource type="Resource" id="fire_finale"]
+script = ExtResource("strike")
+title = "Phase 2: Vồ và bùng nổ"
+melee_enabled = false
+skill_id = &"fire_finale"
+state = &"TigerFireFinale"
+animation = &"Leaper"
+phase_two_only = true
+
+[sub_resource type="Resource" id="phase_two_sequence"]
+script = ExtResource("strike")
+title = "Phase 2: Toàn bộ chuỗi kết thúc"
+melee_enabled = false
+skill_id = &"phase_two_sequence"
+state = &"TigerTransformation"
+phase_two_only = true
+
+[resource]
+script = ExtResource("data")
+idle_animation = &"Growling"
+walk_animation = &"Trot"
+run_animation = &"Run"
+skills = Array[ExtResource("skill")]([SubResource("pounce"), SubResource("double_claw"), SubResource("bite"), SubResource("paw_sweep"), SubResource("snap"), SubResource("left_swat"), SubResource("right_swat"), SubResource("raged"), SubResource("fire_beam"), SubResource("fire_finale"), SubResource("phase_two_sequence")])
+advance_on_cooldown = true
+approach_stop_distance = 2.5
+display_name = "Hổ răng kiếm"
+max_health = 15
+movement = SubResource("Motion")
+detect_range = 38.0
+lose_range = 52.0
+leash_range = 52.0
+attack_range = 3.5
+hitbox_reach = 3.5
+attack_cooldown = 0.9
+patrol_radius = 0.0
+stagger_on_hit = false
+wind_multiplier = 0.0
+stagger_on_wind = false

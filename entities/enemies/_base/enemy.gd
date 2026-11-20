@@ -6,6 +6,8 @@ extends Character
 
 signal died(enemy: Enemy)
 
+const ATTACK_POOL_SCOPE := &"enemy_attack_pool_scope"
+
 @export var data: EnemyData
 ## Phủ lên model khi bị đánh trúng
 @export var hit_flash_material: Material
@@ -166,6 +168,16 @@ func is_dead() -> bool:
 ## Bị đánh vẫn phản ứng như thường. Gọi trễ vì có thể chạy trong callback vật lý (player bước vào Trigger)
 func set_dormant(dormant: bool) -> void:
 	sensor.set_deferred(&"monitoring", not dormant)
+
+
+## Đòn đã phóng sống theo phạm vi giao tranh, dù quái tạo đòn đã chết.
+func get_attack_pool_scope() -> Node:
+	var scope: Node = self
+	var parent: Node = scope.get_parent()
+	while parent != null and parent != get_tree().root and not scope.is_in_group(ATTACK_POOL_SCOPE):
+		scope = parent
+		parent = scope.get_parent()
+	return scope
 
 
 # ---------- Nội bộ ----------

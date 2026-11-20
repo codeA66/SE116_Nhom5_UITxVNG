@@ -8,6 +8,7 @@ var _overview: bool = false
 var _hits: int = 0
 
 func _ready() -> void:
+	training.focus_mode = Control.FOCUS_NONE
 	training.button_pressed = training_mode
 	training.toggled.connect(_set_training)
 	player.health.damaged.connect(_on_damaged)
@@ -17,7 +18,6 @@ func _ready() -> void:
 func _unhandled_key_input(event: InputEvent) -> void:
 	var key: InputEventKey = event as InputEventKey
 	if key == null or not key.pressed or key.echo: return
-	if key.keycode == KEY_TAB: _toggle_view(); get_viewport().set_input_as_handled()
 	if key.keycode == KEY_R: _reset(); get_viewport().set_input_as_handled()
 
 func _set_training(enabled: bool) -> void:

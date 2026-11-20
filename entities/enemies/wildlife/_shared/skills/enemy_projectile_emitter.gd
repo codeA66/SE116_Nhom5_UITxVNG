@@ -14,10 +14,7 @@ var _cast_visual: Node3D
 
 func _ready() -> void:
 	_actor = get_parent() as WildEnemy
-	# Pool thuộc scene thế giới, không nằm dưới enemy sẽ bị xóa sau khi chết.
-	var world: Node = _actor
-	while world.get_parent() != get_tree().root and world.get_parent() != null:
-		world = world.get_parent()
+	var world: Node = _actor.get_attack_pool_scope()
 	var registry: Dictionary = world.get_meta(&"enemy_throwable_pools", {})
 	world.set_meta(&"enemy_throwable_pools", registry)
 	var skeleton: Skeleton3D

@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/combat/pyralon_feather.gd" id="feather"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/combat/pyralon_feather_wind.gd" id="wind"]
+
+[sub_resource type="SphereShape3D" id="WindShape"]
+radius = 0.37
+
+[sub_resource type="SphereShape3D" id="FlightShape"]
+radius = 0.24
+
+[node name="PyralonFeather" type="Node3D"]
+script = ExtResource("feather")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Blade" type="MeshInstance3D" parent="Visual"]
+cast_shadow = 0
+
+[node name="Trail" type="MeshInstance3D" parent="Visual"]
+cast_shadow = 0
+
+[node name="Fire" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="FloorRing" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="FloorShadow" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="Sweep" type="ShapeCast3D" parent="."]
+enabled = false
+collide_with_areas = true
+collision_mask = 259
+max_results = 4
+shape = SubResource("FlightShape")
+
+[node name="WindReceiver" type="Area3D" parent="."]
+collision_layer = 128
+collision_mask = 0
+monitoring = false
+script = ExtResource("wind")
+
+[node name="Shape" type="CollisionShape3D" parent="WindReceiver"]
+shape = SubResource("WindShape")

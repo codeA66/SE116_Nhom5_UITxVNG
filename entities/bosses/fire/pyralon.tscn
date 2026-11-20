@@ -1,0 +1,70 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://entities/bosses/fire/fire_boss.tscn" id="base"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/fire/pyralon.glb" id="rig"]
+[ext_resource type="Resource" path="res://resources/enemies/fire_bosses/pyralon.tres" id="config"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/animation/pyralon_rig.gd" id="pose"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/pyralon.gd" id="actor"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/combat/pyralon_field.gd" id="field"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/combat/pyralon_ground_fire.gd" id="ground"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_advance.gd" id="advance"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_slam.gd" id="slam"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_rear_slash.gd" id="rear_slash"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_barrage.gd" id="barrage"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_command.gd" id="command"]
+[ext_resource type="PackedScene" path="res://entities/bosses/fire/pyralon/combat/pyralon_feather.tscn" id="feather"]
+[ext_resource type="PackedScene" path="res://entities/bosses/fire/pyralon/combat/pyralon_fire_fx.tscn" id="fire_fx"]
+[ext_resource type="Script" path="res://components/combat/damage_area/explosion_component.gd" id="explosion"]
+
+[sub_resource type="CapsuleShape3D" id="Body"]
+radius = 0.52
+height = 2.5
+
+[node name="Pyralon" instance=ExtResource("base")]
+script = ExtResource("actor")
+chase_state = &"PyralonAdvance"
+data = ExtResource("config")
+ground_motion_bone = &"Root Bone"
+
+[node name="CollisionShape3D" parent="." index="0"]
+position = Vector3(0, 1.25, 0)
+shape = SubResource("Body")
+
+[node name="Rig" parent="Model/Visual" instance=ExtResource("rig")]
+scale = Vector3(1.15, 1.15, 1.15)
+
+[node name="CollisionShape3D" parent="HurtboxComponent" index="0"]
+position = Vector3(0, 1.25, 0)
+shape = SubResource("Body")
+
+[node name="PyralonAdvance" type="Node" parent="StateMachine"]
+script = ExtResource("advance")
+
+[node name="PyralonSlam" type="Node" parent="StateMachine"]
+script = ExtResource("slam")
+
+[node name="PyralonRearSlash" type="Node" parent="StateMachine"]
+script = ExtResource("rear_slash")
+
+[node name="PyralonBarrage" type="Node" parent="StateMachine"]
+script = ExtResource("barrage")
+
+[node name="PyralonCommand" type="Node" parent="StateMachine"]
+script = ExtResource("command")
+
+[node name="RigControl" type="Node" parent="."]
+script = ExtResource("pose")
+
+[node name="Field" type="Node3D" parent="."]
+script = ExtResource("field")
+feather_scene = ExtResource("feather")
+fire_fx_scene = ExtResource("fire_fx")
+
+[node name="Explosion" type="Node3D" parent="Field"]
+script = ExtResource("explosion")
+hurtbox_mask = 2
+ignite_targets = false
+spawn_burst_effect = false
+
+[node name="GroundFire" type="Node3D" parent="Field"]
+script = ExtResource("ground")

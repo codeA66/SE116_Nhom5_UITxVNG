@@ -69,7 +69,7 @@ func _on_area_entered(area: Area3D) -> void:
 		return
 
 	_already_pushed.append(receiver)
-	receiver.push(f_norm * _data.push_speed)
+	receiver.push_from_blast(f_norm * _data.push_speed, global_position, _data.width * 0.5)
 	_hit_owner(receiver, f_norm)
 	pushed.emit(receiver)
 
