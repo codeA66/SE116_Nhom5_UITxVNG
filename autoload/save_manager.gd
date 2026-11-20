@@ -24,6 +24,8 @@ var current_slot: int = 1
 ## Thư mục chứa các file hồ sơ. Test đổi sang thư mục riêng để không bao giờ đụng save thật của người chơi
 var storage_dir: String = "user://"
 var _resetting: bool = false
+## Đã dùng cheat dev: tiến trình trong bộ nhớ không còn thật, không ghi đè save tới khi tắt game
+var _saving_blocked: bool = false
 
 
 func _ready() -> void:
@@ -96,7 +98,18 @@ func has_save() -> bool:
 	return slot_has_save(current_slot)
 
 
+## Chặn ghi save tới hết phiên chơi (không mở lại được: cheat đã sửa tiến trình trong bộ nhớ)
+func block_saving() -> void:
+	_saving_blocked = true
+
+
+func is_saving_blocked() -> bool:
+	return _saving_blocked
+
+
 func save_game() -> bool:
+	if _saving_blocked:
+		return false
 	var path := get_slot_path(current_slot)
 	var temp := path + ".tmp"
 	var file := FileAccess.open(temp, FileAccess.WRITE)
