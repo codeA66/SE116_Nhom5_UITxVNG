@@ -43,6 +43,10 @@ func _remove(instant: bool) -> void:
 	for child: Node in get_children():
 		if child is CollisionShape3D:
 			(child as CollisionShape3D).set_deferred(&"disabled", true)
+	# Vùng bắt lửa cũng tắt shape: tắt monitorable chưa đủ vì truy vấn vật lý / ShapeCast vẫn bắt trúng Area
+	for zone: Node in _burnable.get_children():
+		if zone is CollisionShape3D:
+			(zone as CollisionShape3D).set_deferred(&"disabled", true)
 	if instant:
 		visible = false
 		return

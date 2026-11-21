@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://depjpok5a2o3v"]
 
+[ext_resource type="PackedScene" path="res://components/utility/fall_guard/fall_guard.tscn" id="fall_guard_scene"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/tier_1/lighting/fire_lighting.tscn" id="1_t5010"]
 [ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="2_a7umj"]
 [ext_resource type="PackedScene" path="res://objects/core/kill_zone/kill_zone.tscn" id="3_m7jl0"]
@@ -743,6 +744,8 @@ hit_flash_time = 0.06
 script = ExtResource("flag_source_script")
 flag = &"level_3.room13_encounter"
 
+[node name="FallGuard" parent="." instance=ExtResource("fall_guard_scene")]
+editor_description = "Rào vô hình bám mọi lan can / cột lan can, bịt khe ở góc để không lọt xuống vực"
 [node name="RoomFocus" type="Node" parent="." unique_id=811920077 node_paths=PackedStringArray("rooms_root")]
 script = ExtResource("room_focus_script")
 rooms_root = NodePath("../Rooms")

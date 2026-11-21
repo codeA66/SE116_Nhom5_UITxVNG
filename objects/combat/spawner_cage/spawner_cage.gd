@@ -65,8 +65,8 @@ func _ready() -> void:
 		is_cleared = true
 		_visual.hide()
 		_body_shape.disabled = true
-		_hurtbox.monitorable = false
 		_area.monitoring = false
+		_retire_hurtbox(false)
 		# Đã dọn thì rào chắc chắn đã cháy: bỏ luôn (rào không tự lưu trạng thái)
 		if shield:
 			shield.queue_free()
@@ -172,8 +172,8 @@ func _break() -> void:
 	is_broken = true
 	_timer.stop()
 	_area.set_deferred(&"monitoring", false)
-	_hurtbox.set_deferred(&"monitorable", false)
 	_body_shape.set_deferred(&"disabled", true)
+	_retire_hurtbox(true)
 	if _punch:
 		_punch.kill()
 	var t: Tween = create_tween()
@@ -184,6 +184,22 @@ func _break() -> void:
 	broken.emit()
 	if _alive <= 0:
 		_finish()
+
+
+## Lồng vỡ: tắt hẳn shape của hurtbox và gỡ khỏi nhóm mục tiêu. Chỉ tắt monitorable là chưa đủ vì đòn chém quét
+## (ShapeCast3D) và truy vấn vật lý vẫn bắt trúng Area, nên chỗ lồng đã vỡ vẫn "dính" đòn / hiệu ứng trúng.
+func _retire_hurtbox(deferred: bool) -> void:
+	_hurtbox.remove_from_group(HurtboxComponent.GROUP)
+	if deferred:
+		_hurtbox.set_deferred(&"monitorable", false)
+	else:
+		_hurtbox.monitorable = false
+	for child: Node in _hurtbox.get_children():
+		if child is CollisionShape3D:
+			if deferred:
+				(child as CollisionShape3D).set_deferred(&"disabled", true)
+			else:
+				(child as CollisionShape3D).disabled = true
 
 
 func _finish() -> void:
