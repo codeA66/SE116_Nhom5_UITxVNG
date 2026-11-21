@@ -2,6 +2,8 @@ class_name SealGem
 extends Node3D
 ## Giữ ngọc bên player trong lúc mang về ổ, kể cả sau khi nạp checkpoint.
 
+signal collected(player: Player)
+
 @export var drop_offset: Vector3 = Vector3(0, -1.2, -1.4)
 @export_range(0.05, 2.0, 0.05) var drop_time: float = 0.45
 @export_group("Ngọc bay")
@@ -16,6 +18,7 @@ var _picked_flag: StringName
 var _placed_flag: StringName
 var _legacy_flag: StringName
 var _carrier: Player
+var _picked_this_attempt: bool = false
 var _orbit_angle: float = 0.0
 var _drop: Tween
 
@@ -49,13 +52,35 @@ func configure(shield: BeamReceiver, picked_flag: StringName, placed_flag: Strin
 	_restore()
 
 
+func configure_pickup(available: Callable, placed_flag: StringName) -> void:
+	_placed_flag = placed_flag
+	_interaction.availability_check = available
+	_interaction.interacted.connect(_on_interacted)
+	GameState.progress_changed.connect(_refresh_carried)
+	_interaction.enabled = true
+	_refresh_carried()
+
+
+## Bệ trao ngọc qua cờ nhận thưởng, dùng cùng cờ đặt ngọc của bệ trung tâm.
+func configure_reward(earned_flag: StringName, placed_flag: StringName) -> void:
+	_picked_flag = earned_flag
+	_placed_flag = placed_flag
+	GameState.progress_changed.connect(_refresh_carried)
+	GameState.progress_replaced.connect(_restore_reward)
+	_restore_reward()
+
+
+func restore_collected() -> void:
+	_picked_this_attempt = true
+	_refresh_carried()
+
+
 func set_carrier(player: Player) -> void:
 	_carrier = player
-	if _shield != null:
-		_refresh_carried()
-		if is_physics_processing():
-			global_position = _orbit_position()
-			reset_physics_interpolation()
+	_refresh_carried()
+	if is_physics_processing():
+		global_position = _orbit_position()
+		reset_physics_interpolation()
 
 
 func _restore() -> void:
@@ -69,9 +94,19 @@ func _restore() -> void:
 	_refresh_carried()
 
 
+func _restore_reward() -> void:
+	if GameState.has_flag(_picked_flag) or GameState.has_flag(_placed_flag):
+		_refresh_carried()
+		return
+	position = _start
+	reset_physics_interpolation()
+	show()
+	set_physics_process(false)
+
+
 func _refresh_carried() -> void:
 	var placed: bool = GameState.has_flag(_placed_flag) or GameState.has_flag(_legacy_flag)
-	var picked: bool = GameState.has_flag(_picked_flag)
+	var picked: bool = _picked_this_attempt or GameState.has_flag(_picked_flag)
 	if not placed and not picked:
 		return
 	_interaction.enabled = false
@@ -103,7 +138,12 @@ func _enable_pickup() -> void:
 
 func _on_interacted(actor: Node3D) -> void:
 	var player: Player = actor as Player
-	if player == null or not _interaction.enabled:
+	if player == null or not _interaction.can_interact(player):
 		return
 	_carrier = player
-	GameState.set_flag(_picked_flag)
+	if _shield != null:
+		GameState.set_flag(_picked_flag)
+	else:
+		_picked_this_attempt = true
+		_refresh_carried()
+	collected.emit(player)

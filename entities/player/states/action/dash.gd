@@ -14,15 +14,14 @@ func enter(_previous: StringName) -> void:
 	_direction = player.get_facing_direction() if input_direction.is_zero_approx() else input_direction.normalized()
 	_elapsed = 0.0
 	_terrain_scale = player.get_terrain_speed()
-	# Dash xuyên qua gió
-	player.external_forces_enabled = false
+	player.dash_wind_only = true
 	player.face_instantly(_direction)
 	player.play_action(_dash.animation, _dash.anim_speed)
 	_apply_dash_velocity(1.0)
 
 
 func exit() -> void:
-	player.external_forces_enabled = true
+	player.dash_wind_only = false
 
 
 func physics_update(delta: float) -> void:

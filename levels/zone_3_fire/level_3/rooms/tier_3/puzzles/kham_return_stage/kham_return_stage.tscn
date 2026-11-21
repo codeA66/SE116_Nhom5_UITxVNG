@@ -18,8 +18,6 @@
 
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="seal_wall"]
 
-[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/valve_sink_trap/valve_sink_trap.gd" id="valve_trap"]
-
 [sub_resource type="BoxShape3D" id="SealRailShape"]
 size = Vector3(18.4, 1.4, 0.5)
 
@@ -124,6 +122,137 @@ size = Vector3(2.8, 0.48, 5)
 
 [sub_resource type="BoxShape3D" id="haz_GXCrust"]
 size = Vector3(2.8, 0.48, 1.4)
+
+[sub_resource type="StandardMaterial3D" id="IslandWallStone"]
+albedo_color = Color(0.19, 0.165, 0.15, 1)
+roughness = 0.94
+
+[sub_resource type="BoxShape3D" id="IslandWall1Shape"]
+size = Vector3(0.32, 1.25, 4.5)
+
+[sub_resource type="BoxMesh" id="IslandWall1Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(0.32, 1.25, 4.5)
+
+[sub_resource type="BoxShape3D" id="IslandWall2Shape"]
+size = Vector3(0.32, 1.25, 0.85)
+
+[sub_resource type="BoxMesh" id="IslandWall2Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(0.32, 1.25, 0.85)
+
+[sub_resource type="BoxShape3D" id="IslandWall3Shape"]
+size = Vector3(1.5, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall3Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(1.5, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall4Shape"]
+size = Vector3(1.7, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall4Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(1.7, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall5Shape"]
+size = Vector3(6, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall5Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(6, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall6Shape"]
+size = Vector3(0.32, 1.25, 5)
+
+[sub_resource type="BoxMesh" id="IslandWall6Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(0.32, 1.25, 5)
+
+[sub_resource type="BoxShape3D" id="IslandWall7Shape"]
+size = Vector3(0.32, 1.25, 1.1)
+
+[sub_resource type="BoxMesh" id="IslandWall7Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(0.32, 1.25, 1.1)
+
+[sub_resource type="BoxShape3D" id="IslandWall8Shape"]
+size = Vector3(1.6, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall8Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(1.6, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall9Shape"]
+size = Vector3(5, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall9Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(5, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall10Shape"]
+size = Vector3(0.32, 1.25, 1.8)
+
+[sub_resource type="BoxMesh" id="IslandWall10Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(0.32, 1.25, 1.8)
+
+[sub_resource type="BoxShape3D" id="IslandWall11Shape"]
+size = Vector3(0.32, 1.25, 0.4)
+
+[sub_resource type="BoxMesh" id="IslandWall11Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(0.32, 1.25, 0.4)
+
+[sub_resource type="BoxShape3D" id="IslandWall12Shape"]
+size = Vector3(1.1, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall12Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(1.1, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall13Shape"]
+size = Vector3(0.32, 1.25, 0.6)
+
+[sub_resource type="BoxMesh" id="IslandWall13Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(0.32, 1.25, 0.6)
+
+[sub_resource type="BoxShape3D" id="IslandWall14Shape"]
+size = Vector3(0.32, 1.25, 1.6)
+
+[sub_resource type="BoxMesh" id="IslandWall14Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(0.32, 1.25, 1.6)
+
+[sub_resource type="BoxShape3D" id="IslandWall15Shape"]
+size = Vector3(3.3, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall15Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(3.3, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall16Shape"]
+size = Vector3(1.9, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall16Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(1.9, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall17Shape"]
+size = Vector3(1.4, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall17Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(1.4, 1.25, 0.32)
+
+[sub_resource type="BoxShape3D" id="IslandWall18Shape"]
+size = Vector3(3.4, 1.25, 0.32)
+
+[sub_resource type="BoxMesh" id="IslandWall18Mesh"]
+material = SubResource("IslandWallStone")
+size = Vector3(3.4, 1.25, 0.32)
+
 
 [node name="KhamReturnStage" type="Node3D"]
 script = ExtResource("script")
@@ -710,16 +839,6 @@ monitoring = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Exit"]
 shape = SubResource("exit")
 
-[node name="ReturnHint" type="Label3D" parent="."]
-position = Vector3(3.5, 2.7, -18.2)
-billboard = 1
-text = "KHẢM ☵ · TÌM ĐƯỜNG QUAY VỀ"
-font_size = 40
-pixel_size = 0.008
-no_depth_test = true
-
-
-
 [node name="SinkingRoutes" type="Node3D" parent="."]
 
 [node name="DE" type="Node3D" parent="SinkingRoutes" node_paths=PackedStringArray("cooling_path", "floor_bodies")]
@@ -780,8 +899,226 @@ scale = Vector3(0.906404, 0.35, 0.609756)
 
 [node name="Traps" type="Node" parent="."]
 
-[node name="F" type="Node" parent="Traps" node_paths=PackedStringArray("valve", "floor_body", "falling_visuals")]
-script = ExtResource("valve_trap")
-valve = NodePath("../../Valves/F")
-floor_body = NodePath("../../Floors/IslandF")
-falling_visuals = [NodePath("../../Floors/IslandF"), NodePath("../../Valves/F")]
+[node name="WallWest" type="CollisionShape3D" parent="Floors/IslandD"]
+position = Vector3(-3, 0.845, 0)
+shape = SubResource("IslandWall1Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandD/WallWest"]
+mesh = SubResource("IslandWall1Mesh")
+
+[node name="WallEastNorth" type="CollisionShape3D" parent="Floors/IslandD"]
+position = Vector3(3, 0.845, -1.825)
+shape = SubResource("IslandWall2Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandD/WallEastNorth"]
+mesh = SubResource("IslandWall2Mesh")
+
+[node name="WallEastSouth" type="CollisionShape3D" parent="Floors/IslandD"]
+position = Vector3(3, 0.845, 1.825)
+shape = SubResource("IslandWall2Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandD/WallEastSouth"]
+mesh = SubResource("IslandWall2Mesh")
+
+[node name="WallNorthWest" type="CollisionShape3D" parent="Floors/IslandD"]
+position = Vector3(-2.25, 0.845, -2.25)
+shape = SubResource("IslandWall3Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandD/WallNorthWest"]
+mesh = SubResource("IslandWall3Mesh")
+
+[node name="WallNorthEast" type="CollisionShape3D" parent="Floors/IslandD"]
+position = Vector3(2.25, 0.845, -2.25)
+shape = SubResource("IslandWall3Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandD/WallNorthEast"]
+mesh = SubResource("IslandWall3Mesh")
+
+[node name="WallSouthWest" type="CollisionShape3D" parent="Floors/IslandD"]
+position = Vector3(-2.15, 0.845, 2.25)
+shape = SubResource("IslandWall4Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandD/WallSouthWest"]
+mesh = SubResource("IslandWall4Mesh")
+
+[node name="WallSouthEast" type="CollisionShape3D" parent="Floors/IslandD"]
+position = Vector3(2.15, 0.845, 2.25)
+shape = SubResource("IslandWall4Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandD/WallSouthEast"]
+mesh = SubResource("IslandWall4Mesh")
+
+[node name="WallNorth" type="CollisionShape3D" parent="Floors/IslandE"]
+position = Vector3(0, 0.845, -2.5)
+shape = SubResource("IslandWall5Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandE/WallNorth"]
+mesh = SubResource("IslandWall5Mesh")
+
+[node name="WallEast" type="CollisionShape3D" parent="Floors/IslandE"]
+position = Vector3(3, 0.845, 0)
+shape = SubResource("IslandWall6Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandE/WallEast"]
+mesh = SubResource("IslandWall6Mesh")
+
+[node name="WallWestNorth" type="CollisionShape3D" parent="Floors/IslandE"]
+position = Vector3(-3, 0.845, -1.95)
+shape = SubResource("IslandWall7Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandE/WallWestNorth"]
+mesh = SubResource("IslandWall7Mesh")
+
+[node name="WallWestSouth" type="CollisionShape3D" parent="Floors/IslandE"]
+position = Vector3(-3, 0.845, 1.95)
+shape = SubResource("IslandWall7Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandE/WallWestSouth"]
+mesh = SubResource("IslandWall7Mesh")
+
+[node name="WallSouthWest" type="CollisionShape3D" parent="Floors/IslandE"]
+position = Vector3(-2.2, 0.845, 2.5)
+shape = SubResource("IslandWall8Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandE/WallSouthWest"]
+mesh = SubResource("IslandWall8Mesh")
+
+[node name="WallSouthEast" type="CollisionShape3D" parent="Floors/IslandE"]
+position = Vector3(2.2, 0.845, 2.5)
+shape = SubResource("IslandWall8Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandE/WallSouthEast"]
+mesh = SubResource("IslandWall8Mesh")
+
+[node name="WallEast" type="CollisionShape3D" parent="Floors/IslandF"]
+position = Vector3(3, 0.845, 0)
+shape = SubResource("IslandWall6Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandF/WallEast"]
+mesh = SubResource("IslandWall6Mesh")
+
+[node name="WallWest" type="CollisionShape3D" parent="Floors/IslandF"]
+position = Vector3(-3, 0.845, 0)
+shape = SubResource("IslandWall6Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandF/WallWest"]
+mesh = SubResource("IslandWall6Mesh")
+
+[node name="WallNorthWest" type="CollisionShape3D" parent="Floors/IslandF"]
+position = Vector3(-2.15, 0.845, -2.5)
+shape = SubResource("IslandWall4Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandF/WallNorthWest"]
+mesh = SubResource("IslandWall4Mesh")
+
+[node name="WallNorthEast" type="CollisionShape3D" parent="Floors/IslandF"]
+position = Vector3(2.15, 0.845, -2.5)
+shape = SubResource("IslandWall4Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandF/WallNorthEast"]
+mesh = SubResource("IslandWall4Mesh")
+
+[node name="WallSouthWest" type="CollisionShape3D" parent="Floors/IslandF"]
+position = Vector3(-2.15, 0.845, 2.5)
+shape = SubResource("IslandWall4Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandF/WallSouthWest"]
+mesh = SubResource("IslandWall4Mesh")
+
+[node name="WallSouthEast" type="CollisionShape3D" parent="Floors/IslandF"]
+position = Vector3(2.15, 0.845, 2.5)
+shape = SubResource("IslandWall4Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandF/WallSouthEast"]
+mesh = SubResource("IslandWall4Mesh")
+
+[node name="WallNorth" type="CollisionShape3D" parent="Floors/IslandG"]
+position = Vector3(0, 0.845, -2.5)
+shape = SubResource("IslandWall9Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandG/WallNorth"]
+mesh = SubResource("IslandWall9Mesh")
+
+[node name="WallEast" type="CollisionShape3D" parent="Floors/IslandG"]
+position = Vector3(2.5, 0.845, 0)
+shape = SubResource("IslandWall6Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandG/WallEast"]
+mesh = SubResource("IslandWall6Mesh")
+
+[node name="WallWestNorth" type="CollisionShape3D" parent="Floors/IslandG"]
+position = Vector3(-2.5, 0.845, -1.6)
+shape = SubResource("IslandWall10Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandG/WallWestNorth"]
+mesh = SubResource("IslandWall10Mesh")
+
+[node name="WallWestSouth" type="CollisionShape3D" parent="Floors/IslandG"]
+position = Vector3(-2.5, 0.845, 2.3)
+shape = SubResource("IslandWall11Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandG/WallWestSouth"]
+mesh = SubResource("IslandWall11Mesh")
+
+[node name="WallSouthWest" type="CollisionShape3D" parent="Floors/IslandG"]
+position = Vector3(-1.95, 0.845, 2.5)
+shape = SubResource("IslandWall12Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandG/WallSouthWest"]
+mesh = SubResource("IslandWall12Mesh")
+
+[node name="WallSouthEast" type="CollisionShape3D" parent="Floors/IslandG"]
+position = Vector3(1.95, 0.845, 2.5)
+shape = SubResource("IslandWall12Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/IslandG/WallSouthEast"]
+mesh = SubResource("IslandWall12Mesh")
+
+[node name="WallEast" type="CollisionShape3D" parent="Floors/ExitLanding"]
+position = Vector3(4, 0.845, 0)
+shape = SubResource("IslandWall6Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/ExitLanding/WallEast"]
+mesh = SubResource("IslandWall6Mesh")
+
+[node name="WallWestNorth" type="CollisionShape3D" parent="Floors/ExitLanding"]
+position = Vector3(-4, 0.845, -2.2)
+shape = SubResource("IslandWall13Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/ExitLanding/WallWestNorth"]
+mesh = SubResource("IslandWall13Mesh")
+
+[node name="WallWestSouth" type="CollisionShape3D" parent="Floors/ExitLanding"]
+position = Vector3(-4, 0.845, 1.7)
+shape = SubResource("IslandWall14Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/ExitLanding/WallWestSouth"]
+mesh = SubResource("IslandWall14Mesh")
+
+[node name="WallNorthWest" type="CollisionShape3D" parent="Floors/ExitLanding"]
+position = Vector3(-2.35, 0.845, -2.5)
+shape = SubResource("IslandWall15Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/ExitLanding/WallNorthWest"]
+mesh = SubResource("IslandWall15Mesh")
+
+[node name="WallNorthEast" type="CollisionShape3D" parent="Floors/ExitLanding"]
+position = Vector3(3.05, 0.845, -2.5)
+shape = SubResource("IslandWall16Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/ExitLanding/WallNorthEast"]
+mesh = SubResource("IslandWall16Mesh")
+
+[node name="WallSouthWest" type="CollisionShape3D" parent="Floors/ExitLanding"]
+position = Vector3(-3.3, 0.845, 2.5)
+shape = SubResource("IslandWall17Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/ExitLanding/WallSouthWest"]
+mesh = SubResource("IslandWall17Mesh")
+
+[node name="WallSouthEast" type="CollisionShape3D" parent="Floors/ExitLanding"]
+position = Vector3(2.3, 0.845, 2.5)
+shape = SubResource("IslandWall18Shape")
+
+[node name="Stone" type="MeshInstance3D" parent="Floors/ExitLanding/WallSouthEast"]
+mesh = SubResource("IslandWall18Mesh")

@@ -14,9 +14,6 @@
 
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_04_chan_thunder_anvil.tscn" id="chan"]
 
-[ext_resource type="PackedScene" path="res://objects/core/checkpoint/fire/fire_checkpoint.tscn" id="checkpoint"]
-
-
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/tier_1/lighting/fire_lighting.tscn" id="lighting"]
 
 [ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="camera_data"]
@@ -37,16 +34,13 @@
 
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_walkthrough_connectors.tscn" id="connectors"]
 
-[ext_resource type="PackedScene" path="res://objects/gates/stone_gate/fire_cellar_gate.tscn" id="gate"]
-
-
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/tier_3_altar.tscn" id="tier_3_altar"]
-
-[sub_resource type="BoxShape3D" id="CheckpointSpan"]
-size = Vector3(3.92, 1.1, 1.35)
 
 [sub_resource type="BoxShape3D" id="TonDarkBounds"]
 size = Vector3(43, 10, 55)
+
+[sub_resource type="BoxShape3D" id="TonCorridorDarkBounds"]
+size = Vector3(24, 10, 54)
 
 [sub_resource type="Resource" id="FireCamera"]
 script = ExtResource("camera_data")
@@ -70,7 +64,7 @@ seal_flag = &"level_3.t3_walkthrough_kham"
 size = Vector3(210, 10, 160)
 
 [node name="Tier3Walkthrough" type="Node3D"]
-editor_description = "Sảnh bốn hướng. Thứ tự giải Ly, Khảm, Tốn rồi Chấn."
+editor_description = "Sảnh bốn hướng. Lưu tiến trình khi lắp từng viên ngọc ở bệ trung tâm."
 script = ExtResource("zone")
 shader_warmup = null
 
@@ -111,11 +105,16 @@ world_environment = NodePath("../../FireLighting/Environment")
 dark_light_ratio = 0.015
 dark_ambient_ratio = 0.025
 fade_time = 0.45
+use_black_background = true
 use_carried_light = false
 
 [node name="RoomVolume" type="CollisionShape3D" parent="TonAshenGale/TonDarkZone"]
 position = Vector3(10.75, 2, 27.8)
 shape = SubResource("TonDarkBounds")
+
+[node name="CorridorVolume" type="CollisionShape3D" parent="TonAshenGale/TonDarkZone"]
+position = Vector3(-0.12, 2, 78)
+shape = SubResource("TonCorridorDarkBounds")
 
 
 [node name="ChanThunderAnvil" parent="." instance=ExtResource("chan")]
@@ -126,103 +125,17 @@ seal_flag = &"level_3.t3_walkthrough_chan"
 
 [node name="Finish" type="Node3D" parent="."]
 
-[node name="Altar" parent="Finish" node_paths=PackedStringArray("flames", "next_gates") instance=ExtResource("tier_3_altar")]
+[node name="Altar" parent="Finish" node_paths=PackedStringArray("flames") instance=ExtResource("tier_3_altar")]
 position = Vector3(0, 0.32, 0)
 earned_flags = Array[StringName]([&"level_3.t3_walkthrough_ly_picked", &"level_3.t3_walkthrough_kham", &"level_3.t3_walkthrough_ton", &"level_3.t3_walkthrough_chan"])
 placed_flags = Array[StringName]([&"level_3.t3_walkthrough_ly_placed", &"level_3.t3_walkthrough_kham_placed", &"level_3.t3_walkthrough_ton_placed", &"level_3.t3_walkthrough_chan_placed"])
 flames = [NodePath("../../Connectors/Hub/LyFire"), NodePath("../../Connectors/Hub/KhamFire"), NodePath("../../Connectors/Hub/TonFire"), NodePath("../../Connectors/Hub/ChanFire")]
-next_gates = [NodePath("../../SealedDoors/BeforeKham"), NodePath("../../SealedDoors/BeforeTon"), NodePath("../../SealedDoors/BeforeChan")]
 
 [node name="Complete" type="Marker3D" parent="Finish"]
 position = Vector3(0, 0.4, 3.35)
 rotation = Vector3(0, 3.14159265, 0)
 script = ExtResource("spawn")
 spawn_id = &"complete"
-
-[node name="SealedDoors" type="Node3D" parent="."]
-
-[node name="BeforeKham" parent="SealedDoors" instance=ExtResource("gate")]
-position = Vector3(0, 0.32, -18)
-open_time = 0.65
-open_trauma = 0.0
-pressure_mode = true
-
-[node name="BeforeTon" parent="SealedDoors" instance=ExtResource("gate")]
-position = Vector3(-18, 0.32, 0)
-rotation = Vector3(0, 1.5708, 0)
-open_time = 0.65
-open_trauma = 0.0
-pressure_mode = true
-
-[node name="BeforeChan" parent="SealedDoors" instance=ExtResource("gate")]
-position = Vector3(18, 0.32, 0)
-rotation = Vector3(0, 1.5708, 0)
-open_time = 0.65
-open_trauma = 0.0
-pressure_mode = true
-
-[node name="LiLanding" type="Node3D" parent="."]
-position = Vector3(0, 0, 28)
-
-[node name="Checkpoint" parent="LiLanding" instance=ExtResource("checkpoint")]
-position = Vector3(-1.03, 0.06, -4.2)
-checkpoint_id = &"t3_route_ly"
-
-[node name="CollisionShape3D" parent="LiLanding/Checkpoint/Trigger" index="0"]
-position = Vector3(1.03, 0.7, 0)
-shape = SubResource("CheckpointSpan")
-
-[node name="Spawn" parent="LiLanding/Checkpoint" index="3"]
-position = Vector3(1.03, 0.26, -1)
-rotation = Vector3(0, 3.14159265, 0)
-
-[node name="KhamLanding" type="Node3D" parent="."]
-position = Vector3(0, 0, -28)
-rotation = Vector3(0, 3.14159, 0)
-
-[node name="Checkpoint" parent="KhamLanding" instance=ExtResource("checkpoint")]
-position = Vector3(-1.03, 0.06, -4.2)
-checkpoint_id = &"t3_route_kham"
-
-[node name="CollisionShape3D" parent="KhamLanding/Checkpoint/Trigger" index="0"]
-position = Vector3(1.03, 0.7, 0)
-shape = SubResource("CheckpointSpan")
-
-[node name="Spawn" parent="KhamLanding/Checkpoint" index="3"]
-position = Vector3(1.03, 0.26, -1)
-rotation = Vector3(0, 3.14159265, 0)
-
-[node name="TonLanding" type="Node3D" parent="."]
-position = Vector3(-28, 0, 0)
-rotation = Vector3(0, -1.5708, 0)
-
-[node name="Checkpoint" parent="TonLanding" instance=ExtResource("checkpoint")]
-position = Vector3(-1.03, 0.06, -4.2)
-checkpoint_id = &"t3_route_ton"
-
-[node name="CollisionShape3D" parent="TonLanding/Checkpoint/Trigger" index="0"]
-position = Vector3(1.03, 0.7, 0)
-shape = SubResource("CheckpointSpan")
-
-[node name="Spawn" parent="TonLanding/Checkpoint" index="3"]
-position = Vector3(1.03, 0.26, -1)
-rotation = Vector3(0, 3.14159265, 0)
-
-[node name="ChanLanding" type="Node3D" parent="."]
-position = Vector3(28, 0, 0)
-rotation = Vector3(0, 1.5708, 0)
-
-[node name="Checkpoint" parent="ChanLanding" instance=ExtResource("checkpoint")]
-position = Vector3(-1.03, 0.06, -4.2)
-checkpoint_id = &"t3_route_chan"
-
-[node name="CollisionShape3D" parent="ChanLanding/Checkpoint/Trigger" index="0"]
-position = Vector3(1.03, 0.7, 0)
-shape = SubResource("CheckpointSpan")
-
-[node name="Spawn" parent="ChanLanding/Checkpoint" index="3"]
-position = Vector3(1.03, 0.26, -1)
-rotation = Vector3(0, 3.14159265, 0)
 
 [node name="Start" type="Marker3D" parent="."]
 position = Vector3(0, 0.4, -4)
@@ -238,8 +151,3 @@ monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FallRecovery"]
 shape = SubResource("Fall")
-
-[editable path="LiLanding/Checkpoint"]
-[editable path="KhamLanding/Checkpoint"]
-[editable path="TonLanding/Checkpoint"]
-[editable path="ChanLanding/Checkpoint"]
