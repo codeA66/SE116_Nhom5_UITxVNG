@@ -1,0 +1,136 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="floor"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_4m.glb" id="found"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_edge_4m.glb" id="found_edge"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="wall_low"]
+
+[sub_resource type="BoxShape3D" id="FloorCell"]
+size = Vector3(4, 0.32, 4)
+
+[sub_resource type="BoxShape3D" id="WallX"]
+size = Vector3(0.7, 1.25, 4)
+
+[sub_resource type="BoxShape3D" id="WallZ"]
+size = Vector3(4, 1.25, 0.7)
+
+[node name="T210CinderRun" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 376, 4, 52)
+editor_description = "Phòng 10 (tự chọn, sau phòng 7): tối om, chỉ có bệ vào phía tây và bệ cuối góc đông nam; đường ô sàn sụp nằm ở Tier2Mechanics/Room10CinderRun"
+
+[node name="Floor" type="Node3D" parent="."]
+
+[node name="floor_4m1" parent="Floor" instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -10)
+
+[node name="floor_4m2" parent="Floor" instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 10)
+
+[node name="floor_4m3" parent="Floor" instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10)
+
+[node name="floor_4m4" parent="Floor" instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 14)
+
+[node name="floor_4m5" parent="Floor" instance=ExtResource("floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 14)
+
+[node name="Foundation" type="Node3D" parent="."]
+
+[node name="foundation1" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, -4, -10)
+
+[node name="foundation2" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, -8, -10)
+
+[node name="foundation3" parent="Foundation" instance=ExtResource("found_edge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, -12, -10)
+
+[node name="foundation4" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -4, 10)
+
+[node name="foundation5" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -8, 10)
+
+[node name="foundation6" parent="Foundation" instance=ExtResource("found_edge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -12, 10)
+
+[node name="foundation7" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -4, 10)
+
+[node name="foundation8" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -8, 10)
+
+[node name="foundation9" parent="Foundation" instance=ExtResource("found_edge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -12, 10)
+
+[node name="foundation10" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -4, 14)
+
+[node name="foundation11" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -8, 14)
+
+[node name="foundation12" parent="Foundation" instance=ExtResource("found_edge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -12, 14)
+
+[node name="foundation13" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -4, 14)
+
+[node name="foundation14" parent="Foundation" instance=ExtResource("found")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -8, 14)
+
+[node name="foundation15" parent="Foundation" instance=ExtResource("found_edge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, -12, 14)
+
+[node name="Walls" type="Node3D" parent="."]
+
+[node name="wall_low_east1" parent="Walls" instance=ExtResource("wall_low")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.65, 0.32, 10)
+
+[node name="wall_low_east2" parent="Walls" instance=ExtResource("wall_low")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.65, 0.32, 14)
+
+[node name="wall_low_south1" parent="Walls" instance=ExtResource("wall_low")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.32, 15.65)
+
+[node name="wall_low_south2" parent="Walls" instance=ExtResource("wall_low")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.32, 15.65)
+
+[node name="Collision" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Floor1" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.16, -10)
+shape = SubResource("FloorCell")
+
+[node name="Floor2" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.16, 10)
+shape = SubResource("FloorCell")
+
+[node name="Floor3" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.16, 10)
+shape = SubResource("FloorCell")
+
+[node name="Floor4" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.16, 14)
+shape = SubResource("FloorCell")
+
+[node name="Floor5" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.16, 14)
+shape = SubResource("FloorCell")
+
+[node name="Wall_east1" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.65, 0.945, 10)
+shape = SubResource("WallX")
+
+[node name="Wall_east2" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.65, 0.945, 14)
+shape = SubResource("WallX")
+
+[node name="Wall_south1" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.945, 15.65)
+shape = SubResource("WallZ")
+
+[node name="Wall_south2" type="CollisionShape3D" parent="Collision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.945, 15.65)
+shape = SubResource("WallZ")
