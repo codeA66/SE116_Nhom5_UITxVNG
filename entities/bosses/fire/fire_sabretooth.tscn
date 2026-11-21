@@ -21,7 +21,14 @@
 [ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_transformation.gd" id="phase_two_intro"]
 [ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_fire_beam.gd" id="phase_two_beam"]
 [ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_fire_finale.gd" id="phase_two_finale"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_phantom_blitz.gd" id="phase_two_blitz"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_flame_reform.gd" id="phase_two_reform"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_true_death.gd" id="phase_two_death"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_fang_snap.gd" id="phase_two_fang"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_cross_claw.gd" id="phase_two_claw"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/behavior/phase_two/sabretooth_phase_two_rest.gd" id="phase_two_rest"]
 [ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/combat/phase_two/sabretooth_fire_vfx.gd" id="fire_vfx"]
+[ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/combat/phase_two/sabretooth_p2_combat.gd" id="p2_combat"]
 [ext_resource type="Script" path="res://components/combat/damage_area/explosion_component.gd" id="explosion"]
 [ext_resource type="Script" path="res://entities/_base/data/attack_data.gd" id="blast_data"]
 [ext_resource type="Script" path="res://entities/bosses/fire/sabretooth/combat/phase_two/sabretooth_death_effect.gd" id="tiger_death_fx"]
@@ -46,6 +53,19 @@ look_height = 1.72
 shot_fov = 38.0
 push_in_fov = 34.0
 hold_orbit_degrees = -8.0
+letterbox_ratio = 0.085
+
+[sub_resource type="Resource" id="DeathView"]
+resource_local_to_scene = true
+script = ExtResource("cutscene_data")
+travel_time = 0.5
+hold_time = 0.45
+return_time = 0.72
+shot_offset = Vector3(4.9, 3.1, 5.4)
+look_height = 0.82
+shot_fov = 35.0
+push_in_fov = 30.0
+hold_orbit_degrees = -12.0
 letterbox_ratio = 0.085
 
 [sub_resource type="Gradient" id="EmberColors"]
@@ -126,8 +146,29 @@ script = ExtResource("phase_two_beam")
 [node name="TigerFireFinale" type="Node" parent="StateMachine"]
 script = ExtResource("phase_two_finale")
 
+[node name="TigerPhantomBlitz" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_blitz")
+
+[node name="TigerFlameReform" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_reform")
+
+[node name="TigerTrueDeath" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_death")
+
+[node name="TigerFangSnap" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_fang")
+
+[node name="TigerCrossClaw" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_claw")
+
+[node name="TigerPhaseTwoRest" type="Node" parent="StateMachine"]
+script = ExtResource("phase_two_rest")
+
 [node name="FireVfx" type="Node3D" parent="."]
 script = ExtResource("fire_vfx")
+
+[node name="P2Combat" type="Node3D" parent="."]
+script = ExtResource("p2_combat")
 
 [node name="FinaleBlast" type="Node3D" parent="."]
 script = ExtResource("explosion")
@@ -140,6 +181,11 @@ burst_scale = 4.0
 
 [node name="Transformation" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("cutscene")]
 data = SubResource("TransformationView")
+focus_target = NodePath("..")
+manual_only = true
+
+[node name="DeathFraming" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("cutscene")]
+data = SubResource("DeathView")
 focus_target = NodePath("..")
 manual_only = true
 

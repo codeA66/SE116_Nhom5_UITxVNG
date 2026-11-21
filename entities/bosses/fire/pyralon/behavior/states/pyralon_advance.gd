@@ -2,11 +2,15 @@ extends EnemyState
 
 var _bird: Pyralon
 var _rest: float
+var _rear_wait: float
+var _crimson_wait: float = 0.0
 
 
 func enter(_previous: StringName) -> void:
 	_bird = enemy as Pyralon
 	_rest = _bird.profile.chase_pause
+	_rear_wait = _bird.profile.rear_check_pause if _bird.rear_check_pending else 0.0
+	_crimson_wait = 0.0
 
 
 func physics_update(delta: float) -> void:
@@ -15,10 +19,28 @@ func physics_update(delta: float) -> void:
 	if not _bird.has_target():
 		state_machine.transition_to(IDLE)
 		return
+	_bird.apply_gravity(delta)
+	# Dừng 1 nhịp giữ nguyên hướng cũ sau đòn để kiểm tra player có đứng sau lưng không trước khi xoay theo.
+	if _bird.rear_check_pending:
+		_rear_wait -= delta
+		_bird.velocity.x = 0.0
+		_bird.velocity.z = 0.0
+		_bird.play_anim(ANIM_IDLE)
+		if _rear_wait <= 0.0:
+			_bird.rear_check_pending = false
+			if _bird.try_rear_slash():
+				return
+		return
+	# Ở Phase 2, sau đòn có lông đỏ quay lại lượt 2, đứng chờ lông đỏ bay gần xong hết rồi mới ra chiêu AI tiếp theo.
+	if _bird.is_phase_two() and _crimson_wait < _bird.profile.crimson_return_wait_max and _bird.field.has_crimson_returning_busy():
+		_crimson_wait += delta
+		_bird.velocity.x = 0.0
+		_bird.velocity.z = 0.0
+		_bird.play_anim(ANIM_IDLE)
+		return
 	_rest = maxf(0.0, _rest - delta)
 	if _rest <= 0.0 and _bird.try_next_move():
 		return
-	_bird.apply_gravity(delta)
 	if _bird.is_previewing() or _bird.distance_to_target() <= _bird.wildlife.approach_stop_distance:
 		_bird.move_toward_direction(Vector3.ZERO, delta)
 		_bird.play_anim(ANIM_IDLE)

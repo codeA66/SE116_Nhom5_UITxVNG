@@ -6,6 +6,14 @@ uniform float rise_origin = 0.0;
 uniform float rise_height = 0.0;
 uniform bool transitioning = false;
 uniform float dissolve : hint_range(0.0, 1.0) = 0.0;
+uniform bool portal_clip = false;
+uniform vec3 portal_origin = vec3(0.0);
+uniform vec3 portal_normal = vec3(0.0, 1.0, 0.0);
+uniform float reform : hint_range(0.0, 1.0) = 1.0;
+uniform bool reverting_top_down = false;
+uniform float revert_progress : hint_range(0.0, 1.0) = 0.0;
+uniform vec3 revert_head_pos = vec3(0.0, 1.4, 1.0);
+uniform float revert_top_y = 2.0;
 
 varying vec3 local_point;
 varying vec3 world_point;
@@ -49,7 +57,43 @@ void fragment() {
 	if (form == 2 && COLOR.a < 0.955) { discard; }
 	float edge = 0.0;
 	float dissolve_edge = 0.0;
-	if (transitioning) {
+	float portal_edge = 0.0;
+	if (portal_clip) {
+		float plane_d = dot(world_point - portal_origin, normalize(portal_normal));
+		if (plane_d < 0.0) { discard; }
+		portal_edge = 1.0 - smoothstep(0.0, 0.30, plane_d);
+	}
+	if (reform < 0.999 && form >= 2) {
+		// Flame Reformation: mắt & nanh lóe sáng trước -> khung silhouette rìa lửa -> đặc khối toàn thân.
+		float r_rim = pow(1.0 - abs(dot(normalize(NORMAL), normalize(VIEW))), 1.7);
+		float r_n = noise3(local_point * 2.8 - vec3(0.0, TIME * 2.2, 0.0));
+		if (form == 3) {
+			if (reform < 0.18) { discard; }
+			edge = max(edge, 1.0 - smoothstep(0.18, 0.48, reform));
+		} else if (is_ivory(COLOR.a)) {
+			if (reform < 0.26) { discard; }
+			edge = max(edge, 1.0 - smoothstep(0.26, 0.56, reform));
+		} else {
+			float solid_t = smoothstep(0.42, 0.96, reform);
+			float outline_band = r_rim * 0.72 + r_n * 0.35;
+			float threshold = mix(0.88, -0.05, solid_t);
+			if (reform < 0.24 || outline_band < threshold) { discard; }
+			edge = max(edge, (1.0 - smoothstep(0.0, 0.24, outline_band - threshold)) * (1.0 - solid_t * 0.7));
+		}
+	}
+	if (reverting_top_down) {
+		// Tan biến hiệu ứng lửa Phase 2 từ đỉnh đầu & tai quét xuống vai/thân/chân (kể cả khi đang đổ ngã gục xuống sàn!).
+		float ragged_r = noise3(world_point * vec3(3.8, 3.2, 3.8) - vec3(0.0, TIME * 2.5, 0.0));
+		float h_norm = clamp((world_point.y - rise_origin) / max(revert_top_y, 0.65), 0.0, 1.0);
+		float head_prox = 1.0 - clamp(length(world_point - revert_head_pos) / 3.4, 0.0, 1.0);
+		float top_rank = clamp(h_norm * 0.56 + head_prox * 0.44, 0.0, 1.0);
+		float rev_cut = 1.14 - revert_progress * 1.32 + (ragged_r - 0.5) * 0.22;
+		float rev_front = rev_cut - top_rank;
+		if ((form < 2 && rev_front > 0.04) || (form >= 2 && rev_front < 0.0)) {
+			discard;
+		}
+		edge = max(edge, 1.0 - smoothstep(0.0, 0.22, abs(rev_front)));
+	} else if (transitioning) {
 		float ragged = noise3(world_point * vec3(4.0, 3.0, 4.0) - vec3(0.0, TIME * 2.8, 0.0));
 		float front = world_point.y - rise_origin - rise_height + (ragged - 0.5) * 0.48;
 		if ((form < 2 && front < 0.0) || (form >= 2 && front > 0.085)) {
@@ -125,6 +169,6 @@ void fragment() {
 			EMISSION += vec3(0.63, 0.42, 0.18) * COLOR.b;
 		}
 	}
-	EMISSION += vec3(1.45, 0.44, 0.075) * dissolve_edge;
+	EMISSION += vec3(1.45, 0.44, 0.075) * dissolve_edge + vec3(1.85, 0.68, 0.12) * portal_edge;
 	ROUGHNESS = 0.9;
 }

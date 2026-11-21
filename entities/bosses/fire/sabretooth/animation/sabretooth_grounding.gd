@@ -42,9 +42,9 @@ func setup(skeleton: Skeleton3D, mesh: MeshInstance3D) -> void:
 			var at := vertex * stride + slot
 			binds.append(joints[at])
 			amounts.append(weights[at])
-			var foot := bind_feet[joints[at]]
-			if foot >= 0:
-				influences[foot] += weights[at]
+			var foot_id := bind_feet[joints[at]]
+			if foot_id >= 0:
+				influences[foot_id] += weights[at]
 		var foot := 0
 		for candidate: int in range(1, 4):
 			if influences[candidate] > influences[foot]:

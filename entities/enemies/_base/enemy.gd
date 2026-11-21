@@ -134,8 +134,9 @@ func play_slip_animation() -> void:
 	play_anim(&"Idle")
 
 
-func set_telegraph(on: bool) -> void:
-	_set_overlay(telegraph_material if on else null)
+func set_telegraph(_on: bool) -> void:
+	# Đã bỏ hiệu ứng chớp cam cảnh báo trên cơ thể cho toàn bộ boss và quái.
+	_set_overlay(null)
 
 
 # ---------- Animation: bỏ qua nếu model chưa có clip (quái dùng hình tạm) ----------

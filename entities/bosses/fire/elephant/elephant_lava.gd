@@ -63,7 +63,7 @@ const PATCH_LAYER_GAP: float = 0.011
 @export var pool_lifetime: float = 15.0
 @export var trail_radius: float = 1.125
 @export_range(0.1, 1.0, 0.05) var ground_slow: float = 0.5
-@export_range(0.1, 20.0, 0.1) var burn_interval: float = 2.0
+@export_range(0.1, 20.0, 0.1) var burn_interval: float = 1.0
 @export var wave_speed: float = 4.6
 @export var wave_range: float = 13.0
 @export var drop_radius: float = 0.65
@@ -120,10 +120,10 @@ func _ready() -> void:
 	var mesh_scene := PackedScene.new()
 	mesh_scene.pack(mesh_template)
 	mesh_template.free()
-	_meshes = _make_pool(mesh_scene, 16)
-	_tails = _make_pool(mesh_scene, 12, _configure_motion.bind(_make_tail(), false))
-	_impacts = _make_pool(mesh_scene, 8, _configure_motion.bind(_make_splash(), true))
-	_markers = _make_pool(mesh_scene, 12, _configure_marker)
+	_meshes = _make_pool(mesh_scene, 32)
+	_tails = _make_pool(mesh_scene, 28, _configure_motion.bind(_make_tail(), false))
+	_impacts = _make_pool(mesh_scene, 16, _configure_motion.bind(_make_splash(), true))
+	_markers = _make_pool(mesh_scene, 28, _configure_marker)
 	_wave_pool = _make_pool(mesh_scene, 4, _configure_wave.bind(_make_wave()))
 	_stomp = MeshInstance3D.new()
 	_configure_marker(_stomp)
@@ -180,7 +180,8 @@ func rain(trunk: ElephantCoat) -> void:
 			if not at.is_finite():
 				at = _ground(arena_center + Vector3(grid.x, 0.0, grid.y))
 			if at.is_finite():
-				_throw(Vector3.ZERO, at, pool_radius, 0.54 * index + 0.11 * cell, rain_warning, 3.8, trunk)
+				# Phóng toàn bộ 24 vũng dung nham cùng một lúc từ vòi (lệch siêu nhỏ cho tự nhiên).
+				_throw(Vector3.ZERO, at, pool_radius, randf_range(0.0, 0.06), rain_warning, 3.8, trunk)
 
 
 func leave_trail(at: Vector3) -> void:

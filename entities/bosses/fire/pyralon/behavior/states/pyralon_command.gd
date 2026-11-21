@@ -10,6 +10,10 @@ func enter(previous: StringName) -> void:
 	_beat = 0.0
 	_struck = false
 	_beats_left = bird.field.reserve_gold()
+	# Chuyển thẳng sang frame 0 của AxeSignal (không blend từ Idle) để nhịp đầu chạy đủ giậm rìu phía trước.
+	animator.play(skill.animation, 0.0)
+	animator.seek(0.0, true)
+	bird.pose.update_bones()
 
 
 func physics_update(delta: float) -> void:

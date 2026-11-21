@@ -16,6 +16,15 @@ render_mode unshaded, cull_disabled, depth_draw_never, shadows_disabled;
 // 11 = mảnh lửa góc cạnh bung nổ / tàn lửa (white = true) / mảnh đá vỡ đất (heat > 0.5)
 // 12 = cụm khói than tối low-poly bốc lên khi nổ
 // 13 = sóng xung lửa trang trí khi đít rìu giậm sàn (AxeSignal)
+// 14 = mảnh tro đen lật chậm (ash flakes) + đốm tàn lửa cam nhỏ tắt nhanh (glowing embers)
+// 15 = thân lông trắng cắm cháy dần từ đỉnh xuống gốc (ivory -> pale yellow -> hot orange -> ember red -> black char)
+// 16 = làn khói mảnh mờ (thin smoke wisp) bay uốn nhẹ lên trên
+// 17 = vết cháy sém mờ nhỏ tại gốc cắm lông trắng rồi tan biến ở 1.6s
+// 18 = vòng phản lực gió đẩy lùi (Sky Dive Launch — 0 sát thương, xoáy gió trắng-xanh nhạt)
+// 19 = vòng cảnh báo lửa rực cho đợt đáp Sky Dive (0.7s)
+// 20 = vòng cảnh báo crosshair tròn xoay lớn cho đợt đáp Sky Dive thứ 5
+// 21 = hố crater lõm sâu nứt đá + lõi dung nham nóng khi đáp Sky Dive
+// 22 = sóng chấn động đẩy lùi toàn phòng (Resonance Slam — 0 sát thương)
 uniform int kind = 0;
 uniform bool white = false;
 uniform float age = 0.0;
@@ -87,6 +96,34 @@ void vertex() {
 		float ease = 1.0 - pow(1.0 - t, 1.8);
 		vec3 offset = vec3(cos(angle) * rad * ease, 0.34 + rise * ease, sin(angle) * rad * ease);
 		VERTEX = VERTEX * grow + offset;
+	} else if (kind == 14) {
+		// Mảnh tro đen (ash flakes, COLOR.b < 0.68) lật/cuốn chậm bay lên & tản ra ngoài;
+		// đốm tàn lửa cam (glowing embers, COLOR.b >= 0.68) bay lên nhanh và tắt sớm.
+		float t = clamp(age, 0.0, 1.0);
+		float angle = COLOR.r * 6.2831853 + heat * 6.2831853;
+		float start_h = COLOR.g;
+		bool is_ember = COLOR.b >= 0.68;
+		float spd = mix(0.55, 1.25, COLOR.a);
+		// Mỗi hạt tách ra đúng lúc mặt sóng cháy từ đỉnh xuống đi qua chiều cao start_h của nó.
+		float spawn_t = mix(0.16, 0.72, 1.0 - start_h);
+		float life_span = is_ember ? 0.24 : 0.44;
+		float local_t = clamp((t - spawn_t) / life_span, 0.0, 1.0);
+		float alive = step(spawn_t, t) * (1.0 - step(0.999, local_t));
+		// Xoay lật chậm 3D cho mảnh tro (tumbling, slow, curling).
+		float spin = local_t * (is_ember ? 3.0 : 5.2) * spd + COLOR.r * 12.0;
+		float cs = cos(spin);
+		float sn = sin(spin);
+		vec3 v = VERTEX;
+		v = vec3(v.x * cs - v.z * sn, v.y * cs - v.x * sn * 0.4, v.x * sn + v.z * cs);
+		float sz = smoothstep(0.0, 0.14, local_t) * (1.0 - smoothstep(0.62, 1.0, local_t)) * alive;
+		// Tản ra ngoài + bay lên trên (một số mảnh tro thấp rơi nhẹ quanh gốc giống Panel 0.6s/1.2s).
+		float radial = (0.06 + mix(0.28, 0.72, COLOR.a) * pow(local_t, 0.85));
+		float curl = sin(local_t * 5.0 + COLOR.r * 9.0) * 0.10 * local_t;
+		float rise_dir = (!is_ember && start_h < 0.34 && fract(COLOR.r * 7.0) < 0.55) ? -0.35 : 1.0;
+		float y_pos = max(0.02, start_h * 0.92 + rise_dir * local_t * (is_ember ? 0.85 : 0.62) * spd);
+		vec3 offset = vec3(cos(angle) * radial + curl, y_pos, sin(angle) * radial - curl);
+		VERTEX = v * sz + offset;
+		v_data = vec4(local_t, is_ember ? 1.0 : 0.0, start_h, alive);
 	}
 }
 
@@ -293,17 +330,26 @@ void fragment() {
 		color = mix(color, ivory, smoothstep(0.55, 0.95, hot_core));
 		boost = mix(1.05, 1.65, hot_core);
 	} else if (kind == 7) {
-		// Vệt sáng thuôn dài mảnh phía sau lông trắng đang bay.
+		// Vệt sáng thuôn dài mảnh phía sau lông đang bay (heat > 0.5 = vệt đỏ thẫm rực lửa của lông đỏ Phase 2).
 		float along = UV.y;
-		float taper = pow(max(0.0, 1.0 - along), 1.35);
+		float taper = pow(max(0.0, 1.0 - along), 1.30);
 		float w = abs(p.x);
-		float shimmer = 0.88 + 0.12 * sin(along * 24.0 - TIME * 32.0);
-		float core = 1.0 - smoothstep(0.02 * taper, max(0.025, 0.24 * taper), w);
-		float glow = (1.0 - smoothstep(0.10 * taper, max(0.06, 0.62 * taper), w)) * 0.45;
+		float shimmer = 0.86 + 0.14 * sin(along * 26.0 - TIME * 34.0);
+		float is_crimson = step(0.5, heat);
+		float core_w = mix(0.24, 0.34, is_crimson);
+		float glow_w = mix(0.62, 0.84, is_crimson);
+		float core = 1.0 - smoothstep(0.02 * taper, max(0.025, core_w * taper), w);
+		float glow = (1.0 - smoothstep(0.10 * taper, max(0.06, glow_w * taper), w)) * mix(0.45, 0.72, is_crimson);
 		float head_in = smoothstep(0.0, 0.08, along);
 		opacity = clamp(max(core, glow) * taper * head_in * shimmer, 0.0, 1.0);
-		color = mix(bright_gold, ivory, smoothstep(0.15, 0.75, core));
-		boost = 1.45;
+		vec3 white_col = mix(bright_gold, ivory, smoothstep(0.15, 0.75, core));
+		vec3 crimson_outer = vec3(0.58, 0.01, 0.01);
+		vec3 crimson_mid = vec3(0.95, 0.06, 0.03);
+		vec3 crimson_core = vec3(1.0, 0.36, 0.12);
+		vec3 crimson_col = mix(crimson_outer, crimson_mid, smoothstep(0.08, 0.55, max(core, glow)));
+		crimson_col = mix(crimson_col, crimson_core, smoothstep(0.45, 0.92, core));
+		color = mix(white_col, crimson_col, is_crimson);
+		boost = mix(1.45, 1.85, is_crimson);
 	} else if (kind == 8) {
 		// Vùng đất đá nứt toác lớn ngay dưới chân player (KHÔNG vòng tròn cảnh báo đỏ), hắt ánh lửa tăng dần trong lúc chờ phun trào.
 		float phase = clamp(age, 0.0, 1.0);
@@ -402,7 +448,7 @@ void fragment() {
 		float rim_glow = (1.0 - v_data.a) * (1.0 - smoothstep(0.0, 0.45, phase));
 		color = mix(vec3(0.15, 0.12, 0.13), vec3(0.55, 0.18, 0.06), rim_glow * 0.55);
 		boost = 0.92;
-	} else {
+	} else if (kind == 13) {
 		// kind == 13: Sóng âm / xung lửa trang trí bung ra dưới đuôi cán rìu (Concept 2 panel A).
 		float phase = clamp(age, 0.0, 1.0);
 		float fade = 1.0 - smoothstep(0.42, 1.0, phase);
@@ -423,6 +469,196 @@ void fragment() {
 		color = mix(color, bright_gold, clamp(ring1 * 0.75 + arrows * 0.80 + center_hit, 0.0, 1.0));
 		color = mix(color, ivory, center_hit * 0.90);
 		boost = mix(1.15, 1.70, max(ring1, center_hit));
+	} else if (kind == 14) {
+		// Mảnh tro đen (ash flakes) + đốm tàn lửa cam nhỏ tắt nhanh (glowing embers).
+		float local_t = v_data.x;
+		bool is_ember = v_data.y > 0.5;
+		float alive = v_data.a;
+		if (alive < 0.5) { discard; }
+		if (is_ember) {
+			float fade = smoothstep(0.0, 0.10, local_t) * (1.0 - smoothstep(0.32, 1.0, local_t));
+			opacity = 0.95 * fade;
+			color = mix(bright_gold, hot_orange, smoothstep(0.10, 0.65, local_t));
+			color = mix(color, deep_red, smoothstep(0.60, 1.0, local_t));
+			boost = mix(1.75, 1.05, local_t);
+		} else {
+			float fade = smoothstep(0.0, 0.12, local_t) * (1.0 - smoothstep(0.55, 1.0, local_t));
+			opacity = 0.88 * fade;
+			float hot_edge = (1.0 - smoothstep(0.0, 0.25, local_t)) * 0.42;
+			color = mix(vec3(0.09, 0.08, 0.08), vec3(0.22, 0.20, 0.21), v_data.z * 0.55);
+			color = mix(color, deep_red, hot_edge);
+			boost = mix(0.85, 1.18, hot_edge);
+		}
+	} else if (kind == 15) {
+		// Thân lông trắng cắm cháy dần từ đỉnh (UV.y = 1) xuống gốc (UV.y = 0) đúng Concept Art:
+		// 0.0s stuck -> 0.3s ignite tip -> 0.6s burn down -> 0.9s half -> 1.2s glowing base -> 1.45s gone.
+		float t_sec = clamp(age, 0.0, 1.0) * 1.60;
+		float y = UV.y;
+		float edge_bias = abs(UV.x - 0.5) * 0.14;
+		float jag = (fbm(vec2(UV.x * 7.5 + heat * 11.0, y * 9.5 + heat * 5.0)) - 0.5) * 0.22;
+		// Mặt sóng cháy đi từ trên đỉnh (1.22) xuống dưới gốc (-0.12).
+		float burn_progress = clamp((t_sec - 0.16) / 1.18, 0.0, 1.0);
+		float burn_front = mix(1.22, -0.14, burn_progress) - edge_bias + jag;
+		float d = burn_front - y;
+		if (d < 0.0) { discard; }
+
+		// Màu gốc lông trắng ngà + gân xám (hoặc đỏ thẫm phát sáng nếu white == true cho lông đỏ Phase 2 cháy tàn).
+		vec3 base_col = white ? mix(vec3(0.45, 0.02, 0.06), vec3(0.95, 0.14, 0.18), dot(v_data.rgb, vec3(0.333))) : v_data.rgb;
+		// 5 dải màu mép cháy (Panel A: ivory -> pale yellow -> hot orange -> ember red -> black char).
+		float ignite = smoothstep(0.14, 0.32, t_sec);
+		float band_char = (1.0 - smoothstep(0.00, 0.042, d)) * ignite;
+		float band_red = smoothstep(0.022, 0.055, d) * (1.0 - smoothstep(0.085, 0.130, d)) * ignite;
+		float band_orange = smoothstep(0.075, 0.115, d) * (1.0 - smoothstep(0.155, 0.205, d)) * ignite;
+		float band_yellow = smoothstep(0.145, 0.190, d) * (1.0 - smoothstep(0.235, 0.305, d)) * ignite;
+		// Ở 1.2s (BASE), cuống lông dưới gốc đỏ rực trước khi tắt hẳn.
+		float base_glow = smoothstep(0.95, 1.18, t_sec) * (1.0 - smoothstep(1.24, 1.44, t_sec)) * (1.0 - smoothstep(0.0, 0.28, y));
+
+		color = mix(base_col, vec3(1.0, 0.92, 0.56), clamp(band_yellow, 0.0, 1.0));
+		color = mix(color, hot_orange, clamp(band_orange + base_glow * 0.55, 0.0, 1.0));
+		color = mix(color, deep_red, clamp(band_red + base_glow * 0.85, 0.0, 1.0));
+		color = mix(color, vec3(0.07, 0.05, 0.05), clamp(band_char, 0.0, 1.0));
+		boost = 1.0 + band_yellow * 0.35 + band_orange * 0.85 + band_red * 0.50 + base_glow * 0.90;
+		opacity = 1.0 - smoothstep(1.30, 1.46, t_sec);
+	} else if (kind == 16) {
+		// Làn khói mảnh mờ (thin smoke wisp, low opacity) uốn nhẹ bay lên từ 0.38s -> 1.55s.
+		float t_sec = clamp(age, 0.0, 1.0) * 1.60;
+		float h = 1.0 - UV.y;
+		float env_t = smoothstep(0.32, 0.65, t_sec) * (1.0 - smoothstep(1.08, 1.56, t_sec));
+		float sway = sin(h * 5.2 - TIME * 2.4 + heat * 6.2831853) * (0.14 + h * 0.22);
+		float n_smoke = fbm(vec2(p.x * 3.2 + heat * 7.0, h * 3.4 - TIME * 1.2));
+		float x_d = abs(p.x - sway + (n_smoke - 0.5) * 0.26);
+		float width_w = mix(0.24, 0.62, h);
+		float wisp = (1.0 - smoothstep(width_w * 0.20, width_w, x_d)) * smoothstep(0.06, 0.28, h) * (1.0 - smoothstep(0.62, 1.0, h));
+		wisp *= smoothstep(0.28, 0.78, n_smoke);
+		opacity = clamp(wisp * env_t * 0.34, 0.0, 0.34);
+		color = mix(vec3(0.26, 0.26, 0.29), vec3(0.56, 0.54, 0.52), n_smoke * 0.65 + h * 0.25);
+		boost = 0.88;
+	} else if (kind == 17) {
+		// kind == 17: Vết cháy sém mờ nhỏ tại gốc cắm lông trắng rồi tan biến hoàn toàn ở 1.6s.
+		float t_sec = clamp(age, 0.0, 1.0) * 1.60;
+		float n_sc = fbm(p * 4.5);
+		float spot = 1.0 - smoothstep(0.18, 0.88, r + (n_sc - 0.5) * 0.26);
+		float fade = smoothstep(0.24, 0.55, t_sec) * (1.0 - smoothstep(1.25, 1.60, t_sec));
+		float ember_dot = (1.0 - smoothstep(0.04, 0.26, r)) * smoothstep(0.85, 1.15, t_sec) * (1.0 - smoothstep(1.22, 1.42, t_sec));
+		opacity = clamp(spot * fade * 0.58, 0.0, 1.0);
+		color = mix(vec3(0.10, 0.08, 0.08), deep_red, ember_dot * 0.85);
+		color = mix(color, hot_orange, ember_dot * 0.55);
+		boost = mix(0.82, 1.45, ember_dot);
+	} else if (kind == 18) {
+		// kind == 18: Vòng phản lực gió đẩy lùi (Sky Dive lần bay đầu — 0 sát thương, dải xoáy gió sắc nét cách điệu).
+		float phase = clamp(age, 0.0, 1.0);
+		float fade = smoothstep(0.0, 0.08, phase) * (1.0 - smoothstep(0.46, 1.0, phase));
+		float front = mix(0.18, 0.96, pow(phase, 0.72));
+		float spiral1 = pow(max(0.0, sin(a * 4.0 - r * 11.0 + TIME * 14.0)), 2.0);
+		float spiral2 = pow(max(0.0, sin(a * 6.0 - r * 8.5 + TIME * 10.0 + 1.4)), 2.5);
+		float n_wind = fbm(vec2(a * 3.5 - TIME * 5.0, r * 5.0 - phase * 3.5));
+		float outer_arc = (1.0 - smoothstep(0.015, 0.075, abs(r - front))) * (0.45 + 0.55 * spiral1);
+		float inner_swirl = (1.0 - smoothstep(0.02, 0.14, abs(r - front * 0.68))) * max(spiral1, spiral2) * (0.50 + 0.50 * n_wind);
+		float core_gust = (1.0 - smoothstep(0.02, 0.12, abs(r - front * 0.40))) * spiral2 * 0.72;
+		opacity = clamp(max(outer_arc, max(inner_swirl * 0.85, core_gust)) * fade, 0.0, 0.92);
+		vec3 wind_cool = vec3(0.76, 0.88, 0.96);
+		vec3 wind_core = vec3(0.97, 0.99, 1.0);
+		color = mix(vec3(0.52, 0.58, 0.64), wind_cool, clamp(inner_swirl + outer_arc * 0.7, 0.0, 1.0));
+		color = mix(color, wind_core, clamp(pow(outer_arc, 1.35) + core_gust * 0.65, 0.0, 1.0));
+		boost = mix(1.05, 1.60, outer_arc);
+	} else if (kind == 19) {
+		// kind == 19: Vòng cảnh báo rực lửa cho Sky Dive đợt 1–4 (0.7s).
+		float phase = clamp(age, 0.0, 1.0);
+		float pulse = 0.90 + 0.10 * sin(TIME * 24.0);
+		float n_ring = fbm(vec2(a * 5.0 + TIME * 2.8, r * 5.0 - TIME * 3.5));
+		float jag = (n_ring - 0.5) * 0.09;
+		float ring_r = 0.88 + jag;
+		float main_ring = 1.0 - smoothstep(0.018, 0.068, abs(r - ring_r));
+		float tongues = pow(max(0.0, sin(a * 14.0 + TIME * 8.5 + n_ring * 4.0)), 2.0)
+			* (1.0 - smoothstep(0.02, 0.14, abs(r - (ring_r + 0.03)))) * (0.55 + 0.45 * n_ring);
+		float inner_fill = (1.0 - smoothstep(0.0, 0.88, r)) * mix(0.08, 0.24, phase);
+		// Vòng thu hẹp báo thời điểm sắp chạm đất trong 0.3s cuối sau khi khóa vị trí.
+		float shrink_r = mix(0.88, 0.16, smoothstep(0.0, 1.0, phase));
+		float countdown_ring = (1.0 - smoothstep(0.012, 0.040, abs(r - shrink_r))) * 0.65;
+		float fade_in = smoothstep(0.0, 0.10, phase);
+		opacity = clamp(max(max(main_ring, tongues * 0.95), max(inner_fill, countdown_ring)) * fade_in * pulse, 0.0, 1.0);
+		color = mix(deep_red, hot_orange, clamp(main_ring * 0.85 + tongues * 0.95 + countdown_ring * 0.6, 0.0, 1.0));
+		color = mix(color, bright_gold, clamp(pow(main_ring, 1.8) * 0.85 + tongues * 0.60 + countdown_ring * 0.75, 0.0, 1.0));
+		color = mix(color, ivory, pow(main_ring, 3.0) * smoothstep(0.55, 1.0, phase) * 0.75);
+		boost = mix(1.20, 1.80, max(main_ring, countdown_ring * 0.7));
+	} else if (kind == 20) {
+		// kind == 20: Vòng cảnh báo Crosshair tròn xoay (giống tâm ngắm game bắn súng) cho đợt đáp Sky Dive thứ 5!
+		float phase = clamp(age, 0.0, 1.0);
+		float fade_in = smoothstep(0.0, 0.10, phase);
+		float rot = TIME * 2.2 + phase * 2.4;
+		float cs = cos(rot);
+		float sn = sin(rot);
+		vec2 rp = vec2(p.x * cs - p.y * sn, p.x * sn + p.y * cs);
+		float n_f = fbm(vec2(a * 6.0 - TIME * 3.5, r * 5.0 - TIME * 4.2));
+		float outer_r = 0.89 + (n_f - 0.5) * 0.06;
+		float outer_ring = 1.0 - smoothstep(0.018, 0.068, abs(r - outer_r));
+		float outer_flames = pow(max(0.0, sin(a * 18.0 - TIME * 9.0 + n_f * 4.5)), 2.0)
+			* (1.0 - smoothstep(0.02, 0.13, abs(r - (outer_r + 0.025))));
+		// Vòng tâm ngắm bên trong siết nhẹ vào tâm khi gần đáp.
+		float inner_r = mix(0.58, 0.42, smoothstep(0.45, 1.0, phase));
+		float inner_ring = 1.0 - smoothstep(0.012, 0.036, abs(r - inner_r));
+		// 4 vạch chữ thập crosshair xoay quanh tâm (cắt ngang từ inner_r tới outer_r và chĩa vào gần tâm).
+		float tick_x = (1.0 - smoothstep(0.012, 0.032, abs(rp.y))) * step(0.18, abs(rp.x)) * (1.0 - smoothstep(0.86, 0.94, abs(rp.x)));
+		float tick_y = (1.0 - smoothstep(0.012, 0.032, abs(rp.x))) * step(0.18, abs(rp.y)) * (1.0 - smoothstep(0.86, 0.94, abs(rp.y)));
+		float crosshair = max(tick_x, tick_y);
+		float center_dot = 1.0 - smoothstep(0.03, 0.075, r);
+		float fill = (1.0 - smoothstep(0.0, 0.88, r)) * mix(0.10, 0.28, phase);
+
+		float reticle = max(inner_ring, max(crosshair, center_dot));
+		opacity = clamp(max(max(outer_ring, outer_flames * 0.92), max(reticle, fill)) * fade_in, 0.0, 1.0);
+		color = mix(deep_red, hot_orange, clamp(outer_ring * 0.95 + outer_flames + reticle * 0.55, 0.0, 1.0));
+		color = mix(color, bright_gold, clamp(reticle * 0.95 + outer_ring * 0.55, 0.0, 1.0));
+		color = mix(color, ivory, clamp(pow(reticle, 2.4) * 0.48 + center_dot * 0.75, 0.0, 1.0));
+		boost = mix(1.22, 1.85, max(reticle, outer_ring * 0.8));
+	} else if (kind == 21) {
+		// kind == 21: Hố crater lõm xuống đất với lòng hố tối sâu + vành đá vỡ + rãnh dung nham nóng vàng cam sau cú đáp Sky Dive!
+		float phase = clamp(age, 0.0, 1.0);
+		float fade = 1.0 - smoothstep(0.72, 1.0, phase);
+		float n_cr = fbm(p * 5.2);
+		float n_fine = value_noise(p * 12.0);
+		float pit_r = r + (n_cr - 0.5) * 0.14;
+		float pit_depth = 1.0 - smoothstep(0.18, 0.72, pit_r);
+		float bowl_shadow = smoothstep(0.0, 0.58, pit_r) * (1.0 - smoothstep(0.58, 0.74, pit_r));
+		float raised_lip = (1.0 - smoothstep(0.03, 0.15, abs(pit_r - 0.72))) * (0.55 + 0.45 * n_fine);
+		float cracks = 0.0;
+		for (int i = 0; i < 9; i++) {
+			float fi = float(i);
+			float base_a = fi * 0.6981 + sin(fi * 3.1) * 0.18;
+			float jitter = (fbm(vec2(r * 4.8 + fi * 2.7, fi * 1.9)) - 0.5) * 0.28;
+			float da = abs(atan(sin(a - base_a - jitter), cos(a - base_a - jitter)));
+			float arc_d = da * max(r, 0.05);
+			float reach = 0.80 + 0.16 * hash21(vec2(fi, 4.1));
+			float w = mix(0.056, 0.014, r);
+			cracks = max(cracks, (1.0 - smoothstep(w * 0.35, w, arc_d)) * (1.0 - smoothstep(reach * 0.68, reach, r)));
+		}
+		float cool = 1.0 - smoothstep(0.10, 0.84, phase);
+		float magma = clamp((pow(1.0 - smoothstep(0.0, 0.48, pit_r), 1.6) * 0.82 + cracks * 0.92) * cool, 0.0, 1.0);
+		float outer_scorch = (1.0 - smoothstep(0.58, 0.98, pit_r)) * 0.60;
+
+		opacity = clamp(max(max(pit_depth * 0.98, raised_lip * 0.88), max(cracks * 0.96, outer_scorch)) * fade, 0.0, 1.0);
+		color = mix(stone_mid, stone_dark, clamp(outer_scorch + raised_lip * 0.5, 0.0, 1.0));
+		color = mix(color, vec3(0.03, 0.025, 0.028), clamp(pit_depth * 0.95 + bowl_shadow * 0.65 + cracks * 0.72, 0.0, 1.0));
+		color = mix(color, vec3(0.42, 0.36, 0.32), raised_lip * 0.62);
+		color = mix(color, deep_red, smoothstep(0.12, 0.55, magma));
+		color = mix(color, hot_orange, smoothstep(0.36, 0.78, magma));
+		color = mix(color, bright_gold, smoothstep(0.68, 1.0, magma));
+		boost = mix(0.82, 1.72, magma);
+	} else {
+		// kind == 22: Sóng chấn động đẩy lùi toàn phòng (Resonance Slam — vòng lửa cam-vàng sắc nét quét ngang toàn sàn, 0 sát thương).
+		float phase = clamp(age, 0.0, 1.0);
+		float fade = smoothstep(0.0, 0.06, phase) * (1.0 - smoothstep(0.58, 1.0, phase));
+		float front = mix(0.06, 0.96, pow(phase, 0.78));
+		float n_sw = fbm(vec2(a * 6.0 + TIME * 3.0, r * 7.0 - phase * 6.0));
+		float main_wave = 1.0 - smoothstep(0.012, 0.058, abs(r - front));
+		float trail_wave = (1.0 - smoothstep(0.018, 0.14, abs(r - (front - 0.055)))) * (0.45 + 0.55 * n_sw);
+		float echo_ring = (1.0 - smoothstep(0.010, 0.042, abs(r - front * 0.74))) * 0.62;
+		float radial_streaks = pow(max(0.0, sin(a * 16.0 + n_sw * 3.5)), 3.0)
+			* smoothstep(front - 0.22, front, r) * (1.0 - smoothstep(front, front + 0.03, r)) * 0.65;
+		opacity = clamp(max(max(main_wave, trail_wave * 0.80), max(echo_ring, radial_streaks)) * fade, 0.0, 0.96);
+		color = mix(deep_red, hot_orange, clamp(trail_wave * 0.95 + echo_ring * 0.85 + radial_streaks, 0.0, 1.0));
+		color = mix(color, bright_gold, clamp(main_wave * 0.92 + echo_ring * 0.55 + radial_streaks * 0.55, 0.0, 1.0));
+		color = mix(color, ivory, pow(main_wave, 2.4) * 0.68);
+		boost = mix(1.20, 1.85, main_wave);
 	}
 
 	ALBEDO = color * boost;

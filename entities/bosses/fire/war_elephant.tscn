@@ -25,6 +25,19 @@ look_height = 1.85
 shot_fov = 37.0
 push_in_fov = 34.0
 
+[sub_resource type="Resource" id="DeathView"]
+resource_local_to_scene = true
+script = ExtResource("cutscene_data")
+travel_time = 0.5
+hold_time = 0.45
+return_time = 0.72
+shot_offset = Vector3(5.2, 3.6, 6.2)
+look_height = 1.15
+shot_fov = 36.0
+push_in_fov = 31.0
+hold_orbit_degrees = -12.0
+letterbox_ratio = 0.085
+
 [node name="WarElephant" instance=ExtResource("base")]
 script = ExtResource("elephant")
 data = ExtResource("config")
@@ -61,5 +74,10 @@ script = ExtResource("coat")
 
 [node name="Introduction" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("cutscene")]
 data = SubResource("IntroductionView")
+focus_target = NodePath("..")
+manual_only = true
+
+[node name="DeathFraming" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("cutscene")]
+data = SubResource("DeathView")
 focus_target = NodePath("..")
 manual_only = true

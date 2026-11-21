@@ -1,8 +1,7 @@
 extends DeathEffectComponent
-## Hết máu phase đầu là biến hình, không chạy hiệu ứng co model của quái thường.
+## Boss Hổ có animation ngã gục riêng cho cả chuyển pha Phase 1 -> 2 lẫn chết thật ở Phase 2,
+## nên không chạy hiệu ứng co model biến mất của quái thường.
 
 
 func _on_died() -> void:
-	if (owner as FireSabretooth).is_phase_one():
-		return
-	super()
+	return

@@ -3,6 +3,7 @@ extends Node3D
 ## Mesh VFX dùng chung cho vòng nổ, khe đất, cột lửa, vệt chém, sóng xung và áp tường; tự trả lại pool.
 
 const FIRE := preload("res://entities/bosses/fire/pyralon/combat/pyralon_fire.gdshader")
+const WHITE_SPLASH_TIME: float = 0.28
 
 enum Kind {
 	FEATHER,
@@ -21,6 +22,11 @@ enum Kind {
 	FISSURE_CRATER,
 	COMMAND_PULSE,
 	DIRT_CHIP,
+	WIND_PUSH_RING,
+	DIVE_WARNING,
+	CROSSHAIR_WARNING,
+	METEOR_CRATER,
+	RESONANCE_WAVE,
 }
 
 static var _plane: PlaneMesh
@@ -29,7 +35,8 @@ static var _pillar_mesh: ArrayMesh
 static var _chunk_mesh: ArrayMesh
 static var _smoke_mesh: ArrayMesh
 static var _spike_mesh: ArrayMesh
-static var _spike_material: StandardMaterial3D
+static var _ash_mesh: ArrayMesh
+static var _wisp_mesh: ArrayMesh
 
 var _pool: ObjectPool
 var _kind: Kind = Kind.SHOCK
@@ -37,6 +44,7 @@ var _age: float
 var _life: float
 var _base_z_scale: float = 1.0
 var _persistent: bool
+var _white_scorch_switched: bool = false
 
 var _disc: MeshInstance3D
 var _arc_crest: MeshInstance3D
@@ -45,12 +53,17 @@ var _wall: MeshInstance3D
 var _chunks: MeshInstance3D
 var _smoke: MeshInstance3D
 var _spike: MeshInstance3D
+var _ash: MeshInstance3D
+var _wisp: MeshInstance3D
 
 var _disc_mat: ShaderMaterial
 var _pillar_mat: ShaderMaterial
 var _wall_mat: ShaderMaterial
 var _chunk_mat: ShaderMaterial
 var _smoke_mat: ShaderMaterial
+var _spike_mat: ShaderMaterial
+var _ash_mat: ShaderMaterial
+var _wisp_mat: ShaderMaterial
 
 
 func _ready() -> void:
@@ -85,11 +98,17 @@ func _ready() -> void:
 	_smoke_mat = _smoke.material_override as ShaderMaterial
 	_smoke_mat.set_shader_parameter(&"kind", 12)
 
-	_spike = MeshInstance3D.new()
-	_spike.mesh = _spike_mesh
-	_spike.material_override = _spike_material
-	_spike.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(_spike)
+	_spike = _make_shader_mesh(_spike_mesh)
+	_spike_mat = _spike.material_override as ShaderMaterial
+	_spike_mat.set_shader_parameter(&"kind", 15)
+
+	_ash = _make_shader_mesh(_ash_mesh)
+	_ash_mat = _ash.material_override as ShaderMaterial
+	_ash_mat.set_shader_parameter(&"kind", 14)
+
+	_wisp = _make_shader_mesh(_wisp_mesh)
+	_wisp_mat = _wisp.material_override as ShaderMaterial
+	_wisp_mat.set_shader_parameter(&"kind", 16)
 
 	pool_released()
 
@@ -104,10 +123,10 @@ func play(kind: Kind, at: Vector3, direction: Vector3, size: Vector2, life: floa
 	var lift := 0.035
 	if kind in [Kind.WALL_SPLASH, Kind.EMBER_BURST, Kind.ARC, Kind.DIRT_CHIP]:
 		lift = 0.0
-	elif kind == Kind.FISSURE_CRATER:
-		lift = 0.042
-	var basis := _basis_for(kind, direction)
-	global_transform = Transform3D(basis, at + Vector3.UP * lift)
+	elif kind in [Kind.FISSURE_CRATER, Kind.DIVE_WARNING, Kind.CROSSHAIR_WARNING, Kind.METEOR_CRATER, Kind.RESONANCE_WAVE, Kind.WIND_PUSH_RING]:
+		lift = 0.045
+	var rot_basis := _basis_for(kind, direction)
+	global_transform = Transform3D(rot_basis, at + Vector3.UP * lift)
 
 	_hide_all_layers()
 	_disc_mat.set_shader_parameter(&"age", 0.0)
@@ -115,6 +134,7 @@ func play(kind: Kind, at: Vector3, direction: Vector3, size: Vector2, life: floa
 	_disc_mat.set_shader_parameter(&"white", false)
 	_pillar_mat.set_shader_parameter(&"age", 0.0)
 	_wall_mat.set_shader_parameter(&"age", 0.0)
+	_chunk_mat.set_shader_parameter(&"kind", 11)
 	_chunk_mat.set_shader_parameter(&"age", 0.0)
 	_chunk_mat.set_shader_parameter(&"white", false)
 	_chunk_mat.set_shader_parameter(&"heat", 0.0)
@@ -167,13 +187,27 @@ func play(kind: Kind, at: Vector3, direction: Vector3, size: Vector2, life: floa
 			_disc.scale = Vector3(size.x, 1.0, size.y)
 			_disc_mat.set_shader_parameter(&"kind", 3)
 		Kind.WHITE_IMPACT:
+			var burn_seed := randf()
+			_white_scorch_switched = false
 			_disc.visible = true
 			_disc.scale = Vector3(size.x, 1.0, size.y)
 			_disc_mat.set_shader_parameter(&"kind", 3)
 			_disc_mat.set_shader_parameter(&"white", true)
 			_spike.visible = true
 			_spike.rotation = Vector3(0.42, randf() * TAU, 0.18)
-			_spike.scale = Vector3.ONE * clampf(size.x * 1.18, 0.72, 1.30)
+			_spike.scale = Vector3.ONE * clampf(size.x * 1.24, 0.82, 1.35)
+			_spike_mat.set_shader_parameter(&"age", 0.0)
+			_spike_mat.set_shader_parameter(&"heat", burn_seed)
+			_ash.visible = true
+			_ash.global_basis = Basis.IDENTITY
+			_ash.scale = Vector3.ONE
+			_ash_mat.set_shader_parameter(&"age", 0.0)
+			_ash_mat.set_shader_parameter(&"heat", burn_seed)
+			_wisp.visible = true
+			_wisp.global_basis = Basis.IDENTITY
+			_wisp.scale = Vector3.ONE * clampf(size.x * 1.15, 0.85, 1.25)
+			_wisp_mat.set_shader_parameter(&"age", 0.0)
+			_wisp_mat.set_shader_parameter(&"heat", burn_seed)
 		Kind.EMBER_BURST:
 			_chunks.visible = true
 			_chunks.scale = Vector3.ONE * size.x
@@ -199,6 +233,34 @@ func play(kind: Kind, at: Vector3, direction: Vector3, size: Vector2, life: floa
 			_chunks.visible = true
 			_chunks.scale = Vector3(size.x * 0.24, size.y * 0.30, 0.20)
 			_chunk_mat.set_shader_parameter(&"white", true)
+		Kind.WIND_PUSH_RING:
+			_disc.visible = true
+			_disc.scale = Vector3(size.x, 1.0, size.y)
+			_disc_mat.set_shader_parameter(&"kind", 18)
+		Kind.DIVE_WARNING:
+			_disc.visible = true
+			_disc.scale = Vector3(size.x, 1.0, size.y)
+			_disc_mat.set_shader_parameter(&"kind", 19)
+		Kind.CROSSHAIR_WARNING:
+			_disc.visible = true
+			_disc.scale = Vector3(size.x, 1.0, size.y)
+			_disc_mat.set_shader_parameter(&"kind", 20)
+		Kind.METEOR_CRATER:
+			# Hố crater lõm trên đất + cột lửa vàng cam bắn cao lên trời + mảnh lửa & khói bung tỏa!
+			_disc.visible = true
+			_disc.scale = Vector3(size.x * 1.12, 1.0, size.y * 1.12)
+			_disc_mat.set_shader_parameter(&"kind", 21)
+			_pillar.visible = true
+			_pillar.rotation.y = randf() * TAU
+			_pillar.scale = Vector3(size.x * 0.72, clampf(size.x * 1.10, 2.8, 4.4), size.y * 0.72)
+			_chunks.visible = true
+			_chunks.scale = Vector3(size.x * 0.88, size.x * 1.10, size.y * 0.88)
+			_smoke.visible = true
+			_smoke.scale = Vector3(size.x * 0.92, clampf(size.x * 0.85, 2.0, 3.6), size.y * 0.92)
+		Kind.RESONANCE_WAVE:
+			_disc.visible = true
+			_disc.scale = Vector3(size.x, 1.0, size.y)
+			_disc_mat.set_shader_parameter(&"kind", 22)
 		_:
 			_disc.visible = true
 			_disc.scale = Vector3(size.x, 1.0, size.y)
@@ -207,6 +269,24 @@ func play(kind: Kind, at: Vector3, direction: Vector3, size: Vector2, life: floa
 	show()
 	set_physics_process(true)
 	reset_physics_interpolation()
+
+
+func set_embed_direction(flight_dir: Vector3, crimson: bool = false) -> void:
+	_spike_mat.set_shader_parameter(&"white", crimson)
+	if flight_dir.is_zero_approx():
+		return
+	# Đuôi lông chĩa ngược hướng bay để mũi lông cắm đúng góc vào tường hoặc mặt đất.
+	var shaft_out := (-flight_dir).normalized()
+	var ref := Vector3.RIGHT if absf(shaft_out.dot(Vector3.UP)) > 0.94 else Vector3.UP
+	var x_axis := ref.cross(shaft_out).normalized()
+	var z_axis := x_axis.cross(shaft_out).normalized()
+	_spike.global_basis = Basis(x_axis, shaft_out, z_axis).scaled(_spike.scale)
+	# Tro và làn khói luôn bay thẳng lên trời (Basis.IDENTITY) xuất phát từ tâm nghiêng của thân lông.
+	var horiz_offset := Vector3(shaft_out.x, 0.0, shaft_out.z) * 0.24
+	_ash.global_position = global_position + horiz_offset
+	_ash.global_basis = Basis.IDENTITY
+	_wisp.global_position = global_position + horiz_offset
+	_wisp.global_basis = Basis.IDENTITY
 
 
 func set_pose(at: Vector3, direction: Vector3) -> void:
@@ -235,6 +315,33 @@ func _physics_process(delta: float) -> void:
 	if phase >= 1.0 and not _persistent:
 		_pool.release(self)
 		return
+	if _kind == Kind.WHITE_IMPACT:
+		if _age < WHITE_SPLASH_TIME:
+			_disc_mat.set_shader_parameter(&"age", minf(1.0, _age / WHITE_SPLASH_TIME))
+		else:
+			if not _white_scorch_switched:
+				_white_scorch_switched = true
+				_disc_mat.set_shader_parameter(&"kind", 17)
+				_disc_mat.set_shader_parameter(&"white", false)
+				_disc.scale = Vector3(0.56, 1.0, 0.56)
+			_disc_mat.set_shader_parameter(&"age", phase)
+		_spike_mat.set_shader_parameter(&"age", phase)
+		_spike.visible = phase < 0.92
+		_ash_mat.set_shader_parameter(&"age", phase)
+		_wisp_mat.set_shader_parameter(&"age", phase)
+		return
+	if _kind == Kind.METEOR_CRATER:
+		# Hố crater giữ lâu hơn để người chơi thấy 5 hố nứt liên tiếp, còn cột lửa vàng cam & mảnh lửa bùng tắt gọn trong 0.85s.
+		var erupt := minf(1.0, _age / 0.85)
+		_disc_mat.set_shader_parameter(&"age", phase)
+		_pillar.visible = erupt < 1.0
+		_chunks.visible = erupt < 1.0
+		_smoke.visible = erupt < 1.0
+		if erupt < 1.0:
+			_pillar_mat.set_shader_parameter(&"age", erupt)
+			_chunk_mat.set_shader_parameter(&"age", erupt)
+			_smoke_mat.set_shader_parameter(&"age", erupt)
+		return
 	if _disc.visible:
 		_disc_mat.set_shader_parameter(&"age", phase)
 		if _kind in [Kind.WARNING, Kind.FISSURE_LOCK, Kind.FISSURE_CRATER]:
@@ -260,6 +367,8 @@ func _hide_all_layers() -> void:
 	_chunks.visible = false
 	_smoke.visible = false
 	_spike.visible = false
+	_ash.visible = false
+	_wisp.visible = false
 
 
 func _basis_for(kind: Kind, direction: Vector3) -> Basis:
@@ -303,13 +412,8 @@ static func _ensure_shared_meshes() -> void:
 	_chunk_mesh = _build_chunk_mesh()
 	_smoke_mesh = _build_smoke_mesh()
 	_spike_mesh = _build_spike_mesh()
-
-	_spike_material = StandardMaterial3D.new()
-	_spike_material.vertex_color_use_as_albedo = true
-	_spike_material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_spike_material.emission_enabled = true
-	_spike_material.emission = Color("#ffe5b3")
-	_spike_material.emission_energy_multiplier = 0.40
+	_ash_mesh = _build_ash_mesh()
+	_wisp_mesh = _build_wisp_mesh()
 
 
 static func _build_pillar_mesh() -> ArrayMesh:
@@ -322,17 +426,17 @@ static func _build_pillar_mesh() -> ArrayMesh:
 		var bl := -right
 		var br := right
 		var tl := -right + Vector3.UP * 2.55
-		var tr := right + Vector3.UP * 2.55
+		var top_r := right + Vector3.UP * 2.55
 		surface.set_uv(Vector2(0.0, 1.0))
 		surface.add_vertex(bl)
 		surface.set_uv(Vector2(1.0, 1.0))
 		surface.add_vertex(br)
 		surface.set_uv(Vector2(1.0, 0.0))
-		surface.add_vertex(tr)
+		surface.add_vertex(top_r)
 		surface.set_uv(Vector2(0.0, 1.0))
 		surface.add_vertex(bl)
 		surface.set_uv(Vector2(1.0, 0.0))
-		surface.add_vertex(tr)
+		surface.add_vertex(top_r)
 		surface.set_uv(Vector2(0.0, 0.0))
 		surface.add_vertex(tl)
 	surface.generate_normals()
@@ -430,25 +534,99 @@ static func _build_spike_mesh() -> ArrayMesh:
 	var rn := Vector3(0.07, 0.68, 0.01)
 	var r2 := Vector3(0.10, 0.90, 0.0)
 
-	# Cuống cắm.
-	_tri_colored(surface, q0 + Vector3(-0.015, 0, 0), q0 + Vector3(0.015, 0, 0), s0, vein, vein, vein)
+	# Cuống cắm (gắn UV.y = 0 ở gốc -> 1 ở đỉnh để shader cháy lan từ đỉnh xuống gốc).
+	_tri_feather(surface, q0 + Vector3(-0.018, 0, 0), q0 + Vector3(0.018, 0, 0), s0, vein, vein, vein)
 	# Phiến trái.
-	_tri_colored(surface, s0, l0, s1, vein, barb, vein)
-	_tri_colored(surface, l0, l1, s1, barb, ivory, vein)
-	_tri_colored(surface, l1, ln, s1, ivory, barb, vein)
-	_tri_colored(surface, s1, ln, s2, vein, barb, vein)
-	_tri_colored(surface, ln, l2, s2, barb, ivory, vein)
-	_tri_colored(surface, l2, l3, s2, ivory, cream, vein)
-	_tri_colored(surface, l3, tip, s2, cream, ivory, vein)
+	_tri_feather(surface, s0, l0, s1, vein, barb, vein)
+	_tri_feather(surface, l0, l1, s1, barb, ivory, vein)
+	_tri_feather(surface, l1, ln, s1, ivory, barb, vein)
+	_tri_feather(surface, s1, ln, s2, vein, barb, vein)
+	_tri_feather(surface, ln, l2, s2, barb, ivory, vein)
+	_tri_feather(surface, l2, l3, s2, ivory, cream, vein)
+	_tri_feather(surface, l3, tip, s2, cream, ivory, vein)
 	# Phiến phải.
-	_tri_colored(surface, s0, s1, r0, vein, vein, barb)
-	_tri_colored(surface, s1, r1, r0, vein, cream, barb)
-	_tri_colored(surface, s1, rn, r1, vein, barb, cream)
-	_tri_colored(surface, s1, s2, rn, vein, vein, barb)
-	_tri_colored(surface, s2, r2, rn, vein, ivory, barb)
-	_tri_colored(surface, s2, tip, r2, vein, ivory, ivory)
+	_tri_feather(surface, s0, s1, r0, vein, vein, barb)
+	_tri_feather(surface, s1, r1, r0, vein, cream, barb)
+	_tri_feather(surface, s1, rn, r1, vein, barb, cream)
+	_tri_feather(surface, s1, s2, rn, vein, vein, barb)
+	_tri_feather(surface, s2, r2, rn, vein, ivory, barb)
+	_tri_feather(surface, s2, tip, r2, vein, ivory, ivory)
 	surface.generate_normals()
 	return surface.commit()
+
+
+static func _build_ash_mesh() -> ArrayMesh:
+	# 32 hạt tro + tàn lửa nhỏ dọc thân lông cắm (Panel B):
+	# COLOR.r = góc tản 0..1; COLOR.g = chiều cao khởi phát 0.10..0.98; COLOR.b < 0.68 là mảnh tro than, >= 0.68 là đốm tàn cam; COLOR.a = tốc độ.
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 9187
+	const COUNT := 32
+	for i: int in COUNT:
+		var is_ember := (i % 3 == 2)
+		var angle_norm := fposmod((float(i) + rng.randf_range(-0.35, 0.35)) / float(COUNT), 1.0)
+		var height_norm := clampf(lerpf(0.12, 0.96, float(i) / float(COUNT - 1)) + rng.randf_range(-0.08, 0.08), 0.08, 0.98)
+		var kind_flag := rng.randf_range(0.75, 0.98) if is_ember else rng.randf_range(0.05, 0.60)
+		var speed_seed := rng.randf_range(0.35, 1.0)
+		var col := Color(angle_norm, height_norm, kind_flag, speed_seed)
+		var sz := rng.randf_range(0.022, 0.036) if is_ember else rng.randf_range(0.042, 0.082)
+		var asp := 1.0 if is_ember else rng.randf_range(0.45, 0.72)
+		var a := Vector3(-sz, -sz * asp, 0.0)
+		var b := Vector3(sz * 0.9, -sz * asp * 0.6, sz * 0.25)
+		var c := Vector3(sz * 0.45, sz * asp, -sz * 0.2)
+		var d := Vector3(-sz * 0.65, sz * asp * 0.8, sz * 0.15)
+		_tri_colored(surface, a, b, c, col, col, col)
+		_tri_colored(surface, a, c, d, col, col, col)
+	surface.generate_normals()
+	return surface.commit()
+
+
+static func _build_wisp_mesh() -> ArrayMesh:
+	# Hai mặt đứng cắt chữ X mảnh cho làn khói nhẹ bay lên từ lông đang cháy (thin smoke wisp).
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for index: int in 2:
+		var angle := PI * 0.5 * index + 0.4
+		var right := Vector3(cos(angle), 0.0, sin(angle)) * 0.42
+		var bl := -right
+		var br := right
+		var tl := -right + Vector3.UP * 1.65
+		var top_r := right + Vector3.UP * 1.65
+		surface.set_uv(Vector2(0.0, 1.0))
+		surface.add_vertex(bl)
+		surface.set_uv(Vector2(1.0, 1.0))
+		surface.add_vertex(br)
+		surface.set_uv(Vector2(1.0, 0.0))
+		surface.add_vertex(top_r)
+		surface.set_uv(Vector2(0.0, 1.0))
+		surface.add_vertex(bl)
+		surface.set_uv(Vector2(1.0, 0.0))
+		surface.add_vertex(top_r)
+		surface.set_uv(Vector2(0.0, 0.0))
+		surface.add_vertex(tl)
+	surface.generate_normals()
+	return surface.commit()
+
+
+static func _tri_feather(
+	surface: SurfaceTool,
+	a: Vector3,
+	b: Vector3,
+	c: Vector3,
+	ca: Color,
+	cb: Color,
+	cc: Color
+) -> void:
+	surface.set_uv(Vector2(clampf(0.5 + a.x / 0.34, 0.0, 1.0), clampf(a.y / 1.18, 0.0, 1.0)))
+	surface.set_color(ca)
+	surface.add_vertex(a)
+	surface.set_uv(Vector2(clampf(0.5 + b.x / 0.34, 0.0, 1.0), clampf(b.y / 1.18, 0.0, 1.0)))
+	surface.set_color(cb)
+	surface.add_vertex(b)
+	surface.set_uv(Vector2(clampf(0.5 + c.x / 0.34, 0.0, 1.0), clampf(c.y / 1.18, 0.0, 1.0)))
+	surface.set_color(cc)
+	surface.add_vertex(c)
 
 
 static func _tri_colored(

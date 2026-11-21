@@ -24,6 +24,11 @@ func physics_update(delta: float) -> void:
 		_actor.forget_target()
 		state_machine.transition_to(IDLE)
 		return
+	# Trong Phase 2, Hổ chạy thuần vòng lặp 6 chiêu Phase 2 cố định, không đánh xen chiêu cận chiến Phase 1.
+	if _actor.phase.is_in_phase_two and not _actor.manual_skill:
+		var next_p2 := _actor.phase_two_next_state if not _actor.phase_two_next_state.is_empty() else &"TigerFireBeam"
+		state_machine.transition_to(next_p2)
+		return
 	_opening -= delta
 	_decision -= delta
 	if _decision <= 0.0:
@@ -43,10 +48,10 @@ func _decide() -> bool:
 	if _try_dodge(toward, distance):
 		return true
 	if _opening <= _actor.profile.decision_interval and absf(angle) > deg_to_rad(_actor.profile.turn_threshold) and _actor.velocity.length() < 2.6:
-		var clip: StringName = &"TurnLeft" if angle > 0.0 else &"45TurnLeft"
+		var turn_clip: StringName = &"TurnLeft" if angle > 0.0 else &"45TurnLeft"
 		if absf(angle) > deg_to_rad(145.0):
-			clip = &"Spin180" if distance < 5.0 else (&"Slow180" if angle > 0.0 else &"180RIght")
-		_actor.start_maneuver(clip)
+			turn_clip = &"Spin180" if distance < 5.0 else (&"Slow180" if angle > 0.0 else &"180RIght")
+		_actor.start_maneuver(turn_clip)
 		return true
 	if _opening <= 0.0 and absf(angle) < 1.12:
 		var skill := _actor.choose_skill()
@@ -99,5 +104,5 @@ func _try_dodge(toward: Vector3, distance: float) -> bool:
 	if _actor.clear_path(-toward, 1.1):
 		_actor.start_maneuver(&"Backing", -toward, 0.9)
 		return true
-	_actor.start_maneuver(&"Cowering2" if _actor.health.current_health < _actor.health.max_health / 3 else &"PissedOff2")
+	_actor.start_maneuver(&"Cowering2" if _actor.health.current_health * 3 < _actor.health.max_health else &"PissedOff2")
 	return true

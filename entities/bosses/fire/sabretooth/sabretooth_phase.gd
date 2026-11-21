@@ -112,12 +112,67 @@ func show_flame_form() -> void:
 	_set_form(true)
 
 
+func show_phase_one_form() -> void:
+	_set_form(false)
+
+
+func begin_revert_to_phase_one() -> void:
+	# Chuẩn bị tan biến hiệu ứng lửa Phase 2 từ trên đỉnh đầu xuống chân đồng thời trong lúc hổ ngã gục.
+	var ground := global_position.y
+	for material: ShaderMaterial in _skins:
+		material.set_shader_parameter(&"rise_origin", ground)
+		material.set_shader_parameter(&"transitioning", false)
+		material.set_shader_parameter(&"reverting_top_down", true)
+		material.set_shader_parameter(&"revert_progress", 0.0)
+	for index: int in _armored.size():
+		_armored[index].material_override = _skins[index]
+		_armored[index].show()
+	for mesh: MeshInstance3D in _flames:
+		mesh.show()
+	set_revert_progress(0.0)
+
+
+func set_revert_progress(progress: float, head_world: Vector3 = Vector3.INF) -> void:
+	var p := clampf(progress, 0.0, 1.0)
+	var inv := 1.0 - p
+	var head_pt := head_world if head_world.is_finite() else (global_position + Vector3.UP * 1.45)
+	var top_span := maxf(head_pt.y - global_position.y + 0.45, 0.85)
+	for material: ShaderMaterial in _skins:
+		material.set_shader_parameter(&"revert_progress", p)
+		material.set_shader_parameter(&"revert_head_pos", head_pt)
+		material.set_shader_parameter(&"revert_top_y", top_span)
+	_fire_vfx.set_tail_growth(clampf(1.0 - smoothstep(0.45, 0.96, p), 0.0, 1.0))
+	_embers.emitting = inv > 0.25
+	_light.visible = inv > 0.05
+	_light.light_energy = 0.68 * inv + sin(p * PI) * 0.40
+	if p >= 1.0:
+		_set_form(false)
+
+
 func dissolve_finale(progress: float) -> void:
 	_skins[2].set_shader_parameter(&"dissolve", progress)
 	_skins[3].set_shader_parameter(&"dissolve", progress)
 	_fire_vfx.set_tail_dissolve(progress)
 	_embers.emitting = is_in_phase_two and progress < 0.26
 	_light.light_energy = 0.68 * (1.0 - progress)
+
+
+func set_portal_clip(active: bool, origin: Vector3 = Vector3.ZERO, normal: Vector3 = Vector3.UP) -> void:
+	for idx: int in [2, 3]:
+		_skins[idx].set_shader_parameter(&"portal_clip", active)
+		_skins[idx].set_shader_parameter(&"portal_origin", origin)
+		_skins[idx].set_shader_parameter(&"portal_normal", normal)
+	_fire_vfx.set_tail_portal_clip(active, origin, normal)
+
+
+func set_reform_progress(progress: float) -> void:
+	var clamped := clampf(progress, 0.0, 1.0)
+	_skins[2].set_shader_parameter(&"reform", clamped)
+	_skins[3].set_shader_parameter(&"reform", clamped)
+	_fire_vfx.set_tail_growth(smoothstep(0.50, 0.94, clamped) if is_in_phase_two else 0.0)
+	_light.visible = is_in_phase_two and clamped > 0.15
+	_light.light_energy = lerpf(0.25, 0.68, clamped) + sin(clamped * PI) * 0.85
+	_embers.emitting = is_in_phase_two and clamped >= 0.45
 
 
 func set_ambient_active(active: bool) -> void:
@@ -175,7 +230,11 @@ func _set_form(flame: bool) -> void:
 		mesh.visible = flame
 	for material: ShaderMaterial in _skins:
 		material.set_shader_parameter(&"transitioning", false)
+		material.set_shader_parameter(&"reverting_top_down", false)
+		material.set_shader_parameter(&"revert_progress", 0.0)
 	dissolve_finale(0.0)
+	set_portal_clip(false)
+	set_reform_progress(1.0)
 	_fire_vfx.set_tail_growth(1.0 if flame else 0.0)
 	_light.visible = flame
 	_light.light_energy = 0.68

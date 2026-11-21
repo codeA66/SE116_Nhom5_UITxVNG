@@ -40,13 +40,16 @@ func physics_update(delta: float) -> void:
 		_actor.face_direction(_actor.direction_to_target(), delta)
 	elif _firing and _actor.has_target():
 		var player := _actor.target as Character
-		var speed := player.movement.max_speed if player else 5.5
-		var turn_step := speed * data.beam_tracking_ratio / maxf(_actor.distance_to_target(), 2.0) * delta
+		var speed := player.movement.max_speed if player else 6.0
+		var ramp_t := clampf((_time - firing_at) / maxf(data.beam_duration, 0.1), 0.0, 1.0)
+		var track_ratio := lerpf(data.beam_tracking_start_ratio, data.beam_tracking_max_ratio, ramp_t)
+		var turn_step := speed * track_ratio / maxf(_actor.distance_to_target(), 2.0) * delta
 		_actor.set_body_yaw(rotate_toward(_actor.model.rotation.y, _actor.model.rotation.y + _actor.target_angle(), turn_step))
 	_skeleton.force_update_all_bone_transforms()
 	var forward := _actor.get_facing_direction()
 	var mouth := _skeleton.to_global(_skeleton.get_bone_global_pose(_jaw).origin) + Vector3.UP * 0.1
 	var orb := mouth + forward * data.beam_muzzle_offset
+	_actor.fire_vfx.update_beam_barrier(_actor.global_position, _time)
 	if _time < firing_at:
 		_actor.fire_vfx.charge(orb, minf(1.0, _time / maxf(data.beam_charge_time, 0.01)))
 		return
@@ -62,6 +65,6 @@ func physics_update(delta: float) -> void:
 	_actor.fire_vfx.beam(orb, forward, delta, mouth)
 	if elapsed >= data.beam_duration:
 		if _actor.phase_two_chain or not _actor.manual_skill:
-			state_machine.transition_to(&"TigerFireFinale")
+			_actor.rest_then_phase_two(&"TigerFireFinale")
 		else:
 			_actor.finish_phase_two_move()

@@ -105,6 +105,8 @@ var _attack_blocked_by_ui: bool = false
 var _combat_locks: Dictionary[Node, bool] = {}
 ## Mỗi cơ chế giữ khóa dash riêng (dính tơ nhện...); thả vật không vô tình gỡ khóa của cơ chế khác.
 var _dash_locks: Dictionary[Node, bool] = {}
+## Mỗi cơ chế giữ khóa trói chân riêng (xích lửa boss...): khóa di chuyển, roll & nhảy nhưng vẫn đánh/cung/skill tại chỗ.
+var _root_locks: Dictionary[Node, bool] = {}
 ## Model cung đang gắn ở BowHold (tạo một lần, ẩn khi không nhắm) và scene đã dùng để tạo nó
 var _bow_model: Node3D
 var _bow_model_scene: PackedScene
@@ -294,9 +296,9 @@ func get_mouse_aim_direction() -> Vector3:
 	return offset.normalized() if offset.length() > 0.05 else Vector3.ZERO
 
 
-## Đúng khi có jump buffer và còn coyote time
+## Đúng khi có jump buffer, còn coyote time và không bị trói chân
 func can_jump() -> bool:
-	return _jump_buffer_timer > 0.0 and _coyote_timer > 0.0
+	return not root_locked() and _jump_buffer_timer > 0.0 and _coyote_timer > 0.0
 
 
 func jump() -> void:
@@ -380,6 +382,38 @@ func set_dash_locked(source: Node, locked: bool) -> void:
 
 func dash_locked() -> bool:
 	return not _dash_locks.is_empty()
+
+
+## Trói chân (xích lửa boss...): khóa di chuyển, roll (Shift) và nhảy, vẫn cho đánh/bắn cung/dùng chiêu E tại chỗ.
+## Tự gỡ khi source rời cây để không bao giờ kẹt trói vĩnh viễn.
+func set_root_locked(source: Node, locked: bool) -> void:
+	if locked:
+		_root_locks[source] = true
+		var release := _release_root_lock.bind(source)
+		if not source.tree_exiting.is_connected(release):
+			source.tree_exiting.connect(release, CONNECT_ONE_SHOT)
+		set_terrain_speed(source, 0.0)
+		set_dash_locked(source, true)
+		_jump_buffer_timer = 0.0
+		velocity.x = 0.0
+		velocity.z = 0.0
+		if state_machine.current_state and state_machine.current_state.name in [PlayerState.DASH, PlayerState.JUMP]:
+			state_machine.transition_to(PlayerState.IDLE if is_on_floor() else PlayerState.FALL)
+	else:
+		_release_root_lock(source)
+
+
+func root_locked() -> bool:
+	return not _root_locks.is_empty()
+
+
+func _release_root_lock(source: Node) -> void:
+	_root_locks.erase(source)
+	set_terrain_speed(source, 1.0)
+	set_dash_locked(source, false)
+	var release := _release_root_lock.bind(source)
+	if is_instance_valid(source) and source.tree_exiting.is_connected(release):
+		source.tree_exiting.disconnect(release)
 
 
 func _release_dash_lock(source: Node) -> void:
