@@ -10,8 +10,10 @@ const ANIM_BLEND := 0.15
 
 var gravity: float
 var jump_velocity: float
-## Tắt để bỏ qua lực ngoài (gió...), ví dụ trong lúc dash
+## Tắt để bỏ qua mọi lực ngoài.
 var external_forces_enabled: bool = true
+## Lúc lăn chỉ nhận những vùng gió được cấu hình tác động lên dash.
+var dash_wind_only: bool = false
 ## Nhân tốc độ chạy tối đa (buff, cheat dev). Làm chậm bằng cách thay MovementStats vẫn chạy song song
 var speed_multiplier: float = 1.0
 
@@ -51,7 +53,7 @@ func _physics_process(delta: float) -> void:
 	_pre_state_update(delta)
 	state_machine.physics_update(delta)
 	if wind_receiver and external_forces_enabled:
-		wind_receiver.move_with_wind(self, delta)
+		wind_receiver.move_with_wind(self, delta, dash_wind_only)
 	else:
 		move_and_slide()
 	if banana_slip != null and banana_slip.active:

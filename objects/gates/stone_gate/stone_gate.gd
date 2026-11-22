@@ -41,6 +41,9 @@ signal unlock_started
 
 @export_group("Pressure Plate")
 @export var pressure_mode: bool = false
+## Dương thì cửa đảo chiều từ vị trí hiện tại và chỉ thông lối khi hạ xong.
+@export_range(0.0, 5.0, 0.05) var pressure_close_time: float = 0.0
+@export var move_pressure_collision: bool = false
 @export var pressed_color: Color = Color("3fe0d0")
 @export var released_color: Color = Color("e64b50")
 @export_range(0.0, 4.0, 0.1) var status_energy: float = 1.2
@@ -54,6 +57,7 @@ signal unlock_started
 var is_open: bool = false
 var _sinking: bool = false
 var _closed_position: Vector3
+var _closed_collision_y: float
 var _pressure_tween: Tween
 var _light_tween: Tween
 var _status_materials: Array[StandardMaterial3D] = []
@@ -66,6 +70,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	_closed_position = _visual.position
+	_closed_collision_y = _collision.position.y
 	if pressure_mode:
 		_prepare_pressure_feedback()
 		_pressure_color(false)
@@ -152,6 +157,10 @@ func _set_pressure_open(pressed: bool) -> void:
 		_pressure_tween.kill()
 	_visual.visible = true
 	_pressure_color(pressed)
+	if pressure_close_time > 0.0:
+		_move_reversible_pressure_gate(pressed)
+		_pressure_feedback(pressed)
+		return
 	# Collider đổi trong lượt deferred an toàn của physics, không chờ tween/vệt sáng.
 	_collision.set_deferred(&"disabled", pressed)
 	if pressed:
@@ -168,6 +177,36 @@ func _set_pressure_open(pressed: bool) -> void:
 func _finish_pressure_open() -> void:
 	if is_open:
 		_visual.visible = false
+
+
+func _move_reversible_pressure_gate(pressed: bool) -> void:
+	var target_y: float = _closed_position.y - sink_depth if pressed else _closed_position.y
+	var full_time: float = open_time if pressed else pressure_close_time
+	var span: float = absf(target_y - _visual.position.y)
+	if not pressed:
+		_collision.set_deferred(&"disabled", false)
+	var duration: float = full_time * span / maxf(absf(sink_depth), 0.001)
+	_pressure_tween = create_tween()
+	if move_pressure_collision:
+		_pressure_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+		_pressure_tween.tween_method(_apply_pressure_height, _visual.position.y, target_y, duration)
+	else:
+		_pressure_tween.tween_property(_visual, "position:y", target_y, duration)
+	_pressure_tween.finished.connect(_finish_reversible_pressure_gate.bind(pressed))
+
+
+func _apply_pressure_height(height: float) -> void:
+	_visual.position.y = height
+	_collision.position.y = _closed_collision_y + height - _closed_position.y
+
+
+func _finish_reversible_pressure_gate(pressed: bool) -> void:
+	if pressed:
+		_collision.set_deferred(&"disabled", true)
+		_visual.hide()
+		opened.emit()
+	else:
+		closed.emit()
 
 
 func _prepare_pressure_feedback() -> void:

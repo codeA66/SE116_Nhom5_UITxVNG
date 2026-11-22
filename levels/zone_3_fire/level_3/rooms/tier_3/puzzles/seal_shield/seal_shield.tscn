@@ -1,0 +1,66 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/seal_shield/seal_shield.gd" id="shield"]
+
+[sub_resource type="StandardMaterial3D" id="ShellMaterial"]
+resource_local_to_scene = true
+transparency = 1
+rim_enabled = true
+rim = 1.0
+rim_tint = 0.65
+emission_enabled = true
+
+[sub_resource type="SphereMesh" id="Shell"]
+radius = 0.85
+height = 1.7
+radial_segments = 24
+rings = 12
+
+[sub_resource type="SphereShape3D" id="Surface"]
+radius = 0.85
+
+[sub_resource type="StandardMaterial3D" id="ShardMaterial"]
+albedo_color = Color(1, 0.39, 0.095, 1)
+shading_mode = 0
+emission_enabled = true
+emission = Color(1, 0.19, 0.035, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="BoxMesh" id="Shard"]
+material = SubResource("ShardMaterial")
+size = Vector3(0.12, 0.19, 0.035)
+
+[node name="SealShield" type="Node3D" node_paths=PackedStringArray("surface")]
+script = ExtResource("shield")
+surface = NodePath("Surface")
+
+[node name="Shell" type="MeshInstance3D" parent="."]
+mesh = SubResource("Shell")
+material_override = SubResource("ShellMaterial")
+cast_shadow = 0
+
+[node name="Surface" type="Area3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Surface"]
+shape = SubResource("Surface")
+
+[node name="Shards" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 18
+lifetime = 0.42
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource("Shard")
+cast_shadow = 0
+emission_shape = 2
+emission_sphere_radius = 0.68
+spread = 180.0
+gravity = Vector3(0, -3.2, 0)
+initial_velocity_min = 1.6
+initial_velocity_max = 3.6
+angular_velocity_min = -420.0
+angular_velocity_max = 420.0

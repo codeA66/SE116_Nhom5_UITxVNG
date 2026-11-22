@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/seal_socket/seal_socket.gd" id="socket"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/seal_gem/seal_gem.tscn" id="gem"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interact"]
+
+[sub_resource type="CylinderMesh" id="Socket"]
+top_radius = 0.55
+bottom_radius = 0.72
+height = 0.42
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="Bronze"]
+albedo_color = Color(0.39, 0.19, 0.08, 1)
+metallic = 0.6
+
+[sub_resource type="SphereShape3D" id="Reach"]
+radius = 1.1
+
+[node name="SealSocket" type="Node3D"]
+script = ExtResource("socket")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.21, 0)
+mesh = SubResource("Socket")
+material_override = SubResource("Bronze")
+
+[node name="Gem" parent="." instance=ExtResource("gem")]
+position = Vector3(0, 0.79, 0)
+visible = false
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+position = Vector3(0, 0.7, 0)
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+script = ExtResource("interact")
+prompt_text = "ĐẶT NGỌC LY"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+shape = SubResource("Reach")

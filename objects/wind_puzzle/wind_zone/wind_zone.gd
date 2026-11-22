@@ -38,6 +38,8 @@ const PLAYER_MOVEMENT: MovementStats = preload("res://resources/player/player_mo
 			configuration_changed.emit()
 ## Lực giảm dần về 0 ở cuối vùng: dùng cho cột gió để nhân vật lơ lửng gần đỉnh
 @export var fade_toward_end: bool = false
+## Luồng đặc biệt giữ lực đẩy trong lúc nhân vật lăn.
+@export var affects_dash: bool = false
 
 var active: bool = true
 var warning: bool = false
@@ -67,7 +69,7 @@ func _notification(what: int) -> void:
 func _physics_process(delta: float) -> void:
 	flow_age += delta
 	_cycle_time = fmod(_cycle_time + delta, maxf(data.on_time + data.off_time, 0.001))
-	_set_active(_cycle_time < data.on_time)
+	set_active(_cycle_time < data.on_time)
 	var next_warning := not active and _cycle_time >= data.on_time + data.off_time - data.warning_time
 	if warning != next_warning:
 		warning = next_warning
@@ -85,6 +87,14 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if not data.blocks_player and data.strength >= run_speed:
 		return ["Sức gió (%.1f) ≥ tốc độ chạy (%.1f) nên người chơi không đi ngược được, nhưng hình ảnh vẫn là gió nhẹ. Bật Blocks Player hoặc giảm Strength." % [data.strength, run_speed]]
 	return []
+
+
+## Dùng cho vùng gió do van hoặc cơ chế trong phòng điều khiển.
+func set_active(value: bool) -> void:
+	if active == value:
+		return
+	active = value
+	active_changed.emit(active)
 
 
 func is_vertical() -> bool:
@@ -159,13 +169,6 @@ func _vertical_local_axis() -> int:
 	return best
 
 
-func _set_active(value: bool) -> void:
-	if active == value:
-		return
-	active = value
-	active_changed.emit(active)
-
-
 func _on_box_size_changed(box_size: Vector3) -> void:
 	# size setter bỏ qua khi bằng nhau nên không lặp vô hạn giữa hai chiều
 	size = box_size
@@ -177,8 +180,8 @@ func _on_data_changed() -> void:
 	# Editor không chạy pulse: xem trước như gió đang bật
 	set_physics_process(not Engine.is_editor_hint() and data != null and data.pulse_enabled)
 	if data == null:
-		_set_active(false)
+		set_active(false)
 	elif not data.pulse_enabled:
-		_set_active(true)
+		set_active(true)
 	update_configuration_warnings()
 	configuration_changed.emit()

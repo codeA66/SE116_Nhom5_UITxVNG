@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/seal_gem/seal_gem.gd" id="gem"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interact"]
+
+[sub_resource type="StandardMaterial3D" id="Ruby"]
+albedo_color = Color(0.85, 0.015, 0.03, 1)
+metallic = 0.38
+roughness = 0.23
+emission_enabled = true
+emission = Color(1, 0.02, 0.04, 1)
+emission_energy_multiplier = 0.65
+
+[sub_resource type="SphereMesh" id="Gem"]
+material = SubResource("Ruby")
+radius = 0.24
+height = 0.76
+radial_segments = 6
+rings = 2
+
+[sub_resource type="SphereShape3D" id="Pickup"]
+radius = 0.85
+
+[node name="SealGem" type="Node3D"]
+script = ExtResource("gem")
+
+[node name="Gem" type="MeshInstance3D" parent="."]
+mesh = SubResource("Gem")
+cast_shadow = 0
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+script = ExtResource("interact")
+prompt_text = "NHẶT NGỌC"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+shape = SubResource("Pickup")
