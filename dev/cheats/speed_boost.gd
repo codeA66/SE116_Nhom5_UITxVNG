@@ -1,5 +1,5 @@
 extends DevCheat
-## Tốc độ chạy: nhân tốc độ chạy tối đa của player (Character.speed_multiplier). Không đổi dash.
+## Tốc độ chạy: nhân tốc độ chạy tối đa của player (Character.move_speed_scale). Không đổi dash.
 ## Làm chậm của băng / tơ nhện vẫn có tác dụng vì chúng thay MovementStats, cheat nhân thêm lên trên.
 
 
@@ -26,4 +26,4 @@ func on_zone_ready(console: DevConsole) -> void:
 func _apply_to_player(console: DevConsole) -> void:
 	var player := console.find_player()
 	if player:
-		player.speed_multiplier = value
+		player.move_speed_scale = value
