@@ -15,7 +15,7 @@ var external_forces_enabled: bool = true
 ## Lúc lăn chỉ nhận những vùng gió được cấu hình tác động lên dash.
 var dash_wind_only: bool = false
 ## Nhân tốc độ chạy tối đa (buff, cheat dev). Làm chậm bằng cách thay MovementStats vẫn chạy song song
-var speed_multiplier: float = 1.0
+var move_speed_scale: float = 1.0
 
 @onready var model: Node3D = $Model
 @onready var state_machine: StateMachine = $StateMachine
@@ -74,7 +74,7 @@ func apply_gravity(delta: float) -> void:
 ## Tăng/giảm tốc về phía direction (đã chuẩn hóa, độ dài <= 1) và xoay model theo hướng đó
 ## Di chuyển có quán tính chia thành 4 lớp trên không, dừng lại, quay đầu, chạy
 func move_toward_direction(direction: Vector3, delta: float) -> void:
-	var target := direction * movement.max_speed * speed_multiplier
+	var target := direction * movement.max_speed * move_speed_scale
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z)
 
 	var accel: float
