@@ -19,6 +19,8 @@ signal brightened
 @export_range(0.0, 1.0, 0.01) var dark_light_ratio: float = 0.0
 @export_range(0.0, 1.0, 0.01) var dark_ambient_ratio: float = 0.2
 @export_range(0.05, 5.0, 0.05) var fade_time: float = 0.8
+## Đổi nền Environment dạng màu khi người chơi ở trong vùng.
+@export var use_black_background: bool = false
 @export_group("Làm dịu nguồn sáng bên ngoài")
 ## Material dùng chung của mặt dung nham ngoài hầm: dịu bớt khi ở trong để bóng tối không bị tương phản gắt. Để trống = bỏ qua
 @export var dim_material: ShaderMaterial
@@ -38,6 +40,8 @@ var _inside: int = 0
 var _sun_energy: float
 var _bounce_energy: float
 var _ambient_energy: float
+var _background_color: Color
+var _fog_sky_affect: float
 var _dim_base: float = 1.0
 var _tween: Tween
 
@@ -55,7 +59,11 @@ func _ready() -> void:
 		shape.global_position = box.get_center()
 	_sun_energy = sun.light_energy if sun else 0.0
 	_bounce_energy = bounce_light.light_energy if bounce_light else 0.0
-	_ambient_energy = world_environment.environment.ambient_light_energy if world_environment else 0.0
+	if world_environment and world_environment.environment:
+		var environment: Environment = world_environment.environment
+		_ambient_energy = environment.ambient_light_energy
+		_background_color = environment.background_color
+		_fog_sky_affect = environment.fog_sky_affect
 	if dim_material:
 		var value: Variant = dim_material.get_shader_parameter(dim_parameter)
 		_dim_base = float(value) if value != null else 1.0
@@ -77,9 +85,15 @@ func _physics_process(_delta: float) -> void:
 
 
 func _exit_tree() -> void:
+	if _tween:
+		_tween.kill()
 	# Environment là resource dùng chung: trả lại mức sáng gốc khi rời scene giữa lúc tối
 	if world_environment and world_environment.environment:
-		world_environment.environment.ambient_light_energy = _ambient_energy
+		var environment: Environment = world_environment.environment
+		environment.ambient_light_energy = _ambient_energy
+		if use_black_background:
+			environment.background_color = _background_color
+			environment.fog_sky_affect = _fog_sky_affect
 	# Material dung nham cũng dùng chung: trả độ sáng gốc
 	if dim_material:
 		dim_material.set_shader_parameter(dim_parameter, _dim_base)
@@ -115,8 +129,15 @@ func _set_dark(dark: bool) -> void:
 		_tween.tween_property(sun, ^"light_energy", _sun_energy * k, fade_time)
 	if bounce_light:
 		_tween.tween_property(bounce_light, ^"light_energy", _bounce_energy * k, fade_time)
-	if world_environment:
-		_tween.tween_property(world_environment.environment, ^"ambient_light_energy", _ambient_energy * (dark_ambient_ratio if dark else 1.0), fade_time)
+	if world_environment and world_environment.environment:
+		var environment: Environment = world_environment.environment
+		var ambient_target: float = _ambient_energy * (dark_ambient_ratio if dark else 1.0)
+		_tween.tween_property(environment, ^"ambient_light_energy", ambient_target, fade_time)
+		if use_black_background:
+			var background_target: Color = Color.BLACK if dark else _background_color
+			var fog_sky_target: float = 0.0 if dark else _fog_sky_affect
+			_tween.tween_property(environment, ^"background_color", background_target, fade_time)
+			_tween.tween_property(environment, ^"fog_sky_affect", fog_sky_target, fade_time)
 	if dim_material:
 		var from: float = float(dim_material.get_shader_parameter(dim_parameter))
 		_tween.tween_method(_set_dim, from, _dim_base * (dim_ratio if dark else 1.0), fade_time)

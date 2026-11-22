@@ -79,6 +79,20 @@ func _run() -> void:
 	await _frames(30)
 	# 4. Sách hiện, nhặt được
 	_check(cage.is_cleared and GameState.has_flag(cage.persistent_id) and reveal.get_child_count() == 1, "hạ hết quái: lưu cờ, sách hiện")
+	# Lồng đã vỡ không còn "dính" đòn: chém thật vào chỗ lồng thì hitbox không trúng gì
+	var hits: Array[int] = [0]
+	var on_hit := func(_h: HurtboxComponent) -> void: hits[0] += 1
+	_player.hitbox.hit.connect(on_hit)
+	for _i: int in range(4):
+		_player.teleport(cage.global_position - dir * 1.7 + Vector3(0, 0.1, 0), dir)
+		await _press(&"attack")
+		await _seconds(0.35)
+	_player.hitbox.hit.disconnect(on_hit)
+	var shapes_off: bool = true
+	for c: Node in cage.get_node("HurtboxComponent").get_children():
+		if c is CollisionShape3D and not (c as CollisionShape3D).disabled:
+			shapes_off = false
+	_check(hits[0] == 0 and shapes_off and not cage.get_node("HurtboxComponent").is_in_group(HurtboxComponent.GROUP), "lồng đã vỡ: chém 4 nhát vào chỗ lồng không trúng gì (%d), hurtbox tắt shape" % hits[0])
 	var book: Node3D = reveal.get_node_or_null("FlameBreathBook") as Node3D
 	if book:
 		_player.teleport(book.global_position + Vector3(0, 0.1, 1.2), Vector3.FORWARD)

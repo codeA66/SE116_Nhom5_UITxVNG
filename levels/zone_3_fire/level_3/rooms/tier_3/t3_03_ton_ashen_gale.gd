@@ -5,13 +5,14 @@ extends Node3D
 signal activated
 signal seal_released(seal_id: StringName)
 
+const FORWARD_HINT: String = "Có thứ gì đó ở phía trước"
 const SEAL_ID: StringName = &"ton"
 const SEAL_FLAG: StringName = &"level_3.t3_seal_ton"
 const DEFAULT_DATA: TonPuzzleData = preload("res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_puzzle_data.tres")
-const TorchTrap = preload("res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_torch_trap.gd")
 
 @export var data: TonPuzzleData = DEFAULT_DATA
 @export var seal_flag: StringName = SEAL_FLAG
+@export_range(0.5, 8.0, 0.1) var forward_hint_duration: float = 3.0
 
 var _player: Player
 var _stations: Array[TonFlameStation] = []
@@ -27,8 +28,12 @@ var _reset_pending: bool = false
 @onready var _presence: Area3D = $Presence
 @onready var _fall: Area3D = $Fall
 @onready var _required_torch: TonFlameStation = $Stations/ReturnTorch
+@onready var _gem: SealGem = $Stations/Seal/TonGem
 @onready var _entry_gate: StaticBody3D = $EntryGate
-@onready var _torch_trap: TorchTrap = $FalseTrailTrap
+@onready var _false_trail_torch: TonFlameStation = $Stations/FalseTrailTorch
+@onready var _forward_hint: WorldHint = $Stations/FalseTrailTorch/ForwardHint
+@onready var _return_interaction: InteractableComponent = $ReturnPortal/Interactable
+@onready var _return_arrival: Marker3D = $ReturnArrival
 
 
 func _ready() -> void:
@@ -48,6 +53,13 @@ func _ready() -> void:
 	_presence.body_exited.connect(_on_exited)
 	_fall.body_entered.connect(_on_fell)
 	_flame.extinguished.connect(_request_reset)
+	_return_interaction.interacted.connect(_on_return_interacted)
+	var gem_placed_flag: StringName = StringName(String(seal_flag) + "_placed")
+	_gem.configure_reward(seal_flag, gem_placed_flag)
+	var zone: ZoneRoot = get_parent() as ZoneRoot
+	if zone:
+		zone.player_spawned.connect(_gem.set_carrier)
+		_gem.set_carrier(zone.get_node_or_null(^"Player") as Player)
 	GameState.progress_replaced.connect(_restore_progress)
 	_restore_progress()
 
@@ -102,8 +114,8 @@ func _on_transferred(player: Player, station: TonFlameStation) -> void:
 			set_physics_process(true)
 		TonFlameStation.Role.TORCH:
 			station.set_lit(true)
-			if station == _torch_trap.torch:
-				_torch_trap.arm()
+			if station == _false_trail_torch:
+				_forward_hint.flash(FORWARD_HINT, forward_hint_duration)
 		TonFlameStation.Role.SEAL:
 			_complete = true
 			_flame.clear()
@@ -116,11 +128,19 @@ func _on_transferred(player: Player, station: TonFlameStation) -> void:
 			seal_released.emit(SEAL_ID)
 
 
+func _on_return_interacted(actor: Node3D) -> void:
+	var player: Player = actor as Player
+	if player == null or player != _player or _reset_pending:
+		return
+	SceneManager.warp_player(player, _return_arrival.global_position, _return_arrival.global_basis.z)
+
+
 func _on_entered(body: Node3D) -> void:
 	var player := body as Player
 	if player == null or _player == player:
 		return
 	_player = player
+	_gem.set_carrier(player)
 	player.combat_action_committed.connect(_flame.register_action)
 	player.state_machine.state_changed.connect(_on_player_state_changed)
 
@@ -170,11 +190,11 @@ func _perform_reset(player: Player) -> void:
 
 func _reset_attempt() -> void:
 	set_physics_process(false)
+	_forward_hint.cancel_flash()
 	_elapsed = 0.0
 	_gust = false
 	_warning = false
 	_flame.clear()
-	_torch_trap.reset()
 	for screen: TonWindScreen in _screens:
 		screen.reset(false)
 	for station: TonFlameStation in _stations:

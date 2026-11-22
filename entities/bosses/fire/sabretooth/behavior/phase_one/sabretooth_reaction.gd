@@ -26,6 +26,12 @@ func physics_update(delta: float) -> void:
 		return
 	if not _backing:
 		if _actor.motion.finished():
+			# Nếu player đã đứng sang 2 bên rìa sau animation bị đánh, ra đòn quật sườn ngay thay vì lùi xoay theo.
+			var immediate_side := _actor.select_side_skill()
+			if immediate_side:
+				_actor.phase_one_wait = 0.0
+				_actor.begin_skill(immediate_side)
+				return
 			_backing = true
 			_backward = -_actor.get_facing_direction()
 			_remaining = _actor.profile.backup_distance / maxf(_actor.profile.backup_speed, 0.1)
@@ -34,9 +40,22 @@ func physics_update(delta: float) -> void:
 		return
 	_remaining -= delta
 	if _remaining > 0.0 and _actor.clear_path(_backward, 0.35):
-		_actor.walk(_backward, _actor.profile.backup_speed, delta, true)
+		# Giữ nguyên hướng cũ khi lùi (không xoay khóa theo player) để nếu player né sang rìa sẽ ăn đòn 2 bên ngay.
+		var locked_yaw := _actor.model.rotation.y
+		_actor.walk(_backward, _actor.profile.backup_speed, delta, false)
+		_actor.set_body_yaw(locked_yaw)
 		return
 	_actor.velocity.x = 0.0
 	_actor.velocity.z = 0.0
 	_actor.phase_one_wait = 0.0
-	state_machine.transition_to(&"TigerPhaseOneWarning")
+	var side_skill := _actor.select_side_skill()
+	if side_skill:
+		_actor.begin_skill(side_skill)
+		return
+	if _actor.phase_one_can_prepare():
+		var skill := _actor.select_phase_one_skill()
+		if skill:
+			_actor.begin_skill(skill)
+			return
+	_actor.phase_one_prepared = true
+	state_machine.transition_to(_actor.chase_state)

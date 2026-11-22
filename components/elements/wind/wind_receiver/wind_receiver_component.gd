@@ -19,6 +19,7 @@ const WALL_NORMAL_MAX_Y := 0.7
 
 var enabled: bool = true
 var _push_immune: bool = false
+var _wind_zones: Array[WindZone] = []
 
 ## Vận tốc trôi còn lại từ cú thổi, giảm dần về 0
 var _push_velocity: Vector3 = Vector3.ZERO
@@ -27,16 +28,18 @@ var _push_velocity: Vector3 = Vector3.ZERO
 func _ready() -> void:
 	# Phải monitorable để vùng thổi của kỹ năng gió phát hiện được
 	monitorable = true
+	area_entered.connect(_on_wind_area_entered)
+	area_exited.connect(_on_wind_area_exited)
 
 
-func get_wind() -> Vector3:
+func get_wind(dash_wind_only: bool = false) -> Vector3:
 	if not enabled:
 		return Vector3.ZERO
-	var total := Vector3.ZERO
-	for area in get_overlapping_areas():
-		var zone := area as WindZone
-		if zone:
-			total += zone.get_wind_at(global_position)
+	var total: Vector3 = Vector3.ZERO
+	var sample: Vector3 = global_position
+	for zone: WindZone in _wind_zones:
+		if is_instance_valid(zone) and (not dash_wind_only or zone.affects_dash):
+			total += zone.get_wind_at(sample)
 	return total * wind_multiplier
 
 
@@ -79,9 +82,11 @@ func push_from_blast(impulse: Vector3, _origin: Vector3, _half_width: float) -> 
 ## Thay cho body.move_and_slide().
 ## Gió ngang là vận tốc trôi cộng tạm thời (không tích lũy, người chơi vẫn chống lại được);
 ## gió dọc kéo vận tốc đứng về tốc độ gió (nâng lên, lơ lửng khi lực giảm dần).
-func move_with_wind(body: CharacterBody3D, delta: float) -> void:
-	var wind := get_wind() + _push_velocity
-	_push_velocity = _push_velocity.move_toward(Vector3.ZERO, push_decay * delta)
+func move_with_wind(body: CharacterBody3D, delta: float, dash_wind_only: bool = false) -> void:
+	var wind: Vector3 = get_wind(dash_wind_only)
+	if not dash_wind_only:
+		wind += _push_velocity
+		_push_velocity = _push_velocity.move_toward(Vector3.ZERO, push_decay * delta)
 	if wind.is_zero_approx():
 		body.move_and_slide()
 		return
@@ -99,3 +104,15 @@ func move_with_wind(body: CharacterBody3D, delta: float) -> void:
 				own_velocity -= normal * into_wall
 	body.velocity.x = own_velocity.x
 	body.velocity.z = own_velocity.z
+
+
+func _on_wind_area_entered(area: Area3D) -> void:
+	var zone: WindZone = area as WindZone
+	if zone:
+		_wind_zones.append(zone)
+
+
+func _on_wind_area_exited(area: Area3D) -> void:
+	var zone: WindZone = area as WindZone
+	if zone:
+		_wind_zones.erase(zone)

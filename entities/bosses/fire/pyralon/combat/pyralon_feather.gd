@@ -2,20 +2,41 @@ class_name PyralonFeather
 extends Node3D
 ## Lông vàng mang quán tính riêng; lông trắng quét hết quãng bay để không xuyên player.
 
-enum Mode { OFF, ORBIT, WHITE, DEFLECTED, DROP, HOVER, QUEUED, CHASE, WARNING }
+enum Mode {
+	OFF,
+	ORBIT,
+	WHITE,
+	DEFLECTED,
+	DROP,
+	HOVER,
+	QUEUED,
+	CHASE,
+	DOMINO_WAIT,
+	WARNING,
+	CRIMSON_WALL_FLY,
+	CRIMSON_WALL_STUCK,
+	CRIMSON_GROUND_FLY,
+	CRIMSON_GROUND_STUCK,
+	CRIMSON_LIFT,
+	CRIMSON_REFIRE,
+}
 
 const FIRE := preload("res://entities/bosses/fire/pyralon/combat/pyralon_fire.gdshader")
 
 static var _white_mesh: ArrayMesh
+static var _crimson_mesh: ArrayMesh
 static var _gold_mesh: ArrayMesh
 static var _trail_mesh: ArrayMesh
 static var _aura_mesh: ArrayMesh
 static var _floor_plane: PlaneMesh
 static var _shadow_disc: ArrayMesh
 static var _white_material: StandardMaterial3D
+static var _crimson_material: StandardMaterial3D
+static var _crimson_hot_material: StandardMaterial3D
 static var _gold_idle_material: StandardMaterial3D
 static var _gold_hot_material: StandardMaterial3D
 static var _trail_material: ShaderMaterial
+static var _crimson_trail_material: ShaderMaterial
 static var _shadow_material: StandardMaterial3D
 
 var mode: Mode = Mode.OFF
@@ -33,10 +54,20 @@ var _age: float
 var _lifetime: float
 var _deadline: float
 var _warning_duration: float = 0.50
+var _domino_delay: float = 0.0
 var _drop_time: float
 var _tumble: float
 var _queued: bool
 var _gold: bool
+var _crimson: bool
+var _stick_normal: Vector3 = Vector3.UP
+var _saved_flight_speed: float = 0.0
+var _pending_wall_relaunch: bool = false
+var _pending_ground_uproot: bool = false
+var _uproot_delay: float = 0.0
+var _uproot_start: Vector3 = Vector3.ZERO
+var _uproot_lift_h: float = 1.55
+var _uproot_lift_time: float = 0.34
 var _phase: float
 var _wall := PhysicsRayQueryParameters3D.new()
 var _fire_mat: ShaderMaterial
@@ -90,15 +121,21 @@ func pool_released() -> void:
 	set_physics_process(false)
 
 
-func setup(field: PyralonField, target: Node3D, at: Vector3, gold: bool) -> void:
+func setup(field: PyralonField, target: Node3D, at: Vector3, gold: bool, crimson: bool = false) -> void:
 	_field = field
 	_data = field.profile
 	_target = target
 	_gold = gold
+	_crimson = crimson and not gold
 	_age = 0.0
 	_lifetime = 0.0
 	_tumble = 0.0
 	_queued = false
+	_pending_wall_relaunch = false
+	_pending_ground_uproot = false
+	_uproot_delay = 0.0
+	_saved_flight_speed = 0.0
+	_stick_normal = Vector3.UP
 	_phase = randf() * TAU
 	_velocity = Vector3.ZERO
 	_wind = Vector3.ZERO
@@ -106,9 +143,10 @@ func setup(field: PyralonField, target: Node3D, at: Vector3, gold: bool) -> void
 	_last_floor_sample = at
 	global_transform = Transform3D(Basis.IDENTITY, at)
 	_visual.rotation = Vector3.ZERO
-	_visual.scale = Vector3.ONE * (1.04 if gold else 1.38)
-	_blade.mesh = _gold_mesh if gold else _white_mesh
-	_blade.material_override = _gold_idle_material if gold else _white_material
+	_visual.scale = Vector3.ONE * (1.04 if gold else (1.50 if _crimson else 1.38))
+	_blade.mesh = _gold_mesh if gold else (_crimson_mesh if _crimson else _white_mesh)
+	_blade.material_override = _gold_idle_material if gold else (_crimson_material if _crimson else _white_material)
+	_trail.material_override = _crimson_trail_material if _crimson else _trail_material
 	_trail.visible = false
 	_halo.visible = gold
 	_halo.position = Vector3(0.0, 0.24, 0.0)
@@ -139,6 +177,75 @@ func fire(direction: Vector3, speed: float) -> void:
 	_velocity = direction.normalized() * speed
 	_trail.visible = true
 	_orient(direction)
+	_set_wind_enabled(true)
+	set_physics_process(true)
+
+
+func fire_crimson_wall(direction: Vector3, speed: float) -> void:
+	mode = Mode.CRIMSON_WALL_FLY
+	_age = 0.0
+	_saved_flight_speed = maxf(speed, 1.0)
+	_velocity = direction.normalized() * _saved_flight_speed
+	_trail.visible = true
+	_orient(direction)
+	_set_wind_enabled(true)
+	set_physics_process(true)
+
+
+func fire_crimson_ground(direction: Vector3, speed: float) -> void:
+	mode = Mode.CRIMSON_GROUND_FLY
+	_age = 0.0
+	_saved_flight_speed = maxf(speed, 1.0)
+	_velocity = direction.normalized() * _saved_flight_speed
+	_trail.visible = true
+	_orient(direction)
+	_set_wind_enabled(true)
+	set_physics_process(true)
+
+
+func launch_from_wall(speed_override: float = 0.0) -> void:
+	if mode == Mode.CRIMSON_WALL_FLY:
+		_pending_wall_relaunch = true
+		if speed_override > 0.1:
+			_saved_flight_speed = speed_override
+		return
+	if mode != Mode.CRIMSON_WALL_STUCK:
+		return
+	_pending_wall_relaunch = false
+	var speed := speed_override if speed_override > 0.1 else maxf(_saved_flight_speed, 6.0)
+	# Nhích nhẹ khỏi bề mặt tường để ShapeCast không tự đâm ngược lại chính mặt tường đang cắm.
+	global_position += _stick_normal * 0.30
+	var aim_dir := _stick_normal
+	if is_instance_valid(_target):
+		var to_player := (_target.global_position + Vector3.UP * 0.72) - global_position
+		if to_player.length_squared() > 0.0025:
+			aim_dir = to_player.normalized()
+	mode = Mode.CRIMSON_REFIRE
+	_age = 0.0
+	_velocity = aim_dir * speed
+	_blade.material_override = _crimson_hot_material
+	_trail.visible = true
+	_orient(aim_dir)
+	_set_wind_enabled(true)
+	set_physics_process(true)
+	CombatFx.spawn_hit(global_position, _stick_normal, Color("#ff3042"), 0.36)
+
+
+func begin_ground_uproot(delay: float, lift_height: float, lift_time: float, speed_override: float = 0.0) -> void:
+	_uproot_delay = maxf(delay, 0.0)
+	_uproot_lift_h = maxf(lift_height, 0.35)
+	_uproot_lift_time = maxf(lift_time, 0.08)
+	if speed_override > 0.1:
+		_saved_flight_speed = speed_override
+	if mode == Mode.CRIMSON_GROUND_FLY:
+		_pending_ground_uproot = true
+		return
+	if mode != Mode.CRIMSON_GROUND_STUCK:
+		return
+	_pending_ground_uproot = false
+	_uproot_start = global_position
+	mode = Mode.CRIMSON_LIFT
+	_age = 0.0
 	_set_wind_enabled(true)
 	set_physics_process(true)
 
@@ -184,8 +291,31 @@ func chase() -> void:
 	_field.command_feather_flash(global_position)
 
 
+func trigger_domino(delay: float, warn_time: float) -> void:
+	# Kích hoạt hàng đợi nổ domino theo bán kính từ boss ra ngoài (Resonance Slam Phase 2).
+	if not _gold or mode in [Mode.OFF, Mode.WARNING]:
+		return
+	if mode == Mode.DROP:
+		_base = global_position
+	_floor_y = _field.floor_at(_base).y
+	_last_floor_sample = _base
+	_base.y = _floor_y + _data.gold_hover_height
+	_domino_delay = maxf(delay, 0.0)
+	_warning_duration = maxf(warn_time, 0.08)
+	_age = 0.0
+	_blade.material_override = _gold_hot_material
+	if _domino_delay <= 0.01:
+		mode = Mode.WARNING
+		_deadline = _warning_duration
+		_field.command_feather_flash(global_position)
+	else:
+		mode = Mode.DOMINO_WAIT
+		_fire_mat.set_shader_parameter(&"heat", 0.34)
+
+
 func on_blast(impulse: Vector3) -> void:
-	if mode == Mode.WHITE:
+	# Lông đỏ Phase 2 vẫn bị thổi bật đi bởi chiêu E gió giống lông trắng (kể cả lúc đang bứng lên hoặc bay đợt 2).
+	if mode in [Mode.WHITE, Mode.CRIMSON_WALL_FLY, Mode.CRIMSON_GROUND_FLY, Mode.CRIMSON_LIFT, Mode.CRIMSON_REFIRE]:
 		mode = Mode.DEFLECTED
 		_age = 0.0
 		_trail.visible = false
@@ -203,6 +333,10 @@ func _physics_process(delta: float) -> void:
 	match mode:
 		Mode.WHITE:
 			_step_white(delta)
+		Mode.CRIMSON_WALL_FLY, Mode.CRIMSON_GROUND_FLY, Mode.CRIMSON_REFIRE:
+			_step_crimson_fly(delta)
+		Mode.CRIMSON_LIFT:
+			_step_crimson_lift(delta)
 		Mode.DEFLECTED:
 			global_position += _velocity * delta
 			_velocity.y += 6.0 * delta
@@ -211,8 +345,76 @@ func _physics_process(delta: float) -> void:
 				_field.recycle(self)
 		Mode.DROP:
 			_step_drop(delta)
-		Mode.HOVER, Mode.QUEUED, Mode.CHASE, Mode.WARNING:
+		Mode.HOVER, Mode.QUEUED, Mode.CHASE, Mode.DOMINO_WAIT, Mode.WARNING:
 			_step_gold(delta)
+
+
+func _step_crimson_fly(delta: float) -> void:
+	var movement := _velocity * delta
+	_sweep.target_position = movement
+	_sweep.force_shapecast_update()
+	if _sweep.is_colliding():
+		var at := _sweep.get_collision_point(0)
+		var normal := _sweep.get_collision_normal(0)
+		var collider := _sweep.get_collider(0) as Node
+		var hurtbox := collider as HurtboxComponent
+		if hurtbox == null and collider is Player:
+			hurtbox = (collider as Player).get_node(^"HurtboxComponent") as HurtboxComponent
+		if hurtbox:
+			_field.hit_feather(hurtbox, _velocity.normalized())
+			_field.recycle(self)
+			return
+		if mode == Mode.CRIMSON_REFIRE:
+			# Lượt bay thứ 2 chạm sàn/tường -> cháy rụi thành tro giống lông trắng rồi trả pool.
+			_field.white_impact(at, normal, _velocity.normalized(), true)
+			_field.recycle(self)
+			return
+		# Lượt bay đầu của lông đỏ Phase 2: cắm chặt giữ nguyên trên tường (Slam) hoặc trên sàn (Barrage), không tự biến mất!
+		global_position = at + normal * 0.04
+		_stick_normal = normal
+		_orient(_velocity.normalized())
+		_trail.visible = false
+		_set_wind_enabled(false)
+		CombatFx.spawn_hit(at, normal, Color("#ff2434"), 0.36)
+		if mode == Mode.CRIMSON_WALL_FLY:
+			mode = Mode.CRIMSON_WALL_STUCK
+			_age = 0.0
+			set_physics_process(false)
+			if _pending_wall_relaunch:
+				launch_from_wall()
+		else:
+			mode = Mode.CRIMSON_GROUND_STUCK
+			_age = 0.0
+			set_physics_process(false)
+			if _pending_ground_uproot:
+				begin_ground_uproot(_uproot_delay, _uproot_lift_h, _uproot_lift_time)
+	elif _age >= _data.crimson_flight_lifetime:
+		_field.recycle(self)
+	else:
+		global_position += movement
+
+
+func _step_crimson_lift(_delta: float) -> void:
+	if _age < _uproot_delay:
+		return
+	var lift_t := clampf((_age - _uproot_delay) / maxf(_uproot_lift_time, 0.06), 0.0, 1.0)
+	var ease_out := 1.0 - pow(1.0 - lift_t, 2.2)
+	var peak := _uproot_start + _stick_normal * 0.25 + Vector3.UP * _uproot_lift_h
+	global_position = _uproot_start.lerp(peak, ease_out)
+	_blade.material_override = _crimson_hot_material
+	var aim_dir := Vector3.FORWARD
+	if is_instance_valid(_target):
+		var to_target := (_target.global_position + Vector3.UP * 0.68) - global_position
+		if to_target.length_squared() > 0.0025:
+			aim_dir = to_target.normalized()
+	_orient(aim_dir)
+	if lift_t >= 1.0:
+		mode = Mode.CRIMSON_REFIRE
+		_age = 0.0
+		_velocity = aim_dir * maxf(_saved_flight_speed, 6.0)
+		_trail.visible = true
+		_set_wind_enabled(true)
+		CombatFx.spawn_hit(global_position, aim_dir, Color("#ff3842"), 0.34)
 
 
 func _step_white(delta: float) -> void:
@@ -228,7 +430,7 @@ func _step_white(delta: float) -> void:
 		if hurtbox:
 			_field.hit_feather(hurtbox, _velocity.normalized())
 		else:
-			_field.white_impact(at, _sweep.get_collision_normal(0))
+			_field.white_impact(at, _sweep.get_collision_normal(0), _velocity.normalized())
 		_field.recycle(self)
 	elif _age >= 2.8:
 		_field.recycle(self)
@@ -279,7 +481,8 @@ func _step_gold(delta: float) -> void:
 
 	var drift := Vector3(sin(_age * 1.5 + _phase), 0.0, cos(_age * 1.8 + _phase)) * 0.28
 	if mode == Mode.CHASE and to_target.is_finite():
-		drift += to_target.slide(Vector3.UP).normalized() * _data.gold_chase_speed
+		var chase_spd := _data.gold_chase_speed * (_data.p2_gold_chase_mult if _field.is_phase_two() else 1.0)
+		drift += to_target.slide(Vector3.UP).normalized() * chase_spd
 	_base = _shove(_base, (drift + _wind) * delta)
 	var wind_speed := _wind.length()
 	if wind_speed > 0.2:
@@ -298,6 +501,14 @@ func _step_gold(delta: float) -> void:
 	var roll := 0.22 * sin(_age * 3.1) + cos(_tumble * 2.6) * 0.75 * wind_tumble
 	_visual.rotation = Vector3(pitch, yaw, roll)
 
+	if mode == Mode.DOMINO_WAIT:
+		var wait_ratio := clampf(_age / maxf(_domino_delay, 0.01), 0.0, 1.0)
+		_fire_mat.set_shader_parameter(&"heat", lerpf(0.28, 0.62, wait_ratio))
+		if _age >= _domino_delay:
+			mode = Mode.WARNING
+			_age = 0.0
+			_deadline = _warning_duration
+			_field.command_feather_flash(global_position)
 	var in_warning := mode == Mode.WARNING
 	_ring.visible = in_warning
 	if mode in [Mode.WARNING, Mode.CHASE]:
@@ -311,6 +522,8 @@ func _step_gold(delta: float) -> void:
 		if _age >= _deadline:
 			_field.explode_gold(global_position)
 			_field.recycle(self)
+	elif mode == Mode.DOMINO_WAIT:
+		pass
 	elif mode == Mode.QUEUED:
 		_fire_mat.set_shader_parameter(&"heat", 0.22)
 	else:
@@ -354,7 +567,8 @@ func _orient(direction: Vector3) -> void:
 static func _ensure_shared_assets() -> void:
 	if _white_mesh != null:
 		return
-	_white_mesh = _build_white_feather_mesh()
+	_white_mesh = _build_eagle_feather_mesh(false)
+	_crimson_mesh = _build_eagle_feather_mesh(true)
 	_gold_mesh = _build_feather_mesh(true)
 	_trail_mesh = _build_trail_mesh()
 	_aura_mesh = _build_aura_mesh()
@@ -364,12 +578,20 @@ static func _ensure_shared_assets() -> void:
 	_shadow_disc = _build_shadow_disc()
 
 	_white_material = _blade_material(Color("#ffe9c8"), 0.42)
+	_crimson_material = _blade_material(Color("#b80604"), 1.15)
+	_crimson_hot_material = _blade_material(Color("#e61208"), 1.65)
 	_gold_idle_material = _blade_material(Color("#ff9618"), 0.36)
 	_gold_hot_material = _blade_material(Color("#ffcf42"), 1.05)
 
 	_trail_material = ShaderMaterial.new()
 	_trail_material.shader = FIRE
 	_trail_material.set_shader_parameter(&"kind", 7)
+	_trail_material.set_shader_parameter(&"heat", 0.0)
+
+	_crimson_trail_material = ShaderMaterial.new()
+	_crimson_trail_material.shader = FIRE
+	_crimson_trail_material.set_shader_parameter(&"kind", 7)
+	_crimson_trail_material.set_shader_parameter(&"heat", 1.0)
 
 	_shadow_material = StandardMaterial3D.new()
 	_shadow_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -388,16 +610,16 @@ static func _blade_material(glow: Color, energy: float) -> StandardMaterial3D:
 	return material
 
 
-static func _build_white_feather_mesh() -> ArrayMesh:
-	# Lông vũ trắng thuôn dài chi tiết giống lông đại bàng thật: cuống trụ rõ, sống gân xám và nhiều khía tách tơ lông.
+static func _build_eagle_feather_mesh(crimson: bool) -> ArrayMesh:
+	# Lông vũ đại bàng thuôn dài (trắng ngà cho Phase 1; đỏ thẫm rực phát sáng cho Phase 2).
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 
-	var ivory := Color("#fffcf2")
-	var cream := Color("#f1f3f6")
-	var barb_grey := Color("#c6cdd7")
-	var vein_grey := Color("#838b98")
-	var quill_base := Color("#b6bcc6")
+	var ivory := Color("#e61810") if crimson else Color("#fffcf2")
+	var cream := Color("#ad080a") if crimson else Color("#f1f3f6")
+	var barb_grey := Color("#6b0406") if crimson else Color("#c6cdd7")
+	var vein_grey := Color("#2f0203") if crimson else Color("#838b98")
+	var quill_base := Color("#450305") if crimson else Color("#b6bcc6")
 
 	# Cuống lông trụ mảnh nhô ra phía gốc (-0.64 -> -0.32).
 	var qb_l := Vector3(-0.014, -0.64, 0.0)
@@ -600,11 +822,11 @@ static func _tri(surface: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, ca: C
 	surface.add_vertex(c)
 
 
-static func _quad_uv(surface: SurfaceTool, tl: Vector3, tr: Vector3, br: Vector3, bl: Vector3) -> void:
+static func _quad_uv(surface: SurfaceTool, tl: Vector3, top_r: Vector3, br: Vector3, bl: Vector3) -> void:
 	surface.set_uv(Vector2(0.0, 0.0))
 	surface.add_vertex(tl)
 	surface.set_uv(Vector2(1.0, 0.0))
-	surface.add_vertex(tr)
+	surface.add_vertex(top_r)
 	surface.set_uv(Vector2(1.0, 1.0))
 	surface.add_vertex(br)
 	surface.set_uv(Vector2(0.0, 0.0))

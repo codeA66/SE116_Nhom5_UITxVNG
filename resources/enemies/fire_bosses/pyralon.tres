@@ -71,12 +71,30 @@ maximum_range = 42.0
 animation = &"pyralon/AxeSignal"
 melee_enabled = false
 
+[sub_resource type="Resource" id="sky_dive"]
+script = ExtResource("strike")
+skill_id = &"sky_dive"
+state = &"PyralonSkyDive"
+cooldown = 0.0
+maximum_range = 48.0
+animation = &"pyralon/SkyLaunch"
+melee_enabled = false
+
+[sub_resource type="Resource" id="resonance_slam"]
+script = ExtResource("strike")
+skill_id = &"resonance_slam"
+state = &"PyralonResonanceSlam"
+cooldown = 0.0
+maximum_range = 48.0
+animation = &"pyralon/ResonanceSlam"
+melee_enabled = false
+
 [resource]
 script = ExtResource("data")
 idle_animation = &"Idle1"
 walk_animation = &"Action_001"
 run_animation = &"Action_001"
-skills = Array[ExtResource("skill")]([SubResource("axe_slam"), SubResource("axe_sweep"), SubResource("axe_sweep_source_b"), SubResource("wing_barrage"), SubResource("axe_command")])
+skills = Array[ExtResource("skill")]([SubResource("axe_slam"), SubResource("axe_sweep"), SubResource("axe_sweep_source_b"), SubResource("wing_barrage"), SubResource("axe_command"), SubResource("sky_dive"), SubResource("resonance_slam")])
 advance_on_cooldown = true
 approach_stop_distance = 1.5
 display_name = "Pyralon"

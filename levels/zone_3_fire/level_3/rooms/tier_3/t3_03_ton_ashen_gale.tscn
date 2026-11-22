@@ -1,18 +1,23 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_torch_trap.gd" id="torch_trap"]
 [ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_03_ton_ashen_gale.gd" id="room"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_carried_flame/ton_carried_flame.tscn" id="flame"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_flame_station/ton_flame_station.tscn" id="station"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_wind_screen/ton_wind_screen.tscn" id="screen"]
 [ext_resource type="Script" path="res://objects/wind_puzzle/wind_zone/wind_data.gd" id="return_wind_data"]
 
+[ext_resource type="PackedScene" path="res://components/core/interaction/world_hint/world_hint.tscn" id="world_hint"]
+[ext_resource type="PackedScene" path="res://objects/core/portal/vortex/vortex_portal_visual.tscn" id="portal_visual"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interactable"]
+[ext_resource type="Texture2D" path="res://ui/hud/icons/fire.svg" id="fire_icon"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/seal_gem/seal_gem.tscn" id="seal_gem"]
+
 [sub_resource type="Resource" id="ReturnWindData"]
 script = ExtResource("return_wind_data")
 strength = 1.65
 
 [sub_resource type="StandardMaterial3D" id="Stone"]
-albedo_color = Color(0.040, 0.036, 0.039, 1)
+albedo_color = Color(0.064, 0.055, 0.052, 1)
 roughness = 0.95
 
 [sub_resource type="StandardMaterial3D" id="Metal"]
@@ -69,7 +74,7 @@ size = Vector3(4.65, 1, 3.25)
 material = SubResource("Stone")
 
 [sub_resource type="BoxMesh" id="ShortcutLaneMesh"]
-size = Vector3(2.35, 1, 44.2)
+size = Vector3(2.35, 1, 10.99875)
 material = SubResource("Stone")
 
 [sub_resource type="BoxMesh" id="ShortcutJoinMesh"]
@@ -237,12 +242,56 @@ size = Vector3(12.4, 1, 6.95)
 size = Vector3(12.4, 1, 6.95)
 material = SubResource("Stone")
 
-[sub_resource type="BoxShape3D" id="FalseTrapDeckShape"]
+[sub_resource type="BoxShape3D" id="FalseTrailDeckShape"]
 size = Vector3(5.7, 1, 12.8)
 
-[sub_resource type="BoxMesh" id="FalseTrapDeckMesh"]
-size = Vector3(5.7, 1, 12.8)
+[sub_resource type="BoxMesh" id="FalseTrailApproachMesh"]
+size = Vector3(5.7, 1, 1)
 material = SubResource("Stone")
+
+[sub_resource type="BoxMesh" id="FalseTrailDeckMesh"]
+size = Vector3(5.7, 1, 11.8)
+material = SubResource("Stone")
+
+[sub_resource type="BoxMesh" id="ExtensionLitDeckMesh"]
+size = Vector3(5.7, 1, 7.86)
+material = SubResource("Stone")
+
+[sub_resource type="BoxMesh" id="ExtensionLitJoinMesh"]
+size = Vector3(5.7, 1, 3.84)
+material = SubResource("Stone")
+
+[sub_resource type="BoxMesh" id="ExtensionDarkJoinMesh"]
+size = Vector3(5.7, 1, 4.08)
+material = SubResource("Stone")
+
+[sub_resource type="PlaneMesh" id="ExtensionAbyssMesh"]
+material = SubResource("Abyss")
+size = Vector2(24, 54)
+
+[sub_resource type="BoxMesh" id="ExtensionDeckMesh"]
+material = SubResource("Stone")
+size = Vector3(5.7, 1, 7.92)
+
+[sub_resource type="BoxShape3D" id="ExtensionDeckShape"]
+size = Vector3(5.7, 1, 47.52)
+
+[sub_resource type="BoxShape3D" id="ExtensionPresenceShape"]
+size = Vector3(25, 17, 54)
+
+[sub_resource type="BoxShape3D" id="ExtensionFallShape"]
+size = Vector3(24, 2.5, 54)
+
+[sub_resource type="BoxShape3D" id="PortalReach"]
+size = Vector3(2.8, 2.5, 2.4)
+
+[sub_resource type="StandardMaterial3D" id="TonGemMaterial"]
+albedo_color = Color(0.22, 0.85, 0.39, 1)
+metallic = 0.38
+roughness = 0.23
+emission_enabled = true
+emission = Color(0.22, 0.85, 0.39, 1)
+emission_energy_multiplier = 0.45
 
 [node name="TonAshenGale" type="Node3D"]
 script = ExtResource("room")
@@ -267,6 +316,7 @@ position = Vector3(20.405, -0.182, 49.3)
 shape = SubResource("LowerCornerShape")
 
 [node name="Abyss" type="MeshInstance3D" parent="Geometry"]
+visible = false
 position = Vector3(12, -4.2, 27)
 cast_shadow = 0
 mesh = SubResource("AbyssMesh")
@@ -285,6 +335,7 @@ position = Vector3(25.05, 1.52, 26.2)
 mesh = SubResource("ShelterWallMesh")
 
 [node name="TonNeon" type="Node3D" parent="Geometry"]
+visible = false
 position = Vector3(9.55, 2.488, 5)
 
 [node name="SolidTop" type="MeshInstance3D" parent="Geometry/TonNeon"]
@@ -305,6 +356,12 @@ cast_shadow = 0
 position = Vector3(0.23, 0, 0.29)
 mesh = SubResource("SealSplitBar")
 cast_shadow = 0
+
+[node name="FlameEmblem" type="Sprite3D" parent="Geometry"]
+position = Vector3(9.55, 2.498, 5)
+rotation = Vector3(-1.5707963, -1.5707963, 0)
+pixel_size = 0.029
+texture = ExtResource("fire_icon")
 
 [node name="Entrance" type="MeshInstance3D" parent="Geometry"]
 position = Vector3(0, -0.18, 5)
@@ -343,7 +400,19 @@ position = Vector3(24.3, -0.18, 50.6)
 mesh = SubResource("ShortcutMouthMesh")
 
 [node name="ShortcutLane" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(25.45, -0.18, 27.08)
+position = Vector3(25.45, -0.18, 10.479375)
+mesh = SubResource("ShortcutLaneMesh")
+
+[node name="ShortcutLaneMidA" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(25.45, -0.18, 21.478125)
+mesh = SubResource("ShortcutLaneMesh")
+
+[node name="ShortcutLaneMidB" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(25.45, -0.18, 32.476875)
+mesh = SubResource("ShortcutLaneMesh")
+
+[node name="ShortcutLaneCorner" type="MeshInstance3D" parent="Geometry"]
+position = Vector3(25.45, -0.18, 43.475625)
 mesh = SubResource("ShortcutLaneMesh")
 
 [node name="ShortcutJoin" type="MeshInstance3D" parent="Geometry"]
@@ -486,6 +555,10 @@ monitorable = false
 [node name="Collision" type="CollisionShape3D" parent="Presence"]
 shape = SubResource("PresenceShape")
 
+[node name="ExtensionCollision" type="CollisionShape3D" parent="Presence"]
+position = Vector3(-12.62, 0, 48.65)
+shape = SubResource("ExtensionPresenceShape")
+
 [node name="Fall" type="Area3D" parent="."]
 position = Vector3(12.5, -2.55, 29.5)
 collision_layer = 0
@@ -495,32 +568,107 @@ monitorable = false
 [node name="Collision" type="CollisionShape3D" parent="Fall"]
 shape = SubResource("FallShape")
 
+[node name="ExtensionCollision" type="CollisionShape3D" parent="Fall"]
+position = Vector3(-12.62, 0, 48.5)
+shape = SubResource("ExtensionFallShape")
+
 [node name="Restart" type="Marker3D" parent="."]
 position = Vector3(0, 0.39, 2.65)
 
 [node name="CarriedFlame" parent="." instance=ExtResource("flame")]
 
-[node name="FalseTrailTrap" type="StaticBody3D" parent="." node_paths=PackedStringArray("torch")]
+[node name="FalseTrailFloor" type="StaticBody3D" parent="."]
 position = Vector3(-0.12, -0.18, 46.4)
 collision_mask = 0
-script = ExtResource("torch_trap")
-torch = NodePath("../Stations/FalseTrailTorch")
 
-[node name="FloorCollision" type="CollisionShape3D" parent="FalseTrailTrap"]
-shape = SubResource("FalseTrapDeckShape")
+[node name="FloorCollision" type="CollisionShape3D" parent="FalseTrailFloor"]
+shape = SubResource("FalseTrailDeckShape")
 
-[node name="EndCollision" type="CollisionShape3D" parent="FalseTrailTrap"]
-position = Vector3(0, 0.875, 6.24)
+[node name="Visual" type="Node3D" parent="FalseTrailFloor"]
+
+[node name="Approach" type="MeshInstance3D" parent="FalseTrailFloor/Visual"]
+position = Vector3(0, 0, -5.9)
+mesh = SubResource("FalseTrailApproachMesh")
+
+[node name="Deck" type="MeshInstance3D" parent="FalseTrailFloor/Visual"]
+position = Vector3(0, 0, 0.5)
+layers = 257
+mesh = SubResource("FalseTrailDeckMesh")
+
+[node name="CorridorExtension" type="StaticBody3D" parent="."]
+position = Vector3(-0.12, -0.18, 76.5)
+collision_mask = 0
+
+[node name="FloorCollision" type="CollisionShape3D" parent="CorridorExtension"]
+shape = SubResource("ExtensionDeckShape")
+
+[node name="Deck1" type="MeshInstance3D" parent="CorridorExtension"]
+position = Vector3(0, 0, -19.77)
+layers = 257
+mesh = SubResource("ExtensionLitDeckMesh")
+
+[node name="Deck2Near" type="MeshInstance3D" parent="CorridorExtension"]
+position = Vector3(0, 0, -13.92)
+layers = 257
+mesh = SubResource("ExtensionLitJoinMesh")
+
+[node name="Deck2" type="MeshInstance3D" parent="CorridorExtension"]
+position = Vector3(0, 0, -9.96)
+mesh = SubResource("ExtensionDarkJoinMesh")
+
+[node name="Deck3" type="MeshInstance3D" parent="CorridorExtension"]
+position = Vector3(0, 0, -3.96)
+mesh = SubResource("ExtensionDeckMesh")
+
+[node name="Deck4" type="MeshInstance3D" parent="CorridorExtension"]
+position = Vector3(0, 0, 3.96)
+mesh = SubResource("ExtensionDeckMesh")
+
+[node name="Deck5" type="MeshInstance3D" parent="CorridorExtension"]
+position = Vector3(0, 0, 11.88)
+mesh = SubResource("ExtensionDeckMesh")
+
+[node name="Deck6" type="MeshInstance3D" parent="CorridorExtension"]
+position = Vector3(0, 0, 19.80)
+mesh = SubResource("ExtensionDeckMesh")
+
+[node name="Abyss" type="MeshInstance3D" parent="CorridorExtension"]
+visible = false
+position = Vector3(0, -4.02, 1.5)
+cast_shadow = 0
+mesh = SubResource("ExtensionAbyssMesh")
+
+[node name="EndCollision" type="CollisionShape3D" parent="CorridorExtension"]
+position = Vector3(0, 0.875, 23.65)
 shape = SubResource("FalseTrailEndShape")
 
-[node name="Visual" type="Node3D" parent="FalseTrailTrap"]
-
-[node name="Deck" type="MeshInstance3D" parent="FalseTrailTrap/Visual"]
-mesh = SubResource("FalseTrapDeckMesh")
-
-[node name="End" type="MeshInstance3D" parent="FalseTrailTrap/Visual"]
-position = Vector3(0, 0.875, 6.24)
+[node name="EndRail" type="MeshInstance3D" parent="CorridorExtension"]
+position = Vector3(0, 0.875, 23.65)
 mesh = SubResource("FalseTrailEndMesh")
+
+[node name="ReturnPortal" type="Node3D" parent="."]
+position = Vector3(-0.12, 0.32, 98)
+
+[node name="Vortex" parent="ReturnPortal" instance=ExtResource("portal_visual")]
+rotation = Vector3(0, 3.1415927, 0)
+scale = Vector3(0.72, 0.72, 0.72)
+
+[node name="Interactable" type="Area3D" parent="ReturnPortal"]
+position = Vector3(0, 0, -1.7)
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+script = ExtResource("interactable")
+prompt_text = "dịch chuyển về"
+prompt_offset = Vector3(0, 1.7, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ReturnPortal/Interactable"]
+position = Vector3(0, 1, 0)
+shape = SubResource("PortalReach")
+
+[node name="ReturnArrival" type="Marker3D" parent="."]
+position = Vector3(-0.4, 0.36, 25.25)
+rotation = Vector3(0, 1.5707963, 0)
 
 [node name="TorchLighting" type="Node3D" parent="."]
 
@@ -529,44 +677,65 @@ visible = false
 
 [node name="Light1" type="OmniLight3D" parent="TorchLighting/First"]
 position = Vector3(0.1, 2.05, 15)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 4.8
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 5.8
 omni_attenuation = 1.15
 
 [node name="Light2" type="OmniLight3D" parent="TorchLighting/First"]
 position = Vector3(0.1, 2.05, 20)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 4.8
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 5.8
 omni_attenuation = 1.15
 
 [node name="Light3" type="OmniLight3D" parent="TorchLighting/First"]
 position = Vector3(0.1, 2.05, 25)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 4.8
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 5.8
 omni_attenuation = 1.15
 
 [node name="Light4" type="OmniLight3D" parent="TorchLighting/First"]
 position = Vector3(0.1, 2.05, 30)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 4.8
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 5.8
 omni_attenuation = 1.15
 
 [node name="Light5" type="OmniLight3D" parent="TorchLighting/First"]
 position = Vector3(4.7, 2.05, 25.25)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.9
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 4.9
 omni_attenuation = 1.15
 
 [node name="Light6" type="OmniLight3D" parent="TorchLighting/First"]
 position = Vector3(8.1, 2.05, 25.25)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.9
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 4.9
+omni_attenuation = 1.15
+
+[node name="Guide1" type="OmniLight3D" parent="TorchLighting/First"]
+position = Vector3(0.1, 2.05, 38)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 6.7
+omni_attenuation = 1.15
+
+[node name="Guide2" type="OmniLight3D" parent="TorchLighting/First"]
+position = Vector3(0.1, 2.05, 44.25)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 6.7
+omni_attenuation = 1.15
+
+[node name="Guide3" type="OmniLight3D" parent="TorchLighting/First"]
+position = Vector3(12.1, 2.05, 25.25)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 6.7
 omni_attenuation = 1.15
 
 [node name="Second" type="Node3D" parent="TorchLighting"]
@@ -574,30 +743,30 @@ visible = false
 
 [node name="Light1" type="OmniLight3D" parent="TorchLighting/Second"]
 position = Vector3(17, 2.05, 28.4)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 4.8
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 5.8
 omni_attenuation = 1.15
 
 [node name="Light2" type="OmniLight3D" parent="TorchLighting/Second"]
 position = Vector3(17, 2.05, 33.3)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 4.8
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 5.8
 omni_attenuation = 1.15
 
 [node name="Light3" type="OmniLight3D" parent="TorchLighting/Second"]
 position = Vector3(17, 2.05, 38.2)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 4.8
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 5.8
 omni_attenuation = 1.15
 
 [node name="Light4" type="OmniLight3D" parent="TorchLighting/Second"]
 position = Vector3(17, 2.05, 42)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 4.8
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 5.8
 omni_attenuation = 1.15
 
 [node name="Return" type="Node3D" parent="TorchLighting"]
@@ -605,68 +774,102 @@ visible = false
 
 [node name="Light1" type="OmniLight3D" parent="TorchLighting/Return"]
 position = Vector3(25.45, 2.05, 11.1)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.45
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 4.4
 omni_attenuation = 1.15
 
 [node name="Light2" type="OmniLight3D" parent="TorchLighting/Return"]
 position = Vector3(25.45, 2.05, 15)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.45
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 4.4
 omni_attenuation = 1.15
 
 [node name="Light3" type="OmniLight3D" parent="TorchLighting/Return"]
 position = Vector3(25.45, 2.05, 19)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.45
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 4.4
 omni_attenuation = 1.15
 
 [node name="Light4" type="OmniLight3D" parent="TorchLighting/Return"]
 position = Vector3(25.7, 2.05, 22.8)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.45
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 4.4
 omni_attenuation = 1.15
 
 [node name="Light5" type="OmniLight3D" parent="TorchLighting/Return"]
 position = Vector3(26.5, 2.05, 26.45)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.9
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 4.9
 omni_attenuation = 1.15
 
 [node name="Corner" type="Node3D" parent="TorchLighting"]
 visible = false
 
 [node name="Light1" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(25.45, 2.05, 38.7)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.45
+position = Vector3(25.45, 2.3, 38.7)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 4.7
 omni_attenuation = 1.15
 
 [node name="Light2" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(25.45, 2.05, 42.5)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.45
+position = Vector3(25.45, 2.4, 43.35)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.3
+omni_range = 5.6
 omni_attenuation = 1.15
 
 [node name="Light3" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(25.45, 2.05, 46.4)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.45
+position = Vector3(25.45, 2.5, 47.65)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.7
+omni_range = 6.3
 omni_attenuation = 1.15
 
 [node name="Light4" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(25.45, 2.05, 50)
-light_color = Color(1, 0.52, 0.22, 1)
-light_energy = 4.75
-omni_range = 3.45
+position = Vector3(24.65, 2.45, 51)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 7.1
+omni_range = 6.7
+omni_attenuation = 1.15
+
+[node name="Light5" type="OmniLight3D" parent="TorchLighting/Corner"]
+position = Vector3(21.2, 2.6, 49.25)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 7.35
+omni_range = 6.7
+omni_attenuation = 1.15
+
+[node name="FalseTrail" type="Node3D" parent="TorchLighting"]
+visible = false
+
+[node name="Light1" type="OmniLight3D" parent="TorchLighting/FalseTrail"]
+position = Vector3(-0.12, 2.2, 44.6)
+light_color = Color(1, 0.66, 0.4, 1)
+light_energy = 7.4
+light_cull_mask = 256
+omni_range = 7.1
+omni_attenuation = 1.15
+
+[node name="Light2" type="OmniLight3D" parent="TorchLighting/FalseTrail"]
+position = Vector3(-0.12, 2.2, 51.35)
+light_color = Color(1, 0.66, 0.4, 1)
+light_energy = 9.0
+light_cull_mask = 256
+omni_range = 10.3
+omni_attenuation = 1.15
+
+[node name="Light3" type="OmniLight3D" parent="TorchLighting/FalseTrail"]
+position = Vector3(-0.12, 2.2, 59.9)
+light_color = Color(1, 0.66, 0.4, 1)
+light_energy = 8.4
+light_cull_mask = 256
+omni_range = 7.3
 omni_attenuation = 1.15
 
 [node name="Stations" type="Node3D" parent="."]
@@ -689,8 +892,17 @@ position = Vector3(18.64, 0.32, 27.9)
 role = 1
 shaped_lights = NodePath("../../TorchLighting/Second")
 
-[node name="FalseTrailTorch" parent="Stations" instance=ExtResource("station")]
+[node name="FalseTrailTorch" parent="Stations" node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
 position = Vector3(-0.12, 0.32, 51.35)
+role = 1
+shaped_lights = NodePath("../../TorchLighting/FalseTrail")
+
+[node name="ForwardHint" parent="Stations/FalseTrailTorch" instance=ExtResource("world_hint")]
+monitoring = false
+label_offset = Vector3(0, 2.3, 0)
+
+[node name="EndTorch" parent="Stations" instance=ExtResource("station")]
+position = Vector3(-1.7, 0.32, 93.7)
 role = 1
 
 [node name="ReturnTorch" parent="Stations" node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
@@ -706,6 +918,18 @@ shaped_lights = NodePath("../../TorchLighting/Corner")
 [node name="Seal" parent="Stations" instance=ExtResource("station")]
 position = Vector3(8.15, 2.45, 5)
 role = 2
+
+[node name="Ember" parent="Stations/Seal" index="3"]
+visible = false
+
+[node name="Interactable" parent="Stations/Seal" index="7"]
+prompt_text = "truyền lửa và lấy ngọc"
+
+[node name="TonGem" parent="Stations/Seal" instance=ExtResource("seal_gem")]
+position = Vector3(0, 1.55, 0)
+
+[node name="Gem" parent="Stations/Seal/TonGem" index="0"]
+material_override = SubResource("TonGemMaterial")
 
 [node name="WindClusters" type="Node3D" parent="."]
 
@@ -745,3 +969,6 @@ paired_screen_delay = 1.45
 screen_home_offset = Vector3(-14.3, 0, 0.17)
 paired_track_offset = 0.35
 fixed_cover = AABB(-2.95, -0.92, 0.235, 3.5, 2.4, 0.33)
+
+[editable path="Stations/Seal"]
+[editable path="Stations/Seal/TonGem"]

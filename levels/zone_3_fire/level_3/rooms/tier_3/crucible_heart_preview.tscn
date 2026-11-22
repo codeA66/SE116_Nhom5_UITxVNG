@@ -19,6 +19,9 @@
 [sub_resource type="BoxShape3D" id="TonDarkBounds"]
 size = Vector3(43, 10, 55)
 
+[sub_resource type="BoxShape3D" id="TonCorridorDarkBounds"]
+size = Vector3(24, 10, 54)
+
 [sub_resource type="Resource" id="CameraView"]
 script = ExtResource("camera_data")
 distance = 32.0
@@ -83,11 +86,16 @@ world_environment = NodePath("../../FireLighting/Environment")
 dark_light_ratio = 0.015
 dark_ambient_ratio = 0.025
 fade_time = 0.45
+use_black_background = true
 use_carried_light = false
 
 [node name="RoomVolume" type="CollisionShape3D" parent="TonAshenGale/TonDarkZone"]
 position = Vector3(10.75, 2, 27.8)
 shape = SubResource("TonDarkBounds")
+
+[node name="CorridorVolume" type="CollisionShape3D" parent="TonAshenGale/TonDarkZone"]
+position = Vector3(-0.12, 2, 78)
+shape = SubResource("TonCorridorDarkBounds")
 
 
 [node name="ChanThunderAnvil" parent="." instance=ExtResource("chan")]

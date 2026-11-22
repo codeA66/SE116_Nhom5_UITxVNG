@@ -2,23 +2,75 @@
 
 [ext_resource type="PackedScene" path="res://entities/bosses/fire/fire_boss.tscn" id="base"]
 [ext_resource type="PackedScene" path="res://assets/models/bosses/fire/pyralon.glb" id="rig"]
+[ext_resource type="PackedScene" path="res://assets/models/bosses/fire/pyralon_phase_two.glb" id="phase_two_model"]
 [ext_resource type="Resource" path="res://resources/enemies/fire_bosses/pyralon.tres" id="config"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/animation/pyralon_rig.gd" id="pose"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/pyralon.gd" id="actor"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/pyralon_phase.gd" id="phase"]
+[ext_resource type="PackedScene" path="res://objects/world/camera_cutscene/camera_cutscene.tscn" id="cutscene"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/camera_cutscene_data.gd" id="cutscene_data"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/combat/pyralon_field.gd" id="field"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/combat/pyralon_ground_fire.gd" id="ground"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/combat/pyralon_rift_chain.gd" id="rift_chain"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_advance.gd" id="advance"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_slam.gd" id="slam"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_rear_slash.gd" id="rear_slash"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_barrage.gd" id="barrage"]
 [ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_command.gd" id="command"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_sky_dive.gd" id="sky_dive"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_resonance_slam.gd" id="resonance_slam"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_transformation.gd" id="transformation"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/behavior/states/pyralon_true_death.gd" id="true_death"]
+[ext_resource type="Script" path="res://entities/bosses/fire/pyralon/combat/pyralon_death_effect.gd" id="death_fx"]
 [ext_resource type="PackedScene" path="res://entities/bosses/fire/pyralon/combat/pyralon_feather.tscn" id="feather"]
 [ext_resource type="PackedScene" path="res://entities/bosses/fire/pyralon/combat/pyralon_fire_fx.tscn" id="fire_fx"]
+[ext_resource type="PackedScene" path="res://entities/bosses/fire/pyralon/combat/pyralon_sky_crater.tscn" id="sky_crater"]
 [ext_resource type="Script" path="res://components/combat/damage_area/explosion_component.gd" id="explosion"]
 
 [sub_resource type="CapsuleShape3D" id="Body"]
 radius = 0.52
 height = 2.5
+
+[sub_resource type="Resource" id="TransformationView"]
+resource_local_to_scene = true
+script = ExtResource("cutscene_data")
+travel_time = 0.85
+return_time = 0.85
+shot_offset = Vector3(3.8, 2.0, 5.6)
+look_height = 2.05
+shot_fov = 38.0
+push_in_fov = 31.0
+hold_orbit_degrees = -18.0
+letterbox_ratio = 0.085
+
+[sub_resource type="Resource" id="DeathView"]
+resource_local_to_scene = true
+script = ExtResource("cutscene_data")
+travel_time = 0.5
+hold_time = 0.45
+return_time = 0.72
+shot_offset = Vector3(3.3, 2.6, 4.3)
+look_height = 0.65
+shot_fov = 35.0
+push_in_fov = 30.0
+hold_orbit_degrees = -14.0
+letterbox_ratio = 0.085
+
+[sub_resource type="Gradient" id="EmberColors"]
+offsets = PackedFloat32Array(0, 0.25, 0.72, 1)
+colors = PackedColorArray(0.55, 0.05, 0.01, 0, 1, 0.66, 0.16, 1, 1, 0.28, 0.02, 0.85, 0.35, 0.04, 0.01, 0)
+
+[sub_resource type="StandardMaterial3D" id="EmberMaterial"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="EmberMesh"]
+material = SubResource("EmberMaterial")
+radius = 0.028
+height = 0.095
+radial_segments = 4
+rings = 2
 
 [node name="Pyralon" instance=ExtResource("base")]
 script = ExtResource("actor")
@@ -37,6 +89,9 @@ scale = Vector3(1.15, 1.15, 1.15)
 position = Vector3(0, 1.25, 0)
 shape = SubResource("Body")
 
+[node name="DeathEffectComponent" parent="."]
+script = ExtResource("death_fx")
+
 [node name="PyralonAdvance" type="Node" parent="StateMachine"]
 script = ExtResource("advance")
 
@@ -52,6 +107,18 @@ script = ExtResource("barrage")
 [node name="PyralonCommand" type="Node" parent="StateMachine"]
 script = ExtResource("command")
 
+[node name="PyralonSkyDive" type="Node" parent="StateMachine"]
+script = ExtResource("sky_dive")
+
+[node name="PyralonResonanceSlam" type="Node" parent="StateMachine"]
+script = ExtResource("resonance_slam")
+
+[node name="PyralonTransformation" type="Node" parent="StateMachine"]
+script = ExtResource("transformation")
+
+[node name="PyralonTrueDeath" type="Node" parent="StateMachine"]
+script = ExtResource("true_death")
+
 [node name="RigControl" type="Node" parent="."]
 script = ExtResource("pose")
 
@@ -59,6 +126,7 @@ script = ExtResource("pose")
 script = ExtResource("field")
 feather_scene = ExtResource("feather")
 fire_fx_scene = ExtResource("fire_fx")
+sky_crater_scene = ExtResource("sky_crater")
 
 [node name="Explosion" type="Node3D" parent="Field"]
 script = ExtResource("explosion")
@@ -68,3 +136,48 @@ spawn_burst_effect = false
 
 [node name="GroundFire" type="Node3D" parent="Field"]
 script = ExtResource("ground")
+
+[node name="RiftChain" type="Node3D" parent="Field"]
+script = ExtResource("rift_chain")
+
+[node name="Transformation" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("cutscene")]
+data = SubResource("TransformationView")
+focus_target = NodePath("..")
+manual_only = true
+
+[node name="DeathFraming" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("cutscene")]
+data = SubResource("DeathView")
+focus_target = NodePath("..")
+manual_only = true
+
+[node name="Phase" type="Node3D" parent="." node_paths=PackedStringArray("base_rig", "animator", "framing")]
+script = ExtResource("phase")
+base_rig = NodePath("../Model/Visual/Rig")
+phase_two_model = ExtResource("phase_two_model")
+animator = NodePath("../AnimationPlayer")
+framing = NodePath("../Transformation")
+
+[node name="Firelight" type="OmniLight3D" parent="Phase"]
+position = Vector3(0, 2.35, 0)
+light_color = Color(1, 0.34, 0.06, 1)
+omni_range = 7.2
+omni_attenuation = 1.5
+
+[node name="Embers" type="CPUParticles3D" parent="Phase"]
+position = Vector3(0, 1.85, 0)
+cast_shadow = 0
+emitting = false
+amount = 56
+lifetime = 1.25
+randomness = 0.85
+mesh = SubResource("EmberMesh")
+emission_shape = 3
+emission_box_extents = Vector3(1.65, 0.95, 1.15)
+direction = Vector3(0, 1, 0)
+spread = 36.0
+gravity = Vector3(0, 2.1, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 2.6
+scale_amount_min = 0.28
+scale_amount_max = 0.95
+color_ramp = SubResource("EmberColors")

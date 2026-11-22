@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/tier_2/rooms/t2_10_cinder_run.tscn" id="t2_10_room"]
+[ext_resource type="PackedScene" path="res://components/utility/fall_guard/fall_guard.tscn" id="fall_guard_scene"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/tier_1/lighting/fire_lighting.tscn" id="1_t5010"]
 [ext_resource type="PackedScene" path="res://objects/core/kill_zone/kill_zone.tscn" id="3_m7jl0"]
 [ext_resource type="Script" path="res://objects/core/kill_zone/kill_zone.gd" id="4_8x864"]
@@ -100,6 +102,8 @@ size = Vector3(20.0, 12.0, 20.0)
 size = Vector3(24.0, 12.0, 24.0)
 [sub_resource type="BoxShape3D" id="RoomZone_t2_06_dark_forge"]
 size = Vector3(20.0, 12.0, 20.0)
+[sub_resource type="BoxShape3D" id="RoomZone_t2_10_cinder_run"]
+size = Vector3(24.0, 12.0, 32.0)
 [sub_resource type="BoxShape3D" id="RoomZone_t2_07_blackout"]
 size = Vector3(28.0, 12.0, 28.0)
 [sub_resource type="BoxShape3D" id="RoomZone_t2_08_lava_tide"]
@@ -188,6 +192,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 308, 8, 12)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 310, 4, 50)
 [node name="T207Blackout" type="Node3D" parent="Rooms/Tier2" unique_id=1450722186 instance=ExtResource("29_gq6sj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 342, 4, 50)
+[node name="T210CinderRun" parent="Rooms/Tier2" instance=ExtResource("t2_10_room")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 376, 4, 52)
 [node name="T208LavaTide" type="Node3D" parent="Rooms/Tier2" unique_id=1013682096 instance=ExtResource("30_74oxx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278, 0, 88)
 [node name="T209WispHall" type="Node3D" parent="Rooms/Tier2" unique_id=1677128603 instance=ExtResource("31_5uqjc")]
@@ -263,6 +269,14 @@ monitorable = false
 script = ExtResource("tier_zone_script")
 [node name="Shape" type="CollisionShape3D" parent="RoomFocus/T207BlackoutZone"]
 shape = SubResource("RoomZone_t2_07_blackout")
+[node name="T210CinderRunZone" type="Area3D" parent="RoomFocus"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 2.68, 1.4)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("tier_zone_script")
+[node name="Shape" type="CollisionShape3D" parent="RoomFocus/T210CinderRunZone"]
+shape = SubResource("RoomZone_t2_10_cinder_run")
 [node name="T208LavaTideZone" type="Area3D" parent="RoomFocus"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, -1.32, 37.4)
 collision_layer = 0
@@ -335,11 +349,13 @@ monitorable = false
 script = ExtResource("tier_zone_script")
 [node name="Shape" type="CollisionShape3D" parent="RoomFocus/T2SIceCaveZone"]
 shape = SubResource("RoomZone_t2_s_ice_cave")
+[node name="FallGuard" parent="." instance=ExtResource("fall_guard_scene")]
+editor_description = "Rào vô hình bám mọi lan can / cột lan can, bịt khe ở góc để không lọt xuống vực"
 [node name="Tier2Mechanics" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -206, -4.32, -50.6)
 [node name="Room07Blackout" type="Node3D" parent="Tier2Mechanics"]
 [node name="DarkZone" parent="Tier2Mechanics/Room07Blackout" node_paths=PackedStringArray("sun", "bounce_light", "world_environment") instance=ExtResource("dark_zone_scene")]
-boxes = Array[AABB]([AABB(122, -6.32, -14.6, 28, 12, 28)])
+boxes = Array[AABB]([AABB(122, -6.32, -14.6, 28, 12, 28), AABB(150, -6.32, -14.6, 32, 12, 32)])
 sun = NodePath("../../../FireLighting/SunLight")
 bounce_light = NodePath("../../../FireLighting/LavaBounceLight")
 world_environment = NodePath("../../../FireLighting/Environment")
@@ -414,13 +430,137 @@ data = ExtResource("crumbling_one_way")
 size = Vector3(2, 0.4, 2)
 [node name="Portals" type="Node3D" parent="Tier2Mechanics/Room07Blackout"]
 [node name="BlackoutReturnPortal" parent="Tier2Mechanics/Room07Blackout/Portals" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
-transform = Transform3D(-0.00000004371139, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.00000004371139, 355.0, 4.32000017166138, 40.0)
+transform = Transform3D(-0.00000004371139, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.00000004371139, 352.0, 4.32000017166138, 37.5)
 target = NodePath("../HubEastPortal")
 required_flag = &"level_3.t2_shard_east"
 [node name="HubEastPortal" parent="Tier2Mechanics/Room07Blackout/Portals" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 286.0, 4.32000017166138, 37.5999984741211)
 target = NodePath("../BlackoutReturnPortal")
 required_flag = &"level_3.t2_shard_east"
+[node name="Room10CinderRun" type="Node3D" parent="Tier2Mechanics"]
+editor_description = "Phòng 10 tự chọn sau phòng 7: tối om (dùng chung DarkZone của phòng 7, thêm một hộp, để hai vùng không giành bật / tắt nắng), đường ô sàn sụp dài 29 ô (nối từ cửa đông bệ cuối phòng 7). Không đi thì về bằng cổng phòng 7; đi hết thì có cổng về Hub. Phần thưởng: chưa có"
+[node name="Path" type="Node3D" parent="Tier2Mechanics/Room10CinderRun"]
+[node name="Tile01" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 357.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile02" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 359.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile03" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 361.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile04" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 363.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile05" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 369.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile06" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 371.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile07" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 373.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile08" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 375.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile09" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.0, 4.32, 42.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile10" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.0, 4.32, 44.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile11" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.0, 4.32, 46.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile12" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.0, 4.32, 48.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile13" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.0, 4.32, 50.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile14" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.0, 4.32, 52.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile15" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 375.0, 4.32, 52.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile16" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 373.0, 4.32, 52.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile17" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 371.0, 4.32, 52.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile18" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 369.0, 4.32, 52.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile19" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 369.0, 4.32, 54.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile20" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 369.0, 4.32, 56.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile21" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 369.0, 4.32, 58.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile22" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 369.0, 4.32, 60.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile23" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 369.0, 4.32, 62.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile24" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 369.0, 4.32, 64.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile25" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 371.0, 4.32, 64.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile26" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 373.0, 4.32, 64.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile27" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 375.0, 4.32, 64.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile28" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.0, 4.32, 64.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Tile29" parent="Tier2Mechanics/Room10CinderRun/Path" instance=ExtResource("crumbling_floor_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 379.0, 4.32, 64.0)
+data = ExtResource("crumbling_one_way")
+size = Vector3(2, 0.4, 2)
+[node name="Portals" type="Node3D" parent="Tier2Mechanics/Room10CinderRun"]
+[node name="CinderReturnPortal" parent="Tier2Mechanics/Room10CinderRun/Portals" node_paths=PackedStringArray("target") instance=ExtResource("warp_portal_scene")]
+transform = Transform3D(-0.00000004371139, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, -0.00000004371139, 386.0, 4.32, 66.0)
+editor_description = "Cổng về Hub ở bệ cuối phòng 10, luôn hiện (tới được bệ là đã xong thử thách)"
+target = NodePath("../../../Room07Blackout/Portals/HubEastPortal")
 [node name="IceCaveCampfire" parent="Tier2Mechanics" instance=ExtResource("campfire_scene")]
 editor_description = "Lửa trại hang băng, giống lửa trại phòng 5 tier 1: lúc đầu tắt, phun lửa thì cháy, cháy rồi lấy được đuốc"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 334.0, 8.32, 14.0)
@@ -724,15 +864,15 @@ editor_description = "Bật khi hạ xong trận phục kích Hub: 3 cổng bắ
 script = ExtResource("flag_source_script")
 flag = &"level_3.t2_hub_ambush"
 [node name="HubGateNorth" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 4.32, 35.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 4.32, 36.7)
 sources = [NodePath("../HubGateSource")]
 persistent_id = &"level_3.t2_hub_gate_north"
 [node name="HubGateEast" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
-transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 292.7, 4.32, 50.0)
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 291.3, 4.32, 50.0)
 sources = [NodePath("../HubGateSource")]
 persistent_id = &"level_3.t2_hub_gate_east"
 [node name="HubGateSouth" parent="Tier2Fights" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 4.32, 64.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278.0, 4.32, 63.3)
 sources = [NodePath("../HubGateSource")]
 persistent_id = &"level_3.t2_hub_gate_south"
 [node name="RoomGates" type="Node3D" parent="Tier2Fights"]
@@ -742,7 +882,7 @@ editor_description = "Cổng đá giữa các phòng: chỉ chìm khi dọn xong
 script = ExtResource("flag_source_script")
 flag = &"level_3.t2_timber_caster"
 [node name="Gate" parent="Tier2Fights/RoomGates/Room04Gate" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
-transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 288.7, 8.32, 14)
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 287.3, 8.32, 14)
 editor_description = "Phòng 4 → 5: mở khi hạ xong 4 Đầu Lửa"
 sources = [NodePath("../TimberSource")]
 persistent_id = &"level_3.t2_room04_gate_east"
@@ -754,7 +894,7 @@ flag = &"level_3.t2_room05_cagespider"
 script = ExtResource("flag_source_script")
 flag = &"level_3.t2_room05_cageslime"
 [node name="Gate" parent="Tier2Fights/RoomGates/Room05Gate" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
-transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 320.7, 8.32, 14)
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 319.3, 8.32, 14)
 editor_description = "Phòng 5 → hang băng: mở khi phá xong cả 2 lồng"
 sources = [NodePath("../CageSpiderSource"), NodePath("../CageSlimeSource")]
 persistent_id = &"level_3.t2_room05_gate_east"
@@ -763,7 +903,7 @@ persistent_id = &"level_3.t2_room05_gate_east"
 script = ExtResource("flag_source_script")
 flag = &"level_3.t2_dark_forge_pack"
 [node name="Gate" parent="Tier2Fights/RoomGates/Room06Gate" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
-transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 320.7, 4.32, 50)
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 319.3, 4.32, 50)
 editor_description = "Phòng 6 → 7: mở khi hạ xong 2 Fire Caster + 2 nhện"
 sources = [NodePath("../DarkForgeSource")]
 persistent_id = &"level_3.t2_room06_gate_east"
@@ -784,7 +924,7 @@ flag = &"level_3.t2_room08_statue_sw"
 script = ExtResource("flag_source_script")
 flag = &"level_3.t2_room08_statue_se"
 [node name="Gate" parent="Tier2Fights/RoomGates/Room08Gate" node_paths=PackedStringArray("sources") instance=ExtResource("cellar_gate_scene")]
-transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 292.7, 0.32, 86)
+transform = Transform3D(-0.00000004371139, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, -0.00000004371139, 291.3, 0.32, 86)
 editor_description = "Phòng 8 → 9: mở khi phá lồng sói và đập vỡ cả 4 tượng laser"
 sources = [NodePath("../CageSource"), NodePath("../StatueNWSource"), NodePath("../StatueNESource"), NodePath("../StatueSWSource"), NodePath("../StatueSESource")]
 persistent_id = &"level_3.t2_room08_gate_east"

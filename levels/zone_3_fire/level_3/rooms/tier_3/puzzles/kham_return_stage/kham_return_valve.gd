@@ -10,13 +10,12 @@ signal activated(player: Player)
 
 var _duration: float = 0.0
 
-@onready var _valve: StrikeValve = $StrikeValve
+@onready var _valve: InteractValve = $InteractValve
 
 
 func _ready() -> void:
 	_valve.set_enabled(false)
-	_valve.struck.connect(_on_struck)
-	$Label.text = "VAN " + String(valve_id)
+	_valve.activated.connect(_on_valve_opened)
 
 
 func configure(data: KhamPuzzleData, duration: float) -> void:
@@ -26,10 +25,9 @@ func configure(data: KhamPuzzleData, duration: float) -> void:
 
 func set_enabled(enabled: bool) -> void:
 	_valve.set_enabled(enabled)
-	_valve.set_deferred(&"monitorable", enabled)
 
 
-func _on_struck(player: Player) -> void:
+func _on_valve_opened(player: Player) -> void:
 	for path: CoolingPath in paths:
 		path.cool_for(_duration)
 	for vent: SteamVent in vents:

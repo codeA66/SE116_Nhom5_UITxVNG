@@ -1,6 +1,7 @@
 class_name WarElephant
 extends PreviewFireBoss
 
+@warning_ignore("unused_signal")
 signal corpse_settled
 
 const SLEEP := &"sleep"
@@ -20,6 +21,7 @@ const WAKE_STRETCH: float = 0.8
 @export var trail_spacing: float = 0.94
 @export var charge_stop_distance: float = 2.2
 @export_range(0.1, 0.99, 0.01) var charge_player_speed_ratio: float = 0.78
+@export_range(0.1, 1.0, 0.05) var true_death_time_scale: float = 0.5
 
 var _introduced: bool
 var _intro_stage: int

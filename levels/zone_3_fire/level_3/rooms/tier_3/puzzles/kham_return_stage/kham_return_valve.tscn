@@ -1,38 +1,63 @@
 [gd_scene format=3]
 [ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/kham_return_stage/kham_return_valve.gd" id="script"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/strike_valve/strike_valve.tscn" id="valve"]
-[sub_resource type="StandardMaterial3D" id="brass"]
-albedo_color = Color(0.8, 0.43, 0.12, 1)
-metallic = 0.6
-[sub_resource type="CylinderMesh" id="stem"]
-material = SubResource("brass")
-top_radius = 0.12
-bottom_radius = 0.23
-height = 0.85
-[sub_resource type="TorusMesh" id="wheel"]
-material = SubResource("brass")
-inner_radius = 0.28
-outer_radius = 0.43
-rings = 12
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/interact_valve/interact_valve.tscn" id="valve"]
+[sub_resource type="StandardMaterial3D" id="Copper"]
+albedo_color = Color(0.35, 0.18, 0.13, 1)
+metallic = 0.65
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Brass"]
+albedo_color = Color(0.87, 0.55, 0.19, 1)
+roughness = 0.77
+
+[sub_resource type="StandardMaterial3D" id="Iron"]
+albedo_color = Color(0.09, 0.12, 0.14, 1)
+roughness = 0.77
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_47"]
+material = SubResource("Iron")
+top_radius = 0.49
+bottom_radius = 0.49
+height = 0.52
+radial_segments = 12
+rings = 0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_48"]
+material = SubResource("Copper")
+top_radius = 0.16
+bottom_radius = 0.16
+height = 0.5
+radial_segments = 12
+rings = 0
+
+[sub_resource type="TorusMesh" id="TorusMesh_49"]
+material = SubResource("Brass")
+inner_radius = 0.31
+outer_radius = 0.49
+rings = 16
 ring_segments = 8
-[sub_resource type="BoxMesh" id="spoke"]
-material = SubResource("brass")
-size = Vector3(0.8, 0.1, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_50"]
+size = Vector3(0.85, 0.09, 0.1)
+material = SubResource("Copper")
+
 [node name="KhamReturnValve" type="Node3D"]
 script = ExtResource("script")
+[node name="Plinth" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.26, 0)
+mesh = SubResource("CylinderMesh_47")
+
 [node name="Stem" type="MeshInstance3D" parent="."]
-position = Vector3(0, 0.425, 0)
-mesh = SubResource("stem")
-[node name="Wheel" type="MeshInstance3D" parent="."]
-position = Vector3(0, 0.9, 0)
-mesh = SubResource("wheel")
-[node name="Spoke" type="MeshInstance3D" parent="Wheel"]
-mesh = SubResource("spoke")
-[node name="StrikeValve" parent="." node_paths=PackedStringArray("wheel") instance=ExtResource("valve")]
-wheel = NodePath("../Wheel")
-[node name="Label" type="Label3D" parent="."]
-position = Vector3(0, 2, 0)
-billboard = 1
-font_size = 48
-pixel_size = 0.009
-no_depth_test = true
+position = Vector3(0, 0.68, 0)
+mesh = SubResource("CylinderMesh_48")
+
+[node name="Handwheel" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.94, 0)
+mesh = SubResource("TorusMesh_49")
+
+[node name="Spoke" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.94, 0)
+mesh = SubResource("BoxMesh_50")
+
+[node name="InteractValve" parent="." node_paths=PackedStringArray("wheel") instance=ExtResource("valve")]
+wheel = NodePath("../Spoke")

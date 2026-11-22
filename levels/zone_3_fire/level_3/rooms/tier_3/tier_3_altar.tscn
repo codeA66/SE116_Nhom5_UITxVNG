@@ -1,0 +1,241 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/tier_3_altar.gd" id="altar"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interact"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/seal_gem/seal_gem.tscn" id="ly_gem"]
+
+[sub_resource type="StandardMaterial3D" id="Basalt"]
+albedo_color = Color(0.092, 0.07, 0.066, 1)
+roughness = 0.87
+
+[sub_resource type="StandardMaterial3D" id="Bronze"]
+albedo_color = Color(0.52, 0.31, 0.1, 1)
+metallic = 0.64
+roughness = 0.42
+
+[sub_resource type="BoxMesh" id="Foot"]
+size = Vector3(3.64, 0.2, 3.64)
+material = SubResource("Basalt")
+
+[sub_resource type="BoxMesh" id="Trim"]
+size = Vector3(3.42, 0.09, 3.42)
+material = SubResource("Bronze")
+
+[sub_resource type="BoxMesh" id="Body"]
+size = Vector3(3.25, 0.51, 3.25)
+material = SubResource("Basalt")
+
+[sub_resource type="CylinderMesh" id="Seat"]
+top_radius = 0.41
+bottom_radius = 0.49
+height = 0.15
+radial_segments = 8
+material = SubResource("Basalt")
+
+[sub_resource type="TorusMesh" id="Ring"]
+inner_radius = 0.29
+outer_radius = 0.43
+rings = 16
+ring_segments = 8
+material = SubResource("Bronze")
+
+[sub_resource type="CylinderMesh" id="Center"]
+top_radius = 0.64
+bottom_radius = 0.81
+height = 0.22
+radial_segments = 8
+material = SubResource("Bronze")
+
+[sub_resource type="BoxShape3D" id="AltarShape"]
+size = Vector3(3.62, 0.8, 3.62)
+
+[sub_resource type="CylinderShape3D" id="Reach"]
+radius = 3.35
+height = 2.0
+
+[sub_resource type="BoxMesh" id="PathMesh"]
+size = Vector3(0.17, 0.014, 10.15)
+
+[sub_resource type="Shader" id="PathShader"]
+code = "shader_type spatial;
+render_mode unshaded;
+uniform float progress : hint_range(0.0, 1.0) = 0.0;
+varying float distance_along;
+void vertex() {
+	distance_along = clamp(VERTEX.z / 10.15 + 0.5, 0.0, 1.0);
+}
+void fragment() {
+	float front = smoothstep(0.0, 0.05, progress - distance_along);
+	float lit = progress >= 1.0 ? 1.0 : front;
+	ALBEDO = mix(vec3(0.21, 0.11, 0.065), vec3(2.8, 0.58, 0.07), lit);
+}"
+
+[sub_resource type="ShaderMaterial" id="Inlay"]
+shader = SubResource("PathShader")
+
+[sub_resource type="StandardMaterial3D" id="KhamMaterial"]
+albedo_color = Color(0.14, 0.58, 0.95, 1)
+metallic = 0.38
+roughness = 0.23
+emission_enabled = true
+emission = Color(0.14, 0.58, 0.95, 1)
+emission_energy_multiplier = 0.45
+
+[sub_resource type="SphereMesh" id="KhamGem"]
+material = SubResource("KhamMaterial")
+radius = 0.24
+height = 0.76
+radial_segments = 6
+rings = 2
+
+[sub_resource type="StandardMaterial3D" id="TonMaterial"]
+albedo_color = Color(0.22, 0.85, 0.39, 1)
+metallic = 0.38
+roughness = 0.23
+emission_enabled = true
+emission = Color(0.22, 0.85, 0.39, 1)
+emission_energy_multiplier = 0.45
+
+[sub_resource type="SphereMesh" id="TonGem"]
+material = SubResource("TonMaterial")
+radius = 0.24
+height = 0.76
+radial_segments = 6
+rings = 2
+
+[sub_resource type="StandardMaterial3D" id="ChanMaterial"]
+albedo_color = Color(0.82, 0.29, 0.97, 1)
+metallic = 0.38
+roughness = 0.23
+emission_enabled = true
+emission = Color(0.82, 0.29, 0.97, 1)
+emission_energy_multiplier = 0.45
+
+[sub_resource type="SphereMesh" id="ChanGem"]
+material = SubResource("ChanMaterial")
+radius = 0.24
+height = 0.76
+radial_segments = 6
+rings = 2
+
+[node name="Tier3Altar" type="StaticBody3D"]
+collision_mask = 0
+script = ExtResource("altar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.4, 0)
+rotation = Vector3(0, 0.7853982, 0)
+shape = SubResource("AltarShape")
+
+[node name="Foot" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.1, 0)
+rotation = Vector3(0, 0.7853982, 0)
+mesh = SubResource("Foot")
+
+[node name="Trim" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.23, 0)
+rotation = Vector3(0, 0.7853982, 0)
+mesh = SubResource("Trim")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.52, 0)
+rotation = Vector3(0, 0.7853982, 0)
+mesh = SubResource("Body")
+
+[node name="Center" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.87, 0)
+mesh = SubResource("Center")
+
+[node name="Gems" type="Node3D" parent="."]
+
+[node name="LySeat" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.79, 1.92)
+mesh = SubResource("Seat")
+
+[node name="LyRing" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.866, 1.92)
+mesh = SubResource("Ring")
+
+[node name="Ly" parent="Gems" instance=ExtResource("ly_gem")]
+position = Vector3(0, 1.16, 1.92)
+visible = false
+
+[node name="KhamSeat" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.79, -1.92)
+mesh = SubResource("Seat")
+
+[node name="KhamRing" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.866, -1.92)
+mesh = SubResource("Ring")
+
+[node name="Kham" type="MeshInstance3D" parent="Gems"]
+position = Vector3(0, 1.16, -1.92)
+visible = false
+mesh = SubResource("KhamGem")
+
+[node name="TonSeat" type="MeshInstance3D" parent="."]
+position = Vector3(-1.92, 0.79, 0)
+mesh = SubResource("Seat")
+
+[node name="TonRing" type="MeshInstance3D" parent="."]
+position = Vector3(-1.92, 0.866, 0)
+mesh = SubResource("Ring")
+
+[node name="Ton" type="MeshInstance3D" parent="Gems"]
+position = Vector3(-1.92, 1.16, 0)
+visible = false
+mesh = SubResource("TonGem")
+
+[node name="ChanSeat" type="MeshInstance3D" parent="."]
+position = Vector3(1.92, 0.79, 0)
+mesh = SubResource("Seat")
+
+[node name="ChanRing" type="MeshInstance3D" parent="."]
+position = Vector3(1.92, 0.866, 0)
+mesh = SubResource("Ring")
+
+[node name="Chan" type="MeshInstance3D" parent="Gems"]
+position = Vector3(1.92, 1.16, 0)
+visible = false
+mesh = SubResource("ChanGem")
+
+[node name="Paths" type="Node3D" parent="."]
+
+[node name="South" type="MeshInstance3D" parent="Paths"]
+position = Vector3(0, 0.022, 7.425)
+rotation = Vector3(0, 0, 0)
+mesh = SubResource("PathMesh")
+material_override = SubResource("Inlay")
+cast_shadow = 0
+
+[node name="North" type="MeshInstance3D" parent="Paths"]
+position = Vector3(0, 0.022, -7.425)
+rotation = Vector3(0, 3.1415927, 0)
+mesh = SubResource("PathMesh")
+material_override = SubResource("Inlay")
+cast_shadow = 0
+
+[node name="West" type="MeshInstance3D" parent="Paths"]
+position = Vector3(-7.425, 0.022, 0)
+rotation = Vector3(0, -1.5707963, 0)
+mesh = SubResource("PathMesh")
+material_override = SubResource("Inlay")
+cast_shadow = 0
+
+[node name="East" type="MeshInstance3D" parent="Paths"]
+position = Vector3(7.425, 0.022, 0)
+rotation = Vector3(0, 1.5707963, 0)
+mesh = SubResource("PathMesh")
+material_override = SubResource("Inlay")
+cast_shadow = 0
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+position = Vector3(0, 0.95, 0)
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+script = ExtResource("interact")
+prompt_text = "ĐẶT NGỌC"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+shape = SubResource("Reach")

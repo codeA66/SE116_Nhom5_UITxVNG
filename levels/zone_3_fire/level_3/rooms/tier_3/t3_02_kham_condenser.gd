@@ -14,6 +14,7 @@ const DEFAULT_DATA: KhamPuzzleData = preload("res://levels/zone_3_fire/level_3/r
 @export var entrance: Marker3D
 @export_group("Chuyển phase")
 @export var phase_one_platforms: Array[Node3D] = []
+@export var gem_placed_flag: StringName
 
 var _reset_pending: bool = false
 var _water_bounds: AABB
@@ -30,17 +31,19 @@ var _bridge_tween: Tween
 var _phase_transition: Tween
 
 @onready var _water_volume: CollisionShape3D = $Basin/WaterRecovery/CollisionShape3D
-@onready var _valve_a: StrikeValve = $Valves/A
-@onready var _valve_b: StrikeValve = $Valves/B
-@onready var _valve_c: StrikeValve = $Valves/C
+@onready var _valve_a: InteractValve = $Valves/A
+@onready var _valve_b: InteractValve = $Valves/B
+@onready var _lever: InteractValve = $Valves/Lever
+@onready var _shutter: StaticBody3D = $Basin/WestWall/WindShutter
+@onready var _handle: Node3D = $Landmarks/Lever.find_child("Handle", true, false)
 @onready var _first: CoolingPath = $Paths/First
 @onready var _west: CoolingPath = $Paths/West
 @onready var _north: CoolingPath = $Paths/North
 @onready var _west_vent: SteamVent = $Vents/West
-@onready var _north_vent: SteamVent = $Vents/North
+@onready var _north_wind: WindZone = $Vents/North
 @onready var _bridge: Node3D = $FoldBridge
 @onready var _presence: Area3D = $RoomPresence
-@onready var _branch_label: Label3D = $Hints/Branch
+@onready var _gem: SealGem = $KhamGem
 @onready var _return_stage: KhamReturnStage = $ReturnStage
 
 
@@ -59,19 +62,20 @@ func _ready() -> void:
 	for path: CoolingPath in [_first, _west, _north]:
 		path.configure(data)
 		path.failed.connect(reset_room)
-	for valve: StrikeValve in [_valve_a, _valve_b, _valve_c]:
+	for valve: InteractValve in [_valve_a, _valve_b, _lever]:
 		valve.configure(data)
 	for child: Node in $SinkingRoutes.get_children():
 		var route: KhamSinkingRoute = child as KhamSinkingRoute
 		_routes.append(route)
 		route.configure(data.sinking)
 		route.set_active(true)
-	_valve_a.struck.connect(_on_inlet_struck)
-	_valve_b.struck.connect(_on_diverter_struck)
-	_valve_c.struck.connect(_on_relief_struck)
-	for vent: SteamVent in [_west_vent, _north_vent]:
-		vent.configure(data)
-		vent.failed.connect(reset_room)
+	_valve_a.activated.connect(_on_inlet_opened)
+	_valve_b.activated.connect(_on_diverter_opened)
+	_lever.set_enabled(false)
+	_lever.activated.connect(_on_relief_opened)
+	_west_vent.configure(data)
+	_west_vent.failed.connect(reset_room)
+	_north_wind.set_active(false)
 	for body: Node in _bridge.find_children("*", "StaticBody3D", true, false):
 		_bridge_bodies.append(body as StaticBody3D)
 	for platform: Node3D in phase_one_platforms:
@@ -84,7 +88,12 @@ func _ready() -> void:
 	_bridge.hide()
 	_presence.body_entered.connect(_on_room_entered)
 	_presence.body_exited.connect(_on_room_exited)
-	$SealTrigger.body_entered.connect(_on_seal_entered)
+	_gem.configure_pickup(_can_collect_gem, gem_placed_flag)
+	_gem.collected.connect(_on_gem_collected)
+	var zone: ZoneRoot = get_parent() as ZoneRoot
+	if zone:
+		zone.player_spawned.connect(_gem.set_carrier)
+		_gem.set_carrier(zone.get_node_or_null(^"Player") as Player)
 	_connect_return_stage()
 	GameState.progress_replaced.connect(_restore_progress)
 	_restore_progress()
@@ -121,6 +130,8 @@ func _on_room_entered(body: Node3D) -> void:
 	var hurtbox: HurtboxComponent = player.get_node(^"HurtboxComponent") as HurtboxComponent
 	_hurtboxes[player] = hurtbox
 	hurtbox.add_hit_interceptor(_intercept_hit.bind(player))
+	if _complete:
+		_gem.set_carrier(player)
 
 
 func _on_room_exited(body: Node3D) -> void:
@@ -138,35 +149,38 @@ func _intercept_hit(_info: DamageInfo, player: Player) -> bool:
 	return true
 
 
-func _on_inlet_struck(_player: Player) -> void:
+func _on_inlet_opened(_player: Player) -> void:
 	if _complete or _phase_two or _reset_pending:
 		return
 	_first.cool_for(data.first_cold_time)
 	if not _started:
 		_started = true
+		_lever.set_enabled(true)
 		_west_vent.start_cycle()
-		_north_vent.start_continuous()
+		_north_wind.set_active(true)
 
 
-func _on_diverter_struck(_player: Player) -> void:
+func _on_diverter_opened(_player: Player) -> void:
 	if not _started or _complete or _phase_two or _reset_pending:
 		return
 	_west_selected = not _west_selected
 	if _west_selected:
 		_north.set_hot()
 		_west.cool_for(data.west_cold_time)
-		_branch_label.text = "DÒNG LẠNH → TÂY · VAN XẢ ÁP"
 	else:
 		_west.set_hot()
 		_north.cool_for(data.north_cold_time)
-		_branch_label.text = "DÒNG LẠNH → BẮC · PHONG ẤN"
 
 
-func _on_relief_struck(_player: Player) -> void:
+func _on_relief_opened(_player: Player) -> void:
 	if not _started or _pressure_released or _complete or _phase_two or _reset_pending:
 		return
 	_pressure_released = true
-	_north_vent.stop()
+	var closing: Tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	closing.set_parallel(true)
+	closing.tween_property(_handle, "rotation:z", -_handle.rotation.z, maxf(data.valve_turn_time, 0.01))
+	closing.tween_property(_shutter, "position:y", 0.0, maxf(data.bridge_open_time, 0.01))
+	closing.chain().tween_callback(_north_wind.set_active.bind(false))
 	_open_bridge(false)
 
 
@@ -192,11 +206,12 @@ func _set_bridge_collision(enabled: bool) -> void:
 		body.set_deferred(&"collision_layer", 1 if enabled else 0)
 
 
-func _on_seal_entered(body: Node3D) -> void:
-	if not body is Player or _complete or _phase_two or _reset_pending:
-		return
-	if not _pressure_released or _west_selected or _north.heat == CoolingPath.Heat.HOT:
-		return
+func _can_collect_gem(actor: Node3D) -> bool:
+	return actor is Player and not _complete and not _phase_two and not _reset_pending \
+		and _pressure_released and not _west_selected and _north.heat != CoolingPath.Heat.HOT
+
+
+func _on_gem_collected(_player: Player) -> void:
 	_begin_phase_two()
 
 
@@ -204,7 +219,6 @@ func _begin_phase_two(immediate: bool = false) -> void:
 	_phase_two = true
 	_stop_phase_one()
 	$Landmarks.hide()
-	$Hints.hide()
 	$StoneInlays.hide()
 	if _bridge_tween:
 		_bridge_tween.kill()
@@ -237,7 +251,6 @@ func _finish_puzzle() -> void:
 		return
 	_complete = true
 	_stop_phase_one()
-	_branch_label.text = "KHẢM ☵ ĐÃ GIẢI"
 	GameState.set_flag(data.seal_flag)
 	activated.emit()
 	seal_released.emit(data.seal_id)
@@ -252,21 +265,21 @@ func _stop_phase_one() -> void:
 	for route: KhamSinkingRoute in _routes:
 		route.set_active(false)
 	_west_vent.stop()
-	_north_vent.stop()
+	_north_wind.set_active(false)
 	_west_vent.set_deferred(&"monitoring", false)
-	_north_vent.set_deferred(&"monitoring", false)
 	for path: CoolingPath in [_first, _west, _north]:
 		path.set_safe()
 		path.set_deferred(&"monitoring", false)
-	for valve: StrikeValve in [_valve_a, _valve_b, _valve_c]:
+	for valve: InteractValve in [_valve_a, _valve_b, _lever]:
 		valve.set_enabled(false)
-		valve.set_deferred(&"monitorable", false)
 
 
 func _restore_progress() -> void:
 	if GameState.has_flag(data.seal_flag):
 		if not _complete:
 			_complete = true
+			_gem.restore_collected()
+			_shutter.position.y = 0.0
 			_begin_phase_two(true)
 	elif _complete:
 		for player: Player in _hurtboxes:
@@ -343,6 +356,7 @@ func _reset_return_stage(player: Player) -> void:
 	add_child(replacement)
 	_connect_return_stage()
 	player.teleport(seal.global_position, Vector3.LEFT)
+	_gem.set_carrier(player)
 	replacement.start()
 	_reset_pending = false
 	room_reset.emit(self, player)
