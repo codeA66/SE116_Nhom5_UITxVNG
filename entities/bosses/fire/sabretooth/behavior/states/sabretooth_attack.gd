@@ -44,13 +44,9 @@ func enter(_previous: StringName) -> void:
 	_actor.animation_player().callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 	_actor.velocity.x = 0.0
 	_actor.velocity.z = 0.0
-	_warning_left = 0.60 if _skill.skill_id == &"pounce" and not _actor.is_phase_one() and not _actor.manual_skill else 0.0
-	_actor.set_telegraph(true)
-	_telegraph = true
-	if _warning_left > 0.0:
-		_actor.motion.play(&"Roaring", _actor.profile.bridge_duration)
-	else:
-		_start_swing()
+	_warning_left = 0.0
+	_telegraph = false
+	_start_swing()
 	_actor.skill_started.emit(_skill)
 
 

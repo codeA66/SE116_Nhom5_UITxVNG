@@ -22,23 +22,38 @@ func physics_update(delta: float) -> void:
 		_actor.forget_target()
 		state_machine.transition_to(IDLE)
 		return
+	if _actor.phase_one_reaction_pending:
+		_actor.phase_one_stand_left = 0.0
+		state_machine.transition_to(&"TigerPhaseOneReaction")
+		return
+	# Giữ nguyên hướng đứng yên 2 giây sau mỗi đòn để mở cơ hội player vòng sang 2 bên hông rồi dùng đòn quật sườn.
+	if _actor.phase_one_stand_left > 0.0:
+		_actor.phase_one_stand_left = maxf(0.0, _actor.phase_one_stand_left - delta)
+		_actor.velocity.x = 0.0
+		_actor.velocity.z = 0.0
+		if _gait != &"Growling":
+			_actor.motion.play(&"Growling", _actor.profile.bridge_duration, true, false)
+			_gait = &"Growling"
+		if _actor.phase_one_stand_left <= 0.0:
+			var side_skill := _actor.select_side_skill()
+			if side_skill:
+				_actor.phase_one_prepared = false
+				_actor.begin_skill(side_skill)
+				return
+			if absf(_actor.target_angle()) > deg_to_rad(_actor.profile.turn_snap_angle):
+				_actor.phase_one_turn_pending = true
+		return
 	if _actor.phase_one_turn_pending:
 		state_machine.transition_to(&"TigerPhaseOneTurn")
 		return
-	if _actor.phase_one_reaction_pending:
-		state_machine.transition_to(&"TigerPhaseOneReaction")
-		return
-	if _actor.phase_one_prepared and _actor.phase_one_can_prepare():
+	if (_actor.phase_one_prepared or _actor.phase_one_wait <= 0.0) and _actor.phase_one_can_prepare():
 		var skill := _actor.select_phase_one_skill()
 		if skill:
 			_actor.phase_one_prepared = false
+			_actor.velocity.x = 0.0
+			_actor.velocity.z = 0.0
 			_actor.begin_skill(skill)
 			return
-	if not _actor.phase_one_prepared and _actor.phase_one_wait <= 0.0 and _actor.phase_one_can_prepare():
-		_actor.velocity.x = 0.0
-		_actor.velocity.z = 0.0
-		state_machine.transition_to(&"TigerPhaseOneWarning")
-		return
 	_decision -= delta
 	if _decision <= 0.0:
 		_decision = _actor.profile.decision_interval

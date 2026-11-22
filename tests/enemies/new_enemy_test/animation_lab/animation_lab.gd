@@ -216,6 +216,9 @@ func _replace_enemy(scene: PackedScene) -> void:
 			(_controlled as FireSabretooth).skill_finished.connect(_on_manual_move_finished)
 		var bird := _controlled as Pyralon
 		if bird:
+			if bird.phase:
+				bird.phase.finished.connect(_on_manual_intro_finished)
+				_menu.add_move(PyralonPhase.MOVE_ID, PyralonPhase.MOVE_TITLE)
 			for id: StringName in Pyralon.MOVE_TITLES:
 				_menu.add_move(id, Pyralon.MOVE_TITLES[id])
 			bird.preview_finished.connect(_on_pyralon_move_finished)
@@ -311,7 +314,12 @@ func _on_enemy_died(enemy: Enemy) -> void:
 	if enemy is FireSabretooth and (enemy as FireSabretooth).encounter_complete:
 		_ai_enabled = false
 		_menu.set_ai(false)
-		_menu.set_playing(&"Đã hoàn thành chuỗi Phase 2")
+		_menu.set_playing(&"Đã hạ gục Hổ Răng Kiếm")
+		return
+	if enemy is Pyralon and (enemy as Pyralon).encounter_complete:
+		_ai_enabled = false
+		_menu.set_ai(false)
+		_menu.set_playing(&"Đã hạ gục Pyralon")
 		return
 	_controlled = null
 	_animator = null
@@ -461,17 +469,27 @@ func _play_move(id: StringName, title: String) -> void:
 	if _ai_enabled or not is_instance_valid(_controlled):
 		return
 	var bird := _controlled as Pyralon
-	if bird and Pyralon.MOVE_TITLES.has(id):
-		_stop_manual_move()
-		_reset_preview(false)
-		_manual_move = true
-		_menu.set_playing(StringName(title))
-		bird.play_move(id, player)
-		return
+	if bird:
+		if id == PyralonPhase.MOVE_ID and bird.phase:
+			_stop_manual_move()
+			bird.restore_preview()
+			_reset_preview(false)
+			_menu.set_playing(StringName(title))
+			bird.phase.preview(player)
+			return
+		if Pyralon.MOVE_TITLES.has(id):
+			_stop_manual_move()
+			_reset_preview(false)
+			_manual_move = true
+			_menu.set_playing(StringName(title))
+			bird.play_move(id, player)
+			return
 	if id == SabretoothPhase.MOVE_ID:
 		var phase := _controlled.get_node_or_null("Phase") as SabretoothPhase
 		if phase:
 			_stop_manual_move()
+			if _controlled is FireSabretooth:
+				(_controlled as FireSabretooth).restore_preview()
 			_reset_preview(false)
 			_menu.set_playing(StringName(title))
 			phase.preview(player)
@@ -509,9 +527,12 @@ func _stop_manual_move() -> void:
 	if not is_instance_valid(_controlled):
 		return
 	var bird := _controlled as Pyralon
-	if bird and bird.is_previewing():
-		bird.reset_combat()
-		_manual_move = false
+	if bird:
+		if bird.phase:
+			bird.phase.cancel_preview()
+		if bird.is_previewing():
+			bird.reset_combat()
+			_manual_move = false
 	var phase := _controlled.get_node_or_null("Phase") as SabretoothPhase
 	if phase:
 		phase.cancel_preview()

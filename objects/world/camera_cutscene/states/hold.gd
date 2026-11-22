@@ -17,5 +17,5 @@ func physics_update(delta: float) -> void:
 	var linear := clampf(_elapsed / maxf(d.hold_time, 0.001), 0.0, 1.0)
 	cutscene.camera.global_transform = cutscene.get_shot_transform(d.hold_orbit_degrees * linear)
 	cutscene.camera.fov = lerpf(d.shot_fov, d.push_in_fov, 1.0 - (1.0 - linear) * (1.0 - linear))
-	if _elapsed >= d.hold_time:
+	if not cutscene.hold_indefinitely and _elapsed >= d.hold_time:
 		state_machine.transition_to(OUTRO)

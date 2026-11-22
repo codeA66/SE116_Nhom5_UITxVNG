@@ -145,8 +145,8 @@ lunge_window = Vector2(0, 0)
 lunge_speed = 0
 lunge_time = 0.00
 cooldown = 3.2
-minimum_range = 2.8
-maximum_range = 4.2
+minimum_range = 1.0
+maximum_range = 4.6
 recovery_time = 0.66
 follow_bones = Array[StringName]([&"Sabrecat_LeftHand_LHnd_"])
 hitbox_center = Vector3(-2.3, 1.25, 1.6)
@@ -167,8 +167,8 @@ windup_end = 0.7
 active_start = 0.7
 active_end = 0.92
 cooldown = 3.2
-minimum_range = 2.8
-maximum_range = 4.2
+minimum_range = 1.0
+maximum_range = 4.6
 recovery_time = 0.66
 follow_bones = Array[StringName]([&"Sabrecat_RightHand_RHnd_"])
 hitbox_center = Vector3(2.3, 1.25, 1.6)
@@ -211,16 +211,58 @@ phase_two_only = true
 
 [sub_resource type="Resource" id="fire_finale"]
 script = ExtResource("strike")
-title = "Phase 2: Vồ và bùng nổ"
+title = "Phase 2: Chui cổng & Nổ 10m"
 melee_enabled = false
 skill_id = &"fire_finale"
 state = &"TigerFireFinale"
 animation = &"Leaper"
 phase_two_only = true
 
+[sub_resource type="Resource" id="phantom_blitz"]
+script = ExtResource("strike")
+title = "Phase 2: Cào xuyên ống (5 lượt)"
+melee_enabled = false
+skill_id = &"phantom_blitz"
+state = &"TigerPhantomBlitz"
+animation = &"Attack"
+phase_two_only = true
+
+[sub_resource type="Resource" id="flame_reform"]
+script = ExtResource("strike")
+title = "Phase 2: Tái hình thành từ lửa"
+melee_enabled = false
+skill_id = &"flame_reform"
+state = &"TigerFlameReform"
+animation = &"Growling"
+phase_two_only = true
+
+[sub_resource type="Resource" id="fang_snap"]
+script = ExtResource("strike")
+title = "Phase 2: Ngoạm hỏa nanh (Truy đuổi 7s)"
+melee_enabled = false
+skill_id = &"fang_snap"
+state = &"TigerFangSnap"
+animation = &"Bite"
+cooldown = 5.5
+minimum_range = 1.5
+maximum_range = 24.0
+phase_two_only = true
+
+[sub_resource type="Resource" id="cross_claw"]
+script = ExtResource("strike")
+title = "Phase 2: Phẫn nộ song trảo & Khe nứt 30s"
+melee_enabled = false
+skill_id = &"cross_claw"
+state = &"TigerCrossClaw"
+animation = &"Raged"
+cooldown = 7.5
+minimum_range = 0.0
+maximum_range = 14.0
+phase_two_only = true
+
 [sub_resource type="Resource" id="phase_two_sequence"]
 script = ExtResource("strike")
-title = "Phase 2: Toàn bộ chuỗi kết thúc"
+title = "Phase 2: Toàn bộ chuỗi chiêu"
 melee_enabled = false
 skill_id = &"phase_two_sequence"
 state = &"TigerTransformation"
@@ -231,7 +273,7 @@ script = ExtResource("data")
 idle_animation = &"Growling"
 walk_animation = &"Trot"
 run_animation = &"Run"
-skills = Array[ExtResource("skill")]([SubResource("pounce"), SubResource("double_claw"), SubResource("bite"), SubResource("paw_sweep"), SubResource("snap"), SubResource("left_swat"), SubResource("right_swat"), SubResource("raged"), SubResource("fire_beam"), SubResource("fire_finale"), SubResource("phase_two_sequence")])
+skills = Array[ExtResource("skill")]([SubResource("pounce"), SubResource("double_claw"), SubResource("bite"), SubResource("paw_sweep"), SubResource("snap"), SubResource("left_swat"), SubResource("right_swat"), SubResource("raged"), SubResource("fire_beam"), SubResource("fire_finale"), SubResource("phantom_blitz"), SubResource("flame_reform"), SubResource("fang_snap"), SubResource("cross_claw"), SubResource("phase_two_sequence")])
 advance_on_cooldown = true
 approach_stop_distance = 2.5
 display_name = "Hổ răng kiếm"

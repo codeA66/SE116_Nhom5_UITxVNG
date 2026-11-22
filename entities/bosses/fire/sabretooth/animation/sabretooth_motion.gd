@@ -12,6 +12,7 @@ const CINEMATIC_ROAR := &"sabretooth_ai/CinematicRoar"
 const SAMPLE_RATE := 30.0
 const GROUNDING := preload("res://entities/bosses/fire/sabretooth/animation/sabretooth_grounding.gd")
 const STANDING: Array[StringName] = [&"Warning", &"Growling", &"Roaring"]
+const FLOOR_RECOVERY_CLIPS: Array[StringName] = [&"GetUp", &"GetUp2", &"GetUpMad", &"Layout"]
 const MIRRORED: Dictionary[StringName, StringName] = {&"SwatLft": &"SwatRgt", &"TurnLeft": &"TurnRight", &"Spin180": &"Spin180Right"}
 const GAITS: Array[StringName] = [&"Run", &"Run2", &"Trot", &"Stalker", &"BackUp"]
 const FEET: Array[StringName] = [&"Sabrecat_RightHand_RHnd_", &"Sabrecat_LeftHand_LHnd_", &"Sabrecat_RightFoot_RFot_", &"Sabrecat_LeftFoot_LFot_"]
@@ -56,8 +57,8 @@ func setup(actor: PreviewFireBoss) -> void:
 	_animator.advance(0.0)
 	_skeleton.force_update_all_bone_transforms()
 	_anchor = _skeleton.get_bone_global_pose(_pelvis).origin
-	for name: StringName in FEET:
-		var end := _skeleton.find_bone(name)
+	for foot_name: StringName in FEET:
+		var end := _skeleton.find_bone(foot_name)
 		var root := _skeleton.get_bone_parent(_skeleton.get_bone_parent(end))
 		for bone: int in _skeleton.get_bone_count():
 			var ancestor := bone
@@ -78,6 +79,9 @@ func setup(actor: PreviewFireBoss) -> void:
 		_clips[&"FireBeam"] = _beam_clip(_clips[&"Roaring"])
 		_yaw_points[&"FireBeam"] = PackedVector2Array()
 		_turns[&"FireBeam"] = 0.0
+		_clips[&"Collapse"] = _collapse_clip()
+		_yaw_points[&"Collapse"] = PackedVector2Array()
+		_turns[&"Collapse"] = 0.0
 		for clip: StringName in MIRRORED:
 			var mirrored := MIRRORED[clip]
 			_clips[mirrored] = _mirror_clip(_clips[clip])
@@ -101,6 +105,9 @@ func setup(actor: PreviewFireBoss) -> void:
 	for clip: StringName in MIRRORED.values():
 		original.add_animation(clip, _shared_preview[clip])
 	original.add_animation(&"FireBeam", _clips[&"FireBeam"])
+	original.add_animation(&"Collapse", _clips[&"Collapse"])
+	if _clips.has(&"GetUp2"):
+		original.add_animation(&"GetUp2", _clips[&"GetUp2"])
 	_animator.stop()
 	_skeleton.reset_bone_poses()
 	_library.add_animation(CINEMATIC_SLOT, _cinematic_roar)
@@ -256,12 +263,12 @@ func _mirror_clip(source: Animation) -> Animation:
 	var opposites := PackedInt32Array()
 	var rests: Array[Transform3D] = []
 	for bone: int in _skeleton.get_bone_count():
-		var name := String(_skeleton.get_bone_name(bone))
-		var opposite := name
-		if name.contains("Left"):
-			opposite = name.replace("Left", "Right").replace("_L", "_R")
-		elif name.contains("Right"):
-			opposite = name.replace("Right", "Left").replace("_R", "_L")
+		var bone_name := String(_skeleton.get_bone_name(bone))
+		var opposite := bone_name
+		if bone_name.contains("Left"):
+			opposite = bone_name.replace("Left", "Right").replace("_L", "_R")
+		elif bone_name.contains("Right"):
+			opposite = bone_name.replace("Right", "Left").replace("_R", "_L")
 		var found := _skeleton.find_bone(opposite)
 		opposites.append(found if found >= 0 else bone)
 		rests.append(_skeleton.get_bone_global_rest(bone))
@@ -328,7 +335,7 @@ func _lock_limb_lengths(animation: Animation) -> void:
 			elif type == Animation.TYPE_SCALE_3D:
 				animation.track_set_key_value(track, key, _limb_scales[bone])
 
-func _normalize(name: StringName, source: Animation) -> Animation:
+func _normalize(clip_name: StringName, source: Animation) -> Animation:
 	var animation := source.duplicate() as Animation
 	animation.loop_mode = Animation.LOOP_NONE
 	var keys := maxi(1, ceili(source.length * 120.0))
@@ -339,8 +346,8 @@ func _normalize(name: StringName, source: Animation) -> Animation:
 			path = candidate
 			break
 	if path.is_empty():
-		_yaw_points[name] = PackedVector2Array()
-		_turns[name] = 0.0
+		_yaw_points[clip_name] = PackedVector2Array()
+		_turns[clip_name] = 0.0
 		return animation
 	for track: int in range(animation.get_track_count() - 1, -1, -1):
 		if animation.track_get_path(track) == path:
@@ -352,23 +359,36 @@ func _normalize(name: StringName, source: Animation) -> Animation:
 		animation.track_set_path(track, path)
 	_animator.stop()
 	_skeleton.reset_bone_poses()
-	_animator.play(name, 0.0)
+	_animator.play(clip_name, 0.0)
 	_animator.advance(0.0)
 	var yaw_points := PackedVector2Array()
 	var last_yaw := 0.0
 	var first_yaw := 0.0
+	var fixed_floor_yaw := clip_name in FLOOR_RECOVERY_CLIPS
+	var standing_yaw := 0.0
+	if fixed_floor_yaw:
+		# Clip nằm/đứng dậy có xương chậu nghiêng 90 độ lúc nằm: khóa yaw theo dáng đứng thẳng để không bị xoay ngang thân!
+		var upright_t := 0.0 if clip_name == &"Layout" else source.length
+		_animator.seek(upright_t, true)
+		_skeleton.force_update_all_bone_transforms()
+		var up_lat := _skeleton.get_bone_global_pose(_pelvis).basis.z.slide(Vector3.UP)
+		standing_yaw = atan2(up_lat.x, up_lat.z) if up_lat.length_squared() > 0.001 else PI * 0.5
+		first_yaw = standing_yaw
+		last_yaw = standing_yaw
 	for key: int in keys + 1:
 		var time := source.length * key / keys
 		_animator.seek(time, true)
 		_skeleton.force_update_all_bone_transforms()
 		var pelvis := _skeleton.get_bone_global_pose(_pelvis)
-		var lateral := pelvis.basis.z.slide(Vector3.UP)
-		var angle := atan2(lateral.x, lateral.z) if lateral.length_squared() > 0.001 else last_yaw
-		if key == 0:
-			first_yaw = angle
+		var angle := standing_yaw
+		if not fixed_floor_yaw:
+			var lateral := pelvis.basis.z.slide(Vector3.UP)
+			angle = atan2(lateral.x, lateral.z) if lateral.length_squared() > 0.001 else last_yaw
+			if key == 0:
+				first_yaw = angle
+				last_yaw = angle
+			angle = last_yaw + angle_difference(last_yaw, angle)
 			last_yaw = angle
-		angle = last_yaw + angle_difference(last_yaw, angle)
-		last_yaw = angle
 		yaw_points.append(Vector2(time, angle - first_yaw))
 		# Hiệu chỉnh gốc ở Hips để toàn bộ con cháu giữ đúng chuyển động chân/cổ.
 		var correction := Transform3D(Basis(Vector3.UP, PI * 0.5 - angle), Vector3.ZERO)
@@ -380,8 +400,8 @@ func _normalize(name: StringName, source: Animation) -> Animation:
 		animation.position_track_insert_key(position_track, time, pose.origin)
 		animation.rotation_track_insert_key(rotation_track, time, pose.basis.get_rotation_quaternion())
 		animation.scale_track_insert_key(scale_track, time, pose.basis.get_scale())
-	_yaw_points[name] = yaw_points
-	_turns[name] = last_yaw - first_yaw
+	_yaw_points[clip_name] = yaw_points
+	_turns[clip_name] = last_yaw - first_yaw
 	_lock_limb_lengths(animation)
 	return animation
 
@@ -508,10 +528,10 @@ func _best_phase(animation: Animation) -> float:
 	for frame: int in 16:
 		var time := animation.length * frame / 16.0
 		var score := 0.0
-		for name: StringName in FEET:
-			var bone := _skeleton.find_bone(name)
+		for foot_name: StringName in FEET:
+			var bone := _skeleton.find_bone(foot_name)
 			for track: int in animation.get_track_count():
-				if animation.track_get_type(track) != Animation.TYPE_ROTATION_3D or animation.track_get_path(track).get_concatenated_subnames() != name:
+				if animation.track_get_type(track) != Animation.TYPE_ROTATION_3D or animation.track_get_path(track).get_concatenated_subnames() != foot_name:
 					continue
 				var candidate: Quaternion = animation.rotation_track_interpolate(track, time)
 				score += absf(candidate.angle_to(_skeleton.get_bone_pose_rotation(bone)))
@@ -605,6 +625,78 @@ func _beam_clip(source: Animation) -> Animation:
 				poses[bone] = correction * poses[bone]
 		_write_pose(animation, channels, poses, time)
 	return animation
+
+
+func _collapse_clip() -> Animation:
+	# Dựng animation ngã gục chết chậm dramatic (2.35s — không bị vội/rush):
+	# 0.00..0.48s: giật lùi trúng đòn chí mạng (lấy đầu Cowering từ dáng đứng Growling)
+	# 0.48..1.20s: chân khuỵu mất sức dần, hạ thân từ từ xuống sàn (đảo ngược GetUp2 0.88 -> 0.44)
+	# 1.20..2.00s: đổ nghiêng hẳn sang hông đập đầu/nanh nặng xuống sàn (đảo ngược GetUp2 0.44 -> 0.0)
+	# 2.00..2.35s: nhịp nảy lắng & thở cuối cùng khớp 100% frame 0 của GetUp2 để đứng dậy không giật!
+	var getup2 := _clips[&"GetUp2"]
+	var cower := _clips[&"Cowering"] if _clips.has(&"Cowering") else _clips[&"Growling"]
+	var growl := _clips[&"Growling"]
+	var animation := getup2.duplicate() as Animation
+	var channels := _bone_channels(animation)
+	for track: int in animation.get_track_count():
+		if _skeleton.find_bone(animation.track_get_path(track).get_concatenated_subnames()) < 0:
+			continue
+		for key: int in range(animation.track_get_key_count(track) - 1, -1, -1):
+			animation.track_remove_key(track, key)
+	animation.length = 2.35
+	animation.loop_mode = Animation.LOOP_NONE
+
+	var stand_pose := _globals_at(growl, 0.0)
+	var recoil_pose := _globals_at(cower, minf(0.32, cower.length * 0.35))
+	var lie_pose := _globals_at(getup2, 0.0)
+	var rib_idx := _skeleton.find_bone(&"Sabrecat_Ribcage_Spn4_")
+
+	const STEPS := 72
+	for frame: int in STEPS + 1:
+		var time := animation.length * float(frame) / float(STEPS)
+		var poses: Array[Transform3D]
+		if time < 0.48:
+			var u := smoothstep(0.0, 0.48, time)
+			poses = _blend_local_poses(stand_pose, recoil_pose, u)
+		elif time < 1.20:
+			var u := (time - 0.48) / 0.72
+			var grav := pow(u, 1.32)
+			var src_t := lerpf(0.88, 0.44, grav) * getup2.length
+			var fall_pose := _globals_at(getup2, src_t)
+			poses = _blend_local_poses(recoil_pose, fall_pose, smoothstep(0.0, 0.36, u))
+		elif time < 2.00:
+			var u := (time - 1.20) / 0.80
+			var drop := pow(u, 1.42)
+			var src_t := lerpf(0.44, 0.0, drop) * getup2.length
+			poses = _globals_at(getup2, src_t)
+		else:
+			var u := (time - 2.00) / 0.35
+			var settle_bounce := sin(u * PI) * (1.0 - u) * 0.048
+			var slight_up := _globals_at(getup2, getup2.length * 0.032)
+			poses = _blend_local_poses(lie_pose, slight_up, settle_bounce)
+			if rib_idx >= 0 and settle_bounce > 0.001:
+				var breath := poses[rib_idx]
+				breath.origin.y += settle_bounce * 0.12
+				poses[rib_idx] = breath
+		_write_pose(animation, channels, poses, time)
+	return animation
+
+
+func _blend_local_poses(from: Array[Transform3D], to: Array[Transform3D], weight: float) -> Array[Transform3D]:
+	var w := clampf(weight, 0.0, 1.0)
+	if w <= 0.0001:
+		return from.duplicate()
+	if w >= 0.9999:
+		return to.duplicate()
+	var result: Array[Transform3D] = []
+	result.resize(from.size())
+	for bone: int in from.size():
+		var parent := _skeleton.get_bone_parent(bone)
+		var l_from := from[parent].affine_inverse() * from[bone] if parent >= 0 else from[bone]
+		var l_to := to[parent].affine_inverse() * to[bone] if parent >= 0 else to[bone]
+		var blended := l_from.interpolate_with(l_to, w)
+		result[bone] = result[parent] * blended if parent >= 0 else blended
+	return result
 
 
 func _set_yaw(points: PackedVector2Array, length: float) -> void:

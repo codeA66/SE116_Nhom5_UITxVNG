@@ -19,6 +19,7 @@ var _chip_timer: float
 var _arc_speed: float
 var _arc_distance: float
 var _seed_index: int
+var _arc_gold_goal: int = 8
 var _hit: Dictionary[int, bool] = {}
 var _query := PhysicsShapeQueryParameters3D.new()
 var _shape := BoxShape3D.new()
@@ -53,11 +54,12 @@ func slash(at: Vector3, direction: Vector3, speed: float) -> void:
 	_arc_distance = 0.0
 	_seed_index = 0
 	var data := _field.profile
+	_arc_gold_goal = _field.scaled_gold_count(data.arc_gold_count)
 	_arc_fx = _field.effect(
 		PyralonFireFx.Kind.ARC,
 		_center + Vector3.UP * 0.75,
 		_heading,
-		Vector2(data.arc_width * 0.52, 2.05),
+		Vector2(data.arc_width * 0.56, 2.95),
 		data.arc_range / maxf(speed, 0.1)
 	)
 	_hit.clear()
@@ -144,8 +146,8 @@ func _step_arc(delta: float) -> void:
 		return
 
 	_shape.size = Vector3(profile.arc_width, 1.5, 1.20 + step)
-	var basis := Basis.looking_at(_heading, Vector3.UP, true)
-	_query.transform = Transform3D(basis, (_center + next) * 0.5 + level)
+	var rot_basis := Basis.looking_at(_heading, Vector3.UP, true)
+	_query.transform = Transform3D(rot_basis, (_center + next) * 0.5 + level)
 	for result: Dictionary in get_world_3d().direct_space_state.intersect_shape(_query, 8):
 		var hurtbox := result.collider as HurtboxComponent
 		if hurtbox == null or _hit.has(hurtbox.get_instance_id()):
@@ -159,8 +161,8 @@ func _step_arc(delta: float) -> void:
 	if is_instance_valid(_arc_fx):
 		_arc_fx.set_pose(_center + level, _heading)
 
-	var seed_step := profile.arc_range / maxi(1, profile.arc_gold_count)
-	if _seed_index < profile.arc_gold_count and _arc_distance >= seed_step * (_seed_index + 0.5):
+	var seed_step := profile.arc_range / maxi(1, _arc_gold_goal)
+	if _seed_index < _arc_gold_goal and _arc_distance >= seed_step * (_seed_index + 0.5):
 		_drop_seed(basis.x)
 		_seed_index += 1
 
@@ -192,7 +194,7 @@ func _drop_seed(side: Vector3) -> void:
 	var hover := Vector3.UP * _field.profile.gold_hover_height
 	var flank := -1.0 if (_seed_index % 2 == 0) else 1.0
 	for attempt: int in 4:
-		var lateral := flank * randf_range(1.75, 3.10) if attempt < 2 else randf_range(-2.8, 2.8)
+		var lateral := flank * randf_range(3.5, 6.4) if attempt < 2 else randf_range(-5.8, 5.8)
 		var point := _field.floor_at(_center + side * lateral)
 		if _field.can_drop_gold(point, _field.profile.gold_spacing) and _field.wall_between(_center + hover, point + hover).is_empty():
 			_field.drop_gold(_center + Vector3.UP * 1.35, point)

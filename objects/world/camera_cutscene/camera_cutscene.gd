@@ -32,6 +32,10 @@ signal shot_reached
 var player: Player
 ## Camera của player lúc bắt đầu (để trả lại khi xong)
 var player_camera: Camera3D
+## Chạy nhịp camera theo thời gian thực ngay cả khi Engine.time_scale < 1 (slow-motion)
+var unscaled_time: bool = false
+## Giữ khung hình vô hạn ở state Hold cho tới khi caller gọi release_hold()
+var hold_indefinitely: bool = false
 
 @onready var state_machine: StateMachine = $StateMachine
 @onready var camera: Camera3D = $CutCamera
@@ -83,7 +87,10 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## Chạy theo frame hiển thị (không theo physics) cho camera mượt; chỉ bật trong lúc cutscene chạy
 func _process(delta: float) -> void:
-	state_machine.physics_update(delta)
+	var step := delta
+	if unscaled_time and Engine.time_scale > 0.001:
+		step = clampf(delta / Engine.time_scale, 0.0, 0.05)
+	state_machine.physics_update(step)
 
 
 ## Điểm camera nhìn vào
@@ -127,11 +134,25 @@ func play_for(body_player: Player) -> void:
 
 
 func cancel_playback() -> void:
+	hold_indefinitely = false
+	unscaled_time = false
 	if is_processing():
 		state_machine.transition_to(CameraCutsceneState.DONE)
 
 
+func release_hold() -> void:
+	hold_indefinitely = false
+	if is_processing() and state_machine.current_state and state_machine.current_state.name == CameraCutsceneState.HOLD:
+		state_machine.transition_to(CameraCutsceneState.OUTRO)
+
+
+func is_holding() -> bool:
+	return is_processing() and state_machine.current_state != null and state_machine.current_state.name == CameraCutsceneState.HOLD
+
+
 func end() -> void:
+	hold_indefinitely = false
+	unscaled_time = false
 	set_process(false)
 	set_letterbox(0.0)
 	if is_instance_valid(player_camera):
