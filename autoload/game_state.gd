@@ -227,6 +227,19 @@ func can_upgrade_ability(ability: AbilityData) -> bool:
 
 
 ## NPC nâng cấp kỹ năng: lấy đi vật phẩm yêu cầu rồi tăng một cấp. Thiếu thì không đổi gì, trả về false
+## Đặt kỹ năng lên ít nhất level mà không tốn vật phẩm (bộ đồ cấp sẵn của khu, test). Chưa có kỹ năng hoặc đã ở
+## cấp cao hơn thì không đổi: không bao giờ hạ cấp người chơi đã nâng
+func grant_ability_level(ability: AbilityData, level: int) -> void:
+	if ability == null or not has_ability(ability.id):
+		return
+	var target := clampi(level, 1, ability.get_max_level())
+	if get_ability_level(ability) >= target:
+		return
+	progress.ability_levels[ability.id] = target
+	ability_level_changed.emit(ability, target)
+	progress_changed.emit()
+
+
 func upgrade_ability(ability: AbilityData) -> bool:
 	if not can_upgrade_ability(ability):
 		return false

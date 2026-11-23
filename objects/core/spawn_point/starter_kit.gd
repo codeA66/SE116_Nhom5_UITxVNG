@@ -9,6 +9,9 @@ signal applied(player: Player)
 
 @export var weapons: Array[WeaponData] = []
 @export var abilities: Array[AbilityData] = []
+## Kỹ năng -> cấp tối thiểu (ví dụ Thổi Gió -> 2 là Lốc xoáy). Chưa có thì mở rồi nâng; đã cao hơn thì giữ nguyên.
+## Không ghi dạng tiến hoá (Lốc xoáy) vào abilities: nó chỉ có qua nâng cấp kỹ năng gốc
+@export var ability_levels: Dictionary[AbilityData, int] = {}
 ## Vũ khí cầm trên tay nếu chưa cầm gì; để trống = không cầm
 @export var held_weapon: WeaponData
 
@@ -28,6 +31,11 @@ func apply(player: Player) -> void:
 			GameState.add_weapon(weapon)
 	for ability: AbilityData in abilities:
 		GameState.unlock_ability(ability)
+	for ability: AbilityData in ability_levels:
+		if ability == null:
+			continue
+		GameState.unlock_ability(ability)
+		GameState.grant_ability_level(ability, ability_levels[ability])
 	if held_weapon and GameState.get_weapon() == null:
 		GameState.set_weapon(held_weapon)
 	applied.emit(player)

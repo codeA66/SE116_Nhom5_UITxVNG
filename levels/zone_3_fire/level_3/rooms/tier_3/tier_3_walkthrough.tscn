@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="Resource" path="res://abilities/wind_blast/wind_blast.tres" id="kit_wind"]
 [ext_resource type="PackedScene" path="res://objects/world/cellar/dark_zone/dark_zone.tscn" id="ton_dark"]
 [ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/tier_3_walkthrough.gd" id="route"]
 [ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="zone"]
@@ -81,6 +82,9 @@ view = SubResource("FireCamera")
 script = ExtResource("starter_kit")
 weapons = Array[ExtResource("weapon_data")]([ExtResource("sword")])
 abilities = Array[ExtResource("ability_data")]([ExtResource("dash")])
+ability_levels = Dictionary[ExtResource("ability_data"), int]({
+ExtResource("kit_wind"): 2
+})
 held_weapon = ExtResource("sword")
 
 [node name="LiFoundry" parent="." instance=ExtResource("li")]

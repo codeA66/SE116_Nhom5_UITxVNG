@@ -175,6 +175,9 @@ rooms_root = NodePath("../Rooms")
 script = ExtResource("starter_kit_script")
 weapons = Array[ExtResource("kit_weapon_data")]([ExtResource("kit_sword"), ExtResource("kit_bow")])
 abilities = Array[ExtResource("kit_ability_data")]([ExtResource("kit_wind"), ExtResource("kit_fire")])
+ability_levels = Dictionary[ExtResource("kit_ability_data"), int]({
+ExtResource("kit_wind"): 2
+})
 held_weapon = ExtResource("kit_sword")
 [node name="AreaTitles" type="Node" parent="."]
 [node name="Tier2" type="Node3D" parent="Rooms" unique_id=1998555658]
