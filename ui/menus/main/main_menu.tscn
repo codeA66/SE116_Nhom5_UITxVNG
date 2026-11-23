@@ -21,18 +21,7 @@
 [ext_resource type="Script" path="res://ui/menus/main/states/settings_state.gd" id="20_s_settings"]
 
 [ext_resource type="PackedScene" path="res://ui/menus/settings/settings_panel.tscn" id="settings_panel"]
-[ext_resource type="Texture2D" path="res://assets/ui/menu/foxy_wind_dock.png" id="dock_art"]
-[ext_resource type="Shader" path="res://ui/menus/main/backdrop/foxy_wind_dock.gdshader" id="dock_shader"]
-
-[sub_resource type="ShaderMaterial" id="DockMotion"]
-shader = ExtResource("dock_shader")
-shader_parameter/scarf_lift = 0.012
-shader_parameter/banner_sway = 0.009
-shader_parameter/gust_interval = 5.2
-shader_parameter/banner_delay = 0.45
-shader_parameter/fog_strength = 0.11
-shader_parameter/fog_speed = 0.04
-shader_parameter/lantern_strength = 0.085
+[ext_resource type="PackedScene" path="res://ui/menus/main/backdrop/dock/dock_backdrop.tscn" id="dock_backdrop"]
 
 [sub_resource type="ShaderMaterial" id="Vignette"]
 shader = ExtResource("6_vignette")
@@ -46,14 +35,7 @@ registry = ExtResource("3_registry")
 
 [node name="Background" type="CanvasLayer" parent="."]
 
-[node name="MenuBackground" type="TextureRect" parent="Background"]
-material = SubResource("DockMotion")
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-texture = ExtResource("dock_art")
-expand_mode = 1
-stretch_mode = 6
+[node name="MenuBackground" parent="Background" instance=ExtResource("dock_backdrop")]
 
 [node name="UI" type="CanvasLayer" parent="."]
 layer = 10
