@@ -73,7 +73,7 @@ func _run_capture() -> void:
 	if not zone.is_combat_ready():
 		await zone.combat_ready
 	_player = zone.get_node(^"Player") as Player
-	_menu = _player.get_node(^"HUD/InventoryMenu") as InventoryMenu
+	_menu = _player.get_node(^"MenuLayer/InventoryMenu") as InventoryMenu
 	var station: Checkpoint = zone.get_node(^"CharmCheckpoint") as Checkpoint
 	var swift: CharmPickup = zone.get_node(^"SwiftSlashCharm") as CharmPickup
 	var heart: CharmPickup = zone.get_node(^"HeartCharm") as CharmPickup

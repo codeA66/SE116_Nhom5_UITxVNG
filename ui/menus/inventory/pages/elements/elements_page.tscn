@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="Texture2D" path="res://ui/hud/icons/wind.svg" id="page_icon_tex"]
 [ext_resource type="Script" path="res://ui/menus/inventory/pages/elements/elements_page.gd" id="1_page"]
 
 [node name="ElementsPage" type="Control"]
@@ -12,6 +13,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_page")
 page_title = "Nguyên tố"
+page_icon = ExtResource("page_icon_tex")
 
 [node name="Columns" type="HBoxContainer" parent="."]
 layout_mode = 1

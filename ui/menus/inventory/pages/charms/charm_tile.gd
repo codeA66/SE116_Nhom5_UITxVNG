@@ -65,8 +65,13 @@ func setup(data: CharmData, tile_mode: Mode, is_owned: bool, is_equipped: bool) 
 	queue_redraw()
 
 
+## Ô đang đeo / ô trống vẽ kiểu treo dây (style cũ) hay huy hiệu tròn như lưới
+func uses_pendant() -> bool:
+	return style != null and style.charm_pendant_equipped and mode != Mode.COLLECTION
+
+
 func flash() -> void:
-	if mode == Mode.COLLECTION:
+	if not uses_pendant():
 		super.flash()
 		return
 	if style == null:
@@ -111,10 +116,16 @@ func _draw_content(rect: Rect2) -> void:
 		_draw_emblem(charm.icon, rect.get_center(), minf(rect.size.x, rect.size.y) * style.charm_pendant_icon_ratio,
 			Color.WHITE, tr(charm.display_name))
 		return
-	if mode != Mode.COLLECTION:
+	if uses_pendant():
 		_draw_pendant(rect)
 		return
 	var center: Vector2 = rect.get_center()
+	if mode == Mode.EMPTY_SLOT:
+		# Ô trống: chỉ một vòng tròn mờ để thấy còn chỗ đeo, không tranh mắt với bùa thật
+		var empty_radius: float = minf(rect.size.x, rect.size.y) * MEDALLION_RADIUS
+		var empty_rim: Color = style.charm_preview_color if has_focus() else Color(style.charm_socket_edge, 0.8)
+		draw_arc(center, empty_radius, 0.0, TAU, ARC_STEPS, empty_rim, style.charm_border_width, true)
+		return
 	var radius: float = minf(rect.size.x, rect.size.y) * MEDALLION_RADIUS
 	var line: float = style.charm_border_width
 	var rim: Color = style.charm_socket_edge
@@ -141,8 +152,10 @@ func _draw_content(rect: Rect2) -> void:
 
 
 func _draw_brackets(rect: Rect2, color: Color) -> void:
-	if mode == Mode.COLLECTION:
-		super._draw_brackets(rect, color)
+	if not uses_pendant():
+		# Kiểu huy hiệu: ô đang chọn đã sáng vòng (rim) nên không cần góc ngoặc vuông, trừ khi style bật lại
+		if style.charm_focus_brackets:
+			super._draw_brackets(rect, color)
 		return
 	if floating:
 		return

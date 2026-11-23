@@ -124,10 +124,10 @@ func _check_bright_heads(expected: int) -> void:
 	_check(bright==expected,"ảnh thật: %d đầu cáo sáng, cần %d" % [bright,expected])
 ## Mẫu viền trang ở góc màn cho thấy menu nằm trên hiệu ứng khi 1 HP.
 func _check_tab_over_vignette() -> void:
-	var menu: InventoryMenu = actor.get_node(^"HUD/InventoryMenu") as InventoryMenu
+	var menu: InventoryMenu = actor.get_node(^"MenuLayer/InventoryMenu") as InventoryMenu
 	menu.open()
 	await wait_seconds(0.45)
-	_check(menu.visible and _vignette.visible and _vignette.get_index()<menu.get_index(),"Tab và lớp tối cùng mở, lớp tối nằm dưới")
+	_check(menu.visible and not _vignette.is_visible_in_tree(),"Tab mở: HUD (cả lớp tối khi mất máu) ẩn hẳn sau màn Tab")
 	await _shot("tab_at_one")
 	if DisplayServer.get_name()!="headless":
 		await RenderingServer.frame_post_draw

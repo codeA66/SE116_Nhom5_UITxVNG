@@ -236,7 +236,7 @@ func _uc7_charms() -> void:
 	_check(not GameState.is_charm_equipped(&"test_light"), "UC7: ngoài khu đổi bùa -> không đeo được")
 	var refusal_tween: Tween = page._grid_tiles[0]._fx_tween
 	_check(page._grid_tiles[0]._shake > 0.0 or (refusal_tween != null and refusal_tween.is_running()), "UC7: ô rung khi bị từ chối")
-	_check(page._status.get_theme_color(&"font_color") == _menu.style.warning and page._status.text.contains("khu đổi bùa"), "UC7: dòng trạng thái đỏ ghi lý do")
+	_check(page._status.get_theme_color(&"font_color") == _menu.style.warning and page._status.text.contains("checkpoint"), "UC7: dòng trạng thái đỏ ghi lý do")
 	GameState.enter_charm_station()
 	await _wait(0.4)
 	_check(page._notches._preview_cost == 1, "UC7: chọn bùa 1 ô xem trước chi phí")

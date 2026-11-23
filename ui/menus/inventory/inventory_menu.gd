@@ -24,7 +24,7 @@ const PANEL_BODY_Z_INDEX: int = 1
 @export var previous_page_action: StringName = &"menu_prev_page"
 @export var next_page_action: StringName = &"menu_next_page"
 @export var style: InventoryStyle = preload("res://resources/ui/inventory_style.tres")
-## Tiền hiện ở góc trên phải (chỉ hiện ở màn Tab, không hiện ở Sổ tay)
+## Tiền hiện ở góc dưới phải (chỉ hiện ở màn Tab, không hiện ở Sổ tay)
 @export var currency: CurrencyData = preload("res://resources/player/currency/soul_jade.tres")
 
 var _mode: Mode = Mode.TAB
@@ -35,11 +35,14 @@ var _help_page_index: int = 0
 
 var _tween: Tween
 var _page_tween: Tween
+## Cụm [ô phím + chữ] ở chân màn: tạo một lần, mỗi lần đổi màn chỉ đổi chữ và ẩn / hiện (không tạo node mới)
+var _footer_keys: Array[KeyGlyph] = []
+var _footer_labels: Array[Label] = []
 
 @onready var _backdrop: ColorRect = $Backdrop
 @onready var _frame: CornerFrame = $Frame
 @onready var _tabs: PageTabs = $Header/Tabs
-@onready var _currency_label: Label = $Header/Currency
+@onready var _currency_label: Label = $Currency
 @onready var _body: PanelContainer = $Body
 @onready var _columns: HBoxContainer = $Body/Columns
 @onready var _body_default: StyleBox = _body.get_theme_stylebox(&"panel")
@@ -48,7 +51,7 @@ var _page_tween: Tween
 @onready var _tab_page_holder: Control = $Body/Columns/Pages/TabPages
 @onready var _help_page_holder: Control = $Body/Columns/Pages/HelpPages
 @onready var _detail: DetailPanel = $Body/Columns/Detail
-@onready var _footer: Label = $Footer
+@onready var _footer: HBoxContainer = $Footer
 @onready var _sound: AudioStreamPlayer = $Sound
 
 
@@ -60,17 +63,20 @@ func _ready() -> void:
 	_frame.color = style.ornament
 	_frame.margin = style.frame_margin
 	_frame.corner_size = style.corner_size
-	(_backdrop.material as ShaderMaterial).set_shader_parameter(&"base_dim", style.backdrop_dim)
+	var backdrop := _backdrop.material as ShaderMaterial
+	backdrop.set_shader_parameter(&"base_dim", style.backdrop_dim)
+	backdrop.set_shader_parameter(&"blur_lod", style.backdrop_blur)
+	backdrop.set_shader_parameter(&"desaturate", style.backdrop_desaturate)
 	
 	_tabs.configure(style, previous_page_action, next_page_action)
 	_tabs.previous_requested.connect(_change_page.bind(-1))
 	_tabs.next_requested.connect(_change_page.bind(1))
+	_tabs.page_requested.connect(_go_to_page)
 	
 	_detail.configure(style)
 	_currency_label.add_theme_font_size_override(&"font_size", style.tab_font)
 	_currency_label.add_theme_color_override(&"font_color", style.ink)
-	_footer.add_theme_font_size_override(&"font_size", style.key_font)
-	_footer.add_theme_color_override(&"font_color", style.faint)
+	_footer.add_theme_constant_override(&"separation", style.footer_gap)
 	_refresh_footer()
 	
 	_setup_pages_in_holder(_tab_page_holder, _tab_pages)
@@ -261,6 +267,21 @@ func _change_page(direction: int) -> void:
 	_play_sound(&"page")
 
 
+## Bấm icon trang: nhảy thẳng tới trang index (trượt theo chiều đi tới)
+func _go_to_page(index: int) -> void:
+	var available := _current_available_pages()
+	if not visible or index < 0 or index >= available.size() or index == _get_current_page_index():
+		return
+	var direction := 1 if index > _get_current_page_index() else -1
+	var old := _current_page()
+	if old:
+		old.handle_cancel()
+		old.hide()
+	_set_current_page_index(index)
+	_show_page(available[index], direction)
+	_play_sound(&"page")
+
+
 func _show_page(page: MenuPage, direction: int) -> void:
 	for other: MenuPage in _tab_pages + _help_pages:
 		if other != page:
@@ -278,10 +299,7 @@ func _show_page(page: MenuPage, direction: int) -> void:
 	page.refresh()
 	page.show()
 	page.focus_default()
-	var titles := PackedStringArray()
-	for available: MenuPage in _current_available_pages():
-		titles.append(available.page_title)
-	_tabs.show_pages(titles, _get_current_page_index())
+	_refresh_tabs()
 	if direction == 0:
 		return
 	# Trang mới trượt vào từ phía đang đổi tới
@@ -318,10 +336,16 @@ func _refresh_if_open() -> void:
 			_show_page(available[0], 0)
 		return
 	page.refresh()
+	_refresh_tabs()
+
+
+func _refresh_tabs() -> void:
 	var titles := PackedStringArray()
+	var icons: Array[Texture2D] = []
 	for available: MenuPage in _current_available_pages():
 		titles.append(available.page_title)
-	_tabs.show_pages(titles, _get_current_page_index())
+		icons.append(available.page_icon)
+	_tabs.show_pages(titles, _get_current_page_index(), icons)
 
 
 func _refresh_header() -> void:
@@ -339,17 +363,46 @@ func _notification(what: int) -> void:
 
 
 func _refresh_footer() -> void:
+	var entries: Array[PackedStringArray] = []
 	if _mode == Mode.TAB:
-		_footer.text = tr("%s  Đóng      %s / %s  Đổi trang      %s  Xác nhận      %s  Quay lại") % [
-			PageTabs.key_name(toggle_action),
-			PageTabs.key_name(previous_page_action), PageTabs.key_name(next_page_action),
-			PageTabs.key_name(&"ui_accept"), PageTabs.key_name(&"ui_cancel")
-		]
+		entries.append(PackedStringArray([PageTabs.key_name(toggle_action), tr("Đóng")]))
+		entries.append(PackedStringArray([
+			"%s / %s" % [PageTabs.key_name(previous_page_action), PageTabs.key_name(next_page_action)], tr("Đổi trang")]))
+		entries.append(PackedStringArray([PageTabs.key_name(&"ui_accept"), tr("Xác nhận")]))
+		entries.append(PackedStringArray([PageTabs.key_name(&"ui_cancel"), tr("Quay lại")]))
 	else:
-		_footer.text = tr("%s / %s  Đóng      %s  Xác nhận") % [
-			PageTabs.key_name(help_action), PageTabs.key_name(&"ui_cancel"),
-			PageTabs.key_name(&"ui_accept")
-		]
+		entries.append(PackedStringArray([
+			"%s / %s" % [PageTabs.key_name(help_action), PageTabs.key_name(&"ui_cancel")], tr("Đóng")]))
+		entries.append(PackedStringArray([PageTabs.key_name(&"ui_accept"), tr("Xác nhận")]))
+	while _footer_keys.size() < entries.size():
+		_add_footer_entry()
+	for i in _footer_keys.size():
+		var used := i < entries.size()
+		_footer_keys[i].get_parent().visible = used
+		if used:
+			_footer_keys[i].text = entries[i][0]
+			_footer_labels[i].text = entries[i][1]
+
+
+func _add_footer_entry() -> void:
+	var group := HBoxContainer.new()
+	group.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	group.add_theme_constant_override(&"separation", style.footer_key_gap)
+	var key := KeyGlyph.new()
+	key.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	key.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	key.font_size = style.key_font
+	key.text_color = style.ink
+	key.border_color = Color(style.dim, 0.7)
+	key.fill_color = Color(0.0, 0.0, 0.0, 0.45)
+	var label := Label.new()
+	label.add_theme_font_size_override(&"font_size", style.key_font)
+	label.add_theme_color_override(&"font_color", style.dim)
+	group.add_child(key)
+	group.add_child(label)
+	_footer.add_child(group)
+	_footer_keys.append(key)
+	_footer_labels.append(label)
 
 
 func _play_sound(kind: StringName) -> void:

@@ -17,6 +17,22 @@ extends Resource
 @export var success: Color = Color(0.62, 0.86, 0.66)
 ## Lớp tối phủ lên cảnh game
 @export var backdrop_dim: float = 0.55
+## Màu nhấn (vàng ấm như đèn lồng màn hình chính): chỉ dùng cho thứ đang chọn, để màu còn lại dành cho đồ vật
+@export var accent: Color = Color(0.96, 0.78, 0.45)
+## Cảnh game phía sau mờ cỡ nào (mức mip của ảnh màn hình) và nhạt màu bao nhiêu
+@export_range(0.0, 6.0, 0.1) var backdrop_blur: float = 3.0
+@export_range(0.0, 1.0, 0.05) var backdrop_desaturate: float = 0.45
+
+@export_group("Đầu và chân màn Tab")
+## Icon trang trên cùng: cạnh (px), khoảng cách, phần lề trong của hình so với vòng tròn
+@export var page_icon_size: float = 38.0
+@export var page_icon_gap: float = 18.0
+@export_range(0.0, 0.4, 0.01) var page_icon_padding: float = 0.2
+## Hiện tên trang trước / sau ở hai bên tiêu đề (tắt khi đã có hàng icon trang)
+@export var show_side_page_names: bool = false
+## Khoảng cách giữa các cụm phím ở chân màn và giữa ô phím với chữ
+@export var footer_gap: int = 28
+@export var footer_key_gap: int = 8
 
 @export_group("Cỡ chữ")
 @export var title_font: int = 34
@@ -84,8 +100,18 @@ extends Resource
 @export var charm_preview_color: Color = Color("#e9c986")
 @export var charm_border_width: float = 1.5
 @export var charm_refusal_hold: float = 1.6
+## Vẽ khung hộp (charm_panel) quanh cả trang Bùa. Tắt = chỉ còn nét trang trí góc màn (kiểu Hollow Knight)
+@export var charm_body_box: bool = false
+## Lưới hiện cả bùa chưa có (ô kín, chấm mờ) để người chơi thấy còn bao nhiêu bùa để đi tìm (kiểu Hollow Knight)
+@export var charm_show_undiscovered: bool = true
+## Ô khắc vẽ hình tròn (tắt = hình thoi cũ)
+@export var charm_round_notches: bool = true
+## Ô góc ngoặc vuông quanh bùa đang chọn (tắt = chỉ đổi vòng sáng của huy hiệu)
+@export var charm_focus_brackets: bool = false
 
 @export_group("Bùa đang đeo")
+## Bùa đang đeo vẽ kiểu treo trên dây (tắt = huy hiệu tròn như lưới, ô trống là vòng mờ, kiểu Hollow Knight)
+@export var charm_pendant_equipped: bool = false
 @export_range(0.0, 48.0, 1.0, "or_greater") var charm_equipped_gap: float = 14.0
 @export_range(0.0, 96.0, 1.0, "or_greater") var charm_empty_width: float = 48.0
 @export_range(0.0, 0.3, 0.01) var charm_hanger_y_ratio: float = 0.10

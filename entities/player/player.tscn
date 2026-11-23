@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://ogqrogwu58gt"]
 
+[ext_resource type="Script" path="res://ui/hud/layout/menu_hud_hider.gd" id="menu_hud_hider"]
 [ext_resource type="PackedScene" path="res://entities/_base/character.tscn" id="1_base"]
 [ext_resource type="Script" path="res://entities/player/foxy/foxy_player.gd" id="1_sglur"]
 [ext_resource type="PackedScene" path="res://assets/characters/foxy/foxy.glb" id="1_symyc"]
@@ -200,8 +201,6 @@ energy = NodePath("../../EnergyComponent")
 [node name="CurrencyCounter" parent="HUD" instance=ExtResource("55_jadecounter")]
 currency = ExtResource("56_souljade")
 
-[node name="InventoryMenu" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("44_inventory")]
-player = NodePath("../..")
 
 [node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor") instance=ExtResource("18_prompt")]
 interactor = NodePath("../../Interactor")
@@ -211,6 +210,18 @@ interactor = NodePath("../../Interactor")
 [node name="CameraRig" type="Node3D" parent="." unique_id=1233256162]
 script = ExtResource("6_camrig")
 follow_speed = 5.5
+[node name="MenuLayer" type="CanvasLayer" parent="."]
+layer = 40
+
+[node name="InventoryMenu" parent="MenuLayer" node_paths=PackedStringArray("player") instance=ExtResource("44_inventory")]
+player = NodePath("../..")
+
+[node name="MenuHudHider" type="Node" parent="MenuLayer" node_paths=PackedStringArray("menu", "layers")]
+script = ExtResource("menu_hud_hider")
+menu = NodePath("../InventoryMenu")
+layers = [NodePath("../../HUD")]
+root_layer_names = PackedStringArray("AreaTitle")
+
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=68364600]
 transform = Transform3D(1, 0, 0, 0, 0.6427876, 0.76604444, 0, -0.76604444, 0.6427876, 0, 29.11, 24.43)

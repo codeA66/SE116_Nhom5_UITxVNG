@@ -14,6 +14,7 @@ var _tiles_dirty: bool = true
 var _status_dirty: bool = true
 var _instant_notches: bool = true
 var _owned_count: int = 0
+var _catalog_count: int = 0
 var _room: int = 0
 var _denial: String = ""
 
@@ -83,7 +84,7 @@ func setup_style(menu_style: InventoryStyle) -> void:
 
 
 func get_body_panel_style() -> StyleBox:
-	return style.charm_panel
+	return style.charm_panel if style.charm_body_box else null
 
 
 func get_body_column_gap() -> int:
@@ -107,7 +108,7 @@ func refresh() -> void:
 		return
 	_status_dirty = false
 	_notch_label.text = tr(style.charm_capacity_text) % [GameState.get_used_notches(), _notches.total]
-	_collection_heading.text = tr(style.charm_collection_text) % _owned_count
+	_collection_heading.text = tr(style.charm_collection_text) % [_owned_count, _catalog_count]
 	if is_instance_valid(_last_focus) and _last_focus.has_focus():
 		_on_tile_focused(_last_focus)
 	else:
@@ -157,15 +158,23 @@ func _mark_station_changed(_inside: bool) -> void:
 func _sync_tiles() -> void:
 	var catalog: Array[CharmData] = []
 	var catalog_order: Dictionary[StringName, int] = {}
+	var owned_ids: Dictionary[StringName, bool] = {}
 	for charm: CharmData in GameState.ITEMS.charms:
-		# Ô bí mật cũng làm lộ số bùa còn lại, nên chỉ dựng những bùa đã khám phá.
-		if charm and GameState.owns_charm(charm.id):
+		if charm == null:
+			continue
+		var owned: bool = GameState.owns_charm(charm.id)
+		# Bùa chưa có vẫn hiện thành ô kín (kiểu Hollow Knight) để người chơi biết còn bùa để đi tìm; tắt bằng style
+		if owned or style.charm_show_undiscovered:
+			owned_ids[charm.id] = owned
 			catalog_order[charm.id] = catalog.size()
 			catalog.append(charm)
-	# Giữ thứ tự quen thuộc của các bùa cùng bậc vì sort_custom không bảo toàn thứ tự đó.
+	# Bùa đã có đứng trước, rồi theo độ hiếm; bùa chưa có không lộ độ hiếm. Giữ thứ tự danh mục khi bằng nhau
+	# vì sort_custom không bảo toàn thứ tự đó.
 	catalog.sort_custom(func(left: CharmData, right: CharmData) -> bool:
-		var left_priority: int = left.rarity.sort_priority if left.rarity else 0
-		var right_priority: int = right.rarity.sort_priority if right.rarity else 0
+		if owned_ids[left.id] != owned_ids[right.id]:
+			return owned_ids[left.id]
+		var left_priority: int = left.rarity.sort_priority if left.rarity and owned_ids[left.id] else 0
+		var right_priority: int = right.rarity.sort_priority if right.rarity and owned_ids[right.id] else 0
 		if left_priority != right_priority:
 			return left_priority > right_priority
 		return catalog_order[left.id] < catalog_order[right.id]
@@ -175,11 +184,14 @@ func _sync_tiles() -> void:
 	_room = maxi(total - used, 0)
 	_refresh_equipped()
 	_resize(_grid_tiles, catalog.size(), _grid, style.charm_tile_size)
-	_owned_count = catalog.size()
+	_owned_count = 0
+	_catalog_count = catalog.size()
 	for index: int in range(catalog.size()):
 		var charm: CharmData = catalog[index]
-		_grid_tiles[index].setup(charm, CharmTile.Mode.COLLECTION, true, GameState.is_charm_equipped(charm.id))
-	_empty.visible = catalog.is_empty()
+		var owned: bool = owned_ids[charm.id]
+		_owned_count += int(owned)
+		_grid_tiles[index].setup(charm, CharmTile.Mode.COLLECTION, owned, owned and GameState.is_charm_equipped(charm.id))
+	_empty.visible = _owned_count == 0
 	_scroll.visible = not catalog.is_empty()
 	_notches.set_capacity(used, total, not _instant_notches and is_visible_in_tree())
 	_instant_notches = false

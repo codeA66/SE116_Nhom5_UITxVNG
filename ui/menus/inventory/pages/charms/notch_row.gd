@@ -40,6 +40,10 @@ func set_capacity(used_count: int, total_count: int, animate: bool) -> void:
 	_fill_tween.tween_method(_set_used, used, float(used_count), duration)
 
 
+func uses_round_notches() -> bool:
+	return _style != null and _style.charm_round_notches
+
+
 func set_preview(cost: int) -> void:
 	if _preview_cost == cost:
 		return
@@ -70,13 +74,20 @@ func _draw() -> void:
 		if fill > 0.0:
 			var light: Color = _style.charm_preview_color.lerp(_style.warning, _refusal)
 			draw_circle(center, radius * GLOW_SCALE, Color(light, 0.13 * fill), true, -1.0, true)
-			_draw_notch(center, radius * lerpf(0.45, 0.82, fill), Color(light, fill))
-			draw_line(center - Vector2(0.0, radius * fill * 0.6), center + Vector2(0.0, radius * fill * 0.6), Color(light, fill), radius * 0.6, true)
+			if uses_round_notches():
+				# Ô đã dùng: hạt tròn đặc sáng (kiểu Hollow Knight)
+				draw_circle(center, radius * lerpf(0.45, 0.78, fill), Color(light, fill), true, -1.0, true)
+			else:
+				_draw_notch(center, radius * lerpf(0.45, 0.82, fill), Color(light, fill))
+				draw_line(center - Vector2(0.0, radius * fill * 0.6), center + Vector2(0.0, radius * fill * 0.6), Color(light, fill), radius * 0.6, true)
 		elif is_preview:
 			_draw_notch(center, radius * PREVIEW_INSET, preview_color)
 
 
 func _draw_notch(center: Vector2, radius: float, color: Color) -> void:
+	if uses_round_notches():
+		draw_arc(center, radius, 0.0, TAU, 24, color, _style.charm_border_width, true)
+		return
 	var top: Vector2 = center - Vector2(0.0, radius)
 	var right: Vector2 = center + Vector2(radius * 0.72, 0.0)
 	var bottom: Vector2 = center + Vector2(0.0, radius)
