@@ -4,6 +4,7 @@ extends Resource
 
 @export_group("Nhận diện")
 @export var display_name: String = ""
+@export var sort_priority: int = 0
 @export var tint: Color = Color("bc98ed")
 @export var highlight: Color = Color("fff0d4")
 

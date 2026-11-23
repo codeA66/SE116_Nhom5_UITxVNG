@@ -156,10 +156,20 @@ func _mark_station_changed(_inside: bool) -> void:
 
 func _sync_tiles() -> void:
 	var catalog: Array[CharmData] = []
+	var catalog_order: Dictionary[StringName, int] = {}
 	for charm: CharmData in GameState.ITEMS.charms:
 		# Ô bí mật cũng làm lộ số bùa còn lại, nên chỉ dựng những bùa đã khám phá.
 		if charm and GameState.owns_charm(charm.id):
+			catalog_order[charm.id] = catalog.size()
 			catalog.append(charm)
+	# Giữ thứ tự quen thuộc của các bùa cùng bậc vì sort_custom không bảo toàn thứ tự đó.
+	catalog.sort_custom(func(left: CharmData, right: CharmData) -> bool:
+		var left_priority: int = left.rarity.sort_priority if left.rarity else 0
+		var right_priority: int = right.rarity.sort_priority if right.rarity else 0
+		if left_priority != right_priority:
+			return left_priority > right_priority
+		return catalog_order[left.id] < catalog_order[right.id]
+	)
 	var used: int = GameState.get_used_notches()
 	var total: int = GameState.get_charm_notches()
 	_room = maxi(total - used, 0)
