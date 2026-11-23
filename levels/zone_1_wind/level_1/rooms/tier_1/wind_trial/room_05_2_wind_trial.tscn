@@ -38,13 +38,11 @@
 
 [ext_resource type="PackedScene" path="res://objects/combat/breakables/crate/crate.tscn" id="r19"]
 
-[ext_resource type="Resource" path="res://resources/tutorials/data/tut_burrow_beetle.tres" id="r20"]
 
-[ext_resource type="PackedScene" path="res://objects/core/triggers/tutorial_trigger/tutorial_trigger.tscn" id="r21"]
 
 [ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="r22"]
 
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="r23"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="r23"]
 
 [sub_resource type="BoxShape3D" id="Shape_ArenaFloor"]
 size = Vector3(24, 0.48, 24)
@@ -402,7 +400,7 @@ transform = Transform3D(0, 0, -0.5, 0, 1, 0, 1, 0, 0, -0.34, 0, -19)
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.34, 0, -22)
 
 [node name="UnderGate" parent="WestWall" instance=ExtResource("r9")]
-transform = Transform3D(0, 0, -2, 0, 1.35338, 0, 1, 0, 0, -0.34, 0, -14)
+transform = Transform3D(0, 0, -2, 0, 1.2932, 0, 1, 0, 0, -0.34, 0, -14)
 
 [node name="WestWallSouthBody" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, -0.34, 2.04, -5)
@@ -436,19 +434,19 @@ collision_mask = 0
 shape = SubResource("Shape_ExitPostSouth")
 
 [node name="ExitStair" parent="." instance=ExtResource("r11")]
-transform = Transform3D(0, 0, 1, 0, 0.9, 0, -1.125, 0, 0, 2.25, 0, -14)
+transform = Transform3D(0, 0, 1.125, 0, 0.75, 0, -1, 0, 0, 2.25, 0, -14)
 
 [node name="stair_straight_3m_Static" parent="ExitStair/stair_straight_3m"]
 material_override = ExtResource("r3")
 
 [node name="Threshold" parent="." instance=ExtResource("r12")]
-transform = Transform3D(0.7, 0, -0, 0, 1, 0, 0, 0, 2.8, -0.7, 1.48, -14)
+transform = Transform3D(0.7, 0, -0, 0, 1, 0, 0, 0, 2.8, -0.7, 1.44, -14)
 
 [node name="floor_2m_Static" parent="Threshold/floor_2m"]
 material_override = ExtResource("r3")
 
 [node name="ParapetNorth" parent="." instance=ExtResource("r9")]
-transform = Transform3D(0, 0, -1.125, 0, 1.35338, 0, 1.2, 0, 0, 2.25, 0, -16.45)
+transform = Transform3D(1.125, 0, 0, 0, 1.35338, 0, 0, 0, 1.2, 2.25, 0, -16.45)
 
 [node name="ParapetNorthBody" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2.25, 0.9, -16.45)
@@ -458,7 +456,7 @@ collision_mask = 0
 shape = SubResource("Shape_ParapetNorthBody")
 
 [node name="ParapetSouth" parent="." instance=ExtResource("r9")]
-transform = Transform3D(0, 0, -1.125, 0, 1.35338, 0, 1.2, 0, 0, 2.25, 0, -11.55)
+transform = Transform3D(1.125, 0, 0, 0, 1.35338, 0, 0, 0, 1.2, 2.25, 0, -11.55)
 
 [node name="ParapetSouthBody" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 2.25, 0.9, -11.55)
@@ -490,8 +488,15 @@ transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 5.2, 0, -10.6)
 [node name="ExitLight" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 1.2, 4.6, -14)
 light_color = Color(1, 0.8, 0.55, 1)
-light_energy = 0.6
-omni_range = 4.5
+light_energy = 2.0
+omni_range = 8.0
+
+[node name="ExitDoorLight" type="OmniLight3D" parent="."]
+editor_description = "Đèn sau cửa ra: lối lên phòng 6 nằm trong bóng tường cao, thiếu đèn này thì khó thấy cửa"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 3.2, -14)
+light_color = Color(1, 0.8, 0.55, 1)
+light_energy = 1.6
+omni_range = 6.0
 
 [node name="EastWall" type="Node3D" parent="."]
 
@@ -620,10 +625,6 @@ transform = Transform3D(0.179, 0, -0.9838, 0, 1, 0, 0.9838, 0, 0.179, 1.98, 0, -
 [node name="NicheLantern" parent="." instance=ExtResource("r13")]
 transform = Transform3D(0.66, 0, -0, 0, 0.66, 0, 0, 0, 0.66, 0.3, 0, -6)
 
-[node name="BeetleTutorialTrigger" parent="." instance=ExtResource("r21")]
-transform = Transform3D(1, 0, -0, 0, 1, 0, 0, 0, 1, 6, 1.5, -3.2)
-tutorial = ExtResource("r20")
-
 [node name="FirstWave" parent="." instance=ExtResource("r22")]
 spawn_interval = 0.0
 enemies_visible_before_start = false
@@ -633,7 +634,7 @@ clear_trauma = 0.0
 [node name="Trigger" parent="FirstWave" index="0"]
 monitoring = false
 
-[node name="BurrowBeetle1" parent="FirstWave/Enemies" instance=ExtResource("r23")]
+[node name="Guard1" parent="FirstWave/Enemies" instance=ExtResource("r23")]
 transform = Transform3D(-1, 0, -0, 0, 1, 0, 0, 0, -1, 12, 0, -11.5)
 
 [node name="SecondWave" parent="." instance=ExtResource("r22")]
@@ -645,10 +646,10 @@ clear_trauma = 0.0
 [node name="Trigger" parent="SecondWave" index="0"]
 monitoring = false
 
-[node name="BurrowBeetle1" parent="SecondWave/Enemies" instance=ExtResource("r23")]
+[node name="Guard1" parent="SecondWave/Enemies" instance=ExtResource("r23")]
 transform = Transform3D(-1, 0, -0, 0, 1, 0, 0, 0, -1, 8.5, 0, -13)
 
-[node name="BurrowBeetle2" parent="SecondWave/Enemies" instance=ExtResource("r23")]
+[node name="Guard2" parent="SecondWave/Enemies" instance=ExtResource("r23")]
 transform = Transform3D(-1, 0, -0, 0, 1, 0, 0, 0, -1, 15.5, 0, -10.5)
 
 [editable path="FirstWave"]

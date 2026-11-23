@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3]
+
+[ext_resource type="Script" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"charm"
+title = "Bùa Hộ Mệnh"
+category = "Hệ Thống"
+input_actions = Array[StringName]([&"inventory"])
+prompt_template = "Đứng ở checkpoint, nhấn {key1} rồi vào trang Bùa để đeo Bùa Tâm Cáo."
+summary = "Bùa cho thêm sức mạnh khi đeo. Chỉ đeo hoặc tháo bùa được khi đứng ở checkpoint."
+sections = Array[Dictionary]([{
+"heading": "Chỉ đổi bùa ở checkpoint",
+"text": "Đứng trong vùng sáng quanh miếu checkpoint mới đeo hoặc tháo bùa được. Đi ra xa thì trang Bùa chỉ xem, không đổi được.",
+"warning": true
+}, {
+"heading": "Cách đeo",
+"text": "Nhấn [Tab] mở Túi Đồ, dùng [Z] / [C] chuyển tới trang Bùa, chọn bùa rồi nhấn [Enter] để đeo. Nhấn [Enter] lần nữa để tháo.",
+"warning": false
+}, {
+"heading": "Khấc bùa",
+"text": "Mỗi bùa tốn một số khấc. Tổng số khấc có hạn, nên phải chọn bùa hợp với cách chơi.",
+"warning": false
+}])
+hint = "[Tab] Mở Túi Đồ  •  [Z / C] Đổi trang  •  [Enter] Đeo / tháo bùa"
+lore = "Bùa cổ chỉ thức tỉnh bên miếu thờ, nơi linh khí của đảo tụ lại."
+order = 6
+wait_for_action = true
+completion_charm = &"heart_charm"

@@ -57,6 +57,7 @@ func _ready() -> void:
 	hide()
 	_timeout.timeout.connect(dismiss)
 	GameState.tutorial_unlocked.connect(show_tutorial)
+	GameState.charms_changed.connect(_on_charms_changed)
 	_bind_player.call_deferred()
 
 
@@ -114,6 +115,13 @@ func _on_skill_used(skill_id: StringName, _duration: float) -> void:
 			_show_energy_spend()
 		else:
 			dismiss()
+
+
+## Bài bắt đeo bùa: chỉ xong khi bùa đó thật sự được đeo (đổi bùa chỉ làm được ở checkpoint)
+func _on_charms_changed() -> void:
+	if _current != null and not _current.completion_charm.is_empty() \
+			and GameState.is_charm_equipped(_current.completion_charm):
+		dismiss()
 
 
 func _show_next() -> void:

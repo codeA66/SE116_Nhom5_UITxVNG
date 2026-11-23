@@ -55,36 +55,30 @@ func _run() -> void:
 		"TC04 đi bộ qua 5.1 trên mặt đất, lưu checkpoint ở cửa 5.2 (%s), chưa có quái" % GameState.get_checkpoint_spawn_id())
 	await _move_until(&"move_forward", func() -> bool: return _trial.current_wave == 1)
 	await _frames(3)
-	_check(_trial.current_wave == 1 and _enemy_count(_first) == 1, "TC05 vượt ngưỡng 5.2, xuất hiện đúng một Bọ")
+	_check(_trial.current_wave == 1 and _enemy_count(_first) == 1, "TC05 vượt ngưỡng 5.2, xuất hiện đúng một lính canh")
 	_check(not (_trial.get_node(^"EntryGate/CollisionShape3D") as CollisionShape3D).disabled, "TC06 cửa vào khóa sau khi Foxy qua")
 	_check(not (_secret_wall.get_node(^"CollisionShape3D") as CollisionShape3D).disabled, "TC06 tường giả vẫn chắn lối sang 5.3")
 	if _enemy_count(_first) != 1:
 		_finish()
 		return
 
-	# UC02: phản đạn, nạp lại năng lượng và hạ đủ hai đợt.
-	await _reflect(_first.get_node(^"Enemies/BurrowBeetle1") as BurrowBeetle)
-	_check(_trial.current_wave == 1 and not _exit_gate.is_open, "TC07 hạ Bọ đầu vẫn khóa cửa")
+	# UC02: hạ quái, nạp lại năng lượng và hạ đủ hai đợt.
+	await _defeat(_first.get_node(^"Enemies/Guard1") as Enemy)
+	_check(_trial.current_wave == 1 and not _exit_gate.is_open, "TC07 hạ lính đầu vẫn khóa cửa")
 	await _frames(60)
 	_check(_trial.current_wave == 1 and _enemy_count(_second) == 0, "TC08 có khoảng nghỉ giữa hai đợt")
 	await _until(func() -> bool: return _trial.current_wave == 2, 160)
-	_check(_trial.current_wave == 2 and _enemy_count(_second) == 1, "TC09 đợt hai chỉ đưa một Bọ ra trước")
+	_check(_trial.current_wave == 2 and _enemy_count(_second) == 1, "TC09 đợt hai chỉ đưa một lính ra trước")
 	if _enemy_count(_second) != 1:
 		_finish()
 		return
-	var left: BurrowBeetle = _second.get_node(^"Enemies/BurrowBeetle1")
-	var shot_frames: Array[int] = []
-	var on_first_shot := func(_seed: StoneSeed) -> void: shot_frames.append(Engine.get_physics_frames())
-	left.seed_fired.connect(on_first_shot, CONNECT_ONE_SHOT)
+	var left: Enemy = _second.get_node(^"Enemies/Guard1")
 	await _until(func() -> bool: return _enemy_count(_second) == 2, 120)
-	_check(_enemy_count(_second) == 2, "TC10 Bọ thứ hai xuất hiện sau")
+	_check(_enemy_count(_second) == 2, "TC10 lính thứ hai xuất hiện sau")
 	if _enemy_count(_second) != 2:
 		_finish()
 		return
-	var right: BurrowBeetle = _second.get_node(^"Enemies/BurrowBeetle2")
-	right.seed_fired.connect(on_first_shot, CONNECT_ONE_SHOT)
-	await _until(func() -> bool: return shot_frames.size() == 2, 100)
-	_check(shot_frames.size() == 2 and shot_frames[1] - shot_frames[0] >= 30, "TC10 hai phát đầu cách nhau ít nhất nửa giây")
+	var right: Enemy = _second.get_node(^"Enemies/Guard2")
 
 	_player.energy.set_current(0)
 	# Cụm thùng gỗ hồi năng lượng trong hốc tường tây: đứng trước thùng đầu rồi chém
@@ -96,10 +90,10 @@ func _run() -> void:
 	await _frames(55)
 	_check(_player.energy.current > 0, "TC11 chém thùng gỗ nạp lại gió từ 0")
 	_player.energy.set_current(3)
-	await _reflect(left)
-	_check(not _exit_gate.is_open and _old_stair_blocked(), "TC12 còn một Bọ thì cửa vẫn khóa")
-	await _reflect(right)
-	_check(_trial.is_active() and _exit_gate.is_open and _old_stair_blocked(), "TC13 hạ Bọ cuối mở dốc lên phòng 6, cầu thang cũ vẫn chặn (một lối duy nhất)")
+	await _defeat(left)
+	_check(not _exit_gate.is_open and _old_stair_blocked(), "TC12 còn một lính thì cửa vẫn khóa")
+	await _defeat(right)
+	_check(_trial.is_active() and _exit_gate.is_open and _old_stair_blocked(), "TC13 hạ lính cuối mở dốc lên phòng 6, cầu thang cũ vẫn chặn (một lối duy nhất)")
 	await _frames(30)
 	_check(_secret_wall.can_break() and not _secret_wall.is_broken, "TC13 thắng 5.2 thì tường giả mới phá được (chưa tự vỡ)")
 	await _break_secret_wall()
@@ -129,7 +123,7 @@ func _run() -> void:
 	_check(_trial.is_active() and _exit_gate.is_open and _old_stair_blocked() and _secret_wall.is_broken
 		and (_secret_wall.get_node(^"CollisionShape3D") as CollisionShape3D).disabled,
 		"TC18 nạp lại vẫn mở lối lên phòng 6, tường giả vẫn vỡ")
-	_check(not is_instance_valid(_first) and not is_instance_valid(_second), "TC19 nạp lại không tái sinh Bọ")
+	_check(not is_instance_valid(_first) and not is_instance_valid(_second), "TC19 nạp lại không tái sinh quái")
 	await _frames(3)
 	_check(_challenge.is_active() and _challenge.get_node_or_null(^"Waves/Wave1") == null
 		and _challenge.get_node_or_null(^"RewardCharm") == null and _challenge.get_node(^"EntryGate").is_open,
@@ -261,33 +255,21 @@ func _collect_book() -> bool:
 	return _check(_walk_gate.is_open, "TC00 học Gió xong cổng đá lên 5.1 mở để tự đi bộ")
 
 
-## Đứng phía nam con Bọ, ngoài tầm chui đất nhưng trong tầm bắn, tính theo vị trí thật của Bọ trong sân
-func _reflect(beetle: BurrowBeetle) -> void:
-	if not is_instance_valid(beetle):
-		_check(false, "Thiếu Bọ để kiểm tra phản đạn")
+## Hạ một quái của đấu trường bằng đòn của player (chém tới chết); quái phải chết thật để Encounter tính
+func _defeat(enemy: Enemy) -> void:
+	if not is_instance_valid(enemy):
+		_check(false, "Thiếu quái để hạ")
 		return
-	var target: Vector3 = beetle.global_position
-	var position_: Vector3 = target + Vector3(0, 0.05, beetle.rise_distance + 0.5)
-	var direction: Vector3 = target - position_
-	direction.y = 0.0
-	_player.teleport(position_, direction.normalized())
-	var shots: Array[StoneSeed] = []
-	var on_shot := func(seed: StoneSeed) -> void:
-		var muzzle_offset := seed.global_position - beetle.global_position
-		muzzle_offset.y = 0.0
-		_check(muzzle_offset.normalized().dot(beetle.direction_to_target()) > 0.75,
-			"%s quay đầu và nhả đạn về phía Foxy" % beetle.name)
-		shots.append(seed)
-	beetle.seed_fired.connect(on_shot)
-	await _until(func() -> bool: return not shots.is_empty(), 310)
-	_check(not shots.is_empty(), "%s đã bắn đạn" % beetle.get_parent().get_parent().name)
-	if not shots.is_empty():
+	for i in 40:
+		if not is_instance_valid(enemy) or enemy.is_dead():
+			break
+		var target := enemy.global_position
+		_player.teleport(target + Vector3(0, 0.05, 1.4), Vector3.FORWARD)
+		await _frames(4)
 		_aim_at(target)
-		await _press(&"skill")
-		await _until(beetle.is_dead, 100)
-		_check(beetle.is_dead(), "%s bị hạ bằng một viên phản đạn" % beetle.name)
-	if is_instance_valid(beetle):
-		beetle.seed_fired.disconnect(on_shot)
+		await _press(&"attack")
+		await _frames(18)
+	_check(not is_instance_valid(enemy) or enemy.is_dead(), "%s bị hạ bằng kiếm" % (enemy.name if is_instance_valid(enemy) else "quái"))
 	await _frames(42)
 
 
