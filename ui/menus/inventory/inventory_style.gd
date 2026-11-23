@@ -49,9 +49,9 @@ extends Resource
 ## Cạnh khung góc hoa văn (px)
 @export var corner_size: float = 46.0
 @export var detail_width: float = 470.0
-@export var element_card_size: Vector2 = Vector2(150, 168)
+@export var element_card_size: Vector2 = Vector2(180, 250)
 @export var weapon_socket_size: Vector2 = Vector2(270, 132)
-@export var item_tile_size: Vector2 = Vector2(92, 92)
+@export var item_tile_size: Vector2 = Vector2(112, 112)
 @export var charm_tile_size: Vector2 = Vector2(84, 84)
 ## Hình minh họa nguyên tố trong bảng chi tiết (cao, px)
 @export var detail_art_height: float = 200.0
@@ -66,6 +66,27 @@ extends Resource
 @export var charm_columns: int = 6
 ## Ô phóng to bấy nhiêu lần khi đang chọn
 @export_range(1.0, 1.3, 0.01) var focus_scale: float = 1.08
+
+## Thanh cuộn bảng chi tiết (px)
+@export_range(1.0, 12.0, 0.5) var detail_scrollbar_width: float = 3.0
+
+@export_group("Trang Nguyên tố, Vũ khí, Vật phẩm, Hướng dẫn")
+## Vẽ hộp nền + viền quanh thẻ nguyên tố / ô vật phẩm (tắt = chỉ còn hình, không giống ô bùa)
+@export var element_card_box: bool = false
+@export var item_tile_box: bool = false
+## Huy hiệu nguyên tố trên thẻ (bán kính px)
+@export var element_emblem_radius: float = 52.0
+## Số lượng vật phẩm (cỡ chữ)
+@export var item_count_font: int = 22
+## Ô vũ khí: cạnh ô, bán kính huy hiệu
+@export var weapon_tile_size: Vector2 = Vector2(150, 170)
+@export var weapon_emblem_radius: float = 44.0
+## Khoảng cách giữa các ô vũ khí và giữa hai nhóm
+@export var weapon_tile_gap: int = 16
+@export var weapon_group_gap: int = 26
+## Vạch vàng bên trái mục hướng dẫn đang chọn (px)
+@export var tutorial_marker_width: float = 3.0
+@export var tutorial_row_height: float = 52.0
 
 @export_group("Nhịp (giây)")
 @export var open_time: float = 0.22

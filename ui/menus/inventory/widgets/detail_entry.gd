@@ -15,8 +15,15 @@ var art_texture: Texture2D
 var sections: Array[Dictionary] = []
 ## Câu truyện nhỏ cuối bảng
 var lore: String = ""
-## Dòng hướng dẫn thao tác ở đáy bảng
+## Dòng hướng dẫn thao tác ở đáy bảng (một dòng)
 var hint: String = ""
+## Phím vẽ trong ô viền trước dòng hướng dẫn ("Enter"...); trống = chỉ có chữ
+var hint_key: String = ""
+## Chấm cấp dưới dòng phụ: level / max_level (max_level <= 0 = không hiện), tô màu accent
+var level: int = 0
+var max_level: int = 0
+## Bảng chỉ số hai cột {label, value} (vũ khí...), nằm sau các đoạn mô tả
+var stats: Array[Dictionary] = []
 
 
 ## Chèn một khối giao diện vào đúng chỗ hiện tại trong thứ tự các phần

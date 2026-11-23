@@ -5,6 +5,10 @@ extends MenuTile
 var tutorial: TutorialData
 
 
+func _init() -> void:
+	zoom_on_focus = false
+
+
 func setup(data: TutorialData) -> void:
 	tutorial = data
 	queue_redraw()
@@ -17,31 +21,19 @@ func get_detail() -> DetailEntry:
 func _draw_content(rect: Rect2) -> void:
 	if tutorial == null or style == null:
 		return
-	
 	var is_active := has_focus()
-	# Nền thẻ
-	var bg_color := Color(style.ink, 0.12) if is_active else Color(0.0, 0.0, 0.0, 0.45)
-	draw_rect(rect, bg_color)
-	# Đường viền mỏng
-	var border_color := style.ornament if is_active else Color(style.ornament, 0.2)
-	draw_rect(rect, border_color, false, 1.0)
-	
-	# Icon / Biểu tượng bên trái
-	var icon_center := Vector2(rect.position.x + 28.0, rect.get_center().y)
-	var icon_color := style.ink if is_active else style.dim
-	_draw_emblem(tutorial.icon, icon_center, 26.0, icon_color, tutorial.title)
-	
-	# Chữ tiêu đề & phân loại
+	# Không có nền: mục đang chọn chỉ có vạch màu nhấn bên trái và chữ sáng (phân loại đã nằm ở tiêu đề nhóm)
+	if is_active:
+		draw_rect(Rect2(rect.position, Vector2(style.tutorial_marker_width, rect.size.y)), style.accent)
+	var icon_center := Vector2(rect.position.x + 30.0, rect.get_center().y)
+	var color := style.ink if is_active else style.dim
+	_draw_emblem(tutorial.icon, icon_center, 26.0, color, tutorial.title)
 	var font := get_theme_default_font()
-	var title_size := 15
-	var cat_size := 11
-	var text_x := rect.position.x + 54.0
-	var text_max_w := rect.size.x - 64.0
-	
-	var title_color := style.ink if is_active else style.dim
-	var cat_color := style.ornament if is_active else style.faint
-	
-	# Vẽ Title
-	draw_string(font, Vector2(text_x, rect.position.y + 24.0), tr(tutorial.title), HORIZONTAL_ALIGNMENT_LEFT, text_max_w, title_size, title_color)
-	# Vẽ Phân loại
-	draw_string(font, Vector2(text_x, rect.position.y + 42.0), tutorial.category.to_upper(), HORIZONTAL_ALIGNMENT_LEFT, text_max_w, cat_size, cat_color)
+	var text_x := rect.position.x + 56.0
+	var baseline := rect.get_center().y + font.get_ascent(style.body_font) * 0.35
+	draw_string(font, Vector2(text_x, baseline), tr(tutorial.title), HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 64.0, style.body_font - 2, color)
+
+
+## Đang chọn chỉ có vạch bên trái: tắt ngoặc góc chung của MenuTile
+func _draw_brackets(_rect: Rect2, _color: Color) -> void:
+	pass

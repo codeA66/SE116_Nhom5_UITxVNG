@@ -79,3 +79,12 @@ func get_level_name(level: int) -> String:
 		return step.display_name
 	var numeral := LEVEL_NUMERALS[level] if level < LEVEL_NUMERALS.size() else str(level)
 	return "%s %s" % [display_name, numeral]
+
+
+## Mô tả ngắn ở một cấp: lấy mô tả đặt riêng của bậc, không có thì mô tả của dạng kỹ năng ở cấp đó
+func get_level_description(level: int) -> String:
+	if level > 1:
+		var step := get_upgrade(level - 1)
+		if step and not step.description.is_empty():
+			return step.description
+	return resolve(level).description

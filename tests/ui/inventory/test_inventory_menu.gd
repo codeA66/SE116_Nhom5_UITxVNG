@@ -3,16 +3,14 @@ extends Node
 ## Chạy: mở test_inventory_menu.tscn rồi F6, hoặc headless (chụp ảnh chỉ khi có cửa sổ).
 ##
 ## ===== USE CASE =====
-## UC1  Tab mở màn, trang Nguyên tố, con trỏ ở thẻ đầu; bảng chi tiết ghi tên, cấp 1/3, yêu cầu nâng cấp (thiếu -> cảnh báo).
-## UC2  Ghép bằng phím: Enter trên thẻ Gió (cầm) -> con trỏ sang Kiếm -> Enter -> Gió ghép vào Kiếm, thẻ báo đang ghép.
-## UC3  Enter trên vũ khí đang ghép (không cầm gì) -> tháo.
-## UC4  Ghép bằng chuột: kéo thẻ Lửa thả vào Cung -> ghép.
-## UC5  Esc khi đang cầm nguyên tố chỉ bỏ cầm, không đóng; Esc lần nữa mới đóng.
-## UC6  C / Z đổi trang: Vật phẩm hiện chìa khóa (theo cờ) và Ấn Gió x2; trang Bùa ẩn khi chưa có bùa.
+## UC1  Tab mở màn, trang Nguyên tố, con trỏ ở thẻ đầu; bảng chi tiết ghi tên, cấp 1, chấm cấp; không lộ cấp sau.
+## (UC2-UC4 ghép nguyên tố vào vũ khí: đã bỏ khỏi màn Tab ở giai đoạn 3, xem test_inventory_pages)
+## UC5  Enter trên thẻ nguyên tố không "cầm" gì: Esc đóng màn ngay.
+## UC6  Q / E đổi trang (4 trang): Vật phẩm hiện chìa khóa (theo cờ) và Ấn Gió x2.
 ## UC7  Bùa: có bùa thì trang Bùa hiện; ngoài khu đổi bùa không đeo được; trong khu: đeo bùa 1 ô được, bùa 3 ô báo thiếu; tháo được.
 ## UC8  NPC nâng cấp: đủ Ấn Gió -> lên cấp 2, vật phẩm bị trừ, tên thành "Lốc xoáy", chấm cấp đổi; thiếu thì không đổi.
 ## UC9  Lưu / đọc: vật phẩm, cấp kỹ năng, bùa, bùa đang đeo, số ô khắc giữ nguyên qua to_dict / from_dict.
-## UC10 Cực đoan: chưa có nguyên tố nào (thẻ "???"), 12 loại vật phẩm, tên vật phẩm rất dài -> không lỗi, vẫn chọn được.
+## UC10 Cực đoan: chưa có nguyên tố nào (không có thẻ), 12 loại vật phẩm, tên vật phẩm rất dài -> không lỗi, vẫn chọn được.
 
 const MENU := "res://ui/menus/inventory/inventory_menu.tscn"
 const WIND := "res://abilities/wind_blast/wind_blast.tres"
@@ -50,9 +48,6 @@ func _run() -> void:
 	layer.add_child(_menu)
 	await _frames(3)
 	await _uc1_open()
-	await _uc2_keyboard_fuse()
-	await _uc3_unfuse()
-	await _uc4_mouse_fuse()
 	await _uc5_cancel()
 	await _uc6_pages()
 	await _uc7_charms()
@@ -88,6 +83,10 @@ func _detail_text() -> String:
 	return " | ".join(parts)
 
 
+func _pips() -> Vector2i:
+	return (_menu.get_node("Body/Columns/Detail") as DetailPanel).get_pips()
+
+
 func _focused() -> Control:
 	return get_viewport().gui_get_focus_owner()
 
@@ -109,60 +108,20 @@ func _uc1_open() -> void:
 	var card := _focused() as ElementCard
 	_check(card != null and card.element.id == &"wind", "UC1: con trỏ ở thẻ Gió (%s)" % _focused())
 	var text := _detail_text()
-	_check(text.contains("Thổi gió") and text.contains("Cấp 1 / 3"), "UC1: chi tiết có tên + cấp ('%s')" % text.left(120))
-	_check(text.contains("LỘ TRÌNH NÂNG CẤP") and text.contains("Ấn Gió   0 / 1") and text.contains("Thổi gió III"), "UC1: chi tiết có lộ trình nâng cấp + vật phẩm cần ('%s')" % text.left(260))
+	_check(text.contains("Thổi gió") and text.contains("Cấp 1"), "UC1: chi tiết có tên + cấp ('%s')" % text.left(120))
+	_check(not text.contains("LỘ TRÌNH") and not text.contains("Lốc xoáy") and not text.contains("Thổi gió III"), "UC1: không lộ cấp sau ('%s')" % text.left(260))
+	_check(_pips() == Vector2i(1, 3), "UC1: chấm cấp (1, 3) (%s)" % _pips())
 	await _shot("elements")
-
-
-func _uc2_keyboard_fuse() -> void:
-	await _action(&"ui_accept")
-	var card := _elements()._cards[0]
-	_check(card.held, "UC2: Enter -> cầm thẻ Gió")
-	var socket := _focused() as WeaponSocket
-	_check(socket != null and socket.slot == WeaponData.Slot.SWORD, "UC2: con trỏ nhảy sang Kiếm")
-	await _shot("held")
-	await _action(&"ui_accept")
-	_check(GameState.progress.fusions.get(WeaponData.Slot.SWORD) == &"wind", "UC2: Gió đã ghép vào Kiếm")
-	_check(not card.held and card.fused_slot == WeaponData.Slot.SWORD, "UC2: thẻ hết cầm, báo đang ghép")
-	card.grab_focus()
-	await _frames(2)
-	_check(_detail_text().contains("tạm khóa"), "UC2: chi tiết cảnh báo kỹ năng tạm khóa")
-
-
-func _uc3_unfuse() -> void:
-	_elements()._sockets[0].grab_focus()
-	await _frames(2)
-	await _action(&"ui_accept")
-	_check(not GameState.progress.fusions.has(WeaponData.Slot.SWORD), "UC3: Enter trên Kiếm đang ghép -> tháo")
-
-
-func _uc4_mouse_fuse() -> void:
-	var card := _elements()._cards[1]
-	var socket := _elements()._sockets[1]
-	# Tọa độ giao diện -> tọa độ cửa sổ (cửa sổ lớn hơn khung thiết kế thì giao diện được phóng)
-	var to_window := get_viewport().get_final_transform()
-	var from := to_window * card.get_global_rect().get_center()
-	var to := to_window * socket.get_global_rect().get_center()
-	_last_mouse = from
-	await _mouse_move(from)
-	await _mouse_button(from, true)
-	for step in 12:
-		await _mouse_move(from.lerp(to, float(step + 1) / 12.0))
-	await _mouse_button(to, false)
-	await _frames(3)
-	_check(GameState.progress.fusions.get(WeaponData.Slot.BOW) == &"fire", "UC4: kéo Lửa thả vào Cung -> ghép (%s)" % GameState.progress.fusions)
-	await _shot("fused")
 
 
 func _uc5_cancel() -> void:
 	_elements()._cards[0].grab_focus()
 	await _frames(2)
 	await _action(&"ui_accept")
-	await _action(&"ui_cancel")
-	_check(_menu.visible and not _elements()._cards[0].held, "UC5: Esc khi đang cầm chỉ bỏ cầm, không đóng")
+	_check(not _elements()._cards[0].held, "UC5: Enter trên thẻ không cầm nguyên tố")
 	await _action(&"ui_cancel")
 	await _wait(0.3)
-	_check(not _menu.visible, "UC5: Esc lần nữa đóng màn")
+	_check(not _menu.visible, "UC5: Esc đóng màn ngay")
 	await _key(KEY_TAB)
 
 
@@ -172,7 +131,7 @@ func _uc6_pages() -> void:
 	for page: MenuPage in _menu._available_pages():
 		titles.append(page.page_title)
 	_check(titles.has("Bùa"), "UC6: trang Bùa luôn hiện kể cả chưa có bùa (%s)" % ", ".join(titles))
-	_check(titles.size() == 3, "UC6: màn Tab chỉ có 3 trang Bùa, Vật phẩm, Nguyên tố (%s)" % ", ".join(titles))
+	_check(titles.size() == 4, "UC6: màn Tab có 4 trang Bùa, Vật phẩm, Nguyên tố, Vũ khí (%s)" % ", ".join(titles))
 	await _go_to(ItemsPage)
 	_check(_menu.get_current_page() is ItemsPage, "UC6: E -> trang Vật phẩm")
 	var tiles := (_menu.get_current_page() as ItemsPage)._tiles
@@ -298,7 +257,7 @@ func _uc8_upgrade() -> void:
 	card.grab_focus()
 	await _frames(2)
 	var text := _detail_text()
-	_check(text.contains("ĐANG DÙNG") and text.contains("ĐÃ MỞ") and text.contains("Ấn Gió   1 / 3"), "UC8: lộ trình: cấp II đang dùng, cấp I đã mở, cấp III cần 3 Ấn (đang có 1) ('%s')" % text.left(300))
+	_check(text.contains("Lốc xoáy") and not text.contains("Thổi gió III") and _pips() == Vector2i(2, 3), "UC8: chi tiết cấp 2, chấm (2, 3), không lộ cấp 3 ('%s')" % text.left(300))
 	await _shot("upgrade_path")
 	_menu.close()
 	await _wait(0.3)
@@ -339,7 +298,7 @@ func _uc10_extreme() -> void:
 	await _key(KEY_TAB)
 	await _wait(0.3)
 	var cards := _elements()._cards
-	_check(cards.size() > 0 and not cards[0].owned, "UC10: chưa có nguyên tố -> thẻ '???'")
+	_check(cards.is_empty(), "UC10: chưa có nguyên tố -> không có thẻ")
 	await _go_to(ItemsPage)
 	var page := _menu.get_current_page() as ItemsPage
 	_check(page != null and page._tiles.size() == 12, "UC10: 12 loại vật phẩm hiện đủ")

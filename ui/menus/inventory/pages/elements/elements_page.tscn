@@ -15,7 +15,7 @@ script = ExtResource("1_page")
 page_title = "Nguyên tố"
 page_icon = ExtResource("page_icon_tex")
 
-[node name="Columns" type="HBoxContainer" parent="."]
+[node name="Layout" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,37 +23,18 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/separation = 40
-alignment = 1
+theme_override_constants/separation = 22
 
-[node name="Elements" type="VBoxContainer" parent="Columns"]
+[node name="Grid" type="GridContainer" parent="Layout"]
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 2
-theme_override_constants/separation = 14
+theme_override_constants/h_separation = 28
+theme_override_constants/v_separation = 20
+columns = 4
 
-[node name="Heading" type="Label" parent="Columns/Elements"]
+[node name="Empty" type="Label" parent="Layout"]
+visible = false
 layout_mode = 2
-text = "NGUYÊN TỐ"
+text = "Chưa đánh thức nguyên tố nào."
 horizontal_alignment = 1
-
-[node name="Grid" type="GridContainer" parent="Columns/Elements"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 16
-columns = 2
-
-[node name="Weapons" type="VBoxContainer" parent="Columns"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 14
-
-[node name="Heading" type="Label" parent="Columns/Weapons"]
-layout_mode = 2
-text = "VŨ KHÍ"
-horizontal_alignment = 1
-
-[node name="List" type="VBoxContainer" parent="Columns/Weapons"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 18

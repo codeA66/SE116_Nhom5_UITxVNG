@@ -32,3 +32,19 @@ enum Slot { SWORD, BOW }
 
 func is_ranged() -> bool:
 	return projectile_scene != null
+
+
+## Chỉ số hiện trên màn Tab: mỗi dòng {label, value}. Loại vũ khí mới ghi đè để thêm chỉ số riêng, không sửa màn Tab
+func get_stats() -> Array[Dictionary]:
+	var stats: Array[Dictionary] = []
+	var damage := 0
+	for attack in combo:
+		if attack:
+			damage = maxi(damage, attack.damage)
+	stats.append({"label": "Sát thương", "value": str(damage)})
+	if combo.size() > 1:
+		stats.append({"label": "Chuỗi đòn", "value": tr("%d nhát") % combo.size()})
+	stats.append({"label": "Tầm đánh", "value": "%s m" % String.num(attack_range, 1)})
+	if energy_cost > 0:
+		stats.append({"label": "Năng lượng", "value": tr("%d ô / đòn") % energy_cost})
+	return stats

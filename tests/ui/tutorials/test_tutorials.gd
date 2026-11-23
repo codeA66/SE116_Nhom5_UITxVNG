@@ -159,9 +159,8 @@ func _test_category_hierarchy_and_navigation() -> void:
 	_assert(menu._mode == InventoryMenu.Mode.TAB, "Đang ở màn Tab")
 	_assert(menu._currency_label.visible, "Tiền Soul Jade hiển thị ở màn Tab")
 	var tab_pages := menu._tab_pages
-	_assert(tab_pages.size() == 3, "Màn Tab có đúng 3 trang")
-	_assert(tab_pages.size() == 3 and tab_pages[0] is CharmsPage and tab_pages[1] is ItemsPage and tab_pages[2] is ElementsPage,
-		"Thứ tự trang: Bùa, Vật phẩm, Nguyên tố")
+	_assert(tab_pages.size() == 4, "Màn Tab có đúng 4 trang")
+	_assert(tab_pages.size() == 4 and tab_pages[0] is CharmsPage and tab_pages[1] is ItemsPage and tab_pages[2] is ElementsPage 		and tab_pages[3] is WeaponsPage, "Thứ tự trang: Bùa, Vật phẩm, Nguyên tố, Vũ khí")
 	for p: MenuPage in tab_pages:
 		_assert(not (p is TutorialsPage), "Sổ tay KHÔNG nằm trong vòng trang Tab")
 
