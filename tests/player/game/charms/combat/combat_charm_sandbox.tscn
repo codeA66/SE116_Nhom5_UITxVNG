@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="reflect_beetle"]
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="reflect_wisp"]
 [ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_caster/fire_caster.tscn" id="reflect_fire_caster"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/combat/threefold_slash_charm.tres" id="two_slash"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="pickup"]
 [ext_resource type="PackedScene" path="res://objects/combat/training_dummy/training_dummy.tscn" id="dummy"]
 [ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="damage"]
@@ -82,6 +83,11 @@ position = Vector3(1, 0, 2)
 charm = ExtResource("fire_arrow")
 persistent_id = &"combat_charms.fire_arrow"
 
+[node name="TwoSlashCharm" parent="." instance=ExtResource("pickup")]
+position = Vector3(-9, 0, 2)
+charm = ExtResource("two_slash")
+persistent_id = &"combat_charms.two_slash"
+
 [node name="SwordReflectCharm" parent="." instance=ExtResource("pickup")]
 position = Vector3(-11, 0, 2)
 charm = ExtResource("sword_reflect")
@@ -146,7 +152,7 @@ position = Vector3(1, 2.8, 4)
 billboard = 1
 pixel_size = 0.012
 font_size = 36
-text = "Checkpoint: Tab → Bùa để đeo / tháo\nNhặt bốn bùa bằng F\nÔ đỏ: mất 1 máu để kích hoạt Phẫn Nộ"
+text = "Checkpoint: Tab → Bùa để đeo / tháo\nNhặt bùa bằng F\nÔ đỏ: mất 1 máu để kích hoạt Phẫn Nộ"
 
 [node name="TargetLabel" type="Label3D" parent="."]
 position = Vector3(0, 3.5, -6)

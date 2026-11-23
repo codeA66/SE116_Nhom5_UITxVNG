@@ -33,10 +33,10 @@ func _ready() -> void:
 	var zone: ZoneRoot = get_parent() as ZoneRoot
 	if not zone.is_combat_ready():
 		await zone.combat_ready
-	for name: String in ["DummySword", "DummyBow", "DummySkill"]:
-		var dummy: Node = zone.get_node(NodePath(name))
+	for dummy_name: String in ["DummySword", "DummyBow", "DummySkill"]:
+		var dummy: Node = zone.get_node(NodePath(dummy_name))
 		var hurtbox: HurtboxComponent = dummy.get_node(^"HurtboxComponent") as HurtboxComponent
-		hurtbox.hurt.connect(_on_target_hurt.bind(name))
+		hurtbox.hurt.connect(_on_target_hurt.bind(dummy_name))
 	print("COMBAT_CHARMS_SANDBOX: F nhặt bùa; đứng cạnh checkpoint, Tab → Bùa để đeo/tháo; ô đỏ gây 1 sát thương.")
 
 

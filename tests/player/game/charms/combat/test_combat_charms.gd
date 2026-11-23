@@ -6,8 +6,8 @@ extends Node
 ##
 ## ===== USE CASE =====
 ## UC1 Ba bùa có ở đúng file, đã đăng ký catalog, đúng tên và số khấc (Phẫn Nộ 2, Linh Khí 1, Ưng Nhãn 1).
-## UC2 Phẫn Nộ: sau khi player nhận sát thương, KIẾM và CUNG được +1 sát thương trong 1,5 giây.
-##     Bị đánh lại giữa chừng thì tính lại 1,5 giây từ đầu (không cộng dồn thành 3).
+## UC2 Phẫn Nộ: sau khi player nhận sát thương, KIẾM và CUNG được +1 sát thương trong 2,5 giây.
+##     Bị đánh lại giữa chừng thì tính lại 2,5 giây từ đầu (chỉ cộng 1 sát thương).
 ##     Kỹ năng nguyên tố (Thổi Gió) không được cộng. Chưa đeo bùa thì bị đánh vẫn chỉ 1.
 ##     Tháo bùa giữa lúc đang hiệu lực: mất ngay. Dựng lại scene (đổi khu / hồi sinh) giữa lúc hiệu lực: không sót.
 ##     Đòn bị bất tử chặn (không mất máu) không kích hoạt.
@@ -22,9 +22,9 @@ extends Node
 ## TC3  (UC2) Đeo Phẫn Nộ, chưa bị đánh: chém -> mất 1.
 ## TC4  (UC2) Bị đánh (đòn khựng bình thường) rồi chém -> mất 2.
 ## TC5  (UC2) Bị đánh (đòn không khựng) rồi bắn cung trúng Dummy2 -> sát thương cung gốc +1.
-## TC6  (UC2) Bị đánh, chém lúc ~1,15 s -> mất 2; chém lúc ~1,85 s -> mất 1.
-## TC7  (UC2) Bị đánh, 1,0 s sau bị đánh lại, chém lúc 2,15 s (1,15 s sau lần 2) -> mất 2 (đã tính lại giờ);
-##            chém lúc 2,85 s -> mất 1. Bị đánh 3 lần liền rồi chém -> mất 2 (không cộng dồn).
+## TC6  (UC2) Bị đánh, chém lúc ~2,15 s -> mất 2; chém lúc ~2,85 s -> mất 1.
+## TC7  (UC2) Bị đánh, 1,0 s sau bị đánh lại, chém lúc ~3,15 s (2,15 s sau lần 2) -> mất 2 (đã tính lại giờ);
+##            chém lúc ~3,85 s -> mất 1. Bị đánh 3 lần liền rồi chém -> mất 2 (chỉ cộng 1 sát thương).
 ## TC8  (UC2) Thổi Gió vào Dummy3 không buff và có buff: mất máu bằng nhau.
 ## TC9  (UC2) Bị đánh, tháo bùa ngay, chém -> mất 1.
 ## TC10 (UC2) Bị đánh, dựng lại scene, chém -> mất 1; số node con của player không tăng so với trước.
@@ -45,7 +45,9 @@ const STORAGE: String = "user://test_combat_charms_unit/"
 const WRATH := "res://resources/player/items/charms/combat/wrath_charm.tres"
 const KEEN_EYE := "res://resources/player/items/charms/combat/keen_eye_charm.tres"
 const SPIRIT := "res://resources/player/items/charms/utility/spirit_charm.tres"
-const BUFF_TIME := 1.5
+const BUFF_TIME: float = 2.5
+const BUFF_CHECK_BEFORE: float = 2.15
+const BUFF_CHECK_AFTER: float = 2.85
 const ENERGY_BONUS := 2
 ## Chém: chờ nhát ra đòn rồi mới đọc máu; nghỉ cho combo về đầu trước lượt sau
 const SLASH_HIT_WAIT := 0.3
@@ -183,23 +185,23 @@ func _tc3_to_tc11_wrath() -> void:
 	await _wait(BUFF_TIME)
 
 	await _hurt(false)
-	await _wait(1.15 - SLASH_LEAD)
-	_check(await _slash_loss("Dummy1") == 2, "TC6 chém lúc ~1,15 s sau khi bị đánh: vẫn mất 2")
+	await _wait(BUFF_CHECK_BEFORE - SLASH_LEAD)
+	_check(await _slash_loss("Dummy1") == 2, "TC6 chém lúc ~2,15 s sau khi bị đánh: vẫn mất 2")
 	await _hurt(false)
-	await _wait(1.85 - SLASH_LEAD)
-	_check(await _slash_loss("Dummy1") == 1, "TC6 chém lúc ~1,85 s sau khi bị đánh: hết hiệu lực, mất 1")
+	await _wait(BUFF_CHECK_AFTER - SLASH_LEAD)
+	_check(await _slash_loss("Dummy1") == 1, "TC6 chém lúc ~2,85 s sau khi bị đánh: hết hiệu lực, mất 1")
 
 	await _hurt(false)
 	await _wait(1.0)
 	await _hurt(false)
-	await _wait(1.15 - SLASH_LEAD)
-	_check(await _slash_loss("Dummy1") == 2, "TC7 bị đánh lại lúc 1,0 s, chém 1,15 s sau lần 2: vẫn mất 2 (tính lại giờ)")
+	await _wait(BUFF_CHECK_BEFORE - SLASH_LEAD)
+	_check(await _slash_loss("Dummy1") == 2, "TC7 chém ~2,15 s sau lần bị đánh cuối: vẫn mất 2 (tính lại giờ)")
 	await _wait(BUFF_TIME)
 	await _hurt(false)
 	await _wait(1.0)
 	await _hurt(false)
-	await _wait(1.85 - SLASH_LEAD)
-	_check(await _slash_loss("Dummy1") == 1, "TC7 chém 1,85 s sau lần bị đánh cuối: mất 1")
+	await _wait(BUFF_CHECK_AFTER - SLASH_LEAD)
+	_check(await _slash_loss("Dummy1") == 1, "TC7 chém ~2,85 s sau lần bị đánh cuối: mất 1")
 	for i in 3:
 		await _hurt(false)
 		await _f(2)

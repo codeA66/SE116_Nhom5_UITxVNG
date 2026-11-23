@@ -34,9 +34,9 @@ func run(_console: DevConsole) -> void:
 	# Dạng tiến hoá (Lốc xoáy của Thổi Gió) cũng là file kỹ năng riêng: không mở thẳng, chỉ có qua nâng cấp kỹ năng gốc
 	var evolved: Array[AbilityData] = []
 	for ability in abilities:
-		for step in ability.upgrades:
-			if step and step.evolves_into:
-				evolved.append(step.evolves_into)
+		for upgrade_step: SkillUpgradeData in ability.upgrades:
+			if upgrade_step and upgrade_step.evolves_into:
+				evolved.append(upgrade_step.evolves_into)
 	var opened := 0
 	for ability in abilities:
 		if evolved.has(ability):
@@ -52,10 +52,10 @@ func run(_console: DevConsole) -> void:
 func _upgrade_to_max(ability: AbilityData) -> void:
 	var level := GameState.get_ability_level(ability)
 	while level > 0 and level < ability.get_max_level():
-		var step := ability.get_upgrade(level)
-		if step == null:
+		var upgrade_step: SkillUpgradeData = ability.get_upgrade(level)
+		if upgrade_step == null:
 			return
-		for cost: ItemCost in step.requirements:
+		for cost: ItemCost in upgrade_step.requirements:
 			var missing := cost.count - GameState.get_item_count(cost.item)
 			if missing > 0:
 				GameState.add_item(cost.item, missing)

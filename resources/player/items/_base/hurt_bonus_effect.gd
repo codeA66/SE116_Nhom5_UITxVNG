@@ -40,10 +40,10 @@ func apply(player: Node) -> void:
 
 func remove(player: Node) -> void:
 	var id: int = player.get_instance_id()
-	var reference: WeakRef = _instances.get(id)
+	var controller_ref: WeakRef = _instances.get(id)
 	_instances.erase(id)
-	if reference == null:
+	if controller_ref == null:
 		return
-	var controller: Node = reference.get_ref() as Node
+	var controller: Node = controller_ref.get_ref() as Node
 	if is_instance_valid(controller) and controller.is_inside_tree():
 		controller.call(&"release")

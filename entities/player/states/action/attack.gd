@@ -5,6 +5,12 @@ extends PlayerState
 
 ## Chỉ số nhân tốc độ chém cận chiến (StatMultiplierEffect.stat). Cung không dùng
 const MELEE_ATTACK_SPEED := &"melee_attack_speed"
+const SWORD_COMBO_LOOP_LENGTH: StringName = &"sword_combo_loop_length"
+const MIN_LOOP_LENGTH: int = 2
+const SONG_TRAM_FX = preload("res://assets/vfx/shared/charms/song_tram/song_tram_slash.gd")
+
+@export_group("Combat Feedback")
+@export var song_tram_slash: SONG_TRAM_FX
 
 var _combo_index: int = 0
 var _elapsed: float = 0.0
@@ -13,6 +19,7 @@ var _speed: float = 1.0
 var _attack: AttackData
 var _lunge_direction: Vector3 = Vector3.ZERO
 var _hitbox_used: bool = false
+var _song_tram_glint_checked: bool = false
 var _weapon: WeaponData
 ## Khoảng bật hitbox của đòn hiện tại (giây thực), lấy từ marker animation nếu có
 var _active_start: float = 0.0
@@ -27,12 +34,17 @@ var _energy_gained: bool = false
 
 
 func enter(_previous: StringName) -> void:
-	_combo_index = _combo.peek_index(player.get_weapon().combo.size())
+	_weapon = player.get_weapon()
+	var loop_length: int = _get_sword_loop_length()
+	var combo_size: int = loop_length if loop_length > 0 else _weapon.combo.size()
+	_combo_index = _combo.peek_index(combo_size)
 	player.hitbox.hit.connect(_on_hit)
-	_start_attack()
+	_start_attack(combo_size)
 
 
 func exit() -> void:
+	if song_tram_slash:
+		song_tram_slash.cancel_anticipation()
 	player.hitbox.deactivate()
 	player.hitbox.hit.disconnect(_on_hit)
 	_combo.start_grace()
@@ -58,11 +70,16 @@ func physics_update(delta: float) -> void:
 			return
 
 	# Attack buffer nằm ở Player: bấm sớm trong lúc đòn chưa xong vẫn được ghi nhận
-	var has_next := _combo_index < _weapon.combo.size() - 1
-	if has_next and _elapsed >= _attack.combo_window_start and player.can_attack():
-		_combo_index += 1
-		_start_attack()
-		return
+	if _elapsed >= _attack.combo_window_start and player.can_attack():
+		var loop_length: int = _get_sword_loop_length()
+		var combo_size: int = loop_length if loop_length > 0 else _weapon.combo.size()
+		var next_index: int = _combo_index + 1
+		if loop_length > 0 and next_index == loop_length:
+			next_index = 0
+		if next_index < combo_size:
+			_combo_index = next_index
+			_start_attack(combo_size)
+			return
 
 	var moving := not player.get_move_direction().is_zero_approx()
 	# Giữ hướng đi (và không có lệnh chém đang chờ) thì bỏ phần thu đòn để chạy tiếp.
@@ -74,17 +91,26 @@ func physics_update(delta: float) -> void:
 		state_machine.transition_to(RUN if moving else IDLE)
 
 
-func _start_attack() -> void:
+func _get_sword_loop_length() -> int:
+	if _weapon.slot != WeaponData.Slot.SWORD or _weapon.is_ranged():
+		return 0
+	var length: int = roundi(clampf(player.stats.get_bonus(SWORD_COMBO_LOOP_LENGTH), 0.0, float(_weapon.combo.size())))
+	return length if length >= MIN_LOOP_LENGTH else 0
+
+
+func _start_attack(combo_size: int) -> void:
 	player.consume_attack_input()
+	if song_tram_slash:
+		song_tram_slash.cancel_anticipation()
 	player.hitbox.deactivate()
-	_weapon = player.get_weapon()
 	_attack = _weapon.combo[_combo_index]
-	_combo.mark_started(_combo_index, _weapon.combo.size())
+	_combo.mark_started(_combo_index, combo_size)
 	if not _weapon.is_ranged():
 		player.hitbox.set_reach(_weapon.attack_range)
 	_elapsed = 0.0
 	_speed = 1.0 if _weapon.is_ranged() else maxf(player.stats.get_multiplier(MELEE_ATTACK_SPEED), 0.01)
 	_hitbox_used = false
+	_song_tram_glint_checked = false
 	_recoil_start = -1.0
 	_energy_gained = false
 
@@ -140,11 +166,21 @@ func _update_hitbox() -> void:
 			player.shoot_arrow(_weapon, _attack, _lunge_direction)
 			_hitbox_used = true
 		return
+	if not _hitbox_used and not _song_tram_glint_checked and song_tram_slash:
+		var lead: float = song_tram_slash.glint_lead
+		if _elapsed >= maxf(_active_start - lead * _speed, 0.0):
+			_song_tram_glint_checked = true
+			if lead > 0.0 and _elapsed < _active_start and _combo_index < _get_sword_loop_length():
+				song_tram_slash.anticipate_strike()
 	var in_window := _elapsed >= _active_start and _elapsed < _active_end
 	if in_window and not _hitbox_used:
-		player.hitbox.activate(_attack, (_active_end - _active_start) / _speed)
+		var active_time: float = (_active_end - _active_start) / _speed
+		if song_tram_slash and _combo_index < _get_sword_loop_length():
+			song_tram_slash.play_strike(player.global_position, _lunge_direction, player.hitbox.get_reach(), active_time, _combo_index % 2 != 0)
+		player.hitbox.activate(_attack, active_time)
 		_hitbox_used = true
-		player.notify_melee_active(_attack, _combo_index, _weapon.combo.size(), _lunge_direction, (_active_end - _active_start) / _speed)
+		# Dùng chiều dài chuỗi gốc để nhát hai không thành đòn kết thúc của nguyên tố.
+		player.notify_melee_active(_attack, _combo_index, _weapon.combo.size(), _lunge_direction, active_time)
 	elif not in_window and player.hitbox.is_active():
 		player.hitbox.deactivate()
 

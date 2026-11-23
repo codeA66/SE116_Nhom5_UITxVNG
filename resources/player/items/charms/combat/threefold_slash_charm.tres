@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CharmData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="charm"]
+[ext_resource type="Script" path="res://resources/player/items/_base/stat_bonus_effect.gd" id="effect"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
+[ext_resource type="Texture2D" path="res://assets/ui/charms/combat/song_tram_charm.png" id="icon"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/_rarity/rare.tres" id="rarity"]
+
+[sub_resource type="Resource" id="SwordLoop"]
+script = ExtResource("effect")
+stat = &"sword_combo_loop_length"
+bonus = 2.0
+
+[resource]
+script = ExtResource("charm")
+id = &"threefold_slash_charm"
+display_name = "Bùa Song Trảm"
+icon = ExtResource("icon")
+notch_cost = 2
+description = "Mỗi lần bấm ra một nhát. Bấm nối đúng nhịp sẽ lặp hai nhát kiếm đầu, bỏ đòn kết thúc đẩy lùi."
+lore = "Một nhát mở đường, một nhát trở tay."
+effects = Array[ExtResource("base")]([SubResource("SwordLoop")])
+rarity = ExtResource("rarity")

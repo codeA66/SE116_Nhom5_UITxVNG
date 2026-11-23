@@ -9,9 +9,12 @@ extends Node3D
 ## Mesh cung dựng một lần ở _ready (và khi tầm đổi). _process chỉ chạy lúc đang quét.
 ## Không đặt dưới Model của player: foxy_player.gd ghi đè material của mọi mesh dưới Model.
 
+const SONG_TRAM_FX = preload("res://assets/vfx/shared/charms/song_tram/song_tram_slash.gd")
+
 @export var hitbox: HitboxComponent
 ## Node cho biết hướng nhìn; vệt xoay theo node này lúc quét. Để trống = giữ hướng của chính SlashTrail
 @export var follow: Node3D
+@export var alternate_slash: SONG_TRAM_FX
 
 @export_group("Shape")
 ## Bán kính ngoài = tầm hitbox thực tế x hệ số này (vệt khớp vùng trúng để người chơi đọc được tầm)
@@ -209,6 +212,8 @@ func _build_mesh_and_points() -> void:
 
 
 func _on_activated(attack: AttackData) -> void:
+	if alternate_slash and alternate_slash.overrides_swing():
+		return
 	var fusion := GameState.get_active_fusion()
 	if fusion and fusion.replaces_default_trail:
 		return

@@ -8,8 +8,10 @@ const HIT_SCENE: PackedScene = preload("res://abilities/fusion/wind/vfx/impact/m
 ## Nạp kiểu trực tiếp để editor chưa cập nhật class_name vẫn parse được controller.
 const HIT_VFX_SCRIPT = preload("res://abilities/fusion/wind/vfx/impact/melee/wind_sword_hit_vfx.gd")
 const ELEMENT_ID: StringName = &"wind"
+const SONG_TRAM_FX = preload("res://assets/vfx/shared/charms/song_tram/song_tram_slash.gd")
 @export_group("Wiring")
 @export var player: Player
+@export var alternate_slash: SONG_TRAM_FX
 @export_group("Shape")
 @export_range(1, 8, 1) var strand_count: int = 3
 @export_range(12, 96, 1) var segments: int = 56
@@ -144,6 +146,11 @@ func _on_swing(element_id: StringName, attack: AttackData, combo_index: int, com
 	_reach = maxf(player.hitbox.get_reach(), minimum_duration)
 	_armed = true
 	_clip_box = false
+	if alternate_slash and alternate_slash.overrides_swing():
+		# Nhát này vẫn cần hiệu ứng lúc trúng dù vệt kiếm do bùa vẽ.
+		_ribbons.hide()
+		set_process(false)
+		return
 	global_transform = Transform3D(Basis.looking_at(-_direction), player.global_position)
 	var index: int = posmod(combo_index, 3)
 	var sweep: float = -1.0 if combo_index % 2 == 0 else 1.0
