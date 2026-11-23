@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/shared/charms/song_tram/song_tram_slash.gd" id="slash"]
+[ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="pool"]
+[ext_resource type="PackedScene" path="res://assets/vfx/shared/charms/song_tram/snap/slash_snap_slot.tscn" id="slot"]
+
+[node name="SongTramSlash" type="Node3D"]
+script = ExtResource("slash")
+
+[node name="SlashPool" type="Node" parent="."]
+script = ExtResource("pool")
+scene = ExtResource("slot")
+initial_size = 0

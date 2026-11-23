@@ -1,10 +1,13 @@
 class_name PageTabs
 extends HBoxContainer
-## Đầu màn Tab: tên trang đang xem ở giữa (chữ có chân, nét hoa văn bên dưới), tên trang trước / sau mờ ở hai bên
-## kèm phím Z / C (đọc từ Input Map). Bấm chuột vào tên trang hai bên cũng đổi trang.
+## Đầu màn Tab: hàng icon các trang (PageIconBar) trên cùng, tên trang đang xem ở giữa (chữ có chân, nét hoa văn bên
+## dưới), phím đổi trang hai bên (đọc từ Input Map). Tên trang trước / sau chỉ hiện khi style.show_side_page_names.
+## Bấm chuột vào phím / tên hai bên hoặc vào icon cũng đổi trang.
 
 signal previous_requested
 signal next_requested
+## Bấm vào icon trang thứ index
+signal page_requested(index: int)
 
 var _style: InventoryStyle
 
@@ -14,6 +17,7 @@ var _style: InventoryStyle
 @onready var _next_key: KeyGlyph = $Next/Key
 @onready var _title: Label = $Center/Title
 @onready var _rule: OrnamentDivider = $Center/Rule
+@onready var _icons: PageIconBar = $Center/PageIcons
 
 
 func _ready() -> void:
@@ -22,6 +26,7 @@ func _ready() -> void:
 		side.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	($Previous as Control).gui_input.connect(_on_side_input.bind(false))
 	($Next as Control).gui_input.connect(_on_side_input.bind(true))
+	_icons.page_requested.connect(page_requested.emit)
 
 
 func configure(style: InventoryStyle, previous_action: StringName, next_action: StringName) -> void:
@@ -37,12 +42,18 @@ func configure(style: InventoryStyle, previous_action: StringName, next_action: 
 		key.text_color = style.dim
 		key.border_color = Color(style.dim, 0.6)
 		key.fill_color = Color(0.0, 0.0, 0.0, 0.35)
+	_icons.configure(style)
+	_previous.visible = style.show_side_page_names
+	_next.visible = style.show_side_page_names
 	_previous_key.text = key_name(previous_action)
 	_next_key.text = key_name(next_action)
 
 
-## titles: tên các trang đang mở được; index: trang đang xem
-func show_pages(titles: PackedStringArray, index: int) -> void:
+## titles / icons: tên và icon các trang đang mở được (icon có thể null); index: trang đang xem
+func show_pages(titles: PackedStringArray, index: int, icons: Array[Texture2D] = []) -> void:
+	if icons.size() != titles.size():
+		icons.resize(titles.size())
+	_icons.show_pages(icons, titles, index)
 	_title.text = tr(titles[index]).to_upper() if index >= 0 and index < titles.size() else ""
 	var many := titles.size() > 1
 	($Previous as Control).modulate.a = 1.0 if many else 0.0

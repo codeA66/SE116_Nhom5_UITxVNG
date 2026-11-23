@@ -7,6 +7,8 @@ extends Resource
 @export var weapon: WeaponData
 ## Danh sách đã nhặt; weapon phía trên chỉ là vũ khí đang chọn.
 @export var weapons: Array[WeaponData] = []
+## Mọi vũ khí đã nhặt, kể cả cái đang không trang bị (đổi qua trang Vũ khí của màn Tab)
+@export var weapon_collection: Array[WeaponData] = []
 @export var abilities: Array[AbilityData] = []
 ## Nguyên tố đang ghép vào từng ô vũ khí: WeaponData.Slot -> id nguyên tố. Không có khóa = chưa ghép
 @export var fusions: Dictionary[int, StringName] = {}
@@ -40,6 +42,7 @@ func snapshot() -> PlayerProgress:
 	var copy := PlayerProgress.new()
 	copy.weapon = weapon
 	copy.weapons = weapons.duplicate()
+	copy.weapon_collection = weapon_collection.duplicate()
 	copy.abilities = abilities.duplicate()
 	copy.fusions = fusions.duplicate()
 	copy.flags = flags.duplicate()

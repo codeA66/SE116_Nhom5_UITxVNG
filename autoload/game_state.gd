@@ -77,6 +77,31 @@ func get_weapon_in_slot(slot: WeaponData.Slot) -> WeaponData:
 	return progress.get_weapon_in_slot(slot)
 
 
+## Mọi vũ khí đã có của một nhóm (đang trang bị + đã nhặt), theo thứ tự nhặt
+func get_owned_weapons(slot: WeaponData.Slot) -> Array[WeaponData]:
+	var result: Array[WeaponData] = []
+	for list: Array[WeaponData] in [progress.weapon_collection, progress.weapons]:
+		for weapon in list:
+			if weapon and weapon.slot == slot and not result.has(weapon):
+				result.append(weapon)
+	return result
+
+
+## Trang bị một vũ khí đã có vào nhóm của nó (đổi ở đâu cũng được). Đang cầm nhóm đó thì tay đổi theo;
+## cầm nhóm khác thì giữ nguyên tay. false = chưa có vũ khí này
+func equip_owned_weapon(weapon: WeaponData) -> bool:
+	if weapon == null or not get_owned_weapons(weapon.slot).has(weapon):
+		return false
+	if get_weapon_in_slot(weapon.slot) == weapon:
+		return true
+	_store_weapon(weapon)
+	if progress.weapon and progress.weapon.slot == weapon.slot:
+		progress.weapon = weapon
+		weapon_changed.emit(weapon)
+	progress_changed.emit()
+	return true
+
+
 func select_weapon(slot: WeaponData.Slot) -> bool:
 	var owned := get_weapon_in_slot(slot)
 	if owned == null:
@@ -85,9 +110,15 @@ func select_weapon(slot: WeaponData.Slot) -> bool:
 	return true
 
 
+## Đặt vũ khí vào ô của nhóm nó. Vũ khí cũ trong ô vẫn nằm trong danh sách đã nhặt (không mất khi đổi)
 func _store_weapon(weapon: WeaponData) -> void:
+	if not progress.weapon_collection.has(weapon):
+		progress.weapon_collection.append(weapon)
 	for index in progress.weapons.size():
 		if progress.weapons[index].slot == weapon.slot:
+			var old := progress.weapons[index]
+			if old and not progress.weapon_collection.has(old):
+				progress.weapon_collection.append(old)
 			progress.weapons[index] = weapon
 			return
 	progress.weapons.append(weapon)

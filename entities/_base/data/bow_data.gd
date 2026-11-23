@@ -37,3 +37,12 @@ func get_shot_speed(draw: float) -> float:
 ## Độ kéo 0..1 -> sát thương
 func get_shot_damage(draw: float) -> int:
 	return roundi(lerpf(float(min_damage), float(full_damage), clampf(draw, 0.0, 1.0)))
+
+
+func get_stats() -> Array[Dictionary]:
+	var stats := super()
+	# Cung: sát thương theo độ kéo dây thay cho sát thương của đòn
+	stats[0]["value"] = str(full_damage) if min_damage == full_damage else "%d – %d" % [min_damage, full_damage]
+	stats.append({"label": "Kéo dây", "value": "%s s" % String.num(draw_time, 2)})
+	stats.append({"label": "Hồi", "value": "%s s" % String.num(shot_cooldown, 2)})
+	return stats

@@ -11,6 +11,8 @@ signal sound_requested(kind: StringName)
 
 ## Tên trang trên thanh tiêu đề
 @export var page_title: String = ""
+## Icon trang trên hàng icon đầu màn Tab; để trống thì vẽ chữ cái đầu của tên trang
+@export var page_icon: Texture2D
 
 var style: InventoryStyle
 ## Ô được chọn lần cuối: quay lại trang thì con trỏ về đúng chỗ cũ

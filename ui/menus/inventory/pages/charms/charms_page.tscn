@@ -1,5 +1,6 @@
 [gd_scene format=3]
 
+[ext_resource type="Texture2D" path="res://assets/ui/icons/pages/page_charms.svg" id="page_icon_tex"]
 [ext_resource type="Script" path="res://ui/menus/inventory/pages/charms/charms_page.gd" id="1_page"]
 [ext_resource type="Script" path="res://ui/menus/inventory/pages/charms/notch_row.gd" id="2_notches"]
 
@@ -13,6 +14,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_page")
 page_title = "Bùa"
+page_icon = ExtResource("page_icon_tex")
 
 [node name="Layout" type="VBoxContainer" parent="."]
 layout_mode = 1

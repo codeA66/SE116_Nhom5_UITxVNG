@@ -17,6 +17,22 @@ extends Resource
 @export var success: Color = Color(0.62, 0.86, 0.66)
 ## Lớp tối phủ lên cảnh game
 @export var backdrop_dim: float = 0.55
+## Màu nhấn (vàng ấm như đèn lồng màn hình chính): chỉ dùng cho thứ đang chọn, để màu còn lại dành cho đồ vật
+@export var accent: Color = Color(0.96, 0.78, 0.45)
+## Cảnh game phía sau mờ cỡ nào (mức mip của ảnh màn hình) và nhạt màu bao nhiêu
+@export_range(0.0, 6.0, 0.1) var backdrop_blur: float = 3.0
+@export_range(0.0, 1.0, 0.05) var backdrop_desaturate: float = 0.45
+
+@export_group("Đầu và chân màn Tab")
+## Icon trang trên cùng: cạnh (px), khoảng cách, phần lề trong của hình so với vòng tròn
+@export var page_icon_size: float = 38.0
+@export var page_icon_gap: float = 18.0
+@export_range(0.0, 0.4, 0.01) var page_icon_padding: float = 0.2
+## Hiện tên trang trước / sau ở hai bên tiêu đề (tắt khi đã có hàng icon trang)
+@export var show_side_page_names: bool = false
+## Khoảng cách giữa các cụm phím ở chân màn và giữa ô phím với chữ
+@export var footer_gap: int = 28
+@export var footer_key_gap: int = 8
 
 @export_group("Cỡ chữ")
 @export var title_font: int = 34
@@ -33,9 +49,9 @@ extends Resource
 ## Cạnh khung góc hoa văn (px)
 @export var corner_size: float = 46.0
 @export var detail_width: float = 470.0
-@export var element_card_size: Vector2 = Vector2(150, 168)
+@export var element_card_size: Vector2 = Vector2(180, 250)
 @export var weapon_socket_size: Vector2 = Vector2(270, 132)
-@export var item_tile_size: Vector2 = Vector2(92, 92)
+@export var item_tile_size: Vector2 = Vector2(112, 112)
 @export var charm_tile_size: Vector2 = Vector2(84, 84)
 ## Hình minh họa nguyên tố trong bảng chi tiết (cao, px)
 @export var detail_art_height: float = 200.0
@@ -50,6 +66,27 @@ extends Resource
 @export var charm_columns: int = 6
 ## Ô phóng to bấy nhiêu lần khi đang chọn
 @export_range(1.0, 1.3, 0.01) var focus_scale: float = 1.08
+
+## Thanh cuộn bảng chi tiết (px)
+@export_range(1.0, 12.0, 0.5) var detail_scrollbar_width: float = 3.0
+
+@export_group("Trang Nguyên tố, Vũ khí, Vật phẩm, Hướng dẫn")
+## Vẽ hộp nền + viền quanh thẻ nguyên tố / ô vật phẩm (tắt = chỉ còn hình, không giống ô bùa)
+@export var element_card_box: bool = false
+@export var item_tile_box: bool = false
+## Huy hiệu nguyên tố trên thẻ (bán kính px)
+@export var element_emblem_radius: float = 52.0
+## Số lượng vật phẩm (cỡ chữ)
+@export var item_count_font: int = 22
+## Ô vũ khí: cạnh ô, bán kính huy hiệu
+@export var weapon_tile_size: Vector2 = Vector2(150, 170)
+@export var weapon_emblem_radius: float = 44.0
+## Khoảng cách giữa các ô vũ khí và giữa hai nhóm
+@export var weapon_tile_gap: int = 16
+@export var weapon_group_gap: int = 26
+## Vạch vàng bên trái mục hướng dẫn đang chọn (px)
+@export var tutorial_marker_width: float = 3.0
+@export var tutorial_row_height: float = 52.0
 
 @export_group("Nhịp (giây)")
 @export var open_time: float = 0.22
@@ -84,8 +121,18 @@ extends Resource
 @export var charm_preview_color: Color = Color("#e9c986")
 @export var charm_border_width: float = 1.5
 @export var charm_refusal_hold: float = 1.6
+## Vẽ khung hộp (charm_panel) quanh cả trang Bùa. Tắt = chỉ còn nét trang trí góc màn (kiểu Hollow Knight)
+@export var charm_body_box: bool = false
+## Lưới hiện cả bùa chưa có (ô kín, chấm mờ) để người chơi thấy còn bao nhiêu bùa để đi tìm (kiểu Hollow Knight)
+@export var charm_show_undiscovered: bool = true
+## Ô khắc vẽ hình tròn (tắt = hình thoi cũ)
+@export var charm_round_notches: bool = true
+## Ô góc ngoặc vuông quanh bùa đang chọn (tắt = chỉ đổi vòng sáng của huy hiệu)
+@export var charm_focus_brackets: bool = false
 
 @export_group("Bùa đang đeo")
+## Bùa đang đeo vẽ kiểu treo trên dây (tắt = huy hiệu tròn như lưới, ô trống là vòng mờ, kiểu Hollow Knight)
+@export var charm_pendant_equipped: bool = false
 @export_range(0.0, 48.0, 1.0, "or_greater") var charm_equipped_gap: float = 14.0
 @export_range(0.0, 96.0, 1.0, "or_greater") var charm_empty_width: float = 48.0
 @export_range(0.0, 0.3, 0.01) var charm_hanger_y_ratio: float = 0.10

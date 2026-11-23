@@ -26,12 +26,19 @@ func get_detail() -> DetailEntry:
 
 
 func _draw_content(rect: Rect2) -> void:
-	draw_rect(rect, style.tile_fill)
-	draw_rect(rect, style.tile_border, false, 1.0)
+	if item == null:
+		return
+	if style.item_tile_box:
+		draw_rect(rect, style.tile_fill)
+		draw_rect(rect, style.tile_border, false, 1.0)
 	# Có hình vẽ thì giữ màu gốc của hình; chưa có thì hình thoi màu chữ
-	_draw_emblem(item.icon, rect.get_center(), rect.size.x * 0.6, Color.WHITE if item.icon else style.ink, item.display_name)
+	var tint := Color.WHITE if item.icon else (style.ink if has_focus() else style.dim)
+	_draw_emblem(item.icon, rect.get_center(), rect.size.x * 0.78, tint, item.display_name)
 	if item.owned_flag.is_empty() and count > 1:
+		# Số lượng to ở góc dưới phải, viền tối để đọc được trên mọi hình
 		var font := get_theme_default_font()
 		var text := "x%d" % count
-		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, style.key_font)
-		draw_string(font, rect.end - Vector2(text_size.x + 6.0, 6.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, style.key_font, style.ink)
+		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, style.item_count_font)
+		var at := rect.end - Vector2(text_size.x + 2.0, 4.0)
+		draw_string_outline(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, style.item_count_font, 4, Color(0.0, 0.0, 0.0, 0.85))
+		draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, style.item_count_font, style.ink)

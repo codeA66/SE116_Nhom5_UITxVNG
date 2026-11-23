@@ -21,6 +21,9 @@ var held: bool = false:
 		held = value
 		queue_redraw()
 
+## Phóng ô lên khi được chọn (tắt cho hàng dài như mục hướng dẫn: phóng làm hàng lệch ra ngoài cột)
+var zoom_on_focus: bool = true
+
 var _focus_tween: Tween
 var _fx_tween: Tween
 ## Độ phóng hiện tại khi vẽ. Phóng trong _draw thay vì đổi scale: Container đặt lại scale của ô con mỗi lần xếp
@@ -138,7 +141,7 @@ func _on_focus_changed(is_focused: bool) -> void:
 		focused.emit(self)
 	if _focus_tween and _focus_tween.is_valid():
 		_focus_tween.kill()
-	var target := style.focus_scale if is_focused and style else 1.0
+	var target := style.focus_scale if is_focused and style and zoom_on_focus else 1.0
 	_focus_tween = create_tween()
 	_focus_tween.tween_method(_set_zoom, _zoom, target, style.focus_time if style else 0.1) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)

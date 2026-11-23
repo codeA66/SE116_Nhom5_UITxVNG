@@ -1,0 +1,48 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/shared/charms/song_tram/snap/slash_snap_slot.gd" id="slot"]
+[ext_resource type="Shader" path="res://assets/vfx/shared/charms/song_tram/song_tram_slash.gdshader" id="body"]
+[ext_resource type="Shader" path="res://assets/vfx/shared/charms/song_tram/snap/shaders/slash_snap_halo.gdshader" id="halo"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/slash/star_flash.gdshader" id="glint"]
+
+[sub_resource type="ShaderMaterial" id="BodyMaterial"]
+resource_local_to_scene = true
+shader = ExtResource("body")
+render_priority = 0
+
+[sub_resource type="ShaderMaterial" id="HaloMaterial"]
+resource_local_to_scene = true
+shader = ExtResource("halo")
+render_priority = -1
+
+[sub_resource type="ShaderMaterial" id="GlintMaterial"]
+resource_local_to_scene = true
+shader = ExtResource("glint")
+render_priority = 2
+shader_parameter/tint = Color(0.73, 0.98, 1, 1)
+shader_parameter/intensity = 1.25
+shader_parameter/short_arm = 0.32
+shader_parameter/core_radius = 0.10
+
+[sub_resource type="QuadMesh" id="GlintMesh"]
+
+[node name="SlashSnapSlot" type="Node3D"]
+visible = false
+top_level = true
+script = ExtResource("slot")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+material_override = SubResource("BodyMaterial")
+
+[node name="Halo" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+material_override = SubResource("HaloMaterial")
+
+[node name="BladeGlint" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+material_override = SubResource("GlintMaterial")
+mesh = SubResource("GlintMesh")

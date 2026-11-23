@@ -1,9 +1,8 @@
 class_name FireBolt
 extends Area3D
 ## Cầu lửa sọ của Quỷ Xương Lửa. Bay thẳng, nổ khi chạm tường hoặc player; trúng player thì gây đòn lửa
-## và làm player bắt lửa (BurnableComponent). Kiếm không đánh bật được. Dội ngược được bằng: hurtbox có
-## reflect_projectile() (Khiên xỉ), hoặc gió có gọi deflect_by_wind() (Lốc xoáy; cầu nằm ở lớp wind_receiver để lốc
-## thấy). Dội rồi thì cầu bay về quái đã bắn và tính là đòn của người dội; mỗi quả chỉ dội một lần.
+## và làm player bắt lửa (BurnableComponent). Khiên Xỉ và Lốc Xoáy dội về quái bắn, Hồi Phong dội theo
+## hướng kiếm. Dội rồi thì tính là đòn của người dội; mỗi quả chỉ dội một lần.
 ## Dùng với ObjectPool: không queue_free, xong việc phát finished để pool thu lại.
 ## Theo dõi va chạm bằng signal; chỉ chạy _physics_process khi đang bay hoặc đang nổ.
 
@@ -54,6 +53,7 @@ func launch(attack: AttackData, data: FireBoltData, origin: Vector3, direction: 
 	# Shape là local_to_scene nên đổi bán kính không ảnh hưởng quả khác
 	(_shape.shape as SphereShape3D).radius = data.hit_radius
 	set_deferred(&"collision_mask", data.mask)
+	set_deferred(&"monitorable", true)
 	global_position = origin
 	if not _velocity.is_zero_approx():
 		look_at(origin + _velocity, Vector3.UP if absf(_velocity.normalized().y) < 0.99 else Vector3.FORWARD)
@@ -68,6 +68,13 @@ func deflect_by_wind(by: Node3D) -> void:
 	if _spent or _reflected or by == null:
 		return
 	_reflect(by)
+
+
+func try_reflect_by_sword(impulse: Vector3, reflector: Node3D) -> bool:
+	if _spent or _reflected or reflector == null or impulse.is_zero_approx():
+		return false
+	_apply_reflection(reflector, impulse.normalized())
+	return true
 
 
 func is_reflected() -> bool:
@@ -94,6 +101,8 @@ func pool_released() -> void:
 	_trail.emitting = false
 	_visual.visible = false
 	set_deferred(&"monitoring", false)
+	# Đạn trong pool không được giữ overlap khiến lần bắn sau mất tín hiệu vào vùng kiếm.
+	set_deferred(&"monitorable", false)
 
 
 func _physics_process(delta: float) -> void:
@@ -113,6 +122,9 @@ func _physics_process(delta: float) -> void:
 func _on_area_entered(area: Area3D) -> void:
 	var hurtbox := area as HurtboxComponent
 	if _spent or hurtbox == null:
+		return
+	# Mask đổi deferred nên phải bỏ qua va chạm với Foxy ngay khi đã đổi phe.
+	if _reflected and (hurtbox.collision_layer & _data.reflected_mask) == 0:
 		return
 	var source: Node = _source if is_instance_valid(_source) else null
 	var info := DamageInfo.new(_attack.damage, _damage_type, _velocity.normalized() * _attack.knockback, source)
@@ -135,12 +147,16 @@ func _on_area_entered(area: Area3D) -> void:
 
 ## Bay ngược về quái đã bắn (không còn thì quay đầu), nhanh hơn; từ giờ là đạn của người dội, chỉ trúng quái
 func _reflect(by: Node3D) -> void:
-	var speed := _velocity.length() * _data.reflect_speed_mult
-	var direction := -_velocity.normalized()
+	var direction: Vector3 = -_velocity.normalized()
 	if is_instance_valid(_source):
 		var to_source := _source.global_position + Vector3.UP * (global_position.y - by.global_position.y) - global_position
 		if not to_source.is_zero_approx():
 			direction = to_source.normalized()
+	_apply_reflection(by, direction)
+
+
+func _apply_reflection(by: Node3D, direction: Vector3) -> void:
+	var speed: float = _velocity.length() * _data.reflect_speed_mult
 	_velocity = direction * speed
 	_reflected = true
 	_source = by
@@ -168,6 +184,7 @@ func _explode() -> void:
 	_visual.visible = false
 	_trail.emitting = false
 	set_deferred(&"monitoring", false)
+	set_deferred(&"monitorable", false)
 	_burst.restart()
 	if _impact_sound.stream:
 		_impact_sound.play()

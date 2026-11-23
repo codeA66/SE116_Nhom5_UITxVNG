@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://ui/menus/inventory/widgets/detail_panel.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/ui/panel/ability_illustration.tscn" id="2_figure"]
 [ext_resource type="Script" path="res://ui/menus/main/widgets/ornament_divider.gd" id="3_rule"]
+[ext_resource type="Script" path="res://components/feedback/loot_beam/ability_acquire/ui/panel/key_glyph.gd" id="4_key"]
 
 [node name="DetailPanel" type="VBoxContainer"]
 custom_minimum_size = Vector2(470, 0)
@@ -35,6 +36,12 @@ autowrap_mode = 3
 layout_mode = 2
 horizontal_alignment = 1
 
+[node name="Pips" type="Control" parent="."]
+visible = false
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+mouse_filter = 2
+
 [node name="Rule" type="Control" parent="."]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
@@ -59,12 +66,34 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 12
 
+[node name="Stats" type="GridContainer" parent="Scroll/Content"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 6
+columns = 2
+
 [node name="Lore" type="Label" parent="Scroll/Content"]
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Hint" type="Label" parent="."]
+[node name="HintRow" type="HBoxContainer" parent="."]
 layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="HintKey" type="Control" parent="HintRow"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("4_key")
+
+[node name="Hint" type="Label" parent="HintRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 horizontal_alignment = 1
-autowrap_mode = 3
+text_overrun_behavior = 3

@@ -180,6 +180,8 @@ func to_dict(progress: PlayerProgress) -> Dictionary:
 		"version": SAVE_VERSION,
 		"weapon": progress.weapon.resource_path if progress.weapon else "",
 		"weapons": weapon_paths,
+		# Vũ khí đã nhặt nhưng không trang bị (thiếu khóa = save cũ, chỉ có vũ khí đang trang bị)
+		"weapon_collection": _serialize_paths(progress.weapon_collection),
 		"abilities": ability_paths,
 		"flags": flag_ids,
 		# Từ version 4: nguyên tố đang ghép ở từng ô vũ khí (ô -> id nguyên tố)
@@ -219,6 +221,13 @@ func from_dict(data: Dictionary) -> PlayerProgress:
 		else:
 			progress.weapon = owned
 
+	var collection_paths: Variant = data.get("weapon_collection", [])
+	if collection_paths is Array:
+		for path: Variant in collection_paths:
+			var weapon := _load_resource(str(path)) as WeaponData
+			if weapon and not progress.weapon_collection.has(weapon):
+				progress.weapon_collection.append(weapon)
+
 	var ability_paths: Variant = data.get("abilities", [])
 	if ability_paths is Array:
 		for path: Variant in ability_paths:
@@ -231,11 +240,7 @@ func from_dict(data: Dictionary) -> PlayerProgress:
 		for flag: Variant in flag_ids:
 			progress.flags[StringName(str(flag))] = true
 
-	var fusions: Variant = data.get("fusions", {})
-	if fusions is Dictionary:
-		for slot: Variant in fusions:
-			if str(slot).is_valid_int():
-				progress.fusions[int(str(slot))] = StringName(str((fusions as Dictionary)[slot]))
+	# Ghép nguyên tố vào vũ khí đã bỏ: save cũ có "fusions" thì bỏ qua, kỹ năng nguyên tố dùng lại bình thường
 
 	# Từ version 2. Save version 1 không có checkpoint: bắt đầu ở khu đầu tiên
 	var checkpoint: Variant = data.get("checkpoint", {})
@@ -322,6 +327,14 @@ func _serialize_fusions(progress: PlayerProgress) -> Dictionary:
 
 
 ## Chỉ nạp tài nguyên nằm trong project; kiểu dữ liệu được kiểm tra ở nơi gọi bằng "as"
+func _serialize_paths(resources: Array) -> Array[String]:
+	var paths: Array[String] = []
+	for resource: Resource in resources:
+		if resource and not resource.resource_path.is_empty():
+			paths.append(resource.resource_path)
+	return paths
+
+
 func _load_resource(path: String) -> Resource:
 	if path.is_empty():
 		return null

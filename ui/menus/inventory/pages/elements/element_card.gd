@@ -1,24 +1,21 @@
 class_name ElementCard
 extends MenuTile
-## Thẻ một nguyên tố: huy hiệu màu nguyên tố, tên, chấm cấp kỹ năng (I · II · III). Chưa có thì là bóng tối "???".
-## Kéo thẻ thả vào ô vũ khí để ghép; thả nguyên tố đang ghép về thẻ của nó để tháo.
+## Thẻ đứng của một nguyên tố đã mở: huy hiệu lớn màu nguyên tố có quầng sáng, tên kỹ năng cấp hiện tại, chấm cấp.
+## Không có hộp nền như ô bùa (bật lại bằng style.element_card_box). Chỉ để xem, không có thao tác.
+## Chi tiết chỉ nói về cấp đang có: không lộ tên / mô tả cấp sau.
 
-const EMBLEM_RADIUS := 34.0
-## Khoảng cách giữa hai ngọc cấp, tính theo cỡ ngọc
+## Huy hiệu nằm ở phần trên thẻ (tỉ lệ chiều cao thẻ tính tới tâm)
+const EMBLEM_Y_RATIO := 0.36
+## Khoảng cách giữa hai chấm cấp, tính theo cỡ chấm
 const PIP_GAP_SCALE := 2.6
 
 var element: ElementData
-var owned: bool = false
-## Ô vũ khí đang chứa nguyên tố này; -1 = chưa ghép
-var fused_slot: int = -1
 var level: int = 0
 var max_level: int = 1
 
 
-func setup(data: ElementData, is_owned: bool, in_slot: int) -> void:
+func setup(data: ElementData) -> void:
 	element = data
-	owned = is_owned
-	fused_slot = in_slot
 	var ability := data.ability
 	level = GameState.get_ability_level(ability) if ability else 0
 	max_level = ability.get_max_level() if ability else 1
@@ -27,88 +24,40 @@ func setup(data: ElementData, is_owned: bool, in_slot: int) -> void:
 
 func get_detail() -> DetailEntry:
 	var entry := DetailEntry.new()
-	if not owned:
-		entry.title = "???"
-		entry.subtitle = "Nguyên tố chưa tìm thấy"
-		entry.add_section("", "Một sức mạnh còn ngủ yên đâu đó trên đảo.")
-		return entry
 	var ability := element.ability
 	entry.title = ability.get_level_name(level)
-	entry.subtitle = tr("Nguyên tố %s  ·  Cấp %d / %d") % [tr(element.display_name), level, max_level]
+	entry.subtitle = tr("Nguyên tố %s  ·  Cấp %d") % [tr(element.display_name), level]
 	entry.accent = element.color
 	entry.art_ability = ability
 	entry.art_texture = element.icon
-	entry.add_section("Kỹ năng", ability.description)
-	if fused_slot >= 0:
-		var holder := GameState.get_weapon_in_slot(fused_slot as WeaponData.Slot)
-		entry.add_section("", tr("Đang ghép vào %s: kỹ năng này tạm khóa.") % (tr(holder.display_name) if holder else tr("vũ khí")), true)
-	# Lộ trình nâng cấp ngay sau kỹ năng: thấy ngay không cần cuộn
-	if max_level > 1:
-		var path := UpgradePath.new()
-		path.setup(ability, level, element.color, style)
-		entry.add_block(path)
-	for value: int in WeaponData.Slot.values():
-		var slot := value as WeaponData.Slot
-		var fusion := GameState.FUSIONS.get_fusion(slot, element.id)
-		var weapon := GameState.get_weapon_in_slot(slot)
-		if fusion and weapon:
-			entry.add_section(tr("Ghép vào %s") % tr(weapon.display_name), fusion.description)
-	entry.hint = "Enter: cầm nguyên tố rồi chọn vũ khí để ghép  ·  hoặc kéo thả bằng chuột"
+	entry.level = level
+	entry.max_level = max_level
+	entry.add_section("", ability.get_level_description(level))
 	return entry
 
 
-func _get_drag_data(_at_position: Vector2) -> Variant:
-	if not owned:
-		return null
-	set_drag_preview(make_drag_preview(element))
-	return {"element": element.id}
-
-
-func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	return owned and data is Dictionary and data.has("from_slot") and data.get("element") == element.id
-
-
-func _drop_data(_at_position: Vector2, data: Variant) -> void:
-	GameState.unfuse(data["from_slot"])
-
-
-## Huy hiệu nhỏ bám theo con trỏ khi kéo
-static func make_drag_preview(data: ElementData) -> Control:
-	var holder := Control.new()
-	var dot := TextureRect.new()
-	dot.texture = data.icon
-	dot.modulate = data.color
-	dot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	dot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	dot.size = Vector2(44, 44)
-	dot.position = -dot.size * 0.5
-	holder.add_child(dot)
-	return holder
-
-
 func _draw_content(rect: Rect2) -> void:
-	draw_rect(rect, style.tile_fill)
-	draw_rect(rect, style.tile_border, false, 1.0)
-	var emblem_center := Vector2(rect.get_center().x, rect.position.y + 20.0 + EMBLEM_RADIUS)
-	var name_at := Vector2(rect.get_center().x, rect.end.y - 44.0)
-	if not owned:
-		draw_circle(emblem_center, EMBLEM_RADIUS, Color(0.0, 0.0, 0.0, 0.5))
-		draw_arc(emblem_center, EMBLEM_RADIUS, 0.0, TAU, 40, style.faint, 1.2, true)
-		_draw_centered_text("?", emblem_center, 28, style.faint)
-		_draw_centered_text("???", name_at, style.body_font, style.faint)
+	if element == null:
 		return
-	# Đang ghép: huy hiệu mờ đi như "đã lấy ra khỏi thẻ"
-	var strength := 0.35 if fused_slot >= 0 else 1.0
-	draw_circle(emblem_center, EMBLEM_RADIUS + 6.0, Color(element.color, 0.12 * strength))
-	draw_circle(emblem_center, EMBLEM_RADIUS, Color(0.02, 0.025, 0.03, 0.9))
-	draw_arc(emblem_center, EMBLEM_RADIUS, 0.0, TAU, 48, Color(element.color, strength), 1.6, true)
-	_draw_emblem(element.icon, emblem_center, EMBLEM_RADIUS * 1.1, Color(element.color, strength), element.display_name)
-	_draw_level_burst(emblem_center)
-	_draw_centered_text(tr(element.display_name), name_at, style.body_font, style.ink if fused_slot < 0 else style.dim)
-	_draw_level_pips(Vector2(rect.get_center().x, rect.end.y - 20.0))
+	if style.element_card_box:
+		draw_rect(rect, style.tile_fill)
+		draw_rect(rect, style.tile_border, false, 1.0)
+	var radius := style.element_emblem_radius
+	var center := Vector2(rect.get_center().x, rect.position.y + rect.size.y * EMBLEM_Y_RATIO)
+	var active := has_focus()
+	# Quầng sáng màu nguyên tố: đậm hơn khi đang chọn
+	draw_circle(center, radius * 1.32, Color(element.color, 0.16 if active else 0.08))
+	draw_circle(center, radius, Color(0.02, 0.025, 0.03, 0.85))
+	draw_arc(center, radius, 0.0, TAU, 64, Color(element.color, 1.0 if active else 0.75), 2.0 if active else 1.4, true)
+	_draw_emblem(element.icon, center, radius * 1.1, element.color, element.display_name)
+	_draw_level_burst(center, radius)
+	var name_y := center.y + radius * 1.32 + style.body_font + 6.0
+	_draw_centered_text(tr(element.ability.get_level_name(level)) if element.ability else tr(element.display_name),
+		Vector2(rect.get_center().x, name_y), style.body_font, style.ink if active else style.dim, rect.size.x)
+	_draw_level_pips(Vector2(rect.get_center().x, name_y + style.level_gem_size * 3.4))
 
 
-## Ngọc cấp: đã mở = màu nguyên tố, cấp đang dùng có quầng sáng, chưa mở = viên tối
+## Chấm cấp: đã có = màu nguyên tố, cấp đang dùng có quầng sáng, chưa có = viên tối
 func _draw_level_pips(center: Vector2) -> void:
 	var gap := style.level_gem_size * PIP_GAP_SCALE
 	var start := center.x - gap * float(max_level - 1) * 0.5
@@ -118,9 +67,9 @@ func _draw_level_pips(center: Vector2) -> void:
 
 
 ## Vừa lên cấp: vòng sáng nở ra từ huy hiệu (đi kèm lớp sáng chung của MenuTile)
-func _draw_level_burst(center: Vector2) -> void:
+func _draw_level_burst(center: Vector2, radius: float) -> void:
 	if _flash <= 0.0:
 		return
-	var grow := (1.0 - _flash) * EMBLEM_RADIUS
-	draw_arc(center, EMBLEM_RADIUS + 4.0 + grow, 0.0, TAU, 48, Color(element.color, _flash), 2.5, true)
-	draw_circle(center, EMBLEM_RADIUS, Color(element.color, 0.25 * _flash))
+	var grow := (1.0 - _flash) * radius
+	draw_arc(center, radius + 4.0 + grow, 0.0, TAU, 48, Color(element.color, _flash), 2.5, true)
+	draw_circle(center, radius, Color(element.color, 0.25 * _flash))
