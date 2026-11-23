@@ -85,6 +85,17 @@ extends Resource
 @export var charm_border_width: float = 1.5
 @export var charm_refusal_hold: float = 1.6
 
+@export_group("Bùa đang đeo")
+@export_range(0.0, 48.0, 1.0, "or_greater") var charm_equipped_gap: float = 14.0
+@export_range(0.0, 96.0, 1.0, "or_greater") var charm_empty_width: float = 48.0
+@export_range(0.0, 0.3, 0.01) var charm_hanger_y_ratio: float = 0.10
+@export_range(0.0, 0.6, 0.01) var charm_pendant_drop_ratio: float = 0.44
+@export_range(0.1, 1.0, 0.01) var charm_pendant_icon_ratio: float = 0.76
+@export_range(0.0, 12.0, 0.5, "or_greater") var charm_cost_mark_size: float = 2.5
+@export_range(0.0, 30.0, 0.5) var charm_pendant_swing_degrees: float = 7.0
+@export_range(0.0, 2.0, 0.01, "or_greater") var charm_pendant_settle_time: float = 0.48
+@export_range(0, 24) var charm_notch_display_limit: int = 12
+
 @export_group("Văn bản trang Bùa")
 @export var charm_capacity_text: String
 @export var charm_collection_text: String

@@ -1,6 +1,6 @@
 class_name CharmData
 extends Resource
-## Một bùa đeo được: tốn notch_cost ô khắc. Chỉ đổi bùa được khi đứng trong khu đổi bùa (CharmStation).
+## Một bùa đeo được: tốn notch_cost ô khắc. Chỉ đổi bùa được khi đứng trong vùng chạm của checkpoint.
 ## Thêm bùa mới = thêm file .tres vào ItemCatalog.charms, không sửa code.
 
 @export var id: StringName
@@ -10,3 +10,6 @@ extends Resource
 @export_multiline var description: String = ""
 @export_multiline var lore: String = ""
 @export var effects: Array[CharmEffect] = []
+
+@export_group("Độ hiếm")
+@export var rarity: CharmRarity

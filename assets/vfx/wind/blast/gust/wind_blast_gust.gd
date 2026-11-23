@@ -61,6 +61,8 @@ func _start_charge(data: WindBlastData) -> void:
 	show()
 	set_process(true)
 	visual_charge.emit(data)
+	# Khung gồng mới không được nội suy từ vị trí của lượt trước.
+	reset_physics_interpolation()
 
 ## Chốt hướng và vị trí ở khung hitbox bật; đuôi tiếp tục sau khi hitbox tắt.
 func _start_gust(data: WindBlastData) -> void:
@@ -76,6 +78,8 @@ func _start_gust(data: WindBlastData) -> void:
 	if had_charge:
 		_notify_charge_finished()
 	visual_burst.emit(data,_gust_span)
+	# Các lớp vừa đổi hình và vị trí theo hướng thổi mới.
+	reset_physics_interpolation()
 
 ## Vùng đẩy cũng phát stop giữa lượt, chỉ hủy hình khi chưa bung.
 func _stop_charge_if_interrupted() -> void:

@@ -298,7 +298,7 @@ func unequip_charm(id: StringName) -> bool:
 	return true
 
 
-## CharmStation gọi khi player bước vào / ra khu đổi bùa
+## Checkpoint gọi khi player bước vào / ra vùng chạm (chỗ đổi bùa)
 func enter_charm_station() -> void:
 	_charm_stations += 1
 	if _charm_stations == 1:

@@ -211,6 +211,8 @@ func _on_activated(_attack: AttackData) -> void:
 	_set_emitting(true)
 	_heat.show()
 	_ground_mat.set_shader_parameter(&"strength", ground_glow_intensity)
+	# Bỏ vị trí và hình cũ khi mở luồng lửa của lượt mới.
+	_nozzle.reset_physics_interpolation()
 	set_process(true)
 
 
@@ -276,6 +278,9 @@ func _on_state_changed(from: StringName, to: StringName) -> void:
 		var data: FlameBreathData = player.get_ability(FlameBreathData.ID) as FlameBreathData
 		if data:
 			_ignition = data.active_start
+			# Đặt quầng tụ nhiệt đúng miệng cáo ngay từ khung đầu của động tác.
+			_align()
+			_nozzle.reset_physics_interpolation()
 			_heat.show()
 			_heat_mat.set_shader_parameter(&"intensity", 1.0)
 			set_process(true)

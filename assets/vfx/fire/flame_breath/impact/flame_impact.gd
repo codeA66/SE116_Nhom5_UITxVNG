@@ -80,6 +80,8 @@ func play(target: HurtboxComponent) -> void:
 	_contact.show()
 	remaining = duration
 	_sparks.restart()
+	# Khi dùng lại slot, chớp và tia lửa phải bắt đầu ở mục tiêu hiện tại.
+	reset_physics_interpolation()
 	set_process(true)
 
 

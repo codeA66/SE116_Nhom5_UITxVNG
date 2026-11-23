@@ -10,3 +10,5 @@ func play_at(world_position: Vector3, direction: Vector3) -> void:
 	if not flat.is_zero_approx():
 		global_basis = Basis.looking_at(-flat.normalized(), Vector3.UP)
 	play(false)
+	# Slot có thể vừa hiện ở mục tiêu khác, nên chớp phải bắt đầu tại điểm trúng mới.
+	reset_physics_interpolation()

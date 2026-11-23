@@ -36,3 +36,10 @@ func set_contact(world_position: Vector3, incoming_direction: Vector3) -> void:
 	has_contact = true
 	contact_position = world_position
 	contact_direction = incoming_direction.normalized()
+
+
+func apply_weapon_damage_bonus(origin: Node) -> void:
+	if amount <= 0 or not is_instance_valid(source) or not source.has_method(&"get_weapon_damage_bonus"):
+		return
+	# Chủ đòn xác nhận đúng vũ khí; đòn nguyên tố riêng không tự nhận bonus này.
+	amount += maxi(int(source.call(&"get_weapon_damage_bonus", origin, attack)), 0)

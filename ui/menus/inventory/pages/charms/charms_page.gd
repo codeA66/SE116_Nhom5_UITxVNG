@@ -54,12 +54,14 @@ func setup_style(menu_style: InventoryStyle) -> void:
 	for heading: Label in [_equipped_heading, _collection_heading, _notch_label]:
 		heading.add_theme_font_size_override(&"font_size", style.heading_font)
 		heading.add_theme_color_override(&"font_color", style.dim)
+	_equipped_heading.add_theme_color_override(&"font_color", style.ornament)
 	for label: Label in [_empty, _status]:
 		label.add_theme_font_size_override(&"font_size", style.body_font)
 		label.add_theme_color_override(&"font_color", style.dim)
 	_status.custom_minimum_size.y = _status.get_theme_default_font().get_height(style.body_font)
 	for container: Container in [_layout, _loadout, _capacity, _equipped_row]:
 		container.add_theme_constant_override(&"separation", style.charm_section_gap)
+	_equipped_row.add_theme_constant_override(&"separation", maxi(roundi(style.charm_equipped_gap), 0))
 	for margin: MarginContainer in [_equipped_margin, _grid_margin]:
 		for side: StringName in [&"margin_top", &"margin_bottom", &"margin_left", &"margin_right"]:
 			margin.add_theme_constant_override(side, style.charm_grid_inset)
@@ -71,6 +73,7 @@ func setup_style(menu_style: InventoryStyle) -> void:
 	_rule.add_theme_stylebox_override(&"separator", line)
 	_ghost = CharmTile.new()
 	_ghost.setup_style(style)
+	_ghost.floating = true
 	_ghost.top_level = true
 	_ghost.z_index = 4
 	_ghost.hide()
@@ -104,7 +107,7 @@ func refresh() -> void:
 		return
 	_status_dirty = false
 	_notch_label.text = tr(style.charm_capacity_text) % [GameState.get_used_notches(), _notches.total]
-	_collection_heading.text = tr(style.charm_collection_text) % [_owned_count, _grid_tiles.size()]
+	_collection_heading.text = tr(style.charm_collection_text) % _owned_count
 	if is_instance_valid(_last_focus) and _last_focus.has_focus():
 		_on_tile_focused(_last_focus)
 	else:
@@ -154,20 +157,18 @@ func _mark_station_changed(_inside: bool) -> void:
 func _sync_tiles() -> void:
 	var catalog: Array[CharmData] = []
 	for charm: CharmData in GameState.ITEMS.charms:
-		if charm:
+		# Ô bí mật cũng làm lộ số bùa còn lại, nên chỉ dựng những bùa đã khám phá.
+		if charm and GameState.owns_charm(charm.id):
 			catalog.append(charm)
 	var used: int = GameState.get_used_notches()
 	var total: int = GameState.get_charm_notches()
 	_room = maxi(total - used, 0)
 	_refresh_equipped()
 	_resize(_grid_tiles, catalog.size(), _grid, style.charm_tile_size)
-	_owned_count = 0
+	_owned_count = catalog.size()
 	for index: int in range(catalog.size()):
 		var charm: CharmData = catalog[index]
-		var owned: bool = GameState.owns_charm(charm.id)
-		_grid_tiles[index].setup(charm, CharmTile.Mode.COLLECTION, owned, GameState.is_charm_equipped(charm.id))
-		if owned:
-			_owned_count += 1
+		_grid_tiles[index].setup(charm, CharmTile.Mode.COLLECTION, true, GameState.is_charm_equipped(charm.id))
 	_empty.visible = catalog.is_empty()
 	_scroll.visible = not catalog.is_empty()
 	_notches.set_capacity(used, total, not _instant_notches and is_visible_in_tree())
@@ -183,10 +184,13 @@ func _refresh_equipped() -> void:
 	var count: int = equipped.size() + int(_room > 0 or equipped.is_empty())
 	_resize(_equipped_tiles, count, _equipped_row, style.equipped_tile_size)
 	for index: int in range(count):
+		# Ô trống hẹp được tái dùng thành bùa thật; phải trả lại kích thước trước khi vẽ.
+		_equipped_tiles[index].custom_minimum_size = style.equipped_tile_size
 		if index < equipped.size():
 			_equipped_tiles[index].setup(equipped[index], CharmTile.Mode.EQUIPPED, true, true)
 		else:
 			_equipped_tiles[index].setup(null, CharmTile.Mode.EMPTY_SLOT, false, false)
+			_equipped_tiles[index].custom_minimum_size.x = maxf(style.charm_empty_width, 1.0)
 
 
 ## Giữ ô đã tạo để đeo và tháo nhiều lần không phân bổ lại node.

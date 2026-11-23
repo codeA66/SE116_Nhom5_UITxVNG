@@ -10,6 +10,7 @@ signal insufficient(cost: int)
 @export var data: EnergyData
 
 var current: int = 0
+var _max_bonus: int = 0
 
 
 func _ready() -> void:
@@ -19,7 +20,16 @@ func _ready() -> void:
 
 
 func get_max() -> int:
-	return data.max_energy if data else 0
+	return maxi((data.max_energy if data else 0) + _max_bonus, 0)
+
+
+func set_max_bonus(value: int) -> void:
+	if _max_bonus == value:
+		return
+	_max_bonus = value
+	current = clampi(current, 0, get_max())
+	# HUD vẫn phải cập nhật sức chứa khi số năng lượng hiện tại không đổi.
+	energy_changed.emit(current, get_max())
 
 
 func can_spend(cost: int) -> bool:

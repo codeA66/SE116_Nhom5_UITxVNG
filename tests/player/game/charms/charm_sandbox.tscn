@@ -7,7 +7,7 @@
 [ext_resource type="Script" path="res://tests/player/game/charms/charm_sandbox.gd" id="4_sandbox"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="9_pickup"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/swift_slash_charm.tres" id="10_charm"]
-[ext_resource type="PackedScene" path="res://levels/_base/charm_station/charm_station.tscn" id="11_station"]
+[ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint.tscn" id="11_station"]
 [ext_resource type="PackedScene" path="res://objects/combat/breakables/crate/crate.tscn" id="8_crate"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/heart_charm.tres" id="12_heart"]
 [ext_resource type="PackedScene" path="res://objects/combat/hazards/spike_trap.tscn" id="13_spikes"]
@@ -55,10 +55,6 @@ transparency = 1
 shading_mode = 0
 albedo_color = Color(0.95, 0.8, 0.35, 0.35)
 
-[sub_resource type="PlaneMesh" id="StationMesh"]
-material = SubResource("StationMat")
-size = Vector2(6, 6)
-
 [node name="CharmSandbox" type="Node3D"]
 script = ExtResource("1_zone")
 shader_warmup = null
@@ -105,13 +101,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 2)
 charm = ExtResource("10_charm")
 persistent_id = &"test_charm.swift_slash"
 
-[node name="CharmStation" parent="." instance=ExtResource("11_station")]
+[node name="CharmCheckpoint" parent="." instance=ExtResource("11_station")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
-
-[node name="StationFloor" type="MeshInstance3D" parent="CharmStation"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
-cast_shadow = 0
-mesh = SubResource("StationMesh")
+checkpoint_id = &"charm_sandbox"
 
 [node name="Crate1" parent="." instance=ExtResource("8_crate")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)

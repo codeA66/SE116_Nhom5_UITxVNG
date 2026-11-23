@@ -2,6 +2,7 @@
 class_name Checkpoint
 extends Node3D
 ## Checkpoint: player đi qua là lưu. Chết sẽ hồi sinh tại điểm xuất hiện của checkpoint này.
+## Đứng trong vùng chạm (Trigger) cũng là chỗ đổi bùa ở màn Tab, kể cả checkpoint chưa sáng.
 ## Chỉ một checkpoint sáng tại một thời điểm; hình ảnh do một ShrineVisual (miếu Gió, Lửa...) quản lý.
 ## @tool chỉ để hiện cảnh báo cấu hình trong editor.
 
@@ -16,6 +17,9 @@ extends Node3D
 @export var crystal_spin_speed: float = 12.0
 ## Hình ảnh miếu. Để trống = node con WindShrineVisual (scene checkpoint cũ)
 @export var visual: ShrineVisual
+
+## Player đang đứng trong vùng chạm: đã báo GameState là đang ở chỗ đổi bùa
+var _player_inside: bool = false
 
 @onready var _trigger: Area3D = $Trigger
 @onready var _spawn: SpawnPoint = $Spawn
@@ -38,6 +42,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	_trigger.body_entered.connect(_on_body_entered)
+	_trigger.body_exited.connect(_on_body_exited)
 	_update_visual(true)
 
 
@@ -51,6 +56,10 @@ func _exit_tree() -> void:
 		GameState.checkpoint_changed.disconnect(_on_checkpoint_changed)
 	if GameState.progress_replaced.is_connected(_on_progress_replaced):
 		GameState.progress_replaced.disconnect(_on_progress_replaced)
+	# Đổi khu khi player còn đứng trong: trả lại bộ đếm để không kẹt quyền đổi bùa
+	if _player_inside:
+		_player_inside = false
+		GameState.exit_charm_station()
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -65,8 +74,17 @@ func is_active() -> bool:
 
 func _on_body_entered(body: Node3D) -> void:
 	if body is Player:
+		if not _player_inside:
+			_player_inside = true
+			GameState.enter_charm_station()
 		GameState.set_checkpoint(_zone_path(), checkpoint_id)
 		_restore(body)
+
+
+func _on_body_exited(body: Node3D) -> void:
+	if body is Player and _player_inside:
+		_player_inside = false
+		GameState.exit_charm_station()
 
 
 ## Chạm checkpoint (mỗi lần bước vào) là hồi phục toàn bộ. Checkpoint không biết bên trong người chơi:
