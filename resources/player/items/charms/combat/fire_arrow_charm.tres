@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CharmData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="charm"]
+[ext_resource type="Script" path="res://resources/player/items/effects/bow/bow_imbue_effect.gd" id="effect"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
+[ext_resource type="Texture2D" path="res://assets/ui/charms/combat/fire_arrow_charm.png" id="icon"]
+
+[sub_resource type="Resource" id="FireArrows"]
+script = ExtResource("effect")
+infusion_path = "res://resources/combat/fusion/fire/bow_fire.tres"
+
+[resource]
+script = ExtResource("charm")
+id = &"fire_arrow_charm"
+display_name = "Bùa Hỏa Tiễn"
+icon = ExtResource("icon")
+notch_cost = 1
+description = "Tên cung mang lửa, bùng cháy khi trúng, đốt vật dễ cháy và để lại đốm sáng. Không tăng sát thương tên hay phí linh lực. Khi đeo cùng Ưng Nhãn, cả hai tên đều có lửa."
+lore = "Bùa thường. Một đốm than còn nhớ đường bay qua đêm tối."
+effects = Array[ExtResource("base")]([SubResource("FireArrows")])

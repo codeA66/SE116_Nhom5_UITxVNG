@@ -10,12 +10,15 @@ var _laying_out: bool = false
 @onready var _health_panel: Control = $HealthPanel
 @onready var _health_bar: HealthBar = $HealthPanel/HealthBar
 @onready var _cluster: Control = $SkillCluster
+@onready var _status_row: Control = $BuffStatusRow
 ## Deferred để các sibling EnergyBar/CurrencyCounter đã dựng hình trước khi apply.
 func _ready() -> void:
 	mouse_filter = MOUSE_FILTER_IGNORE
 	set_process(false)
 	get_viewport().size_changed.connect(_layout)
 	_health_bar.minimum_size_changed.connect(_layout)
+	_status_row.minimum_size_changed.connect(_layout)
+	_status_row.visibility_changed.connect(_layout)
 	if is_instance_valid(currency_counter): currency_counter.minimum_size_changed.connect(_layout)
 	GameState.weapon_changed.connect(_on_weapon)
 	GameState.fusion_changed.connect(_refresh_element)
@@ -58,8 +61,13 @@ func _layout() -> void:
 	var currency_size: Vector2 = currency_counter.get_combined_minimum_size() if is_instance_valid(currency_counter) else Vector2.ZERO
 	skills_offset.y = maxf(skills_offset.y, currency_offset.y + currency_size.y + gap)
 	var height: float = maxf(energy_offset.y + energy_size.y, skills_offset.y + _cluster.size.y)
+	var status_offset: Vector2 = Vector2(energy_offset.x, height + gap)
+	var status_size: Vector2 = _status_row.get_combined_minimum_size()
+	if _status_row.visible:
+		height = status_offset.y + status_size.y
 	var width: float = maxf(energy_offset.x + energy_size.x, skills_offset.x + _cluster.size.x)
 	width = maxf(width,currency_offset.x + currency_size.x)
+	width = maxf(width, status_offset.x + status_size.x)
 	factor = minf(factor,maxf((viewport.y-position.y-maxf(style.safe_bottom_margin,0))/maxf(height,1),0.1))
 	factor = minf(factor, maxf((viewport.x - position.x * 2.0) / maxf(width, 1), 0.1))
 	scale = Vector2.ONE*factor
@@ -68,6 +76,7 @@ func _layout() -> void:
 	_health_panel.position = health_offset
 	_health_panel.size = _health_panel.get_combined_minimum_size()
 	_cluster.position = skills_offset
+	_status_row.position = status_offset
 	if is_instance_valid(energy_bar):
 		energy_bar.scale = scale
 		energy_bar.position = position+energy_offset*factor

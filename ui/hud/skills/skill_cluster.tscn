@@ -23,8 +23,7 @@ script = ExtResource("3")
 ability_id = &"wind_blast"
 input_action = &"skill"
 glyph_id = &"wind_blast"
-cooldown_signal = &"wind_blast_cooldown_started"
-active_states = Array[StringName]([&"WindBlast"])
+active_states = Array[StringName]([&"WindBlast", &"WindTornado"])
 [node name="SwordSlot" type="Control" parent="."]
 mouse_filter = 2
 script = ExtResource("2")

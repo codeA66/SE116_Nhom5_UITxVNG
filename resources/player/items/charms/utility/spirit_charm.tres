@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CharmData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="charm"]
+[ext_resource type="Script" path="res://resources/player/items/_base/stat_bonus_effect.gd" id="effect"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
+[ext_resource type="Texture2D" path="res://assets/ui/charms/combat/spirit_charm.png" id="icon"]
+
+[sub_resource type="Resource" id="Capacity"]
+script = ExtResource("effect")
+stat = &"max_energy"
+bonus = 2.0
+
+[resource]
+script = ExtResource("charm")
+id = &"spirit_charm"
+display_name = "Bùa Linh Khí"
+icon = ExtResource("icon")
+notch_cost = 1
+description = "Tăng thêm 2 ô năng lượng tối đa."
+lore = "Bùa thường. Một khoảng lặng để giữ thêm linh khí."
+effects = Array[ExtResource("base")]([SubResource("Capacity")])

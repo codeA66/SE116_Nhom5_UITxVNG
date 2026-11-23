@@ -109,6 +109,7 @@ func try_hit(hurtbox: HurtboxComponent) -> bool:
 	var info := DamageInfo.new(attack.damage, attack.damage_type, direction * attack.knockback, owner)
 	info.direction = direction
 	info.attack = attack
+	info.apply_weapon_damage_bonus(self)
 	var accepted: bool = hurtbox.receive_hit(info)
 	if accepted:
 		hit_applied.emit(hurtbox)

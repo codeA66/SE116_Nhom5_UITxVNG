@@ -1,8 +1,8 @@
 extends PlayerState
 ## Kéo cung (vũ khí phụ): giữ phím aim để kéo, thả để bắn. Đứng yên, xoay người theo chuột
 ## (đứng nghiêng kiểu cung thủ, góc do Player.bow_stance_degrees quyết định).
-## Thả trước BowData.min_draw_to_shoot thì hủy; từ mức đó trở lên lực bắn theo độ kéo. Dash hủy được cả lúc kéo lẫn lúc thu tay.
-## Rời mặt đất hoặc bị khoá điều khiển (cutscene) thì hủy, không bắn.
+## Dash hủy lúc kéo; sau khi nhả dây, phát chờ do player giữ nên không mất khi rời state.
+## Rời mặt đất trước khi nhả dây hoặc bị khoá điều khiển thì hủy.
 
 var _bow: BowData
 var _elapsed: float = 0.0
@@ -15,6 +15,7 @@ func enter(_previous: StringName) -> void:
 	_elapsed = 0.0
 	_draw = 0.0
 	_released = false
+	player.bow_projectile_fired.connect(_on_bow_volley_projectile)
 	var aim := player.get_mouse_aim_direction()
 	if aim.is_zero_approx():
 		aim = player.get_facing_direction()
@@ -23,6 +24,7 @@ func enter(_previous: StringName) -> void:
 
 
 func exit() -> void:
+	player.bow_projectile_fired.disconnect(_on_bow_volley_projectile)
 	# Thôi đứng nghiêng: quay mặt về hướng vừa nhắm
 	player.face_instantly(player.get_bow_aim_direction())
 	player.end_bow_aim()
@@ -41,16 +43,19 @@ func physics_update(delta: float) -> void:
 		state_machine.transition_to(FALL)
 		return
 
+	if not player.controls_enabled:
+		state_machine.transition_to(IDLE)
+		return
+
 	if _released:
+		if player.has_pending_bow_shots():
+			return
 		if _elapsed >= _bow.release_recovery:
 			state_machine.transition_to(IDLE if player.get_move_direction().is_zero_approx() else RUN)
 		return
 
-	if not player.controls_enabled:
-		state_machine.transition_to(IDLE)
-		return
 	_turn_toward_aim(delta)
-	_draw = minf(_elapsed / _bow.draw_time, 1.0)
+	_draw = minf(_elapsed / maxf(_bow.draw_time, 0.0001), 1.0)
 	player.set_bow_draw(_draw)
 	if not player.is_holding_aim():
 		# So với một sai số nhỏ: kéo đầy bị kẹp đúng 1.0 nhưng phép chia thời gian có thể lệch vài ulp
@@ -59,6 +64,13 @@ func physics_update(delta: float) -> void:
 		else:
 			# Thả sớm: hủy, không bắn, không tính hồi
 			state_machine.transition_to(IDLE if player.get_move_direction().is_zero_approx() else RUN)
+
+
+func _on_bow_volley_projectile(primary: bool) -> void:
+	# Chỉ state đang nhả dây được phát clip cung; Timer không ghi đè clip Dash/Hurt.
+	if not primary and _released:
+		_elapsed = 0.0
+		player.release_bow(false)
 
 
 func _turn_toward_aim(delta: float) -> void:

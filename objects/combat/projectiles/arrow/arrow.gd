@@ -132,6 +132,7 @@ func _physics_process(delta: float) -> void:
 			var flight_direction: Vector3 = _velocity.normalized()
 			var info: DamageInfo = DamageInfo.new(_damage, _attack.damage_type, flight_direction * _attack.knockback, source)
 			info.set_contact(hit_position, flight_direction)
+			info.apply_weapon_damage_bonus(self)
 			hurtbox.receive_hit(info)
 		# Lùi một chút khỏi điểm trúng để vật nở ra (hố hút) không lọt vào trong tường
 		impacted.emit(hit_position - _velocity.normalized() * 0.3, _velocity.normalized())

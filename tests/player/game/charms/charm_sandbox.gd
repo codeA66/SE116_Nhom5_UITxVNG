@@ -1,5 +1,5 @@
 extends Node
-## Sân thử bùa: nhặt -> ghép -> buff. Foxy có kiếm; Bùa Phong Kiếm và Bùa Tâm Cáo nằm trên đất; khu đổi bùa có vạch vàng;
+## Sân thử bùa: nhặt -> ghép -> buff. Foxy có kiếm; Bùa Phong Kiếm và Bùa Tâm Cáo nằm trên đất; checkpoint là chỗ đổi bùa;
 ## vài thùng gỗ để chém, bẫy gai để thử mất máu.
 ## Chơi tay: F nhặt bùa -> đứng trong vạch vàng, Tab -> trang Bùa, đeo:
 ## - Phong Kiếm: chém nhanh hơn 25% (so nhịp chém thùng trước / sau).
@@ -74,7 +74,7 @@ func _run_capture() -> void:
 		await zone.combat_ready
 	_player = zone.get_node(^"Player") as Player
 	_menu = _player.get_node(^"HUD/InventoryMenu") as InventoryMenu
-	var station: CharmStation = zone.get_node(^"CharmStation") as CharmStation
+	var station: Checkpoint = zone.get_node(^"CharmCheckpoint") as Checkpoint
 	var swift: CharmPickup = zone.get_node(^"SwiftSlashCharm") as CharmPickup
 	var heart: CharmPickup = zone.get_node(^"HeartCharm") as CharmPickup
 	var catalog: Array[CharmData] = GameState.ITEMS.charms.duplicate()

@@ -106,6 +106,8 @@ func start(projectile: Node3D) -> void:
 	_flames.restart()
 	_flames.emitting = true
 	set_process(true)
+	# Slot cũ từng ở nơi khác; bỏ lịch sử để khung đầu không lóe giữa hai vị trí.
+	reset_physics_interpolation()
 
 
 ## Pool nhả về giữa chừng: tắt hẳn, gỡ signal còn nối

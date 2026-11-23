@@ -302,3 +302,7 @@ match_shape_of = NodePath("../HurtboxComponent/CollisionShape3D")
 
 [node name="BurningVfx" parent="." node_paths=PackedStringArray("burnable") instance=ExtResource("93_burnvfx")]
 burnable = NodePath("../BurnableComponent")
+
+[node name="BowVolleyTimer" type="Timer" parent="."]
+one_shot = true
+process_callback = 0

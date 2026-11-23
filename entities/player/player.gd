@@ -5,6 +5,7 @@ extends Character
 
 ## Vừa bắn cung, bắt đầu thời gian hồi (HUD nghe để hiện, không phải dò mỗi frame)
 signal bow_cooldown_started(duration: float)
+signal bow_projectile_fired(primary: bool)
 ## Vừa dùng kỹ năng gió, bắt đầu thời gian hồi (tính cả thời gian ra đòn)
 signal wind_blast_cooldown_started(duration: float)
 ## Vừa dùng một kỹ năng chủ động bất kỳ (SkillData), bắt đầu thời gian khoá của nó
@@ -22,6 +23,13 @@ signal combat_action_committed(element_id: StringName, skill_id: StringName)
 
 ## Chỉ số cộng thêm vào máu tối đa (StatBonusEffect.stat)
 const MAX_HEALTH_STAT := &"max_health"
+const MAX_ENERGY_STAT: StringName = &"max_energy"
+const WEAPON_DAMAGE_BONUS_STAT: StringName = &"weapon_damage_bonus"
+const BOW_EXTRA_PROJECTILES_STAT: StringName = &"bow_extra_projectiles"
+const MAX_BOW_VOLLEY_PROJECTILES: int = 8
+const MAX_BOW_VOLLEY_RESERVE: int = 64
+const BOW_VOLLEY_PREWARM_COUNT: int = 2
+const BOW_VOLLEY_TICK_EPSILON: float = 0.001
 const ANIM_IDLE := &"Rig_Medium_General/Idle_A"
 const ANIM_RUN := &"Rig_Medium_MovementBasic/Running_A"
 const ANIM_JUMP := &"Rig_Medium_MovementBasic/Jump_Start"
@@ -57,13 +65,17 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export var soft_lock_range: float = 4.0
 ## Góc lệch tối đa (độ) giữa hướng input và mục tiêu để được soft-lock
 @export var soft_lock_angle: float = 60.0
-## Số mũi tên tạo sẵn trước combat; thiếu thì pool vẫn mở rộng để không mất phát bắn.
+## Mức dự trữ tối thiểu; pool được làm nóng thêm theo số phát và thời gian tên tồn tại.
 @export var arrow_pool_size: int = 4
 ## Chuẩn bị cả vũ khí chưa nhặt, không cấp vũ khí cho tiến trình.
 @export var combat_weapons: Array[WeaponData] = [preload("res://resources/combat/weapons/bow.tres")]
 ## Khi nhắm cung, người quay nghiêng bấy nhiêu độ để vai trái hướng về mục tiêu như cung thủ;
 ## cung và mũi tên vẫn theo đúng hướng nhắm. Model nhìn theo +Z nên bên trái là +X. 0 = đứng thẳng mặt
 @export_range(-180.0, 180.0, 0.5) var bow_stance_degrees: float = 90.0
+
+@export_group("Bow Volley")
+@export_range(0.0, 1.0, 0.01, "or_greater") var bow_volley_interval: float = 0.20
+@export_range(1, 8) var bow_volley_limit: int = 8
 
 ## Đòn đánh gần nhất trúng player, state Hurt dùng để lấy hướng đẩy lùi
 ## Tắt khi cutscene / hội thoại: bỏ qua mọi phím (đi, nhảy, đánh, dash, gió, tương tác, đổi vũ khí).
@@ -113,6 +125,17 @@ var _bow_model_scene: PackedScene
 ## Pool đạn theo scene thuộc player; mỗi mũi tên top_level nên không đi theo người.
 var _projectile_pools: Dictionary[PackedScene, ObjectPool] = {}
 var _projectile_fusions: Dictionary[ArrowProjectile, FusionData] = {}
+var _bow_imbues: Dictionary[StringName, FusionData] = {}
+var _active_bow_imbue: FusionData
+var _weapon_damage_projectiles: Dictionary[ArrowProjectile, bool] = {}
+var _last_volley_weapon: BowData
+var _last_volley_count: int = -1
+var _bow_volley_weapon: BowData
+var _bow_volley_direction: Vector3
+var _bow_volley_speed: float = 0.0
+var _bow_volley_damage: int = 0
+var _bow_volley_left: int = 0
+var _bow_volley_sent: int = 0
 var _fusion_pools: Dictionary[FusionEffect, Dictionary] = {}
 var _combat_prepared: bool = false
 ## Máu tối đa gốc trong scene, chưa tính bùa
@@ -136,13 +159,16 @@ var _fusion_warmup_prepared: bool = false
 @onready var _arrow_spawn: Marker3D = $Model/ArrowSpawn
 ## Chỗ đặt cung khi nhắm (cầm ngang trước ngực), xoay theo model
 @onready var _bow_hold: Node3D = $Model/BowHold
+@onready var _bow_volley_timer: Timer = $BowVolleyTimer
 
 
 func _ready() -> void:
 	super()
+	_bow_volley_timer.timeout.connect(_on_bow_volley_timeout)
 	add_to_group(ShaderWarmup.SOURCE_GROUP)
 	hitbox.hit.connect(_on_hitbox_hit)
 	GameState.weapon_changed.connect(_attach_weapon_model)
+	GameState.progress_changed.connect(_warm_bow_volley_pool)
 	GameState.progress_replaced.connect(_on_progress_replaced)
 	# Vào scene mới: gắn lại vũ khí đã có trong tiến trình
 	_attach_weapon_model(GameState.get_weapon())
@@ -160,6 +186,8 @@ func _ready() -> void:
 	if kept_energy >= 0:
 		energy.set_current(kept_energy)
 	energy.energy_changed.connect(_on_energy_changed)
+	# Giá trị giữ qua khu phải khớp mức đã kẹp sau khi áp bùa.
+	GameState.set_player_energy(energy.current)
 	health.health_changed.connect(_on_health_changed)
 	health.died.connect(_on_died)
 	_hurtbox.hurt.connect(_on_hurt)
@@ -184,6 +212,7 @@ func prepare_for_combat() -> void:
 		if weapon is BowData:
 			_prepare_bow_model(weapon)
 	FusionEffect.prepare_loaded_effects(self)
+	_warm_bow_volley_pool()
 
 
 ## Pool thuộc player để tự dọn khi đổi khu; hiệu ứng đặt top_level để không đi theo player.
@@ -246,6 +275,7 @@ func _process(delta: float) -> void:
 func set_controls_enabled(enabled: bool) -> void:
 	controls_enabled = enabled
 	if not enabled:
+		cancel_bow_volley()
 		# Xoá lệnh đang chờ trong buffer: thả khoá xong không tự bật đòn đã bấm lúc bị khoá
 		_jump_buffer_timer = 0.0
 		_attack_buffer_timer = 0.0
@@ -313,6 +343,18 @@ func get_weapon() -> WeaponData:
 
 func has_weapon() -> bool:
 	return get_weapon() != null
+
+
+func get_weapon_damage_bonus(origin: Node, attack: AttackData) -> int:
+	if health.is_dead():
+		return 0
+	if origin == hitbox:
+		var weapon: WeaponData = get_weapon()
+		if weapon == null or weapon.slot != WeaponData.Slot.SWORD or weapon.is_ranged() or not weapon.combo.has(attack):
+			return 0
+	elif not origin is ArrowProjectile or not _weapon_damage_projectiles.has(origin):
+		return 0
+	return maxi(roundi(stats.get_bonus(WEAPON_DAMAGE_BONUS_STAT)), 0)
 
 
 ## Đúng khi đang cầm vũ khí, có lệnh đánh trong buffer và đủ năng lượng (cung tiêu năng lượng mỗi phát)
@@ -497,25 +539,61 @@ func turn_bow_toward(direction: Vector3, rate: float, delta: float) -> void:
 	model.rotation.y = target if rate < 0.0 else lerp_angle(model.rotation.y, target, 1.0 - exp(-rate * delta))
 
 
-## Bắn một mũi tên từ cung đang cầm; draw 0..1 quyết định tốc độ và sát thương
+## Một lần nhả dây chỉ tiêu năng lượng và phát hồi cung một lần, dù có nhiều mũi tên.
 func shoot_bow(draw: float) -> void:
+	cancel_bow_volley()
 	var bow := get_bow()
 	if bow == null:
 		return
 	# Cung tiêu năng lượng mỗi phát (luật của nhánh energy-fusion); thiếu thì spend() tự báo và không bắn
 	if not energy.spend(bow.energy_cost):
 		return
-	var direction := get_bow_aim_direction()
-	# Xuất phát trên đường thẳng qua tâm người (hướng chuột tính từ tâm), ngang tay cầm cung:
-	# đứng nghiêng thì tay cầm lệch sang bên, bắn từ đó sẽ trượt khỏi chỗ chuột chỉ
-	var grip := _bow_hold.global_position
-	var flat_offset := Vector3(grip.x - global_position.x, 0.0, grip.z - global_position.z)
-	var spawn := global_position + direction * flat_offset.dot(direction)
-	spawn.y = grip.y
-	_launch_projectile(bow, bow.combo[0], direction, spawn, bow.get_shot_speed(draw), bow.get_shot_damage(draw))
+	_bow_volley_weapon = bow
+	_bow_volley_direction = get_bow_aim_direction()
+	_bow_volley_speed = bow.get_shot_speed(draw)
+	_bow_volley_damage = bow.get_shot_damage(draw)
+	_bow_volley_left = get_bow_projectile_count() - 1
+	_bow_volley_sent = 1
+	_fire_bow_projectile(bow, _bow_volley_direction, _bow_volley_speed, _bow_volley_damage, true)
+	_schedule_bow_followup()
 	_bow_cooldown_timer = bow.shot_cooldown
 	if bow.shot_cooldown > 0.0:
 		bow_cooldown_started.emit(bow.shot_cooldown)
+
+
+func get_bow_projectile_count() -> int:
+	var limit: int = clampi(bow_volley_limit, 1, MAX_BOW_VOLLEY_PROJECTILES)
+	var extra: float = clampf(stats.get_bonus(BOW_EXTRA_PROJECTILES_STAT), 0.0, float(limit - 1))
+	return 1 + roundi(extra)
+
+
+func has_pending_bow_shots() -> bool:
+	return _bow_volley_left > 0
+
+
+func shoot_bow_followup() -> bool:
+	if not has_pending_bow_shots():
+		return false
+	if health.is_dead() or not controls_enabled or get_bow() != _bow_volley_weapon or _bow_volley_sent >= get_bow_projectile_count():
+		cancel_bow_volley()
+		return false
+	_bow_volley_left -= 1
+	_bow_volley_sent += 1
+	_fire_bow_projectile(_bow_volley_weapon, _bow_volley_direction, _bow_volley_speed, _bow_volley_damage, false)
+	if _bow_volley_left == 0:
+		cancel_bow_volley()
+	return true
+
+
+func cancel_bow_volley() -> void:
+	if is_instance_valid(_bow_volley_timer):
+		_bow_volley_timer.stop()
+	_bow_volley_left = 0
+	_bow_volley_sent = 0
+	_bow_volley_weapon = null
+	_bow_volley_direction = Vector3.ZERO
+	_bow_volley_speed = 0.0
+	_bow_volley_damage = 0
 
 
 ## amount 0..1: độ kéo dây
@@ -530,14 +608,14 @@ func set_bow_draw(amount: float) -> void:
 
 
 ## Buông dây sau khi bắn: dây bật về, chạy animation buông
-func release_bow() -> void:
+func release_bow(primary: bool = true) -> void:
 	var bow := get_bow()
 	if bow:
 		play_action(bow.release_animation)
 	if _bow_model is BowVisual:
 		(_bow_model as BowVisual).play_release_flash()
 	var element_id := _bow_element_id()
-	if element_id != &"":
+	if primary and element_id != &"":
 		fusion_bow_released.emit(element_id)
 	# Sau play_action: clip buông chạy từ tư thế đang kéo, không bị tua về đầu clip kéo trước
 	set_bow_draw(0.0)
@@ -562,14 +640,60 @@ func get_bow_grip_transform() -> Transform3D:
 
 ## Id nguyên tố đang ghép vào cung; &"" nếu chưa ghép
 func _bow_element_id() -> StringName:
-	var bow := get_bow()
-	if bow == null:
-		return &""
-	var element := GameState.get_fused_element(bow.slot)
-	return element.id if element else &""
+	var infusion: FusionData = _get_bow_projectile_fusion(true)
+	return infusion.element.id if infusion and infusion.element else &""
+
+
+## Nguồn có định danh để tháo một bùa không gỡ nhầm tác dụng của bùa khác.
+func register_bow_imbue(source: StringName, infusion: FusionData) -> void:
+	if source.is_empty():
+		return
+	if infusion == null or infusion.weapon_slot != WeaponData.Slot.BOW or infusion.element == null:
+		unregister_bow_imbue(source)
+		return
+	_bow_imbues[source] = infusion
+	for effect: FusionEffect in infusion.effects:
+		if effect:
+			effect.prepare_for_combat(self)
+	_refresh_bow_imbue()
+
+
+func unregister_bow_imbue(source: StringName) -> void:
+	if _bow_imbues.erase(source):
+		_refresh_bow_imbue()
+
+
+func get_bow_imbue() -> FusionData:
+	return null if health and health.is_dead() else _active_bow_imbue
+
+
+func _refresh_bow_imbue() -> void:
+	var previous: StringName = _bow_element_id()
+	_active_bow_imbue = null
+	# Chỉ giải quyết ưu tiên lúc đổi trang bị; không quét bùa khi tên đang bay.
+	for infusion: FusionData in _bow_imbues.values():
+		_active_bow_imbue = infusion
+	var current: StringName = _bow_element_id()
+	if previous != current and previous != &"":
+		fusion_bow_aim_ended.emit(previous)
+	if _bow_model is BowVisual:
+		(_bow_model as BowVisual).default_charge_enabled = current == &""
+
+
+func _get_bow_projectile_fusion(primary: bool) -> FusionData:
+	if get_bow() == null or (health and health.is_dead()):
+		return null
+	var imbue: FusionData = get_bow_imbue()
+	if imbue:
+		return imbue
+	if not primary or _fusion_table == null:
+		return null
+	var element: ElementData = GameState.get_fused_element(WeaponData.Slot.BOW)
+	return _fusion_table.get_fusion(WeaponData.Slot.BOW, element.id) if element else null
 
 
 func _on_progress_replaced() -> void:
+	cancel_bow_volley()
 	_requested_weapon_slot = -1
 	_attach_weapon_model(GameState.get_weapon())
 
@@ -894,7 +1018,7 @@ func _on_bow_draw_changed(_amount: float) -> void:
 
 
 func _launch_projectile(weapon: WeaponData, attack: AttackData, direction: Vector3, spawn: Vector3,
-		speed: float, damage: int) -> void:
+		speed: float, damage: int, primary: bool = true) -> void:
 	var pool := _get_projectile_pool(weapon.projectile_scene)
 	var arrow := pool.acquire() as ArrowProjectile
 	if not arrow.finished.is_connected(pool.release):
@@ -904,25 +1028,48 @@ func _launch_projectile(weapon: WeaponData, attack: AttackData, direction: Vecto
 		arrow.impacted.connect(impacted)
 	if not arrow.finished.is_connected(_on_projectile_finished):
 		arrow.finished.connect(_on_projectile_finished)
-	var element := GameState.get_fused_element(weapon.slot)
-	var fusion := _fusion_table.get_fusion(weapon.slot, element.id) if element else null
+	var element: ElementData = GameState.get_fused_element(weapon.slot) if primary else null
+	var fusion: FusionData = _get_bow_projectile_fusion(primary) if weapon.slot == WeaponData.Slot.BOW else (_fusion_table.get_fusion(weapon.slot, element.id) if element else null)
+	if fusion:
+		element = fusion.element
 	if fusion:
 		_projectile_fusions[arrow] = fusion
 	else:
 		_projectile_fusions.erase(arrow)
 	arrow.global_position = spawn
+	# Chỉ tên gốc do vũ khí cung bắn mới được nhận bonus; đạn phụ fusion dùng pool riêng.
+	if weapon.slot == WeaponData.Slot.BOW:
+		_weapon_damage_projectiles[arrow] = true
+	else:
+		_weapon_damage_projectiles.erase(arrow)
 	# Quét từ thân (cùng độ cao) tới đầu tên trong frame đầu để không bắn xuyên tường sát người.
 	var origin := Vector3(global_position.x, spawn.y, global_position.z)
 	var shot_speed := weapon.projectile_speed if speed < 0.0 else speed
 	arrow.launch(attack, shot_speed, weapon.projectile_lifetime, direction, self, origin, damage)
-	combat_action_committed.emit(element.id if fusion and element else &"", &"")
+	# Đạn phụ không nhân đôi sự kiện dùng cung; bùa có thể áp hiệu ứng cho cả loạt tên.
+	if primary:
+		combat_action_committed.emit(element.id if fusion and element else &"", &"")
 	if fusion:
 		for effect: FusionEffect in fusion.effects:
 			effect.on_projectile_fired(self, arrow)
 
 
+func _schedule_bow_followup() -> void:
+	if has_pending_bow_shots():
+		var step: float = 1.0 / maxf(float(Engine.physics_ticks_per_second), 1.0)
+		# Timer so sánh nghiêm với 0; trừ sai số nhỏ hơn một bước để 0,20 s không thành 13 tick.
+		_bow_volley_timer.start(maxf(bow_volley_interval, step) - step * BOW_VOLLEY_TICK_EPSILON)
+
+
+func _on_bow_volley_timeout() -> void:
+	# Phát đã trả năng lượng thuộc lượt nhả dây, không phụ thuộc state lăn hoặc bị khựng.
+	if shoot_bow_followup():
+		_schedule_bow_followup()
+
+
 func _on_projectile_finished(arrow: ArrowProjectile) -> void:
 	_projectile_fusions.erase(arrow)
+	_weapon_damage_projectiles.erase(arrow)
 
 
 func _prepare_bow_model(bow: WeaponData) -> void:
@@ -956,6 +1103,45 @@ func _get_projectile_pool(scene: PackedScene) -> ObjectPool:
 	return pool
 
 
+func _fire_bow_projectile(bow: BowData, direction: Vector3, speed: float, damage: int, primary: bool) -> void:
+	# Tâm ngắm nằm giữa người; bắn từ tay lệch bên sẽ trượt khỏi hướng chuột.
+	var grip: Vector3 = _bow_hold.global_position
+	var flat_offset: Vector3 = Vector3(grip.x - global_position.x, 0.0, grip.z - global_position.z)
+	var spawn: Vector3 = global_position + direction * flat_offset.dot(direction)
+	spawn.y = grip.y
+	_launch_projectile(bow, bow.combo[0], direction, spawn, speed, damage, primary)
+	bow_projectile_fired.emit(primary)
+
+
+func _warm_bow_volley_pool() -> void:
+	if not _combat_prepared or not is_inside_tree():
+		return
+	var bow: BowData = get_bow()
+	if bow == null:
+		for weapon: WeaponData in combat_weapons:
+			if weapon is BowData:
+				bow = weapon as BowData
+				break
+	if bow == null or bow.projectile_scene == null:
+		return
+	# Giữ hai phát ngay từ đầu để đeo/tháo Ưng Nhãn không phải tạo/xóa đạn trong pool.
+	var count: int = maxi(get_bow_projectile_count(), BOW_VOLLEY_PREWARM_COUNT)
+	if bow == _last_volley_weapon and count == _last_volley_count:
+		return
+	_last_volley_weapon = bow
+	_last_volley_count = count
+	var pool: ObjectPool = _get_projectile_pool(bow.projectile_scene)
+	pool.reserve(1)
+	var arrow: ArrowProjectile = pool.get_child(0) as ArrowProjectile
+	var fade: float = maxf(arrow.trail_fade_time, 0.0) if arrow else 0.0
+	var interval: float = maxf(bow.shot_cooldown, bow.release_recovery + maxf(bow.draw_time, 0.0) * clampf(bow.min_draw_to_shoot, 0.0, 1.0))
+	interval = maxf(interval, 1.0 / maxf(float(Engine.physics_ticks_per_second), 1.0))
+	var overlap: float = clampf((maxf(bow.projectile_lifetime, 0.0) + fade) / interval, 0.0, float(MAX_BOW_VOLLEY_RESERVE))
+	var required: int = mini(maxi(arrow_pool_size, (1 + ceili(overlap)) * count), MAX_BOW_VOLLEY_RESERVE)
+	# Làm nóng khi vào khu / đổi bùa / nhận cung, không tạo đạn trong từng lượt bắn.
+	pool.reserve(required)
+
+
 func _configure_projectile_instance(node: Node) -> void:
 	(node as Node3D).set_as_top_level(true)
 
@@ -983,11 +1169,21 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 
 
 func _on_died() -> void:
+	var bow_element: StringName = _active_bow_imbue.element.id if _active_bow_imbue and _active_bow_imbue.element else _bow_element_id()
+	if bow_element != &"":
+		fusion_bow_aim_ended.emit(bow_element)
+	cancel_bow_volley()
 	_stop_blink()
 	state_machine.transition_to(PlayerState.DEAD)
 
 
 func _on_stat_changed(stat: StringName) -> void:
+	if stat == BOW_EXTRA_PROJECTILES_STAT:
+		_warm_bow_volley_pool()
+		if _bow_volley_sent >= get_bow_projectile_count():
+			cancel_bow_volley()
+	if stat == MAX_ENERGY_STAT:
+		energy.set_max_bonus(roundi(stats.get_bonus(MAX_ENERGY_STAT)))
 	if stat == MAX_HEALTH_STAT:
 		# Đeo bùa thêm máu: ô mới đổ đầy luôn; tháo thì kẹp về mức gốc
 		var new_max := _base_max_health + roundi(stats.get_bonus(MAX_HEALTH_STAT))

@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="CharmData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="charm"]
+[ext_resource type="Script" path="res://resources/player/items/_base/hurt_bonus_effect.gd" id="effect"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
+[ext_resource type="Texture2D" path="res://assets/ui/charms/combat/wrath_charm.png" id="icon"]
+[ext_resource type="PackedScene" path="res://assets/vfx/shared/charms/wrath/wrath_vfx.tscn" id="visual"]
+[ext_resource type="Resource" path="res://resources/vfx/charms/wrath/wrath_default.tres" id="style"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/_rarity/rare.tres" id="rarity"]
+
+[sub_resource type="Resource" id="Wrath"]
+script = ExtResource("effect")
+stat = &"weapon_damage_bonus"
+bonus = 1.0
+duration = 1.5
+visual_scene = ExtResource("visual")
+visual_style = ExtResource("style")
+status_icon = ExtResource("icon")
+status_color = Color(0.91, 0.3, 0.26, 1)
+
+[resource]
+script = ExtResource("charm")
+id = &"wrath_charm"
+display_name = "Bùa Phẫn Nộ"
+icon = ExtResource("icon")
+notch_cost = 2
+description = "Sau khi mất máu, đòn kiếm và tên cung gốc gây thêm 1 sát thương trong 1,5 giây. Bị đánh lại sẽ tính lại thời gian."
+lore = "Bùa hiếm. Cơn giận giữ lại sức nóng của vết thương."
+effects = Array[ExtResource("base")]([SubResource("Wrath")])
+rarity = ExtResource("rarity")
