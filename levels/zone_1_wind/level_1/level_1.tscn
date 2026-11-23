@@ -44,6 +44,9 @@
 [ext_resource type="MultiMesh" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/openings/stair/terrain_batch_14.res" id="Room09GrandStairTerrainBatch14"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/tier3_connection.tscn" id="tier3_bridge"]
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint.tscn" id="tier3_checkpoint"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="heart_charm_pickup"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/heart_charm.tres" id="heart_charm"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_charm.tres" id="tut_charm"]
 [ext_resource type="PackedScene" uid="uid://6b38aottgqnl" path="res://levels/zone_1_wind/level_1/rooms/tier_3/tier3_test.tscn" id="tier3_map"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.tscn" id="trial_arena"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.tscn" id="trial_challenge"]
@@ -351,6 +354,13 @@ shape = SubResource("Tier3ZoneShape")
 [node name="WindTrialGateCheckpoint" parent="." instance=ExtResource("tier3_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3.6, -57.2)
 checkpoint_id = &"level_1.wind_trial_gate"
+
+[node name="HeartCharm" parent="." instance=ExtResource("heart_charm_pickup")]
+editor_description = "Bùa đầu tiên (Tâm Cáo), đặt cạnh checkpoint để dạy đổi bùa trước khi vào Thử Thách Gió (thưởng Phong Kiếm)"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.5, 3.6, -57.2)
+persistent_id = &"level_1.heart_charm"
+charm = ExtResource("heart_charm")
+tutorial = ExtResource("tut_charm")
 
 [node name="Tier3EntryCheckpoint" parent="." unique_id=2090428911 instance=ExtResource("tier3_checkpoint")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -263)

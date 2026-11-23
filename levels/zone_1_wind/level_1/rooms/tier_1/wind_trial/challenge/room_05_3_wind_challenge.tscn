@@ -28,7 +28,6 @@
 
 [ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/charm_altar.glb" id="old_altar"]
 
-[ext_resource type="PackedScene" path="res://entities/enemies/palace/burrow_beetle/burrow_beetle.tscn" id="old_beetle"]
 
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="old_caster"]
 
@@ -610,10 +609,10 @@ position = Vector3(5, 0, -6)
 [node name="Guard2" parent="Waves/Wave2/Enemies" instance=ExtResource("old_guard")]
 position = Vector3(15, 0, -6)
 
-[node name="Beetle1" parent="Waves/Wave2/Enemies" instance=ExtResource("old_beetle")]
+[node name="Guard3" parent="Waves/Wave2/Enemies" instance=ExtResource("old_guard")]
 position = Vector3(7, 0, -3)
 
-[node name="Beetle2" parent="Waves/Wave2/Enemies" instance=ExtResource("old_beetle")]
+[node name="Guard4" parent="Waves/Wave2/Enemies" instance=ExtResource("old_guard")]
 position = Vector3(13, 0, -3)
 
 [node name="Caster1" parent="Waves/Wave3/Enemies" instance=ExtResource("old_caster")]

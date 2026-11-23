@@ -32,6 +32,8 @@ extends Resource
 @export var complete_on_bow_shot: bool = false
 @export var completion_skill: StringName
 @export var show_after_acquire: bool = false
+## Gợi ý giữ trên màn hình (cần wait_for_action) cho tới khi người chơi đeo bùa có id này
+@export var completion_charm: StringName
 
 
 ## Tạo DetailEntry để đổ sang DetailPanel của màn Tab

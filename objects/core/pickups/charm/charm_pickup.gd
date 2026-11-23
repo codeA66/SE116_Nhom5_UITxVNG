@@ -13,6 +13,8 @@ signal revealed
 ## Ẩn và không nhặt được cho tới khi có ai gọi reveal()
 @export var starts_hidden: bool = false
 @export var beam_color: Color = Color("fff1c4")
+## Bài hướng dẫn mở khi nhặt (ví dụ bùa đầu tiên dạy cách đeo); để trống = không hiện
+@export var tutorial: TutorialData
 
 
 func _ready() -> void:
@@ -55,3 +57,5 @@ func _can_be_picked_by(interactor: Node3D) -> bool:
 
 func _give_to(_interactor: Node3D) -> void:
 	GameState.add_charm(charm)
+	if tutorial:
+		GameState.unlock_tutorial(tutorial)
