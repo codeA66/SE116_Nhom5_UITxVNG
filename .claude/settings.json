@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "ask": [
+      "Edit(**/CLAUDE.md)",
+      "Write(**/CLAUDE.md)",
+      "Edit(**/AGENTS.md)",
+      "Write(**/AGENTS.md)",
+      "Edit(**/docs/map_building_rules.md)",
+      "Write(**/docs/map_building_rules.md)",
+      "Edit(**/docs/export_release_rules.md)",
+      "Write(**/docs/export_release_rules.md)",
+      "Edit(**/.claude/settings.json)",
+      "Write(**/.claude/settings.json)",
+      "Edit(**/.github/CODEOWNERS)",
+      "Write(**/.github/CODEOWNERS)",
+      "Edit(**/.githooks/**)",
+      "Write(**/.githooks/**)"
+    ],
+    "deny": [
+      "Bash(git config core.hooksPath:*)",
+      "Bash(git config --unset core.hooksPath:*)",
+      "Bash(git commit --no-verify:*)",
+      "Bash(RULES_OWNER_EDIT=1:*)"
+    ]
+  }
+}
