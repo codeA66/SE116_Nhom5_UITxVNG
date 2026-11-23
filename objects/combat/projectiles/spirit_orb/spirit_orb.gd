@@ -47,6 +47,10 @@ func is_reflected() -> bool:
 	return _reflected
 
 
+func try_reflect_by_sword(impulse: Vector3, _reflector: Node3D) -> bool:
+	return _try_reflect(impulse, false)
+
+
 ## attack: sát thương lên player trước khi bị phản; data: thông số cầu; source: quái bắn (cho DamageInfo)
 func launch(attack: AttackData, data: SpiritOrbData, origin: Vector3, direction: Vector3, source: Node3D) -> void:
 	_attack = attack
@@ -107,6 +111,9 @@ func _on_area_entered(area: Area3D) -> void:
 	var hurtbox := area as HurtboxComponent
 	if _spent or hurtbox == null:
 		return
+	# Mask của server đổi ở lượt deferred; quả đã đổi phe phải bỏ qua player ngay.
+	if _reflected and (hurtbox.collision_layer & _data.reflected_mask) == 0:
+		return
 	var source: Node = _source if is_instance_valid(_source) else null
 	var info: DamageInfo
 	if _reflected:
@@ -127,14 +134,20 @@ func _on_body_entered(body: Node3D) -> void:
 
 
 func _on_wind_pushed(impulse: Vector3) -> void:
-	if _spent or _reflected:
-		return
-	var flat := Vector3(impulse.x, 0.0, impulse.z)
+	_try_reflect(impulse, true)
+
+
+func _try_reflect(impulse: Vector3, use_wind_aim: bool) -> bool:
+	if _spent or _reflected or _data == null:
+		return false
+	var flat: Vector3 = Vector3(impulse.x, 0.0, impulse.z)
 	if flat.is_zero_approx():
-		return
+		return false
 	_reflected = true
 	_source = null
-	var direction := _find_reflect_direction(flat.normalized())
+	var direction: Vector3 = flat.normalized()
+	if use_wind_aim:
+		direction = _find_reflect_direction(direction)
 	_velocity = direction * _data.speed * _data.reflect_speed_mult
 	# Cho thêm tuổi thọ đủ để bay tới mục tiêu
 	_remaining = _data.lifetime
@@ -142,6 +155,7 @@ func _on_wind_pushed(impulse: Vector3) -> void:
 	if _reflect_sound.stream:
 		_reflect_sound.play()
 	reflected.emit(self)
+	return true
 
 
 ## Aim assist một lần lúc phản: bẻ về hurtbox quái gần nhất lệch không quá reflect_aim_angle

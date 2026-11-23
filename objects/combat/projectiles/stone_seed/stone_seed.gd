@@ -1,6 +1,6 @@
 class_name StoneSeed
 extends Node3D
-## Đạn đá quét đường bay mỗi tick. Chỉ nhận lực từ cú thổi của Foxy.
+## Đạn đá quét đường bay mỗi tick để giữ va chạm khi bị hất nhanh.
 
 signal finished(seed: StoneSeed)
 
@@ -59,6 +59,10 @@ func is_reflected() -> bool:
 	return _reflected
 
 
+func try_reflect_by_sword(impulse: Vector3, _reflector: Node3D) -> bool:
+	return _reflect(impulse)
+
+
 func _physics_process(delta: float) -> void:
 	_remaining -= delta
 	if _remaining <= 0.0:
@@ -78,10 +82,10 @@ func _physics_process(delta: float) -> void:
 	finished.emit(self)
 
 
-func _reflect(impulse: Vector3) -> void:
+func _reflect(impulse: Vector3) -> bool:
 	if not is_physics_processing() or _reflected or impulse.is_zero_approx():
-		return
-	# Giữ động lượng ngang của viên đá rồi cộng thay đổi vận tốc do gió.
+		return false
+	# Giữ động lượng ngang để cú gạt lệch cũng làm viên đá bay lệch.
 	var incoming := Vector3(_velocity.x, 0.0, _velocity.z)
 	var wind := Vector3(impulse.x, 0.0, impulse.z)
 	_velocity = incoming + wind * wind_response
@@ -91,6 +95,7 @@ func _reflect(impulse: Vector3) -> void:
 	_dust.hide()
 	_ribbon.show()
 	_face_velocity()
+	return true
 
 
 func _face_velocity() -> void:
