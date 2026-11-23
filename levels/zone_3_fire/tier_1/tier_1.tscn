@@ -904,6 +904,9 @@ shape = SubResource("RoomZone_room_15_ruins_plaza")
 script = ExtResource("starter_kit_script")
 weapons = Array[ExtResource("kit_weapon_data")]([ExtResource("kit_sword"), ExtResource("kit_bow")])
 abilities = Array[ExtResource("kit_ability_data")]([ExtResource("kit_wind")])
+ability_levels = Dictionary[ExtResource("kit_ability_data"), int]({
+ExtResource("kit_wind"): 2
+})
 held_weapon = ExtResource("kit_sword")
 
 [node name="AreaTitles" type="Node" parent="." unique_id=1519470455]
