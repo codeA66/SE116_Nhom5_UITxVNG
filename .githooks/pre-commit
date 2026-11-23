@@ -1,0 +1,18 @@
+#!/bin/sh
+# Chặn commit có đụng file luật được bảo vệ (luật 8 trong CLAUDE.md / AGENTS.md).
+# Chỉ người dùng (chủ repo) được sửa các file này; khi tự sửa thì commit bằng:  RULES_OWNER_EDIT=1 git commit ...
+# AI không được đặt biến này, không được sửa hay tắt hook này.
+PROTECTED="CLAUDE.md AGENTS.md docs/map_building_rules.md docs/export_release_rules.md .claude/settings.json .github/CODEOWNERS .githooks/pre-commit"
+changed=$(git diff --cached --name-only --diff-filter=ACMRD)
+hit=""
+for f in $PROTECTED; do
+	if printf '%s\n' "$changed" | grep -qx "$f"; then
+		hit="$hit $f"
+	fi
+done
+if [ -n "$hit" ] && [ "$RULES_OWNER_EDIT" != "1" ]; then
+	echo "CHẶN COMMIT: các file luật được bảo vệ chỉ người dùng được sửa:$hit"
+	echo "Người dùng tự sửa thì commit bằng: RULES_OWNER_EDIT=1 git commit ..."
+	exit 1
+fi
+exit 0

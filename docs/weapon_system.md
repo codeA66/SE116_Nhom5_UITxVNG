@@ -1,3 +1,6 @@
+> **ĐÃ CŨ, KHÔNG DÙNG.** Tài liệu viết từ nhánh `weapon_system` cũ, không còn đúng với code. Thông tin vũ khí lấy từ code
+> (`entities/_base/data/weapon_data.gd`, `bow_data.gd`) và các file `resources/combat/weapons/*.tres`.
+
 # Hệ thống kiếm và cung
 
 Nhánh: `weapon_system`. Dùng player cáo hiện tại, FSM hiện tại và hệ thống `DamageInfo` / `HurtboxComponent` hiện có.
