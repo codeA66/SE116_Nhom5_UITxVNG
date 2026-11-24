@@ -39,6 +39,9 @@ func _ready() -> void:
 	# Tạo noise một lần, dùng lại mọi frame
 	_noise = FastNoiseLite.new()
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	# Tần số nhiễu mặc định của FastNoiseLite là 0.01: nhiễu đổi rất chậm nên camera chỉ trôi một chiều, không rung.
+	# Đặt 1 để tốc độ rung do export frequency quyết định
+	_noise.frequency = 1.0
 	_noise.seed = randi()
 	# Bắt đầu ở điểm ngẫu nhiên: gần gốc toạ độ simplex noise xấp xỉ 0 nên rung yếu
 	_time = randf() * 1000.0 / frequency

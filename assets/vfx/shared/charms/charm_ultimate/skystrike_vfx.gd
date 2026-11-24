@@ -50,16 +50,23 @@ const TURN_STEP: float = 2.399963
 @export_range(0.1, 12.0, 0.1) var release_light_range: float = 4.4
 
 @export_group("Impact")
-@export_range(0.01, 0.3, 0.001) var flash_life: float = 0.045
-@export_range(0.1, 3.0, 0.01) var flash_size_ratio: float = 1.22
-@export_range(0.05, 1.5, 0.01) var fire_life: float = 0.33
+@export_range(0.01, 0.3, 0.001) var flash_life: float = 0.09
+@export_range(0.1, 3.0, 0.01) var flash_size_ratio: float = 1.6
+@export_range(0.05, 1.5, 0.01) var fire_life: float = 0.5
 @export_range(0.1, 3.0, 0.01) var fire_size_ratio: float = 0.96
 @export_range(0.05, 1.5, 0.01) var shock_life: float = 0.43
 @export_range(0.02, 0.55, 0.01) var shock_band_width: float = 0.24
 @export_range(0.1, 1.0, 0.01) var shock_expansion_fraction: float = 0.76
-@export_range(0.0, 0.5, 0.01) var impact_shake: float = 0.34
+## Rung màn khi chạm đất (trauma 0..1; độ rung = trauma², camera xa 38 m nên phải lớn mới thấy)
+@export_range(0.0, 1.0, 0.01) var impact_shake: float = 1.0
+## Khựng hình ngắn đúng lúc chạm đất cho cú đập có lực (giây thật); 0 = tắt
+@export_range(0.0, 0.2, 0.005) var impact_hitstop: float = 0.06
 @export_range(0.0, 6.0, 0.05) var impact_light_energy: float = 2.0
 @export_range(0.2, 3.0, 0.05) var impact_light_range_ratio: float = 1.55
+## Cột sáng đứng tại điểm chạm (cho cú đập có chiều đứng khi nhìn từ trên cao): thời gian, cao (m), rộng theo bán kính
+@export_range(0.02, 0.6, 0.01) var beam_life: float = 0.2
+@export_range(0.5, 20.0, 0.1) var beam_height: float = 7.0
+@export_range(0.02, 1.0, 0.01) var beam_width_ratio: float = 0.32
 
 @export_group("Residue")
 @export_range(0.05, 4.0, 0.05) var scorch_life: float = 2.0
@@ -75,7 +82,7 @@ const TURN_STEP: float = 2.399963
 @export_range(0, 20, 1) var shard_count: int = 10
 @export_range(0.05, 2.0, 0.01) var shard_life: float = 0.68
 @export_range(0.0, 40.0, 0.5) var shard_gravity: float = 15.0
-@export_range(0.0, 12.0, 0.1) var shard_launch_speed: float = 3.9
+@export_range(0.0, 12.0, 0.1) var shard_launch_speed: float = 6.5
 @export_range(0.05, 2.0, 0.01) var shard_scale: float = 0.73
 @export var shard_material: ShaderMaterial
 @export var projectile_material: ShaderMaterial
@@ -124,6 +131,8 @@ var _takeoff_dust_started: bool = false
 @onready var _dust: CPUParticles3D = $Impact/Dust
 @onready var _embers: CPUParticles3D = $Impact/Embers
 @onready var _impact_light: OmniLight3D = $Impact/Light
+@onready var _beam: MeshInstance3D = $Impact/Beam
+@onready var _fire_burst: CPUParticles3D = $Impact/FireBurst
 
 @onready var _halo_mat: ShaderMaterial = _halo.material_override as ShaderMaterial
 @onready var _lift_dust_mat: ShaderMaterial = _lift_dust.material_override as ShaderMaterial
@@ -138,6 +147,7 @@ var _takeoff_dust_started: bool = false
 @onready var _fissure_mat: ShaderMaterial = _fissures.material_override as ShaderMaterial
 @onready var _dust_mat: ShaderMaterial = _dust.material_override as ShaderMaterial
 @onready var _ember_mat: ShaderMaterial = _embers.material_override as ShaderMaterial
+@onready var _beam_mat: ShaderMaterial = _beam.material_override as ShaderMaterial
 
 
 func _ready() -> void:
@@ -264,6 +274,7 @@ func burst(at: Vector3, floor_normal: Vector3, radius: float) -> void:
 	_burst_clock = 0.0
 	_burst_life = maxf(maxf(scorch_life, fissure_life), maxf(maxf(shock_life, fire_life), flash_life))
 	_burst_life = maxf(_burst_life, maxf(maxf(_dust.lifetime, _embers.lifetime), maxf(shard_life, trail_residue_life)))
+	_burst_life = maxf(_burst_life, maxf(beam_life, _fire_burst.lifetime))
 	_radius = maxf(radius, EPSILON)
 	_spot = at
 	_floor_normal = floor_normal
@@ -277,6 +288,7 @@ func burst(at: Vector3, floor_normal: Vector3, radius: float) -> void:
 	_start_debris()
 	_animate_impact()
 	ScreenShake.add_trauma(impact_shake)
+	HitStop.stop(impact_hitstop)
 
 
 func begin_descent() -> void:
@@ -318,6 +330,9 @@ func pool_released() -> void:
 	_dust.hide()
 	_embers.emitting = false
 	_embers.hide()
+	_fire_burst.emitting = false
+	_fire_burst.hide()
+	_beam.hide()
 	_burst_clock = -1.0
 	_land_clock = -1.0
 	_lift_dust_clock = -1.0
@@ -385,6 +400,7 @@ func _animate_impact() -> void:
 	_animate_shards()
 	_dust.visible = _burst_clock < _dust.lifetime
 	_embers.visible = _burst_clock < _embers.lifetime
+	_fire_burst.visible = _burst_clock < _fire_burst.lifetime
 
 
 func _animate_ground() -> void:
@@ -409,6 +425,7 @@ func _animate_ground() -> void:
 
 
 func _animate_light() -> void:
+	_animate_beam()
 	var flash: float = _age_rate(_burst_clock, flash_life)
 	_flash.visible = flash < 1.0
 	if _flash.visible:
@@ -428,6 +445,25 @@ func _animate_light() -> void:
 		_impact_light.light_energy = impact_light_energy * cooling * cooling
 
 
+## Cột sáng: đứng theo pháp tuyến sàn, luôn quay mặt rộng về camera (chỉ xoay quanh trục đứng), hẹp dần rồi tắt
+func _animate_beam() -> void:
+	var t: float = _age_rate(_burst_clock, beam_life)
+	_beam.visible = t < 1.0
+	if not _beam.visible:
+		return
+	var up: Vector3 = _floor_normal.normalized()
+	var to_camera: Vector3 = _view_basis.z
+	var right: Vector3 = up.cross(to_camera)
+	if right.length() < EPSILON:
+		right = _impact_basis.x
+	right = right.normalized()
+	var facing: Vector3 = right.cross(up).normalized()
+	var width: float = _radius * beam_width_ratio * lerpf(1.0, 0.25, t * t)
+	var height: float = beam_height * lerpf(0.7, 1.0, smoothstep(0.0, 0.3, t))
+	_beam.global_transform = Transform3D(Basis(right * width, up * height, facing), _spot + up * (height * 0.5))
+	_beam_mat.set_shader_parameter(&"opacity", (1.0 - smoothstep(0.35, 1.0, t)) * 1.4)
+
+
 func _start_debris() -> void:
 	_dust.global_transform = Transform3D(_impact_basis.scaled(Vector3.ONE * _radius), _spot)
 	_dust.show()
@@ -438,6 +474,14 @@ func _start_debris() -> void:
 	_embers.show()
 	_embers.restart()
 	_embers.emitting = true
+	# Lưỡi lửa bùng ra quanh tâm, toả theo bán kính nổ
+	_fire_burst.global_transform = Transform3D(_impact_basis, _spot + _floor_normal * 0.1)
+	_fire_burst.emission_sphere_radius = _radius * 0.18
+	_fire_burst.initial_velocity_min = _radius * 1.1
+	_fire_burst.initial_velocity_max = _radius * 2.0
+	_fire_burst.show()
+	_fire_burst.restart()
+	_fire_burst.emitting = true
 
 
 func _animate_shards() -> void:
@@ -508,6 +552,8 @@ func _apply_palette() -> void:
 	_dust_mat.set_shader_parameter(&"tint", dust_brown)
 	_ember_mat.set_shader_parameter(&"tint", fire_gold)
 	_ember_mat.set_shader_parameter(&"edge_color", rim_gold)
+	_beam_mat.set_shader_parameter(&"tint", fire_gold)
+	_beam_mat.set_shader_parameter(&"core_color", ivory)
 	shard_material.set_shader_parameter(&"tint", rock_brown)
 	shard_material.set_shader_parameter(&"edge_color", fire_gold)
 	_impact_light.light_color = fire_gold
@@ -523,7 +569,8 @@ func _build_dust_emitters() -> void:
 		var angle: float = TAU * float(index) / float(_dust.amount)
 		var radial: Vector3 = Vector3(cos(angle), 0.0, sin(angle))
 		points.append(radial * dust_spawn_ratio + Vector3.UP * 0.088)
-		normals.append((radial + Vector3.UP * 0.18).normalized())
+		# Nghiêng lên nhiều hơn: bụi bốc lên rồi mới lan ra, có chiều đứng khi nhìn từ trên cao
+		normals.append((radial + Vector3.UP * 0.45).normalized())
 	_dust.emission_points = points
 	_dust.emission_normals = normals
 

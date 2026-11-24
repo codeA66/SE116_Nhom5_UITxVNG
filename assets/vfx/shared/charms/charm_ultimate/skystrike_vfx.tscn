@@ -33,6 +33,8 @@
 [ext_resource type="Texture2D" path="res://assets/vfx/shared/charms/charm_ultimate/shot/residue/skystrike_dust.png" id="Dust_mask"]
 [ext_resource type="Shader" path="res://assets/vfx/shared/charms/charm_ultimate/shaders/impact/debris/skystrike_shards.gdshader" id="Shards_shader"]
 [ext_resource type="Shader" path="res://assets/vfx/shared/charms/charm_ultimate/shaders/impact/debris/skystrike_embers.gdshader" id="Embers_shader"]
+[ext_resource type="Shader" path="res://assets/vfx/shared/charms/charm_ultimate/shaders/impact/contact/skystrike_beam.gdshader" id="Beam_shader"]
+[ext_resource type="Shader" path="res://assets/vfx/shared/charms/charm_ultimate/shaders/impact/contact/skystrike_fire_burst.gdshader" id="FireBurst_shader"]
 
 [sub_resource type="ShaderMaterial" id="WingMaterial"]
 resource_local_to_scene = true
@@ -130,6 +132,27 @@ subdivide_width = 0
 subdivide_depth = 0
 
 [sub_resource type="QuadMesh" id="Card"]
+
+[sub_resource type="ShaderMaterial" id="BeamMaterial"]
+resource_local_to_scene = true
+shader = ExtResource("Beam_shader")
+
+[sub_resource type="ShaderMaterial" id="FireBurstMaterial"]
+resource_local_to_scene = true
+shader = ExtResource("FireBurst_shader")
+
+[sub_resource type="QuadMesh" id="FlameCard"]
+size = Vector2(0.9, 1.6)
+
+[sub_resource type="Gradient" id="FlameEnvelope"]
+offsets = PackedFloat32Array(0, 0.08, 0.35, 0.7, 1)
+colors = PackedColorArray(1, 0.95, 0.8, 0, 1, 0.85, 0.5, 1, 1, 0.5, 0.15, 0.75, 0.75, 0.2, 0.06, 0.18, 0.4, 0.08, 0.04, 0)
+
+[sub_resource type="Curve" id="FlameSize"]
+_data = [Vector2(0, 0.55), 0.0, 0.0, 0, 0, Vector2(0.3, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="QuadMesh" id="BeamCard"]
 
 [sub_resource type="QuadMesh" id="DustCard"]
 size = Vector2(0.44, 0.33)
@@ -240,6 +263,38 @@ cast_shadow = 0
 mesh = SubResource("FloorQuad")
 material_override = SubResource("ShockMaterial")
 
+[node name="Beam" type="MeshInstance3D" parent="Impact"]
+visible = false
+cast_shadow = 0
+mesh = SubResource("BeamCard")
+material_override = SubResource("BeamMaterial")
+
+[node name="FireBurst" type="CPUParticles3D" parent="Impact"]
+visible = false
+cast_shadow = 0
+material_override = SubResource("FireBurstMaterial")
+mesh = SubResource("FlameCard")
+emitting = false
+amount = 22
+lifetime = 0.55
+one_shot = true
+explosiveness = 0.92
+randomness = 0.35
+emission_shape = 1
+emission_sphere_radius = 0.6
+direction = Vector3(0, 1, 0)
+spread = 62.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 4.0
+initial_velocity_max = 8.0
+damping_min = 6.0
+damping_max = 9.0
+particle_flag_align_y = true
+scale_amount_min = 0.9
+scale_amount_max = 1.6
+scale_amount_curve = SubResource("FlameSize")
+color_ramp = SubResource("FlameEnvelope")
+
 [node name="Light" type="OmniLight3D" parent="Impact"]
 visible = false
 omni_attenuation = 1.7
@@ -271,15 +326,15 @@ cast_shadow = 0
 material_override = SubResource("EmbersMaterial")
 mesh = SubResource("EmberMesh")
 emitting = false
-amount = 25
-lifetime = 0.77
+amount = 40
+lifetime = 0.9
 one_shot = true
 explosiveness = 0.82
 direction = Vector3(0, 1, 0)
-spread = 65.0
-gravity = Vector3(0, -1.4, 0)
-initial_velocity_min = 1.7
-initial_velocity_max = 4.9
+spread = 40.0
+gravity = Vector3(0, -2.2, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 7.5
 particle_flag_align_y = true
 angular_velocity_min = -115.0
 angular_velocity_max = 115.0

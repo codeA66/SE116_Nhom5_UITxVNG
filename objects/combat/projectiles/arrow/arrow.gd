@@ -161,7 +161,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _apply_arrow_hit(hurtbox: HurtboxComponent, info: DamageInfo) -> void:
-	if _reported_enemy_damage or hurtbox.health == null or not hurtbox.get_collision_layer_value(3) or not hurtbox.owner is Character:
+	if _reported_enemy_damage or hurtbox.health == null or not _counts_as_enemy(hurtbox):
 		hurtbox.receive_hit(info)
 		return
 	# Dùng lượng máu signal báo để pha hồi máu của boss vẫn tính đúng nhát đã gây sát thương.
@@ -175,6 +175,13 @@ func _apply_arrow_hit(hurtbox: HurtboxComponent, info: DamageInfo) -> void:
 	if _confirmed_damage > 0:
 		_reported_enemy_damage = true
 		enemy_damaged.emit()
+
+
+## Quái / boss thật, hoặc hình nộm tập bắn (để thử nạp năng lượng bằng cung, như kiếm chém hình nộm cũng nạp)
+func _counts_as_enemy(hurtbox: HurtboxComponent) -> bool:
+	if hurtbox.owner is TrainingDummy:
+		return true
+	return hurtbox.get_collision_layer_value(3) and hurtbox.owner is Character
 
 
 func _collect_damage(info: DamageInfo, amount: int) -> void:
