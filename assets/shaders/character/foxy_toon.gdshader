@@ -9,12 +9,20 @@ uniform float rim_strength : hint_range(0.0, 1.0) = 0.1;
 // trong phòng nhiều đèn, nên chỉ nắng (directional) mới có dải bóng tím; đèn phụ chỉ sáng mặt hướng về nó
 uniform float local_shadow_fill : hint_range(0.0, 1.0) = 0.0;
 
+#include "res://assets/shaders/character/dissolve.gdshaderinc"
+
+void vertex() {
+	dissolve_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+}
+
 void fragment() {
 	ALBEDO = albedo.rgb;
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 4.0);
 	EMISSION = albedo.rgb * rim * rim_strength;
+	// Lúc chết: tan biến dọc thân, mép có viền sáng
+	EMISSION += dissolve_edge_color.rgb * dissolve_apply() * dissolve_edge_glow;
 }
 
 void light() {

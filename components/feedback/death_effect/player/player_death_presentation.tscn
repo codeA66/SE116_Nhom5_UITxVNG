@@ -1,0 +1,85 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://components/feedback/death_effect/player/player_death_presentation.gd" id="1_script"]
+[ext_resource type="Shader" path="res://components/feedback/death_effect/player/player_death_grey.gdshader" id="2_grey"]
+[ext_resource type="Resource" path="res://resources/feedback/death/player_death.tres" id="3_data"]
+
+[sub_resource type="ShaderMaterial" id="GreyMaterial"]
+shader = ExtResource("2_grey")
+shader_parameter/amount = 0.0
+shader_parameter/focus_uv = Vector2(0.5, 0.5)
+shader_parameter/focus_radius = 0.1
+shader_parameter/focus_softness = 0.12
+shader_parameter/aspect = 1.7778
+shader_parameter/edge_darkness = 0.45
+shader_parameter/blackout = 0.0
+
+[sub_resource type="Gradient" id="SoftDot"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="DotTexture"]
+gradient = SubResource("SoftDot")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="MoteMaterial"]
+transparency = 1
+
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("DotTexture")
+billboard_mode = 3
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="MoteMesh"]
+material = SubResource("MoteMaterial")
+size = Vector2(0.3, 0.3)
+
+[sub_resource type="Gradient" id="FadeRamp"]
+offsets = PackedFloat32Array(0, 0.12, 0.6, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0.75, 1, 1, 1, 0)
+
+[sub_resource type="Curve" id="ShrinkCurve"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.25), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="PlayerDeathPresentation" type="Node"]
+script = ExtResource("1_script")
+data = ExtResource("3_data")
+
+[node name="Screen" type="CanvasLayer" parent="."]
+layer = 0
+visible = false
+
+[node name="Grey" type="ColorRect" parent="Screen"]
+material = SubResource("GreyMaterial")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Particles" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 90
+lifetime = 1.4
+randomness = 0.4
+local_coords = false
+mesh = SubResource("MoteMesh")
+emission_shape = 1
+emission_sphere_radius = 0.35
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0, 0.9, 0)
+initial_velocity_min = 0.5
+initial_velocity_max = 1.4
+damping_min = 0.6
+damping_max = 1.2
+scale_amount_min = 0.6
+scale_amount_max = 1.4
+scale_amount_curve = SubResource("ShrinkCurve")
+color_ramp = SubResource("FadeRamp")

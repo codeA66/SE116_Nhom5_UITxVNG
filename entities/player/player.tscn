@@ -60,6 +60,7 @@
 [ext_resource type="Resource" path="res://resources/combat/fire/burn_lava.tres" id="94_burnlava"]
 [ext_resource type="Script" path="res://entities/player/charms/stat_modifiers.gd" id="95_stats"]
 [ext_resource type="Script" path="res://entities/player/charms/charm_holder.gd" id="96_charms"]
+[ext_resource type="PackedScene" path="res://components/feedback/death_effect/player/player_death_presentation.tscn" id="97_deathfx"]
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
 
@@ -262,8 +263,9 @@ script = ExtResource("19_dash")
 [node name="Hurt" type="Node" parent="StateMachine"]
 script = ExtResource("23_hurt")
 
-[node name="Dead" type="Node" parent="StateMachine"]
+[node name="Dead" type="Node" parent="StateMachine" node_paths=PackedStringArray("presentation")]
 script = ExtResource("24_dead")
+presentation = NodePath("../../DeathPresentation")
 
 [node name="WindBlast" type="Node" parent="StateMachine"]
 script = ExtResource("27_blaststate")
@@ -326,3 +328,8 @@ burnable = NodePath("../BurnableComponent")
 [node name="BowVolleyTimer" type="Timer" parent="."]
 one_shot = true
 process_callback = 0
+
+[node name="DeathPresentation" parent="." node_paths=PackedStringArray("visual", "camera_rig", "hide_on_dissolve") instance=ExtResource("97_deathfx")]
+visual = NodePath("../Model/Visual")
+camera_rig = NodePath("../CameraRig")
+hide_on_dissolve = [NodePath("../WeaponSocket")]
