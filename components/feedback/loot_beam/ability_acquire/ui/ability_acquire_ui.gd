@@ -100,7 +100,8 @@ func _input(event: InputEvent) -> void:
 			var mouse: InputEventMouseButton = event as InputEventMouseButton
 			confirm = confirm or (mouse.pressed and mouse.button_index == data.confirm_mouse_button)
 		if confirm: request_close()
-	if _root.visible: get_viewport().set_input_as_handled()
+	# Lúc icon bay về HUD (mode 2) người chơi đã điều khiển lại được: không nuốt phím
+	if _root.visible and _mode != 2: get_viewport().set_input_as_handled()
 ## Một icon được tái sử dụng cho đường bay và một glow cho ô đích.
 func _process(delta: float) -> void:
 	_clock += delta / maxf(Engine.time_scale, data.minimum_time)

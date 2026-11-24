@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="4_02cqm"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_blfy4"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="6_pk2ku"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/brazier_002.glb" id="7_t2tx1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_no8sx"]
 size = Vector3(4, 0.32, 4)
@@ -422,18 +421,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.65
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.65, 0.32, -9.65)
 
 [node name="Decor" type="Node3D" parent="." unique_id=922776164]
-
-[node name="ForgeLamp1" type="Node3D" parent="Decor" unique_id=118129707 instance=ExtResource("7_t2tx1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.32, -7)
-
-[node name="ForgeLamp2" type="Node3D" parent="Decor" unique_id=1134308808 instance=ExtResource("7_t2tx1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.32, -7)
-
-[node name="ForgeLamp3" type="Node3D" parent="Decor" unique_id=1430801177 instance=ExtResource("7_t2tx1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.32, 7)
-
-[node name="ForgeLamp4" type="Node3D" parent="Decor" unique_id=946971552 instance=ExtResource("7_t2tx1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.32, 7)
 
 [node name="Collision" type="StaticBody3D" parent="." unique_id=1789393066]
 collision_mask = 0

@@ -5,9 +5,12 @@ extends StaticBody3D
 ## Đánh vỡ lồng (hết máu) thì ngừng sinh hẳn; hạ nốt quái còn lại thì phát cleared và lưu cờ persistent_id.
 ## Có signal activated + is_active() như nguồn của StoneGate. Thêm loại quái mới chỉ cần đổi enemy_scene.
 ## Có shield (vật cản đốt được bọc quanh) thì lồng không nhận đòn cho tới khi shield cháy tan.
+## Mỗi lần sinh: hiệu ứng tia lửa (spawn_fx, lấy từ pool) bay từ lồng tới chỗ quái, spawn_delay giây sau quái mới hiện.
 ## Hiệu năng: chỉ dùng Timer + signal (vào/ra vùng, quái chết, lồng hết máu), không có _process.
 
 signal spawned(enemy: Enemy)
+## Một con do lồng sinh vừa chết (phát trước cleared nếu là con cuối): cho vật rơi đồ (KeyDrop) biết chỗ quái gục
+signal enemy_died(enemy: Enemy)
 signal broken
 signal cleared
 signal activated
@@ -34,6 +37,13 @@ signal activated
 	set(value):
 		active_area_offset = value
 		_apply_area()
+@export_group("Hiệu ứng sinh quái")
+## Hiệu ứng mỗi lần sinh (tia lửa từ lồng bay tới chỗ quái). Để trống = quái hiện ngay, không hiệu ứng
+@export var spawn_fx: PackedScene = preload("res://objects/combat/spawner_cage/spawn_fx/cage_spawn_fx.tscn")
+## Quái hiện ra sau hiệu ứng bấy nhiêu giây (người chơi kịp thấy chỗ quái ra)
+@export_range(0.0, 3.0, 0.05) var spawn_delay: float = 0.5
+## Quái nở từ nhỏ ra cỡ thật trong thời gian này (s)
+@export_range(0.0, 1.0, 0.01) var appear_time: float = 0.2
 @export_group("Feedback")
 @export_range(0.0, 1.0) var break_trauma: float = 0.35
 @export_range(0.01, 0.5) var hit_punch_time: float = 0.12
@@ -46,6 +56,9 @@ var _alive: int = 0
 var _player: Node3D
 var _spawn_index: int = 0
 var _punch: Tween
+var _fx_pool: ObjectPool
+## Quái đã tạo nhưng chưa vào cây (đang chờ hiệu ứng): rời cây giữa chừng thì tự giải phóng, không rò bộ nhớ
+var _pending: Array[Enemy] = []
 
 @onready var _health: HealthComponent = $HealthComponent
 @onready var _hurtbox: HurtboxComponent = $HurtboxComponent
@@ -75,12 +88,37 @@ func _ready() -> void:
 	if shield and not shield.is_burned:
 		_hurtbox.monitorable = false
 		shield.burned_away.connect(_on_shield_burned, CONNECT_ONE_SHOT)
+	if spawn_fx:
+		# Hiệu ứng sinh quái lặp lại liên tục: dùng pool, không tạo / xoá mỗi lần
+		_fx_pool = ObjectPool.new()
+		_fx_pool.name = "SpawnFxPool"
+		_fx_pool.scene = spawn_fx
+		_fx_pool.initial_size = 1
+		add_child(_fx_pool)
+		add_to_group(ShaderWarmup.SOURCE_GROUP)
 	_timer.wait_time = spawn_interval
 	_timer.timeout.connect(_try_spawn)
 	_area.body_entered.connect(_on_body_entered)
 	_area.body_exited.connect(_on_body_exited)
 	_hurtbox.hurt.connect(_on_hurt)
 	_health.died.connect(_break)
+
+
+## ShaderWarmup gọi lúc vào khu: hiệu ứng sinh quái và quái (chưa nằm trong cây) để lần sinh đầu không giật
+func get_shader_warmup_sources() -> Array:
+	var sources: Array = []
+	if spawn_fx:
+		sources.append(spawn_fx)
+	if enemy_scene:
+		sources.append(enemy_scene)
+	return sources
+
+
+func _exit_tree() -> void:
+	for enemy: Enemy in _pending:
+		if is_instance_valid(enemy) and enemy.get_parent() == null:
+			enemy.free()
+	_pending.clear()
 
 
 func is_active() -> bool:
@@ -136,17 +174,41 @@ func _try_spawn() -> void:
 	var angle: float = float(_spawn_index) * 2.39996
 	_spawn_index += 1
 	var offset: Vector3 = Vector3(cos(angle), 0.0, sin(angle)) * spawn_radius
-	_enemies_root.add_child(enemy)
-	enemy.global_position = global_position + offset
+	var at: Vector3 = global_position + offset
+	# Giữ chỗ ngay để lượt sinh sau không vượt max_alive trong lúc hiệu ứng đang chạy
 	_alive += 1
+	if _fx_pool:
+		var fx: CageSpawnFx = _fx_pool.acquire() as CageSpawnFx
+		fx.finished.connect(_fx_pool.release.bind(fx), CONNECT_ONE_SHOT)
+		fx.play(global_position, at)
+	if spawn_delay > 0.0:
+		_pending.append(enemy)
+		await get_tree().create_timer(spawn_delay, false).timeout
+		_pending.erase(enemy)
+		# Lồng vỡ / rời cây trong lúc chờ: bỏ con này
+		if not is_inside_tree() or is_broken:
+			enemy.free()
+			_alive -= 1
+			if is_inside_tree() and is_broken and _alive <= 0:
+				_finish()
+			return
+	_enemies_root.add_child(enemy)
+	enemy.global_position = at
 	enemy.died.connect(_on_enemy_died, CONNECT_ONE_SHOT)
+	if appear_time > 0.0:
+		var model: Node3D = enemy.get_node_or_null(^"Model") as Node3D
+		if model:
+			var full: Vector3 = model.scale
+			model.scale = full * 0.2
+			model.create_tween().tween_property(model, ^"scale", full, appear_time).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	if is_instance_valid(_player):
 		enemy.target = _player
 	spawned.emit(enemy)
 
 
-func _on_enemy_died(_enemy: Enemy) -> void:
+func _on_enemy_died(enemy: Enemy) -> void:
 	_alive -= 1
+	enemy_died.emit(enemy)
 	if is_broken and _alive <= 0:
 		_finish()
 

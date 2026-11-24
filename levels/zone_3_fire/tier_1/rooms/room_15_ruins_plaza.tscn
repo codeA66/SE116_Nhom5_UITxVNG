@@ -5,9 +5,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_4m.glb" id="3_krrvp"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_edge_4m.glb" id="4_1jxf1"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_5q2nj"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/column_big_broken_001.glb" id="6_yeooa"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/column_big_broken_002.glb" id="7_fhdta"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/column_big_001.glb" id="8_gm6nx"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8mlat"]
 size = Vector3(4, 0.32, 4)
@@ -270,15 +267,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.65
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.65, 0.32, 4)
 
 [node name="Decor" type="Node3D" parent="." unique_id=1281053526]
-
-[node name="column_big_broken_001" type="Node3D" parent="Decor" unique_id=706521627 instance=ExtResource("6_yeooa")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, 0)
-
-[node name="column_big_broken_002" type="Node3D" parent="Decor" unique_id=954235003 instance=ExtResource("7_fhdta")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.32, 2)
-
-[node name="column_big_001" type="Node3D" parent="Decor" unique_id=1157777515 instance=ExtResource("8_gm6nx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.32, 3)
 
 [node name="Collision" type="StaticBody3D" parent="." unique_id=1532159329]
 collision_mask = 0

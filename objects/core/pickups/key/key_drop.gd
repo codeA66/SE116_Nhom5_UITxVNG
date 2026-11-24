@@ -3,9 +3,11 @@ extends Node3D
 ## Trận đánh thắng thì rơi chìa ở chỗ con quái cuối gục (chớp sáng, vòng sóng, cột sáng để nhìn từ xa cũng thấy).
 ## Nạp lại khi đã thắng mà chưa nhặt: chìa nằm sẵn ở vị trí node này (giữa phòng). Đã nhặt rồi: không làm gì.
 ## Nhiều trận rơi chìa trong một map: mỗi KeyDrop trỏ tới trận của nó bằng tham chiếu, không phát tin chung.
-## Rơi vật phẩm khác (Ấn Gió...) cũng được: key_scene là scene vật nhặt, key_id thành cờ "đã nhặt" (persistent_id của vật).
+## Rơi vật phẩm khác (Ấn Gió, sách kỹ năng...) cũng được: key_scene là scene vật nhặt, key_id thành cờ "đã nhặt"
+## (persistent_id của vật).
 
-@export var encounter: Encounter
+## Nguồn trận: Encounter, SpawnerCage hoặc node bất kỳ có signal enemy_died(enemy), cleared và thuộc tính persistent_id
+@export var encounter: Node
 @export var key_scene: PackedScene
 ## Cờ chìa (cửa có cùng key_id mới mở)
 @export var key_id: StringName
@@ -39,13 +41,21 @@ func _ready() -> void:
 		return
 	if GameState.has_flag(key_id):
 		return
-	var won := not encounter.persistent_id.is_empty() and GameState.has_flag(encounter.persistent_id)
+	var won_flag: StringName = encounter.get(&"persistent_id") if &"persistent_id" in encounter else &""
+	var won := not won_flag.is_empty() and GameState.has_flag(won_flag)
 	if won:
 		# Phòng còn đang dựng node con lúc _ready: thêm chìa vào sau một khung
 		_spawn_key.call_deferred(global_position, false)
 		return
-	encounter.enemy_died.connect(_on_enemy_died)
-	encounter.cleared.connect(_on_cleared, CONNECT_ONE_SHOT)
+	encounter.connect(&"enemy_died", _on_enemy_died)
+	encounter.connect(&"cleared", _on_cleared, CONNECT_ONE_SHOT)
+	# Vật rơi chưa nằm trong cây: đưa cho ShaderWarmup biên dịch trước, lúc rơi không bị giật
+	add_to_group(ShaderWarmup.SOURCE_GROUP)
+
+
+## ShaderWarmup gọi lúc vào khu: scene vật sẽ rơi (chưa nằm trong cây)
+func get_shader_warmup_sources() -> Array:
+	return [key_scene] if key_scene != null else []
 
 
 func _on_enemy_died(enemy: Enemy) -> void:
@@ -54,7 +64,7 @@ func _on_enemy_died(enemy: Enemy) -> void:
 
 
 func _on_cleared() -> void:
-	encounter.enemy_died.disconnect(_on_enemy_died)
+	encounter.disconnect(&"enemy_died", _on_enemy_died)
 	# cleared phát giữa lúc engine xử lý va chạm (đòn chém trúng): thêm chìa ngay lúc đó thì Area của chìa không bật được
 	_spawn_key.call_deferred(_last_death if _has_death else global_position, true)
 

@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_4m.glb" id="2_e600h"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_edge_4m.glb" id="3_d8rs4"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="4_x8qqm"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/tower_big_001.glb" id="5_h4omh"]
 [ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_fire_pit.tscn" id="6_pc7ey"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ett6r"]
@@ -670,9 +669,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 13.6
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 13.65, 0.32, 12)
 
 [node name="Decor" type="Node3D" parent="." unique_id=656624293]
-
-[node name="ForgeFurnace" type="Node3D" parent="Decor" unique_id=1686961031 instance=ExtResource("5_h4omh")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.32, -10)
 
 [node name="Collision" type="StaticBody3D" parent="." unique_id=1045415596]
 collision_mask = 0

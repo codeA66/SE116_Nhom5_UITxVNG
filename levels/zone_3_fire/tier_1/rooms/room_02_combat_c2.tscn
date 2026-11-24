@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_nfnmg"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="6_6yq1a"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/altar.glb" id="7_aql46"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/bone_004.glb" id="8_4a8ie"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8356l"]
 size = Vector3(4, 0.32, 4)
@@ -282,21 +281,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.32, -7.65)
 [node name="wall_4m5" type="Node3D" parent="Walls" unique_id=843940425 instance=ExtResource("4_xix7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.32, -7.65)
 
-[node name="wall_low_4m2" type="Node3D" parent="Walls" unique_id=1898569689 instance=ExtResource("5_nfnmg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.32, 7.65)
-
-[node name="wall_low_4m3" type="Node3D" parent="Walls" unique_id=718234700 instance=ExtResource("5_nfnmg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.32, 7.65)
-
-[node name="wall_low_4m4" type="Node3D" parent="Walls" unique_id=1266138731 instance=ExtResource("5_nfnmg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 7.65)
-
-[node name="wall_low_4m5" type="Node3D" parent="Walls" unique_id=671806942 instance=ExtResource("5_nfnmg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.32, 7.65)
-
-[node name="wall_low_4m6" type="Node3D" parent="Walls" unique_id=1956627035 instance=ExtResource("5_nfnmg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.32, 7.65)
-
 [node name="wall_4m6" type="Node3D" parent="Walls" unique_id=1524100114 instance=ExtResource("4_xix7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -9.65, 0.32, -6)
 
@@ -309,15 +293,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -9.6
 [node name="wall_4m9" type="Node3D" parent="Walls" unique_id=634434884 instance=ExtResource("4_xix7m")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -9.65, 0.32, 6)
 
-[node name="wall_low_4m7" type="Node3D" parent="Walls" unique_id=1246794655 instance=ExtResource("5_nfnmg")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.65, 0.32, -6)
-
-[node name="wall_low_4m8" type="Node3D" parent="Walls" unique_id=298226319 instance=ExtResource("5_nfnmg")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.65, 0.32, 2)
-
-[node name="wall_low_4m9" type="Node3D" parent="Walls" unique_id=1444326252 instance=ExtResource("5_nfnmg")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.65, 0.32, 6)
-
 [node name="wall_pillar2" type="Node3D" parent="Walls" unique_id=890736463 instance=ExtResource("6_6yq1a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.65, 0.32, -7.65)
 
@@ -325,9 +300,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.65, 0.32, -7.65)
 
 [node name="TriggerAltar" type="Node3D" parent="Decor" unique_id=1420315375 instance=ExtResource("7_aql46")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0)
-
-[node name="bone_004" type="Node3D" parent="Decor" unique_id=1315600319 instance=ExtResource("8_4a8ie")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.32, 4)
 
 [node name="Collision" type="StaticBody3D" parent="." unique_id=1327433578]
 collision_mask = 0

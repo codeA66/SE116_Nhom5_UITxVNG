@@ -44,6 +44,7 @@ func _ready() -> void:
 		phase.entered.connect(_on_phase_entered.bind(phase.name))
 	ui.close_finished.connect(_finish)
 	ui.icon_landed.connect(_on_icon_landed)
+	ui.transfer_started.connect(_on_transfer_started)
 	_sounds[&"descend"] = $Audio/Descend
 	_sounds[&"gather"] = $Audio/Gather
 	_sounds[&"burst"] = $Audio/Burst
@@ -123,6 +124,10 @@ func _on_phase_entered(phase_name: StringName) -> void:
 ## Target có thể bị gỡ khi đổi scene; callback không được giữ một player cũ.
 func _on_target_exiting() -> void:
 	stop_all()
+## Bảng vừa đóng: trả điều khiển và thế giới ngay để người chơi thử kỹ năng mới luôn,
+## không chờ icon bay về HUD (icon là UI, chạy cả khi thế giới đã chạy lại). _cleanup gọi restore lần nữa thì bỏ qua.
+func _on_transfer_started() -> void:
+	if _active: context.restore(get_tree())
 ## Icon tới HUD mới phát âm thanh chốt.
 func _on_icon_landed() -> void:
 	_audio(&"icon_land")

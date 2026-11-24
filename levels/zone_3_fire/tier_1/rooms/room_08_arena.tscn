@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="4_7x1wx"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_a86dt"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="6_ilrfp"]
-[ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_fire_pillar.tscn" id="7_iqb7p"]
 [ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_fire_pit.tscn" id="8_1nf5i"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_lvtvm"]
@@ -603,15 +602,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 13.6
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.65, 0.32, -9.65)
 
 [node name="Decor" type="Node3D" parent="." unique_id=265861181]
-
-[node name="fire_pillar2" type="Node3D" parent="Decor" unique_id=1186148008 instance=ExtResource("7_iqb7p")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.32, -6)
-
-[node name="fire_pillar3" type="Node3D" parent="Decor" unique_id=730974947 instance=ExtResource("7_iqb7p")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.32, -6)
-
-[node name="fire_pillar4" type="Node3D" parent="Decor" unique_id=196114026 instance=ExtResource("7_iqb7p")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.32, 6)
 
 [node name="EventCenter" type="Node3D" parent="Decor" unique_id=1291867562 instance=ExtResource("8_1nf5i")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0)

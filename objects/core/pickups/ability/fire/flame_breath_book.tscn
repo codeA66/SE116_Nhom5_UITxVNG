@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/fire/fire_ability_pickup.tscn" id="1_pickup"]
+[ext_resource type="Resource" uid="uid://bbpu4dp2vnrxy" path="res://abilities/flame_breath/flame_breath.tres" id="2_ability"]
+
+[node name="FlameBreathBook" instance=ExtResource("1_pickup")]
+editor_description = "Sách Phun Lửa dựng sẵn kỹ năng: dùng làm vật rơi (KeyDrop.key_scene) sau trận"
+ability = ExtResource("2_ability")

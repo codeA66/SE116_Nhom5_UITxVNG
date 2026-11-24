@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="4_brnbr"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_bub0o"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="6_gevix"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/fire_pillar.glb" id="7_b7co4"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ycpf3"]
 size = Vector3(4, 0.32, 4)
@@ -1130,18 +1129,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 13.6
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.65, 0.32, -13.65)
 
 [node name="Decor" type="Node3D" parent="." unique_id=1023957231]
-
-[node name="fire_pillar2" type="Node3D" parent="Decor" unique_id=1186148008 instance=ExtResource("7_b7co4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.32, -8)
-
-[node name="fire_pillar3" type="Node3D" parent="Decor" unique_id=1251961378 instance=ExtResource("7_b7co4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.32, -8)
-
-[node name="fire_pillar4" type="Node3D" parent="Decor" unique_id=2057534348 instance=ExtResource("7_b7co4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.32, 8)
-
-[node name="fire_pillar5" type="Node3D" parent="Decor" unique_id=1498851468 instance=ExtResource("7_b7co4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.32, 8)
 
 [node name="Collision" type="StaticBody3D" parent="." unique_id=1589590346]
 collision_mask = 0

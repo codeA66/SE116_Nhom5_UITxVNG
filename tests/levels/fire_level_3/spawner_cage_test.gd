@@ -32,11 +32,10 @@ func _run() -> void:
 	await _frames(30)
 	_player.get_node("HurtboxComponent").set_invincible(9999.0)
 	var cage: SpawnerCage = _level.get_node("Room4SpawnerCage") as SpawnerCage
-	var reveal: FlagReveal = _level.get_node("Pickups/Room4BookReveal") as FlagReveal
 	# 1. Ngoài phòng 4
 	_player.teleport(Vector3(62, 4.4, 40))
 	await _frames(30)
-	_check(cage.alive_count() == 0 and reveal.get_child_count() == 0, "chưa vào phòng 4: chưa có quái, sách chưa hiện")
+	_check(cage.alive_count() == 0 and _flame_book() == null, "chưa vào phòng 4: chưa có quái, sách chưa hiện")
 	# 2. Vào phòng: con đầu ra ngay, sau 2 chu kỳ đủ 3 con, chờ thêm vẫn 3
 	_player.teleport(Vector3(68, 8.4, 16))
 	await _frames(10)
@@ -72,13 +71,13 @@ func _run() -> void:
 		await _seconds(0.35)
 		t += 0.4
 	_check(cage.is_broken, "chém lồng bằng kiếm: lồng vỡ (máu %d → %d, %.1f s)" % [start_hp, hp.current_health, t])
-	_check(not cage.is_cleared and reveal.get_child_count() == 0 or cage.alive_count() == 0, "lồng vỡ khi còn quái thì chưa xong")
+	_check(not cage.is_cleared and _flame_book() == null or cage.alive_count() == 0, "lồng vỡ khi còn quái thì chưa xong")
 	await _seconds(cage.spawn_interval + 0.5)
 	_check(_enemies(cage).size() == cage.alive_count() and not cage.get_node("ActiveArea").monitoring, "lồng vỡ: không sinh thêm")
 	_kill(_enemies(cage))
 	await _frames(30)
 	# 4. Sách hiện, nhặt được
-	_check(cage.is_cleared and GameState.has_flag(cage.persistent_id) and reveal.get_child_count() == 1, "hạ hết quái: lưu cờ, sách hiện")
+	_check(cage.is_cleared and GameState.has_flag(cage.persistent_id) and _flame_book() != null, "hạ hết quái: lưu cờ, sách rơi")
 	# Lồng đã vỡ không còn "dính" đòn: chém thật vào chỗ lồng thì hitbox không trúng gì
 	var hits: Array[int] = [0]
 	var on_hit := func(_h: HurtboxComponent) -> void: hits[0] += 1
@@ -93,7 +92,7 @@ func _run() -> void:
 		if c is CollisionShape3D and not (c as CollisionShape3D).disabled:
 			shapes_off = false
 	_check(hits[0] == 0 and shapes_off and not cage.get_node("HurtboxComponent").is_in_group(HurtboxComponent.GROUP), "lồng đã vỡ: chém 4 nhát vào chỗ lồng không trúng gì (%d), hurtbox tắt shape" % hits[0])
-	var book: Node3D = reveal.get_node_or_null("FlameBreathBook") as Node3D
+	var book: Node3D = _flame_book()
 	if book:
 		_player.teleport(book.global_position + Vector3(0, 0.1, 1.2), Vector3.FORWARD)
 		await _frames(15)
@@ -165,6 +164,15 @@ func _capture(file: String) -> void:
 
 func _seconds(s: float) -> void:
 	await get_tree().create_timer(s, true, true).timeout
+
+
+## Sách Phun Lửa đang nằm trong khu (rơi từ Room4BookDrop); null nếu chưa có
+func _flame_book() -> Node3D:
+	for n: Node in _level.find_children("*", "AbilityPickup", true, false):
+		var p := n as AbilityPickup
+		if p.ability != null and p.ability.id == &"flame_breath" and p.is_inside_tree():
+			return p
+	return null
 
 
 func _frames(n: int) -> void:

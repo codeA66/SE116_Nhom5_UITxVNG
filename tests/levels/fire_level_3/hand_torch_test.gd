@@ -56,20 +56,13 @@ func _run() -> void:
 	var base_state: String = String(_player.state_machine.current_state.name)
 	print("  đối chứng attack khi chưa cầm gậy: state %s" % base_state)
 	await _frames(60)
-	# 2. Lửa trại lúc đầu tắt: chưa nhận được đuốc, và không còn bó gậy
+	# 2. Lửa trại cháy sẵn ngay khi vào khu (không cần Phun lửa), không còn bó gậy
 	var fire: Campfire = campfire as Campfire
 	_check(_level.get_node_or_null("Room5StickBundle") == null, "không còn bó gậy ở phòng 5")
-	_check(not fire.is_lit and not fire.get_node("Light").visible, "lửa trại lúc đầu tắt")
-	_player.teleport(campfire.global_position + Vector3(1.8, 0.1, 0.0), Vector3.LEFT)
-	await _frames(10)
-	await _press(&"interact")
-	await _frames(5)
-	_check(HandTorch.find_on(_player) == null, "lửa trại tắt: interact không nhận được đuốc")
-	# 3. Phun lửa (đòn lửa) trúng thì lửa trại bùng cháy; đến lấy thì được gậy đã châm
-	fire.get_node("BurnableComponent").ignite()
-	await _frames(40)
-	_check(fire.is_lit and fire.get_node("Light").visible, "trúng lửa: lửa trại cháy")
+	_check(fire.is_lit and fire.get_node("Light").visible, "lửa trại cháy sẵn khi vào khu")
+	_check(fire.get_node_or_null("BurnableComponent") == null and fire.get_node_or_null("UnlitHint") == null, "lửa trại không còn vùng bắt lửa / gợi ý cần lửa")
 	await _capture("campfire_lit.png")
+	# 3. Đến lấy thì được gậy đã châm ngay
 	_player.teleport(campfire.global_position + Vector3(1.8, 0.1, 0.0), Vector3.LEFT)
 	await _frames(10)
 	await _press(&"interact")
