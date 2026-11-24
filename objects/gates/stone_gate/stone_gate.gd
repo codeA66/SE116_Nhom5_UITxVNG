@@ -8,6 +8,7 @@ extends StaticBody3D
 
 signal opened
 signal closed
+signal height_changed
 ## Vừa đủ nguồn, đang chờ wait_source báo mới chìm (camera cắt cảnh nghe signal này để bay tới)
 signal unlock_started
 
@@ -198,6 +199,7 @@ func _move_reversible_pressure_gate(pressed: bool) -> void:
 func _apply_pressure_height(height: float) -> void:
 	_visual.position.y = height
 	_collision.position.y = _closed_collision_y + height - _closed_position.y
+	height_changed.emit()
 
 
 func _finish_reversible_pressure_gate(pressed: bool) -> void:

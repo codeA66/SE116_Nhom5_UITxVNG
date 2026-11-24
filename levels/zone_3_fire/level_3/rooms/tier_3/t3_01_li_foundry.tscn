@@ -252,10 +252,10 @@ material = SubResource("Copper")
 size = Vector3(0.07, 0.025, 3)
 
 [sub_resource type="BoxShape3D" id="PuzzleGateShape"]
-size = Vector3(4, 4, 0.4)
+size = Vector3(4, 3.9, 0.4)
 
 [sub_resource type="BoxShape3D" id="ShortcutBeamSurface"]
-size = Vector3(4.02, 4.02, 0.42)
+size = Vector3(4, 3.9, 0.42)
 
 [sub_resource type="BoxMesh" id="PuzzleGateMesh"]
 material = SubResource("Copper")
@@ -1243,18 +1243,18 @@ position = Vector3(0, 2.05, 0.205)
 
 [node name="BeamReceiver" parent="TutorialGate" node_paths=PackedStringArray("surface", "flame_symbols") instance=ExtResource("beam_receiver")]
 position = Vector3(0, 1.65, -0.65)
-surface = NodePath("../BeamSurface")
+surface = NodePath("../Visual/BeamSurface")
 requires_continuous_light = true
 charge_time = 1.5
 flame_symbols = [NodePath("../Visual/FireFront"), NodePath("../Visual/FireBack")]
 
-[node name="BeamSurface" type="Area3D" parent="TutorialGate"]
+[node name="BeamSurface" type="Area3D" parent="TutorialGate/Visual"]
 collision_layer = 1
 collision_mask = 0
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TutorialGate/BeamSurface"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TutorialGate/Visual/BeamSurface"]
 position = Vector3(0, 2, 0)
 shape = SubResource("ShortcutBeamSurface")
 
@@ -1289,19 +1289,19 @@ position = Vector3(0, 2.05, 0.205)
 
 [node name="BeamReceiver" parent="ShortcutGate" node_paths=PackedStringArray("surface", "flame_symbols") instance=ExtResource("beam_receiver")]
 position = Vector3(0, 1.65, 0.65)
-surface = NodePath("../BeamSurface")
+surface = NodePath("../Visual/BeamSurface")
 requires_continuous_light = true
 stay_open_on_completion = true
 charge_time = 1.5
 flame_symbols = [NodePath("../Visual/FireFront"), NodePath("../Visual/FireBack")]
 
-[node name="BeamSurface" type="Area3D" parent="ShortcutGate"]
+[node name="BeamSurface" type="Area3D" parent="ShortcutGate/Visual"]
 collision_layer = 1
 collision_mask = 0
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ShortcutGate/BeamSurface"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ShortcutGate/Visual/BeamSurface"]
 position = Vector3(0, 2, 0)
 shape = SubResource("ShortcutBeamSurface")
 
@@ -1451,3 +1451,7 @@ transform = Transform3D(-1, 0, -3.2584137e-07, 0, 1, 0, 3.2584137e-07, 0, -1, 8.
 
 [connection signal="opened" from="TutorialGate" to="TutorialGate/BeamReceiver" method="record_completion"]
 [connection signal="opened" from="ShortcutGate" to="ShortcutGate/BeamReceiver" method="record_completion"]
+[connection signal="height_changed" from="TutorialGate" to="FireBeam" method="request_trace"]
+[connection signal="height_changed" from="TutorialGate" to="ReturnBeam" method="request_trace"]
+[connection signal="height_changed" from="ShortcutGate" to="FireBeam" method="request_trace"]
+[connection signal="height_changed" from="ShortcutGate" to="ReturnBeam" method="request_trace"]

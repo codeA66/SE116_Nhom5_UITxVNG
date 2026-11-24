@@ -90,22 +90,21 @@ func _trace() -> void:
 	if _enabled and is_instance_valid(_source):
 		var origin: Vector3 = _source.global_position
 		var direction: Vector3 = -_source.global_basis.z.normalized()
-		var remaining: float = maxf(_data.beam_distance, 0.0)
+		var segment_range: float = _data.beam_distance
 		var route_matches: bool = true
 		_excluded.clear()
 		var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 		for segment: MeshInstance3D in _segments:
-			if remaining < MIN_LENGTH:
+			if segment_range < MIN_LENGTH:
 				break
 			_query.from = origin
-			_query.to = origin + direction * remaining
+			_query.to = origin + direction * segment_range
 			_query.collision_mask = _data.collision_mask
 			_query.exclude = _excluded
 			var hit: Dictionary = space.intersect_ray(_query)
 			var endpoint: Vector3 = _query.to if hit.is_empty() else hit["position"]
 			_draw_segment(segment, origin, endpoint)
 			_segment_count += 1
-			remaining -= origin.distance_to(endpoint)
 			if hit.is_empty():
 				break
 			var collider: Object = hit["collider"]
@@ -131,7 +130,6 @@ func _trace() -> void:
 			direction = direction.bounce(mirror.get_surface_normal()).normalized()
 			var offset: float = maxf(_data.surface_offset, MIN_LENGTH)
 			origin = endpoint + direction * offset
-			remaining -= offset
 			_excluded.resize(1)
 			_excluded[0] = mirror.get_rid()
 	for index: int in range(_segment_count, _segments.size()):
