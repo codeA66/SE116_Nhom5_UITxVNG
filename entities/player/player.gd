@@ -6,6 +6,8 @@ extends Character
 ## Vừa bắn cung, bắt đầu thời gian hồi (HUD nghe để hiện, không phải dò mỗi frame)
 signal bow_cooldown_started(duration: float)
 signal bow_projectile_fired(primary: bool)
+signal bow_enemy_hit
+signal targetability_changed(targetable: bool)
 ## Vừa dùng kỹ năng gió, bắt đầu thời gian hồi (tính cả thời gian ra đòn)
 signal wind_blast_cooldown_started(duration: float)
 ## Vừa dùng một kỹ năng chủ động bất kỳ (SkillData), bắt đầu thời gian khoá của nó
@@ -121,6 +123,9 @@ var _combat_locks: Dictionary[Node, bool] = {}
 var _dash_locks: Dictionary[Node, bool] = {}
 ## Mỗi cơ chế giữ khóa trói chân riêng (xích lửa boss...): khóa di chuyển, roll & nhảy nhưng vẫn đánh/cung/skill tại chỗ.
 var _root_locks: Dictionary[Node, bool] = {}
+var _targetability_locks: Dictionary[Node, bool] = {}
+var _damage_protection: Dictionary[Node, bool] = {}
+var _previous_invulnerable: bool = false
 ## Model cung đang gắn ở BowHold (tạo một lần, ẩn khi không nhắm) và scene đã dùng để tạo nó
 var _bow_model: Node3D
 var _bow_model_scene: PackedScene
@@ -317,15 +322,51 @@ func get_mouse_aim_direction() -> Vector3:
 	# Chạy headless (test tự động) không có chuột thật: vị trí chuột vô nghĩa, để state dùng hướng phím
 	if DisplayServer.get_name() == "headless":
 		return Vector3.ZERO
-	var mouse := get_viewport().get_mouse_position()
-	var origin := _camera.project_ray_origin(mouse)
-	var normal := _camera.project_ray_normal(mouse)
-	var hit: Variant = Plane(Vector3.UP, global_position.y).intersects_ray(origin, normal)
-	if hit == null:
+	var hit: Vector3 = project_cursor_to_height(get_viewport().get_mouse_position(), global_position.y)
+	if not hit.is_finite():
 		return Vector3.ZERO
-	var offset: Vector3 = (hit as Vector3) - global_position
+	var offset: Vector3 = hit - global_position
 	offset.y = 0.0
 	return offset.normalized() if offset.length() > 0.05 else Vector3.ZERO
+
+
+func project_cursor_to_height(cursor: Vector2, height: float) -> Vector3:
+	var origin: Vector3 = _camera.project_ray_origin(cursor)
+	var direction: Vector3 = _camera.project_ray_normal(cursor)
+	var point: Variant = Plane(Vector3.UP, height).intersects_ray(origin, direction)
+	return Vector3.INF if point == null else point as Vector3
+
+
+func can_start_ground_cast() -> bool:
+	if not controls_enabled or _attack_blocked_by_ui or combat_locked() or root_locked():
+		return false
+	if health.is_dead() or SceneManager.is_busy() or not is_on_floor() or state_machine.current_state == null:
+		return false
+	return state_machine.current_state.name in [PlayerState.IDLE, PlayerState.RUN]
+
+
+func is_targetable() -> bool:
+	return _targetability_locks.is_empty() and (health == null or not health.is_dead())
+
+
+func set_targetability_block(source: Node, blocked: bool) -> void:
+	var was_targetable: bool = is_targetable()
+	if blocked:
+		_targetability_locks[source] = true
+	else:
+		_targetability_locks.erase(source)
+	if is_targetable() != was_targetable:
+		targetability_changed.emit(is_targetable())
+
+
+func set_damage_protection(source: Node, enabled: bool) -> void:
+	if enabled:
+		if _damage_protection.is_empty():
+			_previous_invulnerable = _hurtbox.invulnerable
+		_damage_protection[source] = true
+		_hurtbox.invulnerable = true
+	elif _damage_protection.erase(source) and _damage_protection.is_empty():
+		_hurtbox.invulnerable = _previous_invulnerable
 
 
 ## Đúng khi có jump buffer, còn coyote time và không bị trói chân
@@ -927,7 +968,7 @@ func on_kill_zone_entered() -> void:
 ## Gọi từ vùng chết người (nước sâu, gai...): chết thật, hồi sinh ở checkpoint qua state Dead.
 ## red_flash: nháy đỏ trước rồi mới ngã (bẫy gai); rơi nước thì không
 func on_lethal_zone_entered(red_flash: bool = false) -> void:
-	if health.is_dead():
+	if health.is_dead() or not _damage_protection.is_empty():
 		return
 	_lethal_flash_pending = red_flash
 	health.take_damage(health.current_health)
@@ -963,7 +1004,7 @@ func start_red_flash(duration: float) -> void:
 ## Về chỗ đứng an toàn gần nhất (rơi vực, trúng bẫy). stunned = choáng tại chỗ như bị đánh
 func return_to_safe_ground(stunned: bool = false) -> void:
 	# Lưới cứu rơi không được ngắt state Dead trước khi hồi sinh tại checkpoint.
-	if health.is_dead():
+	if health.is_dead() or not _damage_protection.is_empty():
 		return
 	teleport(_last_safe_position, get_facing_direction())
 	_hurtbox.set_invincible(recovery_invincibility)
@@ -1057,6 +1098,9 @@ func _launch_projectile(weapon: WeaponData, attack: AttackData, direction: Vecto
 		arrow.impacted.connect(impacted)
 	if not arrow.finished.is_connected(_on_projectile_finished):
 		arrow.finished.connect(_on_projectile_finished)
+	var damage_confirmed: Callable = _on_arrow_enemy_damaged.bind(arrow)
+	if not arrow.enemy_damaged.is_connected(damage_confirmed):
+		arrow.enemy_damaged.connect(damage_confirmed)
 	var element: ElementData = GameState.get_fused_element(weapon.slot) if primary else null
 	var fusion: FusionData = _get_bow_projectile_fusion(primary) if weapon.slot == WeaponData.Slot.BOW else (_fusion_table.get_fusion(weapon.slot, element.id) if element else null)
 	if fusion:
@@ -1099,6 +1143,11 @@ func _on_bow_volley_timeout() -> void:
 func _on_projectile_finished(arrow: ArrowProjectile) -> void:
 	_projectile_fusions.erase(arrow)
 	_weapon_damage_projectiles.erase(arrow)
+
+
+func _on_arrow_enemy_damaged(arrow: ArrowProjectile) -> void:
+	if _weapon_damage_projectiles.has(arrow) and not health.is_dead():
+		bow_enemy_hit.emit()
 
 
 func _prepare_bow_model(bow: WeaponData) -> void:

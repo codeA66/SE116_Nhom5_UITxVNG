@@ -9,7 +9,8 @@
 [ext_resource type="Script" uid="uid://dkyk8ucntxdga" path="res://entities/player/states/ground/idle.gd" id="7_idle"]
 [ext_resource type="Script" uid="uid://cdpskso3yh3xi" path="res://entities/player/states/ground/run.gd" id="8_run"]
 [ext_resource type="Script" uid="uid://boj3o7h8xcbyq" path="res://entities/player/states/air/jump.gd" id="9_jump"]
-[ext_resource type="Script" uid="uid://dnbp6fhk50t0s" path="res://entities/player/states/air/fall.gd" id="10_fall"]
+[ext_resource type="Script" uid="uid://dnbp6fhk50t0s" path="res://entities/player/states/air/fall/fall.gd" id="10_fall"]
+[ext_resource type="Script" path="res://entities/player/states/air/charm_ultimate/skystrike_cast.gd" id="skystrike"]
 [ext_resource type="Script" path="res://entities/player/states/action/pick_up.gd" id="11_pickup"]
 [ext_resource type="Script" path="res://entities/player/states/action/attack.gd" id="12_attack"]
 [ext_resource type="Script" path="res://components/combat/hitbox/hitbox_component.gd" id="13_hitbox"]
@@ -247,6 +248,9 @@ script = ExtResource("9_jump")
 
 [node name="Fall" type="Node" parent="StateMachine" unique_id=1529057692]
 script = ExtResource("10_fall")
+
+[node name="SkystrikeCast" type="Node" parent="StateMachine"]
+script = ExtResource("skystrike")
 
 [node name="PickUp" type="Node" parent="StateMachine"]
 script = ExtResource("11_pickup")

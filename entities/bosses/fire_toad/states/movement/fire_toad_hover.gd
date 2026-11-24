@@ -23,6 +23,8 @@ func _run(id: int) -> void:
 		drop_clock += delta
 		if drop_clock >= data.hover_drop_interval:
 			drop_clock = 0.0
+			if toad.find_target() == null:
+				continue
 			var skills := toad.skills()
 			toad.drop_fireball(toad.clamp_to_arena(toad.player_position()), skills.rain_warn_time, skills.rain_radius)
 	if not still_running(id):

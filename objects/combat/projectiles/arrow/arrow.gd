@@ -10,6 +10,7 @@ signal finished(arrow: ArrowProjectile)
 
 ## Tên trúng thứ gì đó (quái hoặc tường) tại position: buff nguyên tố của cung nghe signal này
 signal impacted(position: Vector3, direction: Vector3)
+signal enemy_damaged
 
 @export_flags_3d_physics var collision_mask: int = 5 # world + enemy
 
@@ -52,6 +53,9 @@ var _fading: bool = false
 var _trail_intensity: float = 1.0
 var _default_visual_enabled: bool = true
 var _visual_trail_length: float = 0.0
+var _reported_enemy_damage: bool = false
+var _damage_being_applied: DamageInfo
+var _confirmed_damage: int = 0
 ## Truy vấn quét khối cầu tạo một lần, mỗi frame chỉ đổi vị trí / quãng (không cấp phát trong vòng lặp nóng)
 var _sweep: PhysicsShapeQueryParameters3D
 var _sweep_shape: SphereShape3D
@@ -86,6 +90,7 @@ func launch(attack: AttackData, speed: float, lifetime: float, direction: Vector
 	_traveled = 0.0
 	_fading = false
 	_visual_trail_length = 0.0
+	_reported_enemy_damage = false
 	set_default_visual_enabled(true)
 	_model.visible = true
 	_trail_material.set_shader_parameter(&"intensity", _trail_intensity)
@@ -133,7 +138,7 @@ func _physics_process(delta: float) -> void:
 			var info: DamageInfo = DamageInfo.new(_damage, _attack.damage_type, flight_direction * _attack.knockback, source)
 			info.set_contact(hit_position, flight_direction)
 			info.apply_weapon_damage_bonus(self)
-			hurtbox.receive_hit(info)
+			_apply_arrow_hit(hurtbox, info)
 		# Lùi một chút khỏi điểm trúng để vật nở ra (hố hút) không lọt vào trong tường
 		impacted.emit(hit_position - _velocity.normalized() * 0.3, _velocity.normalized())
 		_traveled += global_position.distance_to(hit_position)
@@ -153,6 +158,28 @@ func _physics_process(delta: float) -> void:
 	_set_trail_length(_traveled)
 	if _remaining <= 0.0:
 		_start_fade()
+
+
+func _apply_arrow_hit(hurtbox: HurtboxComponent, info: DamageInfo) -> void:
+	if _reported_enemy_damage or hurtbox.health == null or not hurtbox.get_collision_layer_value(3) or not hurtbox.owner is Character:
+		hurtbox.receive_hit(info)
+		return
+	# Dùng lượng máu signal báo để pha hồi máu của boss vẫn tính đúng nhát đã gây sát thương.
+	_damage_being_applied = info
+	_confirmed_damage = 0
+	hurtbox.hurt.connect(_collect_damage)
+	hurtbox.receive_hit(info)
+	if is_instance_valid(hurtbox):
+		hurtbox.hurt.disconnect(_collect_damage)
+	_damage_being_applied = null
+	if _confirmed_damage > 0:
+		_reported_enemy_damage = true
+		enemy_damaged.emit()
+
+
+func _collect_damage(info: DamageInfo, amount: int) -> void:
+	if info == _damage_being_applied:
+		_confirmed_damage = amount
 
 
 ## Quét khối cầu bán kính hit_radius theo quãng bay frame này, chỉ trên target_mask.

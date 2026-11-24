@@ -70,6 +70,7 @@ func _ready() -> void:
 		return
 	if not energy.is_node_ready(): await energy.ready
 	if not is_inside_tree(): return
+	$SpecialChargeRing.bind_player(energy.owner)
 	energy.energy_changed.connect(_refresh)
 	energy.insufficient.connect(_on_insufficient)
 	_refresh(energy.current,energy.get_max())
@@ -103,6 +104,8 @@ func apply_style() -> void:
 		_frame_rect.position = Vector2((size.x-_frame_rect.size.x)*0.5,0)
 		_surface.position = _frame_rect.position+vessel_uv.position*_frame_rect.size
 		_surface.size = vessel_uv.size*_frame_rect.size
+	if not Engine.is_editor_hint():
+		$SpecialChargeRing.place_around(_frame_rect)
 	_material.set_shader_parameter(&"ink",style.empty_ink)
 	_material.set_shader_parameter(&"hot",style.ivory)
 	_material.set_shader_parameter(&"wave_height",clampf(style.energy_wave_height,0.0,0.12))

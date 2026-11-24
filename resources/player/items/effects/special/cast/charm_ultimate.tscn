@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/effects/special/cast/charm_ultimate.gd" id="cast"]
+[ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="pool"]
+[ext_resource type="PackedScene" path="res://assets/vfx/shared/charms/charm_ultimate/skystrike_vfx.tscn" id="visual"]
+
+[node name="CharmUltimate" type="Node"]
+script = ExtResource("cast")
+
+[node name="VfxPool" type="Node" parent="."]
+script = ExtResource("pool")
+scene = ExtResource("visual")
+initial_size = 1

@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="CharmData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="charm"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
+[ext_resource type="Script" path="res://resources/player/items/effects/special/skystrike_effect.gd" id="effect"]
+[ext_resource type="Script" path="res://resources/player/items/effects/special/data/skystrike_data.gd" id="tuning"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/_rarity/special.tres" id="rarity"]
+[ext_resource type="Texture2D" path="res://assets/ui/charms/swift_slash_charm.png" id="icon"]
+
+[sub_resource type="Resource" id="Tuning"]
+script = ExtResource("tuning")
+hits_to_fill = 12
+aim_time = 3.0
+damage = 4
+radius = 10.0
+
+[sub_resource type="Resource" id="Skystrike"]
+script = ExtResource("effect")
+data = SubResource("Tuning")
+
+[resource]
+script = ExtResource("charm")
+id = &"skystrike_charm"
+display_name = "Bùa Thiên Kích"
+icon = ExtResource("icon")
+notch_cost = 3
+description = "Tên trúng địch nạp Thiên Kích. Khi đầy, cất cánh và bắn một phát nổ xuống đất."
+lore = "Đôi cánh chỉ hiện trong một nhịp. Dấu va chạm còn in trên đá."
+effects = Array[ExtResource("base")]([SubResource("Skystrike")])
+rarity = ExtResource("rarity")

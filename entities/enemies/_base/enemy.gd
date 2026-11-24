@@ -23,7 +23,19 @@ const ATTACK_POOL_SCOPE := &"enemy_attack_pool_scope"
 @export var attack_state: StringName = &"Attack"
 
 ## Mục tiêu đang đuổi (null = không đuổi)
-var target: Node3D
+var target: Node3D:
+	set(value):
+		var next_player: Player = value as Player
+		if next_player and not next_player.is_targetable():
+			return
+		if target == value:
+			return
+		var previous_player: Player = target as Player
+		if is_instance_valid(previous_player) and previous_player.targetability_changed.is_connected(_on_targetability_changed):
+			previous_player.targetability_changed.disconnect(_on_targetability_changed)
+		target = value
+		if next_player:
+			next_player.targetability_changed.connect(_on_targetability_changed)
 ## Đòn gần nhất trúng quái, state Hurt đọc để đẩy lùi
 var last_hit: DamageInfo
 var home_position: Vector3
@@ -192,6 +204,21 @@ func _die_now() -> void:
 func _on_target_entered(body: Node3D) -> void:
 	if not is_dead():
 		target = body
+
+
+func _on_targetability_changed(targetable: bool) -> void:
+	if targetable:
+		return
+	forget_target()
+	_cancel_targeted_attack.call_deferred()
+
+
+func _cancel_targeted_attack() -> void:
+	if is_dead() or has_target() or state_machine.current_state == null:
+		return
+	var current: StringName = state_machine.current_state.name
+	if current == attack_state or current == chase_state:
+		state_machine.transition_to(get_slip_recovery_state())
 
 
 func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:

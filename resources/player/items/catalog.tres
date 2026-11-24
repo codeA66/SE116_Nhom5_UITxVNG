@@ -17,8 +17,9 @@
 [ext_resource type="Resource" path="res://resources/player/items/charms/combat/fire_arrow_charm.tres" id="fire_arrow"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/combat/sword_reflect_charm.tres" id="sword_reflect"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/combat/threefold_slash_charm.tres" id="two_slash"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/special/timebreak_charm.tres" id="skystrike"]
 
 [resource]
 script = ExtResource("1")
 items = Array[ExtResource("2")]([ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7")])
-charms = Array[ExtResource("3")]([ExtResource("challenge_charm"), ExtResource("swift_slash_charm"), ExtResource("heart_charm"), ExtResource("wrath"), ExtResource("keen"), ExtResource("spirit"), ExtResource("fire_arrow"), ExtResource("sword_reflect"), ExtResource("two_slash")])
+charms = Array[ExtResource("3")]([ExtResource("challenge_charm"), ExtResource("swift_slash_charm"), ExtResource("heart_charm"), ExtResource("wrath"), ExtResource("keen"), ExtResource("spirit"), ExtResource("fire_arrow"), ExtResource("sword_reflect"), ExtResource("two_slash"), ExtResource("skystrike")])

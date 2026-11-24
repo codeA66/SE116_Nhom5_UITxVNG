@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/player/game/special_charm/test_special_charm.gd" id="test"]
+[ext_resource type="Shader" path="res://assets/shaders/environment/monkey_garden/stable_floor.gdshader" id="flagstones"]
+
+[sub_resource type="ShaderMaterial" id="Stone"]
+shader = ExtResource("flagstones")
+shader_parameter/stone = true
+shader_parameter/range_only = false
+shader_parameter/room_half_size = Vector2(16, 15)
+shader_parameter/room_origin = Vector2(0, -4)
+shader_parameter/stone_color = Color(0.24, 0.26, 0.31, 1)
+shader_parameter/earth_color = Color(0.19, 0.17, 0.19, 1)
+shader_parameter/dirt_layout = 0
+
+[sub_resource type="BoxMesh" id="FloorMesh"]
+material = SubResource("Stone")
+size = Vector3(32, 0.4, 30)
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(32, 0.4, 30)
+
+[sub_resource type="Environment" id="RoomLight"]
+background_mode = 1
+background_color = Color(0.045, 0.061, 0.086, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.69, 0.76, 0.91, 1)
+ambient_light_energy = 0.66
+
+[node name="TestSpecialCharm" type="Node3D"]
+script = ExtResource("test")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("RoomLight")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.95, -0.57, 0)
+light_color = Color(1, 0.88, 0.75, 1)
+light_energy = 0.83
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.2, -4)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+
+[node name="Shape" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
