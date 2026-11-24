@@ -15,3 +15,8 @@ func push(impulse: Vector3) -> void:
 func push_from_blast(impulse: Vector3, _origin: Vector3, _half_width: float) -> void:
 	if enabled and combat:
 		combat.apply_fang_wind(slot_index, impulse)
+
+
+func steer_push(target: Vector3, _rate: float, _delta: float) -> void:
+	if enabled and combat:
+		combat.apply_fang_wind(slot_index, target)

@@ -26,6 +26,10 @@ func _ready() -> void:
 	super()
 
 
+func resists_knockback() -> bool:
+	return true
+
+
 func choose_skill() -> EnemySkillData:
 	var selected: EnemySkillData
 	var count: int = 0

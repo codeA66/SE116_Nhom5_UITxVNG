@@ -3,8 +3,8 @@ extends WildEnemyData
 ## Cân bằng từng phần nhịp đánh của Pyralon.
 
 @export_group("AI")
-@export var chase_pause: float = 1.45
-@export var rear_check_pause: float = 1.5
+@export var chase_pause: float = 0.0
+@export var rear_check_pause: float = 1.6
 @export var rear_detect_length: float = 18.0
 @export var rear_detect_half_width: float = 8.0
 @export var rear_min_back_offset: float = 2.4
@@ -15,7 +15,7 @@ extends WildEnemyData
 @export var transform_duration: float = 4.4
 @export var phase_two_down_time: float = 3.0
 @export var phase_two_launch_prep: float = 0.45
-@export var phase_two_fakeout_wait: float = 3.0
+@export var phase_two_fakeout_wait: float = 5.0
 @export var phase_two_rise_duration: float = 1.15
 @export_range(0.1, 1.0, 0.05) var phase_two_slowmo_scale: float = 0.5
 @export var death_revert_duration: float = 1.85

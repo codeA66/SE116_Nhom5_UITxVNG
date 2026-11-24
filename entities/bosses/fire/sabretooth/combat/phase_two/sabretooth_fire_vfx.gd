@@ -18,6 +18,7 @@ var _actor: FireSabretooth
 var _ball: MeshInstance3D
 var _charge_rays: MeshInstance3D
 var _beam: MeshInstance3D
+var _beam_head: MeshInstance3D
 var _barrier_mesh: MeshInstance3D
 var _barrier_body: StaticBody3D
 var _barrier_shapes: Array[CollisionShape3D] = []
@@ -29,6 +30,7 @@ var _barrier_rise: float = 0.0
 var _barrier_cached_radius: float = -1.0
 var _barrier_cached_height: float = -1.0
 var _barrier_collision_on: bool = false
+var _barrier_projectile_blocking: bool = false
 var _warning: MeshInstance3D
 var _burst: MeshInstance3D
 var _flame_crown: MeshInstance3D
@@ -61,6 +63,9 @@ var _query := PhysicsShapeQueryParameters3D.new()
 var _cylinder := CylinderShape3D.new()
 var _beam_from: Vector3
 var _beam_to: Vector3
+var _beam_fire_age: float = 0.0
+var _current_beam_length: float = 0.0
+var _wall_beam_length: float = 0.0
 var _tick_left: float = 0.0
 var _burst_left: float = 0.0
 var _scorch_life: float = 6.0
@@ -87,6 +92,8 @@ func _ready() -> void:
 	cylinder.radial_segments = 24
 	cylinder.rings = 16
 	_beam = _mesh(cylinder, 1)
+	_beam_head = _mesh(sphere, 0)
+	(_beam_head.material_override as ShaderMaterial).set_shader_parameter(&"strength", 1.35)
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(2.0, 2.0)
 	_barrier_mesh = _make_barrier_visual()
@@ -145,7 +152,7 @@ func _ready() -> void:
 	_impact = _particles(22, false)
 	_ray.collision_mask = 1
 	_ray.hit_from_inside = false
-	_ray.exclude = [_actor.get_rid()]
+	_ray.exclude = [_actor.get_rid(), _barrier_body.get_rid()]
 	_query.shape = _cylinder
 	_query.collision_mask = 2
 	_query.collide_with_areas = true
@@ -212,28 +219,71 @@ func charge(orb_center: Vector3, progress: float) -> void:
 	_update_tail_aim(orb_center)
 	_set_tail_fold(smoothstep(0.0, 0.7, progress))
 	_scorch_life = _actor.profile.scorch_duration
+	_beam_fire_age = 0.0
+	_current_beam_length = 0.0
+	_wall_beam_length = 0.0
+	_beam_head.hide()
 	_tick_left = 0.0
 	_last_mark = Vector3.INF
+
+
+func current_beam_length() -> float:
+	return _current_beam_length
+
+
+func wall_beam_length() -> float:
+	return _wall_beam_length
 
 
 func beam(orb_center: Vector3, direction: Vector3, delta: float, jaw: Vector3) -> void:
 	global_basis = _actor.model.global_basis.orthonormalized()
 	_charge_rays.hide()
+	var first_shot := _beam_fire_age <= 0.0001
+	_beam_fire_age += delta
 	_beam_from = orb_center
 	_ray.from = Vector3(jaw.x, orb_center.y, jaw.z)
 	_ray.to = orb_center + direction * _actor.profile.beam_range
 	var contact := get_world_3d().direct_space_state.intersect_ray(_ray)
-	_beam_to = contact.position if not contact.is_empty() else _ray.to
-	var length := maxf(0.0, (_beam_to - orb_center).dot(direction))
+	var wall_end: Vector3 = contact.position if not contact.is_empty() else _ray.to
+	_wall_beam_length = maxf(0.0, (wall_end - orb_center).dot(direction))
+	# Cho tia laser bắn vọt nhanh tới tường trong beam_travel_time (0.5s) thay vì hiện đầy tới tường ngay lập tức.
+	var travel_dur := maxf(_actor.profile.beam_travel_time, 0.0)
+	var raw_t := 1.0 if travel_dur <= 0.001 else clampf(_beam_fire_age / travel_dur, 0.0, 1.0)
+	var travel_t := 1.0 - pow(1.0 - raw_t, 1.35)
+	var length := _wall_beam_length * travel_t
+	_current_beam_length = length
+	var reached_wall := raw_t >= 0.999
+	_beam_to = wall_end if reached_wall else (orb_center + direction * length)
 	var facing := Basis.looking_at(direction, Vector3.UP, true)
 	var beam_transform := Transform3D(facing * Basis(Vector3.RIGHT, PI * 0.5), (orb_center + _beam_to) * 0.5)
+	var r := _actor.profile.beam_radius
 	_beam.global_transform = beam_transform
-	_beam.scale = Vector3(_actor.profile.beam_radius, maxf(length, 0.01), _actor.profile.beam_radius)
+	_beam.scale = Vector3(r, maxf(length, 0.01), r)
 	_beam.visible = length > 0.01
+	if first_shot:
+		_beam.reset_physics_interpolation()
+		_sparks.global_position = orb_center
+		_sparks.emission_sphere_radius = r * 0.55
+		_sparks.initial_velocity_min = 4.5
+		_sparks.initial_velocity_max = 9.5
+		_sparks.restart()
 	_ball.global_position = orb_center
 	_update_tail_aim(orb_center)
+	var has_wall_contact := not contact.is_empty() and not (contact.normal as Vector3).is_zero_approx()
+	var show_head := length > 0.05 and ((not reached_wall) or has_wall_contact)
+	if show_head:
+		var was_head := _beam_head.visible
+		_beam_head.global_transform = Transform3D(facing, _beam_to)
+		var head_len := minf(r * 2.35, maxf(length * 0.45, r * 0.95)) if not reached_wall else (r * 1.12)
+		var head_w := (r * 1.32) if not reached_wall else (r * 1.12)
+		_beam_head.scale = Vector3(head_w, head_w, head_len)
+		_beam_head.show()
+		if first_shot or not was_head:
+			_beam_head.reset_physics_interpolation()
+	else:
+		_beam_head.hide()
 	var was_impact := _impact.emitting
-	var valid_contact := not contact.is_empty() and not (contact.normal as Vector3).is_zero_approx() and length > 0.2
+	var valid_contact := reached_wall and has_wall_contact and length > 0.2
 	_impact.emitting = valid_contact
 	if valid_contact:
 		_impact.global_position = _beam_to
@@ -245,14 +295,17 @@ func beam(orb_center: Vector3, direction: Vector3, delta: float, jaw: Vector3) -
 			_mark_ages[(_mark_cursor + SCORCH_COUNT - 1) % SCORCH_COUNT] = 0.0
 	_tick_left = maxf(0.0, _tick_left - delta)
 	if _tick_left <= 0.0 and length > 0.01:
-		_tick_left = maxf(_actor.profile.beam_tick, 0.05)
-		_cylinder.radius = _actor.profile.beam_radius
+		_cylinder.radius = r
 		_cylinder.height = length
 		_query.transform = beam_transform
+		var dealt := false
 		for result: Dictionary in get_world_3d().direct_space_state.intersect_shape(_query, 32):
 			var hurtbox := result.collider as HurtboxComponent
 			if hurtbox and _beam_reaches(hurtbox, orb_center.y):
-				hurtbox.receive_hit(DamageInfo.new(_actor.profile.beam_damage, DamageInfo.Type.FIRE, Vector3.ZERO, _actor))
+				if hurtbox.receive_hit(DamageInfo.new(_actor.profile.beam_damage, DamageInfo.Type.FIRE, Vector3.ZERO, _actor)):
+					dealt = true
+		if dealt:
+			_tick_left = maxf(_actor.profile.beam_tick, 0.05)
 	set_physics_process(true)
 
 
@@ -264,8 +317,11 @@ func _beam_reaches(hurtbox: HurtboxComponent, height: float) -> bool:
 	return clear
 
 
-func update_beam_barrier(center: Vector3, elapsed: float) -> void:
-	# Dựng barrier lửa hình tròn từ từ quanh Hổ: vẽ nét vòng tròn (0 -> 360 độ) trước, rồi nâng dần thành barrier cao lên!
+func update_beam_barrier(center: Vector3, elapsed: float, allow_player_exit: bool = false) -> void:
+	# Dựng barrier lửa hình tròn từ từ quanh Hổ (vẽ nét vòng tròn 0 -> 360 độ rồi nâng thành lửa cao lên):
+	# - Hitbox chặn player (layer 256) bật FULL ngay lập tức từ đầu (trừ khoảnh khắc ngắn đẩy player đang ở sẵn bên trong ra ngoài để không bị nhốt).
+	# - Khi hiệu ứng chưa dựng xong (_barrier_rise < 0.99): chỉ bật layer 256 nên cung tên & skill vẫn xuyên qua trúng Hổ.
+	# - Khi hiệu ứng đã dựng xong (_barrier_rise >= 0.99): bật thêm layer 1 (world) để mọi đạn/skill (tên, kiếm gió, lốc xoáy...) đập trúng barrier sẽ despawn (vẫn nổ hiệu ứng tại mặt barrier), trong khi tia laser của Hổ đã exclude RID nên bắn xuyên ra bình thường!
 	var config := _actor.profile
 	var radius := maxf(config.beam_barrier_radius, 2.0)
 	var wall_h := maxf(config.beam_barrier_height, 1.2)
@@ -284,11 +340,16 @@ func update_beam_barrier(center: Vector3, elapsed: float) -> void:
 	bmat.set_shader_parameter(&"barrier_fade", 1.0)
 	_barrier_mesh.show()
 	_barrier_body.global_position = Vector3(center.x, center.y, center.z)
-	# Tường rỗng chỉ chặn (không đẩy, không sát thương), kích hoạt khi thành lửa bắt đầu nhô lên khỏi vòng vẽ.
-	_set_barrier_collision(_barrier_rise >= 0.25)
+	_barrier_projectile_blocking = _barrier_rise >= 0.99
+	var desired_layer := (1 | 256) if _barrier_projectile_blocking else 256
+	if _barrier_body.collision_layer != desired_layer:
+		_barrier_body.collision_layer = desired_layer
+	_set_barrier_collision(not allow_player_exit)
 
 
 func stop_beam_barrier(immediate: bool = false) -> void:
+	_barrier_projectile_blocking = false
+	_barrier_body.collision_layer = 256
 	_set_barrier_collision(false)
 	if immediate or not _barrier_mesh.visible:
 		_barrier_fading = false
@@ -307,10 +368,26 @@ func is_barrier_blocking() -> bool:
 	return _barrier_collision_on
 
 
+func is_barrier_projectile_blocking() -> bool:
+	return _barrier_projectile_blocking
+
+
+func barrier_center() -> Vector3:
+	return _barrier_body.global_position
+
+
+func barrier_rid() -> RID:
+	return _barrier_body.get_rid()
+
+
 func stop_beam() -> void:
 	_ball.hide()
 	_charge_rays.hide()
 	_beam.hide()
+	_beam_head.hide()
+	_beam_fire_age = 0.0
+	_current_beam_length = 0.0
+	_wall_beam_length = 0.0
 	_impact.emitting = false
 	_tail_release = _tail_fold > 0.0
 	stop_beam_barrier(false)

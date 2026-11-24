@@ -22,6 +22,8 @@ func _ready() -> void:
 
 func begin() -> bool:
 	if active or not _actor.is_on_floor(): return false
+	# Boss / quái kháng knockback miễn nhiễm trượt để không bị ngắt chiêu giữa chừng.
+	if _actor is Enemy and (_actor as Enemy).resists_knockback(): return false
 	var health: HealthComponent = _actor.get_node_or_null(^"HealthComponent") as HealthComponent
 	if health != null and health.is_dead(): return false
 	var direction: Vector3 = Vector3(_actor.velocity.x, 0.0, _actor.velocity.z)

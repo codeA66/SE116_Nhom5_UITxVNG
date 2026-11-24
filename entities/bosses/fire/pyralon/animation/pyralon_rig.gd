@@ -95,13 +95,15 @@ func _build_library(idle: Array[Transform3D]) -> AnimationLibrary:
 		library.add_animation(&"AxeSignal", _bake(1.0, func(t: float) -> Array[Transform3D]:
 			return _stamp(idle, t)))
 	# 4 clip Phase 2 dùng lại rig gốc:
-	# - SkyLaunch (2.02s): 3 nhịp vỗ cánh hoàn toàn tự nhiên từ Action_005:
-	#   2 nhịp đầu nguyên bản (0.00..1.62s) + nhịp 3 copy nguyên nhịp vỗ thứ 2 (1.00..1.62s) tăng tốc phóng thẳng lên trời!
+	# - SkyLaunch (2.02s, bake 60fps): 3 nhịp vỗ cánh mượt liên tục từ Action_005:
+	#   2 nhịp đầu nguyên bản (0.00..1.60s) + nhịp 3 nối đồng pha từ 1.06..1.60s (cùng chiều nâng cánh, không tụt hông) phóng thẳng lên trời!
 	# - SkyDiveLand (0.52s): lao nhanh xuống tư thế khuỵu chân tạo crater
 	# - SkyReAscent (0.48s): tái sử dụng đúng nhịp vỗ thứ 2 tăng tốc của Action_005 (1.00..1.62s) để bay vọt lên
 	# - ResonanceSlam (1.65s): nhấc cán rìu cao -> giữ 0.5s trên không -> giậm mạnh đuôi cán xuống sàn
+	var flap2_end := _sample(&"Action_005", 1.60)
+	_relax_arms(flap2_end, idle)
 	library.add_animation(&"SkyLaunch", _bake(2.02, func(t: float) -> Array[Transform3D]:
-		return _sky_launch_pose(idle, t)))
+		return _sky_launch_pose(idle, flap2_end, t), 60.0))
 	library.add_animation(&"SkyDiveLand", _bake(0.52, func(t: float) -> Array[Transform3D]:
 		return _sky_dive_land_pose(idle, t)))
 	var impact_pose := _sky_dive_land_pose(idle, 0.46)
@@ -158,25 +160,30 @@ func _flare_wings_up(pose: Array[Transform3D], weight: float) -> void:
 	_aim_wings(pose, Vector3(0.76, 0.56, -0.34), Vector3(0.62, 0.72, -0.30), weight)
 
 
-func _sky_launch_pose(idle: Array[Transform3D], t: float) -> Array[Transform3D]:
-	# Lần bay lên trời đầu tiên (2.02s): 3 nhịp vỗ cánh tự nhiên từ Action_005:
-	# - t 0.000..0.802 (1.62s): 2 nhịp vỗ cánh & khép chân nguyên bản của Action_005 (0.00s..1.62s).
-	# - t 0.802..1.000 (0.40s): Copy nguyên bản nhịp vỗ cánh thứ 2 của Action_005 (1.00s..1.62s) tăng tốc 1.55x phóng thẳng lên trời!
-	const RAW_END_T := 0.802
+func _sky_launch_pose(idle: Array[Transform3D], flap2_end: Array[Transform3D], t: float) -> Array[Transform3D]:
+	# Lần bay lên trời đầu tiên (2.02s, bake 60fps): 3 nhịp vỗ cánh liền mạch hoàn toàn từ Action_005:
+	# - t 0.000..0.792 (1.60s): 2 nhịp vỗ cánh & khép chân nguyên bản của Action_005 (0.00s..1.60s).
+	# - t 0.792..1.000 (0.42s): Nối đồng pha từ 1.06s..1.60s (cùng chiều & góc nâng cánh với 1.60s nên không giật ngược) + giữ lực nâng hông êm!
+	const RAW_END_T := 0.792
 	if t < RAW_END_T:
-		var src_t := lerpf(0.0, 1.62, t / RAW_END_T)
+		var src_t := lerpf(0.0, 1.60, t / RAW_END_T)
 		var raw_pose := _sample(&"Action_005", src_t)
 		_relax_arms(raw_pose, idle)
 		return raw_pose
 	var flap3_u := clampf((t - RAW_END_T) / (1.0 - RAW_END_T), 0.0, 1.0)
-	var flap3_src := lerpf(1.00, 1.62, flap3_u)
+	var flap3_src := lerpf(1.06, 1.60, flap3_u)
 	var flap3_pose := _sample(&"Action_005", flap3_src)
 	_relax_arms(flap3_pose, idle)
-	# Chuyển mượt siêu ngắn từ cuối nhịp vỗ 2 (1.62s) sang đầu nhịp vỗ 3 (1.00s) để không khựng khung.
-	if flap3_u < 0.14:
-		var prev_end := _sample(&"Action_005", 1.62)
-		_relax_arms(prev_end, idle)
-		return _blend(prev_end, flap3_pose, smoothstep(0.0, 0.14, flap3_u))
+	# Giữ cao độ hông nâng liền mạch từ cuối nhịp vỗ 2 (3.29m) thay vì tụt xuống 2.88m rồi mới vọt lên.
+	var base_pelv_y := flap2_end[_pelvis].origin.y
+	var cur_pelv_y := flap3_pose[_pelvis].origin.y
+	var desired_pelv_y := maxf(cur_pelv_y, base_pelv_y + sin(flap3_u * PI) * 0.08 + flap3_u * 0.14)
+	if desired_pelv_y > cur_pelv_y:
+		var lifted := flap3_pose[_pelvis]
+		lifted.origin.y = desired_pelv_y
+		_repose_branch(flap3_pose, _pelvis, lifted)
+	if flap3_u < 0.24:
+		return _blend(flap2_end, flap3_pose, smoothstep(0.0, 0.24, flap3_u))
 	return flap3_pose
 
 
@@ -556,17 +563,17 @@ func _axe_points(mesh: MeshInstance3D) -> void:
 		_axe_end = bind * high_center
 
 
-func _bake(length: float, pose_at: Callable) -> Animation:
+func _bake(length: float, pose_at: Callable, sample_rate: float = SAMPLE_RATE) -> Animation:
 	var animation := Animation.new()
 	animation.length = length
-	animation.step = 1.0 / SAMPLE_RATE
+	animation.step = 1.0 / sample_rate
 	var count := _skeleton.get_bone_count()
 	for bone: int in count:
 		var path := NodePath(_path + ":" + String(_skeleton.get_bone_name(bone)))
 		for type: Animation.TrackType in [Animation.TYPE_POSITION_3D, Animation.TYPE_ROTATION_3D, Animation.TYPE_SCALE_3D]:
 			var track := animation.add_track(type)
 			animation.track_set_path(track, path)
-	var steps := maxi(1, ceili(length * SAMPLE_RATE))
+	var steps := maxi(1, ceili(length * sample_rate))
 	for frame: int in steps + 1:
 		var t := float(frame) / steps
 		var poses: Array[Transform3D] = pose_at.call(t)

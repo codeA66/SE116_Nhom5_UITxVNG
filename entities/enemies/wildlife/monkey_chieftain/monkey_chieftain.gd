@@ -27,13 +27,11 @@ func _clear_push_on_attack(_previous: StringName, _current: StringName) -> void:
 		wind_receiver.clear_push()
 
 func resists_knockback() -> bool:
-	return _is_committed_to_attack() or super()
+	return true
 
-func _on_wind_pushed(impulse: Vector3) -> void:
-	if _is_committed_to_attack():
+func _on_wind_pushed(_impulse: Vector3) -> void:
+	if wind_receiver:
 		wind_receiver.clear_push()
-		return
-	super(impulse)
 
 func _is_committed_to_attack() -> bool:
 	var state := state_machine.current_state

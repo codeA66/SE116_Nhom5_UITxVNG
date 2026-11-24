@@ -44,11 +44,14 @@ func _ready() -> void:
 	super()
 	motion.setup(self)
 	hurtbox.hurt.connect(_noticed_hit)
+	hurtbox.add_hit_interceptor(_intercept_barrier_hit)
 	phase.finished.connect(_sync_phase_behavior)
 	_sync_phase_behavior()
 	circle_side = -1.0 if _rng.randf() < 0.5 else 1.0
 	_path_query.collision_mask = 1
-	_path_query.exclude = [get_rid()]
+	_path_query.exclude = [get_rid(), fire_vfx.barrier_rid()]
+	if p2_combat:
+		p2_combat.exclude_ray_rid(fire_vfx.barrier_rid())
 
 
 func _pre_state_update(delta: float) -> void:
@@ -380,3 +383,20 @@ func _sync_phase_behavior() -> void:
 		_phase_two_started = true
 		health.max_health = profile.phase_two_health
 		health.heal_full()
+
+
+func _intercept_barrier_hit(info: DamageInfo) -> bool:
+	if fire_vfx == null or not fire_vfx.is_barrier_projectile_blocking():
+		return false
+	# Khi barrier đã dựng xong hoàn toàn, chặn luôn các đòn tầm gần / skill dạng Area3D (Phun lửa Q, Thổi gió E, kiếm...) từ ngoài mép barrier.
+	var src := info.source as Node3D
+	if src == null:
+		return false
+	var center := fire_vfx.barrier_center()
+	var offset := (src.global_position - center).slide(Vector3.UP)
+	var radius := maxf(profile.beam_barrier_radius, 2.0)
+	if offset.length() < maxf(radius - 0.5, 1.5):
+		return false
+	var dir := offset.normalized() if offset.length_squared() > 0.001 else Vector3.BACK
+	CombatFx.spawn_hit(center + dir * radius + Vector3.UP * 1.1, dir, Color("#ff7c24"), 0.85)
+	return true

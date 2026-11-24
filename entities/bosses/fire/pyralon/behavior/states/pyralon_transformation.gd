@@ -2,7 +2,7 @@ extends EnemyState
 ## Chuyển pha Pyralon Phase 1 -> Phase 2 (Fakeout Sky Dive dramatic):
 ## 1. Hết máu Phase 1 -> giữ form Phase 1, trở về dáng mặc định 1 nhịp mượt đồng thời tạo sóng gió phản lực đẩy lùi player.
 ## 2. Bay vút lên trời dùng đúng animation bay đầu tiên (SkyLaunch).
-## 3. Ẩn trên trời 3.0s cho player tưởng đã hạ gục.
+## 3. Ẩn trên trời 5.0s cho player tưởng đã hạ gục.
 ## 4. Hiện vòng cảnh báo đòn Sky Dive cuối (Crosshair) dưới chân player và chờ 1.0s.
 ## 5. Lao xuống đòn cuối Sky Dive có Impact Frame nhưng KHÔNG tỏa lông vàng.
 ## 6. Vừa kết thúc Impact Frame -> zoom camera vào Pyralon + slow-motion 0.5x và nhấc người đứng dậy từ từ uy lực (SkyDiveRise).
@@ -49,13 +49,22 @@ func enter(_previous: StringName) -> void:
 	_bird.hitbox.cancel()
 	_bird.field.clear()
 	_bird.velocity = Vector3.ZERO
-	_bird.hurtbox.invulnerable = true
 	_bird.set_air_pose(false)
+	_bird.hurtbox.invulnerable = true
+	_bird.global_position = _bird.field.floor_at(_bird.global_position)
+	_bird.reset_physics_interpolation()
 	_visual.position = Vector3.ZERO
 	if _bird.phase:
 		_bird.phase.show_phase_two_form(false)
 	# Trở về dáng đứng mặc định 1 nhịp mượt để tránh giựt hình khi vừa bị đánh hết máu, đồng thời phát phản lực đẩy player ra!
+	# Chạy AnimationPlayer ở mode IDLE trong lúc chuẩn bị & cất cánh để xương cập nhật mượt ở mọi tần số quét (60/120/144Hz),
+	# đồng thời hủy SquashStretch từ đòn kết liễu (gọi trễ vì HitFeedback chạy ngay sau tín hiệu died).
+	var squash := _bird.get_node_or_null("SquashStretch") as SquashStretchComponent
+	if squash:
+		squash.reset_scale()
+		squash.call_deferred(&"reset_scale")
 	var anim := _bird.animation_player()
+	anim.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE
 	anim.speed_scale = 1.0
 	var idle_clip := &"Idle1" if anim.has_animation(&"Idle1") else &"Idle"
 	anim.play(idle_clip, 0.22)
@@ -69,8 +78,11 @@ func exit() -> void:
 	HitStop.end_cinematic(self)
 	if is_instance_valid(_visual):
 		_visual.position = Vector3.ZERO
+	_bird.set_air_pose(false)
 	_bird.hurtbox.invulnerable = false
-	_bird.animation_player().speed_scale = 1.0
+	var anim := _bird.animation_player()
+	anim.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS
+	anim.speed_scale = 1.0
 	if _stage in [Stage.SLOWMO_ZOOM_LAND, Stage.TRANSFORM] and not _done:
 		_bird.phase.cancel_preview()
 
@@ -118,27 +130,36 @@ func _begin_launch() -> void:
 	_stage = Stage.LAUNCH
 	_timer = 0.0
 	_wind_pushed = false
+	_bird.velocity = Vector3.ZERO
+	# Giữ nguyên mode IDLE đang chạy mượt (không reset interpolation lần 2, không đổi callback_mode giữa chừng gây khựng khung).
 	var anim := _bird.animation_player()
+	anim.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE
 	anim.speed_scale = 1.0
-	anim.play(PyralonRig.SKY_LAUNCH, 0.12)
+	anim.play(PyralonRig.SKY_LAUNCH, 0.14)
 	_bird.pose.update_bones()
 
 
 func _step_launch(delta: float, config: PyralonData) -> void:
-	_bird.apply_gravity(delta)
-	_bird.velocity.x = 0.0
-	_bird.velocity.z = 0.0
 	_bird.pose.update_bones()
 	var blast_time := LAUNCH_DURATION * PyralonRig.SKY_LAUNCH_BLAST
 	var airborne := _bird.pose.displacement().y > 0.14 or _timer >= blast_time
+	_bird.velocity.x = 0.0
+	_bird.velocity.z = 0.0
+	# Khi collider đã nhấc theo xương trên không thì tắt trọng lực (giống stay_in_place của PyralonSkyDive), tránh bị kéo chìm xuống đất!
+	if airborne:
+		_bird.velocity.y = 0.0
+	else:
+		_bird.apply_gravity(delta)
 	_bird.set_air_pose(airborne)
+	_bird.hurtbox.invulnerable = true
 	if not _wind_pushed and _timer >= blast_time:
 		_wind_pushed = true
 		_trigger_wind_push(config)
 	if _timer >= blast_time:
 		var climb_t := clampf((_timer - blast_time) / maxf(LAUNCH_DURATION - blast_time, 0.05), 0.0, 1.0)
-		_visual.position.y = pow(climb_t, 1.85) * config.sky_dive_height
+		_visual.position.y = pow(climb_t, 2.05) * config.sky_dive_height
 	if _timer >= LAUNCH_DURATION:
+		_bird.animation_player().callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS
 		_set_sky_hidden(true)
 		_stage = Stage.AIR_FAKEOUT
 		_timer = 0.0
