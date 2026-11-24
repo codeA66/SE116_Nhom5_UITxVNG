@@ -6,7 +6,6 @@ const K2_TO_K3: PackedInt32Array = [3, 1, 2]
 const INVERTED_PINS: PackedInt32Array = [2, 3]
 const SELECTOR_COUNT: int = 3
 const PORT_COUNT: int = 3
-const ANY_PORT: int = 0
 
 @export var source_track: Node3D
 @export var crossed_tracks: Array[Node3D] = []
@@ -15,15 +14,10 @@ const ANY_PORT: int = 0
 @export var receiver_track: Node3D
 @export var receiver_zero_track: Node3D
 @export var zero_taps: Array[Node3D] = []
-@export var receiver_value: Label3D
-@export var inverter_labels: Array[Label3D] = []
+@export var inverter_plates: Array[MeshInstance3D] = []
+@export var inverter_active_material: Material
 
 @onready var _track_groups: Array[Array] = [crossed_tracks, tracks_before_gate, tracks_after_gate, zero_taps]
-
-
-func _ready() -> void:
-	super()
-	_show_circuit_labels.call_deferred()
 
 
 func _trace_pulse() -> bool:
@@ -32,46 +26,38 @@ func _trace_pulse() -> bool:
 	if sockets.size() != SELECTOR_COUNT * PORT_COUNT:
 		return false
 
-	var first_port: int = _trace_selector(0, ANY_PORT)
-	if first_port == ANY_PORT:
-		return false
-	crossed_tracks[first_port - 1].show()
-	var second_port: int = _trace_selector(1, K1_TO_K2[first_port - 1])
-	if second_port == ANY_PORT:
-		return false
-	tracks_before_gate[second_port - 1].show()
-	tracks_after_gate[second_port - 1].show()
-
-	var powered: bool = not INVERTED_PINS.has(second_port)
-	var third_port: int = _trace_selector(2, K2_TO_K3[second_port - 1])
-	if third_port == ANY_PORT:
-		return false
+	var powered: bool = false
+	var received_zero: bool = false
+	for first: int in PORT_COUNT:
+		if not _trace_port(0, first):
+			continue
+		crossed_tracks[first].show()
+		var second: int = K1_TO_K2[first] - 1
+		if not _trace_port(1, second):
+			continue
+		tracks_before_gate[second].show()
+		tracks_after_gate[second].show()
+		var inverter: int = INVERTED_PINS.find(second + 1)
+		if inverter >= 0 and inverter < inverter_plates.size():
+			inverter_plates[inverter].material_override = inverter_active_material
+		var third: int = K2_TO_K3[second] - 1
+		if not _trace_port(2, third):
+			continue
+		if inverter < 0:
+			powered = true
+		else:
+			received_zero = true
+			zero_taps[third].show()
 	receiver_track.visible = powered
-	receiver_zero_track.visible = not powered
-	if not powered:
-		zero_taps[third_port - 1].show()
-	receiver_value.text = "1" if powered else "0"
-	receiver_value.show()
+	receiver_zero_track.visible = received_zero and not powered
 	return powered
 
 
-func _trace_selector(index: int, incoming_port: int) -> int:
-	var first_socket: int = index * PORT_COUNT
-	var selected_port: int = ANY_PORT
-	var count: int = 0
-	for port: int in range(1, PORT_COUNT + 1):
-		if sockets[first_socket + port - 1].has_block():
-			selected_port = port
-			count += 1
-	var connected: bool = count == 1 and (incoming_port == ANY_PORT or selected_port == incoming_port)
-	if connected:
-		sockets[first_socket + selected_port - 1].show_trace(true, false)
-		return selected_port
-	for port: int in range(1, PORT_COUNT + 1):
-		var socket: ChanSocket = sockets[first_socket + port - 1]
-		if (count > 1 and socket.has_block()) or incoming_port == port or (incoming_port == ANY_PORT and count == 0):
-			socket.show_trace(false, true)
-	return ANY_PORT
+func _trace_port(selector: int, port: int) -> bool:
+	var socket: ChanSocket = sockets[selector * PORT_COUNT + port]
+	var connected: bool = socket.has_block()
+	socket.show_trace(connected, not connected)
+	return connected
 
 
 func _hide_tracks() -> void:
@@ -79,14 +65,8 @@ func _hide_tracks() -> void:
 	source_track.hide()
 	receiver_track.hide()
 	receiver_zero_track.hide()
-	receiver_value.hide()
+	for plate: MeshInstance3D in inverter_plates:
+		plate.material_override = null
 	for group: Array in _track_groups:
 		for track: Node3D in group:
 			track.hide()
-
-
-func _show_circuit_labels() -> void:
-	# Cảnh walkthrough ẩn nhãn dựng phòng khi khởi tạo.
-	for label: Label3D in inverter_labels:
-		label.modulate.a = 1.0
-	receiver_value.modulate.a = 1.0

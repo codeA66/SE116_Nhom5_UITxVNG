@@ -31,6 +31,7 @@ var _wave_damage: DamageInfo
 @onready var _encounter: ChanEncounter = $Encounter
 @onready var _seal: InteractableComponent = $Seal/Interactable
 @onready var _seal_stone: MeshInstance3D = $Seal/Stone
+@onready var _gem: SealGem = $Seal/ChanGem
 @onready var _ready_glow: Node3D = $Seal/ReadyGlow
 
 
@@ -48,6 +49,12 @@ func _ready() -> void:
 	_forge.powered.connect(_unlock_forge)
 	_encounter.phase_changed.connect(_on_phase_changed)
 	_seal.interacted.connect(_finish)
+	var placed_flag: StringName = StringName(String(seal_flag) + "_placed")
+	_gem.configure_reward(seal_flag, placed_flag)
+	var zone: ZoneRoot = get_parent() as ZoneRoot
+	if zone:
+		zone.player_spawned.connect(_gem.set_carrier)
+		_gem.set_carrier(zone.get_node_or_null(^"Player") as Player)
 	GameState.progress_replaced.connect(_restore_progress, CONNECT_DEFERRED)
 	_restore_progress()
 
@@ -61,9 +68,10 @@ func _on_entered(body: Node3D) -> void:
 	if player == null:
 		return
 	_player = player
+	_gem.set_carrier(player)
 	if not _complete:
 		player.register_local_respawn(_respawn_local)
-		_start_hammers()
+		_start_hammers(true)
 
 
 func _on_exited(body: Node3D) -> void:
@@ -126,13 +134,13 @@ func _on_phase_changed(phase: ChanEncounter.Phase) -> void:
 		_stop_hammers()
 
 
-func _start_hammers() -> void:
+func _start_hammers(warn_on_entry: bool = false) -> void:
 	if not is_instance_valid(_player) or _player.health.is_dead():
 		return
 	match _encounter.phase:
 		ChanEncounter.Phase.INACTIVE, ChanEncounter.Phase.ARENA:
-			_tutorial_hammer.start(_player, data)
-			_forge_hammer.start(_player, data)
+			_tutorial_hammer.start(_player, data, data.cycle_time, data.warning_time, 0.0, warn_on_entry)
+			_forge_hammer.start(_player, data, data.cycle_time, data.warning_time, 0.0, warn_on_entry)
 		ChanEncounter.Phase.FULL_ROOM:
 			_tutorial_hammer.start(_player, data, data.combat_cycle_time, data.combat_warning_time)
 			_forge_hammer.start(_player, data, data.combat_cycle_time, data.combat_warning_time, data.combat_cycle_time * 0.5)
@@ -167,6 +175,8 @@ func _finish(body: Node3D) -> void:
 
 func _restore_progress() -> void:
 	_complete = GameState.has_flag(seal_flag)
+	if not _complete:
+		_gem.hide()
 	_reset_attempt()
 	if is_instance_valid(_player):
 		if _complete:
