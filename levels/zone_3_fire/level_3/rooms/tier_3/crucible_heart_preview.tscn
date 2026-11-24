@@ -17,10 +17,7 @@
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_bridge_segment.tscn" id="bridge"]
 
 [sub_resource type="BoxShape3D" id="TonDarkBounds"]
-size = Vector3(43, 10, 55)
-
-[sub_resource type="BoxShape3D" id="TonCorridorDarkBounds"]
-size = Vector3(24, 10, 54)
+size = Vector3(49, 28, 50)
 
 [sub_resource type="Resource" id="CameraView"]
 script = ExtResource("camera_data")
@@ -90,13 +87,8 @@ use_black_background = true
 use_carried_light = false
 
 [node name="RoomVolume" type="CollisionShape3D" parent="TonAshenGale/TonDarkZone"]
-position = Vector3(10.75, 2, 27.8)
+position = Vector3(14, 2, 20)
 shape = SubResource("TonDarkBounds")
-
-[node name="CorridorVolume" type="CollisionShape3D" parent="TonAshenGale/TonDarkZone"]
-position = Vector3(-0.12, 2, 78)
-shape = SubResource("TonCorridorDarkBounds")
-
 
 [node name="ChanThunderAnvil" parent="." instance=ExtResource("chan")]
 position = Vector3(24, 0, 0)
