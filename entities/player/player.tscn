@@ -61,6 +61,7 @@
 [ext_resource type="Script" path="res://entities/player/charms/stat_modifiers.gd" id="95_stats"]
 [ext_resource type="Script" path="res://entities/player/charms/charm_holder.gd" id="96_charms"]
 [ext_resource type="PackedScene" path="res://components/feedback/death_effect/player/player_death_presentation.tscn" id="97_deathfx"]
+[ext_resource type="Script" path="res://entities/player/states/status/respawn.gd" id="98_respawn"]
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
 
@@ -265,6 +266,10 @@ script = ExtResource("23_hurt")
 
 [node name="Dead" type="Node" parent="StateMachine" node_paths=PackedStringArray("presentation")]
 script = ExtResource("24_dead")
+presentation = NodePath("../../DeathPresentation")
+
+[node name="Respawn" type="Node" parent="StateMachine" node_paths=PackedStringArray("presentation")]
+script = ExtResource("98_respawn")
 presentation = NodePath("../../DeathPresentation")
 
 [node name="WindBlast" type="Node" parent="StateMachine"]

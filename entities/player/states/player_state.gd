@@ -13,6 +13,7 @@ const WIND_BLAST := &"WindBlast"
 const BOW_AIM := &"BowAim"
 const HURT := &"Hurt"
 const DEAD := &"Dead"
+const RESPAWN := &"Respawn"
 
 var player: Player
 

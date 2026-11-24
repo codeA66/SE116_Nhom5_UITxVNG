@@ -55,3 +55,24 @@ extends Resource
 ## Tan xong giữ hình bấy nhiêu giây rồi tối màn trong end_fade_time
 @export_range(0.0, 3.0, 0.05) var end_hold: float = 0.2
 @export_range(0.0, 3.0, 0.05) var end_fade_time: float = 0.5
+
+@export_group("Hồi sinh")
+## Màn sáng xong chờ bấy nhiêu giây rồi checkpoint loé, cáo bắt đầu hiện
+@export_range(0.0, 3.0, 0.05) var revive_delay: float = 0.3
+## Thời gian cáo hiện lại (từ đầu xuống chân)
+@export_range(0.1, 6.0, 0.05) var reform_time: float = 1.2
+## Tốc độ chạy ngược clip ngã để đứng dậy (1 = bằng lúc ngã); và thời gian chờ cho xong động tác đứng dậy
+@export_range(0.1, 4.0, 0.05) var get_up_speed: float = 1.4
+@export_range(0.0, 3.0, 0.05) var get_up_time: float = 0.75
+## Màn hết xám và camera lùi về khoảng cách thường trong bấy nhiêu giây (bắt đầu lúc đứng dậy)
+@export_range(0.0, 3.0, 0.05) var restore_time: float = 0.9
+## Bất tử sau khi đứng dậy (s), cáo nhấp nháy
+@export_range(0.0, 5.0, 0.05) var invincible_time: float = 1.5
+## Hạt tụ về: hút vào tâm mạnh cỡ nào, toả từ vùng rộng cỡ nào (m)
+@export_range(0.0, 20.0, 0.1) var gather_pull: float = 4.0
+@export_range(0.1, 3.0, 0.05) var gather_radius: float = 0.9
+
+
+## Tổng thời gian cảnh hồi sinh (s, thời gian thật) tính tới lúc mở điều khiển
+func get_revive_duration() -> float:
+	return revive_delay + reform_time + maxf(get_up_time, restore_time)

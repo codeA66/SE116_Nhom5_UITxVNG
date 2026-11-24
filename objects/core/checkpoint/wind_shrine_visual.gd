@@ -9,6 +9,10 @@ const AURA_SHADER: Shader = preload("res://assets/shaders/wind/shrine/wind_shrin
 const RIBBON_SHADER: Shader = preload("res://assets/shaders/wind/shrine/wind_shrine_ribbon.gdshader")
 const STONE_SHADER: Shader = preload("res://assets/shaders/wind/shrine/wind_shrine_stone.gdshader")
 
+## Quầng sáng phồng to bấy nhiêu lần trong bấy nhiêu giây khi player hồi sinh tại miếu
+const REVIVE_PULSE_SCALE := 1.8
+const REVIVE_PULSE_TIME := 0.35
+
 static var _stone_material_cache: Dictionary[String, BaseMaterial3D] = {}
 
 @export var style: WindShrineStyle = DEFAULT_STYLE:
@@ -87,6 +91,23 @@ func set_active(enabled: bool, legacy_material: Material = null, spin_degrees: f
 	_transition = create_tween()
 	_transition.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	_transition.tween_method(_set_level, active_level, target, settings.activation_time)
+
+
+## Hồi sinh tại miếu: quầng sáng phồng lên rồi thu về, pha lê sáng bừng rồi về mức thường
+func play_revive() -> void:
+	if Engine.is_editor_hint() or not is_node_ready():
+		return
+	if _transition:
+		_transition.kill()
+	var settings: WindShrineStyle = style if style else DEFAULT_STYLE
+	_aura.show()
+	_ribbons.show()
+	_set_level(1.0)
+	var rest := _aura.scale
+	_transition = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_transition.tween_property(_aura, ^"scale", rest * REVIVE_PULSE_SCALE, REVIVE_PULSE_TIME)
+	_transition.tween_property(_aura, ^"scale", rest, REVIVE_PULSE_TIME * 1.5)
+	_transition.tween_method(_set_level, 1.0, 1.0 if _last_target else 0.0, settings.activation_time)
 
 
 func _make_material(shader: Shader) -> ShaderMaterial:

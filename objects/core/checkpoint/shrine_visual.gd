@@ -8,3 +8,8 @@ extends Node3D
 ## Bật / tắt trạng thái sáng. legacy_material, spin_degrees giữ cho miếu Gió; kiểu khác có thể bỏ qua
 func set_active(_enabled: bool, _legacy_material: Material = null, _spin_degrees: float = 12.0, _immediate: bool = false) -> void:
 	pass
+
+
+## Player vừa hồi sinh tại miếu này: loé sáng một lần. Kiểu miếu tự cài cách loé; mặc định không làm gì
+func play_revive() -> void:
+	pass

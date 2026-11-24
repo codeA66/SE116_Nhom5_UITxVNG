@@ -2,13 +2,22 @@ class_name PlayerDeathPresentation
 extends Node
 ## Màn player chết: chậm thời gian + camera zoom sát vào cáo, màn xám dần trừ vùng quanh cáo, cáo ngã rồi tan từ chân
 ## lên đầu thành hạt màu cáo, tan xong tối màn rồi báo finished để state Dead hồi sinh.
-## State Dead gọi play() / reset(); không tự nghe health để không chạy hai lần. Chỉ chạy _process trong lúc diễn
-## (để giữ vùng có màu bám theo cáo trên màn), xong thì tắt. Mọi mốc dùng thời gian thật, không bị slow-mo kéo dài.
+## Hồi sinh (play_revive) là cảnh ngược lại: màn xám + camera gần, checkpoint loé, hạt tụ về, cáo hiện từ đầu xuống
+## chân, báo revive_get_up để state đứng dậy, màn lấy lại màu, camera lùi về, báo revive_finished.
+## State Dead / Respawn gọi play() / play_revive() / reset(); không tự nghe health để không chạy hai lần.
+## Chỉ chạy _process trong lúc diễn (giữ vùng có màu bám theo cáo trên màn), xong thì tắt.
+## Mọi mốc dùng thời gian thật, không bị slow-mo kéo dài.
 
 signal finished
+## Cáo đã hiện xong, state cho đứng dậy (chạy ngược clip ngã với tốc độ speed)
+signal revive_get_up(speed: float)
+signal revive_finished
 
 ## Tham số shader tan biến (assets/shaders/character/dissolve.gdshaderinc)
 const DISSOLVE_PARAM := &"dissolve"
+## Thông số hạt lúc tan (cấu hình trong scene) được cất lại để đổi qua kiểu hạt tụ về lúc hồi sinh rồi trả lại
+const BURST_PROPERTIES: Array[StringName] = [&"radial_accel_min", &"radial_accel_max", &"emission_sphere_radius",
+	&"gravity", &"initial_velocity_min", &"initial_velocity_max", &"direction", &"spread", &"lifetime"]
 
 @export var data: PlayerDeathData
 ## Gốc model hiển thị (Model/Visual): mọi material có tham số dissolve bên dưới sẽ tan
@@ -18,6 +27,7 @@ const DISSOLVE_PARAM := &"dissolve"
 @export var hide_on_dissolve: Array[Node3D] = []
 
 var _playing: bool = false
+var _reviving: bool = false
 var _finished: bool = false
 var _materials: Array[ShaderMaterial] = []
 var _hidden: Array[Node3D] = []
@@ -26,6 +36,7 @@ var _origin: Vector3
 var _axis: Vector3 = Vector3.UP
 var _length: float = 1.0
 var _skeleton: Skeleton3D
+var _burst_settings: Dictionary[StringName, Variant] = {}
 
 @onready var _screen: CanvasLayer = $Screen
 @onready var _grey: ColorRect = $Screen/Grey
@@ -37,6 +48,8 @@ func _ready() -> void:
 	set_process(false)
 	_screen.visible = false
 	_particles.emitting = false
+	for property in BURST_PROPERTIES:
+		_burst_settings[property] = _particles.get(property)
 	if data:
 		_apply_particle_colors()
 
@@ -49,24 +62,22 @@ func is_finished() -> bool:
 	return _finished
 
 
+func is_reviving() -> bool:
+	return _reviving
+
+
 func play() -> void:
 	if data == null or _playing:
 		return
 	_kill_tween()
 	_playing = true
+	_reviving = false
 	_finished = false
+	_set_gather_particles(false)
 	HitStop.slow_motion(data.slow_time, data.slow_scale)
 	if camera_rig:
-		var base := camera_rig.get_base_distance()
-		camera_rig.zoom_to(minf(data.zoom_distance / maxf(base, 0.01), 1.0), data.zoom_time)
-	_grey_material.set_shader_parameter(&"amount", 0.0)
-	_grey_material.set_shader_parameter(&"blackout", 0.0)
-	_grey_material.set_shader_parameter(&"focus_radius", data.focus_radius)
-	_grey_material.set_shader_parameter(&"focus_softness", data.focus_softness)
-	_grey_material.set_shader_parameter(&"edge_darkness", data.edge_darkness)
-	_screen.visible = true
-	_update_focus()
-	set_process(true)
+		camera_rig.zoom_to(_zoom_ratio(), data.zoom_time)
+	_show_screen(0.0)
 	_tween = create_tween().set_ignore_time_scale(true)
 	_tween.tween_method(_set_grey, 0.0, data.grey_amount, data.grey_time).set_trans(Tween.TRANS_SINE)
 	_tween.parallel().tween_callback(_start_dissolve).set_delay(data.dissolve_delay)
@@ -77,28 +88,71 @@ func play() -> void:
 	_tween.tween_callback(_finish)
 
 
-## Về trạng thái thường ngay lập tức (hồi sinh tại chỗ, rời state Dead). Gọi nhiều lần không sao
+## Cảnh hồi sinh. Gọi lúc khu còn tối: dựng sẵn khung đầu (cáo chưa hiện, màn xám, camera gần); các bước chỉ chạy
+## khi khu được xử lý trở lại (màn đã sáng). anchor có play_revive() (checkpoint) thì loé sáng theo
+func play_revive(anchor: Node3D) -> void:
+	if data == null:
+		revive_finished.emit()
+		return
+	_kill_tween()
+	_playing = false
+	_reviving = true
+	_finished = false
+	_collect_materials()
+	# Trục tạm theo chiều đứng: lúc này skeleton chưa vào tư thế nằm (khu đang tắt xử lý); đo lại khi bắt đầu hiện
+	_origin = visual.global_position if visual else Vector3.ZERO
+	_axis = Vector3.UP
+	_length = 1.5
+	_apply_dissolve_params()
+	_set_materials(1.0)
+	_hide_attachments()
+	if camera_rig:
+		camera_rig.zoom_to(_zoom_ratio(), 0.0)
+	_show_screen(data.grey_amount)
+	_set_gather_particles(true)
+	_tween = create_tween().set_ignore_time_scale(true)
+	_tween.tween_interval(data.revive_delay)
+	_tween.tween_callback(_start_reform.bind(anchor))
+	_tween.tween_method(_set_dissolve, 1.0, 0.0, data.reform_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_tween.tween_callback(_get_up)
+	_tween.tween_method(_set_grey, data.grey_amount, 0.0, data.restore_time).set_trans(Tween.TRANS_SINE)
+	if data.get_up_time > data.restore_time:
+		_tween.tween_interval(data.get_up_time - data.restore_time)
+	_tween.tween_callback(_finish_revive)
+
+
+## Về trạng thái thường ngay lập tức (hồi sinh tại chỗ, rời state giữa chừng). Gọi nhiều lần không sao
 func reset() -> void:
 	if _playing:
 		# Hồi sinh khi đang chậm thời gian: chạy lại bình thường ngay, không chờ hết slow-mo
 		HitStop.cancel()
 	_kill_tween()
 	_playing = false
+	_reviving = false
 	_finished = false
 	set_process(false)
 	_screen.visible = false
 	_particles.emitting = false
+	_set_gather_particles(false)
 	_set_materials(0.0)
-	for node in _hidden:
-		if is_instance_valid(node):
-			node.visible = true
-	_hidden.clear()
+	_show_attachments()
 	if camera_rig:
 		camera_rig.reset_zoom()
 
 
 func _process(_delta: float) -> void:
 	_update_focus()
+
+
+func _show_screen(grey: float) -> void:
+	_grey_material.set_shader_parameter(&"amount", grey)
+	_grey_material.set_shader_parameter(&"blackout", 0.0)
+	_grey_material.set_shader_parameter(&"focus_radius", data.focus_radius)
+	_grey_material.set_shader_parameter(&"focus_softness", data.focus_softness)
+	_grey_material.set_shader_parameter(&"edge_darkness", data.edge_darkness)
+	_screen.visible = true
+	_update_focus()
+	set_process(true)
 
 
 ## Vùng giữ màu bám theo ngực cáo trên màn (camera và cáo đều có thể đang trôi)
@@ -114,9 +168,54 @@ func _update_focus() -> void:
 	_grey_material.set_shader_parameter(&"aspect", size.x / maxf(size.y, 1.0))
 
 
+func _zoom_ratio() -> float:
+	if camera_rig == null:
+		return 1.0
+	return minf(data.zoom_distance / maxf(camera_rig.get_base_distance(), 0.01), 1.0)
+
+
 func _start_dissolve() -> void:
 	_collect_materials()
 	_measure_body()
+	_apply_dissolve_params()
+	# Lớp nháy (đỏ khi trúng bẫy, chớp khi bị đánh) phủ lên thân sẽ không tan theo: bỏ đi
+	for mesh in _meshes():
+		mesh.material_overlay = null
+	_hide_attachments()
+	_particles.amount = maxi(data.particle_amount, 1)
+	_particles.global_position = _origin
+	_particles.emitting = true
+
+
+## Khu đã sáng, cáo đã nằm: đo lại trục thật, checkpoint loé, hạt bắt đầu tụ về từ phía đầu
+func _start_reform(anchor: Node3D) -> void:
+	_measure_body()
+	_apply_dissolve_params()
+	if is_instance_valid(anchor) and anchor.has_method(&"play_revive"):
+		anchor.call(&"play_revive")
+	_particles.amount = maxi(data.particle_amount, 1)
+	_particles.global_position = _origin + _axis * _length
+	_particles.emitting = true
+
+
+func _get_up() -> void:
+	_particles.emitting = false
+	_set_materials(0.0)
+	_show_attachments()
+	if camera_rig:
+		camera_rig.zoom_to(1.0, data.restore_time)
+	revive_get_up.emit(data.get_up_speed)
+
+
+func _finish_revive() -> void:
+	_reviving = false
+	set_process(false)
+	_screen.visible = false
+	_set_gather_particles(false)
+	revive_finished.emit()
+
+
+func _apply_dissolve_params() -> void:
 	for material in _materials:
 		material.set_shader_parameter(&"dissolve_origin", _origin)
 		material.set_shader_parameter(&"dissolve_axis", _axis)
@@ -126,21 +225,11 @@ func _start_dissolve() -> void:
 		material.set_shader_parameter(&"dissolve_noise", data.edge_noise)
 		material.set_shader_parameter(&"dissolve_noise_scale", data.noise_scale)
 		material.set_shader_parameter(&"dissolve_edge_glow", data.edge_glow)
-	# Lớp nháy (đỏ khi trúng bẫy, chớp khi bị đánh) phủ lên thân sẽ không tan theo: bỏ đi
-	for mesh in _meshes():
-		mesh.material_overlay = null
-	for node in hide_on_dissolve:
-		if is_instance_valid(node) and node.visible:
-			node.visible = false
-			_hidden.append(node)
-	_particles.amount = maxi(data.particle_amount, 1)
-	_particles.global_position = _origin
-	_particles.emitting = true
 
 
+## Mép tan / hiện chạy dọc trục chân -> đầu; hạt bật ra (hoặc tụ về) đúng chỗ mép
 func _set_dissolve(value: float) -> void:
 	_set_materials(value)
-	# Hạt bật ra đúng chỗ mép đang tan
 	_particles.global_position = _origin + _axis * (_length * clampf(value, 0.0, 1.0))
 
 
@@ -167,7 +256,36 @@ func _finish() -> void:
 	finished.emit()
 
 
-## Trục chân -> đầu lấy từ xương lúc cáo đã nằm; thiếu xương thì dùng chiều đứng
+func _hide_attachments() -> void:
+	for node in hide_on_dissolve:
+		if is_instance_valid(node) and node.visible:
+			node.visible = false
+			_hidden.append(node)
+
+
+func _show_attachments() -> void:
+	for node in _hidden:
+		if is_instance_valid(node):
+			node.visible = true
+	_hidden.clear()
+
+
+## Hạt tụ về (hút vào tâm, toả từ vùng rộng) khi hồi sinh; tắt thì trả lại kiểu bật ra lúc tan
+func _set_gather_particles(gather: bool) -> void:
+	for property: StringName in _burst_settings:
+		_particles.set(property, _burst_settings[property])
+	if not gather or data == null:
+		return
+	_particles.radial_accel_min = -data.gather_pull
+	_particles.radial_accel_max = -data.gather_pull * 1.4
+	_particles.emission_sphere_radius = data.gather_radius
+	_particles.gravity = Vector3.ZERO
+	_particles.initial_velocity_min = 0.0
+	_particles.initial_velocity_max = 0.3
+	_particles.lifetime = 0.7
+
+
+## Trục chân -> đầu lấy từ xương lúc cáo đang nằm; thiếu xương thì dùng chiều đứng
 func _measure_body() -> void:
 	var feet := visual.global_position if visual else Vector3.ZERO
 	var head := feet + Vector3.UP

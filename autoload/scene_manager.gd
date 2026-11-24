@@ -22,6 +22,8 @@ var _busy: bool = false
 var _zone_ready: bool = false
 ## Lần đổi khu tới là hồi sinh: khôi phục tiến trình về checkpoint lúc màn đã tối
 var _restore_on_load: bool = false
+## Khu vừa tải là do hồi sinh: ZoneRoot đọc một lần (consume_respawn) để player diễn cảnh hồi sinh
+var _respawning: bool = false
 var _fade: FadeLayer
 var _loading_screen: LoadingScreen
 
@@ -73,6 +75,7 @@ func change_zone(zone_path: String, spawn_id: StringName = &"") -> void:
 	await physics_drain.prepare(get_tree().current_scene)
 	# Hồi sinh: tiến trình về bản chốt ở checkpoint, làm lúc màn đã tối để không thấy cổng / vật đổi trạng thái.
 	# Chuyển khu thường thì giữ nguyên tiến trình đang chơi
+	_respawning = _restore_on_load
 	if _restore_on_load:
 		_restore_on_load = false
 		GameState.restore_checkpoint()
@@ -139,6 +142,13 @@ func warp_player(player: Player, target_position: Vector3, facing: Vector3 = Vec
 		player.teleport(target_position, facing)
 	await _fade.fade_in(fade_duration)
 	_busy = false
+
+
+## ZoneRoot gọi khi đặt player: true = lần tải khu này là hồi sinh sau khi chết. Chỉ lấy được một lần
+func consume_respawn() -> bool:
+	var respawning := _respawning
+	_respawning = false
+	return respawning
 
 
 ## Vào checkpoint đã lưu; chưa có thì vào điểm start của khu đầu game. Dùng khi mở game và khi hồi sinh

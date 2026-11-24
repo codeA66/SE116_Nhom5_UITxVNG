@@ -315,6 +315,12 @@ func _on_bow_draw_changed(amount: float) -> void:
 		_anim.seek(amount * _clip_length(clip), true)
 
 
+func _action_clip(anim_name: StringName) -> StringName:
+	_landing_remaining = 0.0
+	_anim.speed_scale = 1.0
+	return _resolve_clip(anim_name)
+
+
 func _resolve_clip(anim_name: StringName) -> StringName:
 	var clip: StringName
 	if anim_name == Player.ANIM_IDLE:

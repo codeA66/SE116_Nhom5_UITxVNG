@@ -37,6 +37,10 @@ func _ready() -> void:
 		player.teleport(spawn.global_position, spawn.get_facing())
 	else:
 		push_warning("%s: không có SpawnPoint '%s', player giữ vị trí ban đầu" % [name, default_spawn_id])
+	# Hồi sinh sau khi chết: dựng sẵn khung đầu (cáo nằm, chưa hiện, màn xám) trước khi màn sáng. Cảnh chỉ chạy khi
+	# khu hết bị tắt xử lý (màn đã sáng). Checkpoint chứa điểm xuất hiện (cha của Spawn) loé sáng theo
+	if SceneManager.consume_respawn():
+		player.begin_respawn(spawn.get_parent() as Node3D if spawn else null)
 	player_spawned.emit(player)
 	# Báo sẵn sàng sau khi biên dịch xong: SceneManager giữ màn tối tới lúc đó. Bỏ bước này thì lần đầu chém,
 	# thổi gió, quái chết, hố hút... đều đứng hình 0.2-0.5 s vì shader mới được biên dịch giữa lúc chơi
