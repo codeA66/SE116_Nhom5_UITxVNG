@@ -1,0 +1,213 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="standing_lantern"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_square_4m.glb" id="pillar"]
+[ext_resource type="Shader" path="res://assets/shaders/environment/monkey_garden/stable_floor.gdshader" id="floor"]
+
+[sub_resource type="StandardMaterial3D" id="Wall"]
+albedo_color = Color(0.15, 0.2, 0.27, 1)
+roughness = 0.89
+
+[sub_resource type="StandardMaterial3D" id="Trim"]
+albedo_color = Color(0.24, 0.32, 0.39, 1)
+roughness = 0.89
+
+[sub_resource type="ShaderMaterial" id="Floor"]
+shader = ExtResource("floor")
+shader_parameter/stone = true
+shader_parameter/range_only = false
+shader_parameter/room_origin = Vector2(-8, -357.645)
+shader_parameter/room_half_size = Vector2(6.5, 18)
+shader_parameter/earth_color = Color(0.19, 0.18, 0.15, 1)
+shader_parameter/stone_color = Color(0.28, 0.31, 0.32, 1)
+shader_parameter/dirt_layout = 0
+
+[sub_resource type="BoxMesh" id="CourtFloorMesh"]
+size = Vector3(13, 0.4, 36)
+
+[sub_resource type="BoxShape3D" id="CourtFloorShape"]
+size = Vector3(13, 0.4, 36)
+
+[sub_resource type="BoxMesh" id="EntryLeftMesh"]
+size = Vector3(5.25, 2.4, 0.52)
+
+[sub_resource type="BoxShape3D" id="EntryLeftShape"]
+size = Vector3(5.25, 2.4, 0.52)
+
+[sub_resource type="BoxMesh" id="EntryRightMesh"]
+size = Vector3(1.25, 2.4, 0.52)
+
+[sub_resource type="BoxShape3D" id="EntryRightShape"]
+size = Vector3(1.25, 2.4, 0.52)
+
+[sub_resource type="BoxMesh" id="BridgeMouthLeftMesh"]
+size = Vector3(2.8, 2.4, 0.52)
+
+[sub_resource type="BoxShape3D" id="BridgeMouthLeftShape"]
+size = Vector3(2.8, 2.4, 0.52)
+
+[sub_resource type="BoxMesh" id="WestBalustradeMesh"]
+size = Vector3(0.55, 1.3, 34.9)
+
+[sub_resource type="BoxShape3D" id="WestBalustradeShape"]
+size = Vector3(0.55, 1.3, 34.9)
+
+[sub_resource type="BoxMesh" id="WestCopingMesh"]
+size = Vector3(0.67, 0.18, 34.9)
+
+[sub_resource type="BoxMesh" id="ThresholdMesh"]
+size = Vector3(3.6, 0.036, 0.45)
+
+[node name="KeeperCourt" type="Node3D"]
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="Decor" type="Node3D" parent="."]
+
+[node name="CourtFloor" type="StaticBody3D" parent="World"]
+position = Vector3(0, -0.2, -18)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/CourtFloor"]
+mesh = SubResource("CourtFloorMesh")
+material_override = SubResource("Floor")
+cast_shadow = 0
+
+[node name="Shape" type="CollisionShape3D" parent="World/CourtFloor"]
+shape = SubResource("CourtFloorShape")
+
+[node name="EntryLeft" type="StaticBody3D" parent="World"]
+position = Vector3(-3.875, 1.2, -0.28)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/EntryLeft"]
+mesh = SubResource("EntryLeftMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/EntryLeft"]
+shape = SubResource("EntryLeftShape")
+
+[node name="EntryRight" type="StaticBody3D" parent="World"]
+position = Vector3(5.875, 1.2, -0.28)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/EntryRight"]
+mesh = SubResource("EntryRightMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/EntryRight"]
+shape = SubResource("EntryRightShape")
+
+[node name="BridgeMouthLeft" type="StaticBody3D" parent="World"]
+position = Vector3(-5.1, 1.2, -35.73)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/BridgeMouthLeft"]
+mesh = SubResource("BridgeMouthLeftMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/BridgeMouthLeft"]
+shape = SubResource("BridgeMouthLeftShape")
+
+[node name="BridgeMouthRight" type="StaticBody3D" parent="World"]
+position = Vector3(5.1, 1.2, -35.73)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/BridgeMouthRight"]
+mesh = SubResource("BridgeMouthLeftMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/BridgeMouthRight"]
+shape = SubResource("BridgeMouthLeftShape")
+
+[node name="WestBalustrade" type="StaticBody3D" parent="World"]
+position = Vector3(-6.25, 0.65, -18)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/WestBalustrade"]
+mesh = SubResource("WestBalustradeMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/WestBalustrade"]
+shape = SubResource("WestBalustradeShape")
+
+[node name="WestCoping" type="MeshInstance3D" parent="World"]
+position = Vector3(-6.25, 1.39, -18)
+mesh = SubResource("WestCopingMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="WestPillar" instance=ExtResource("pillar") parent="Decor"]
+position = Vector3(-4.9, 0, -16)
+scale = Vector3(0.64, 0.67, 0.64)
+
+[node name="WestLamp" instance=ExtResource("standing_lantern") parent="Decor"]
+position = Vector3(-4.75, 0, -6)
+
+[node name="WestLampLight" type="OmniLight3D" parent="Decor"]
+position = Vector3(-4.75, 1.5, -6)
+light_color = Color(1, 0.71, 0.41, 1)
+light_energy = 0.65
+omni_range = 4.8
+
+[node name="EastBalustrade" type="StaticBody3D" parent="World"]
+position = Vector3(6.25, 0.65, -18)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/EastBalustrade"]
+mesh = SubResource("WestBalustradeMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/EastBalustrade"]
+shape = SubResource("WestBalustradeShape")
+
+[node name="EastCoping" type="MeshInstance3D" parent="World"]
+position = Vector3(6.25, 1.39, -18)
+mesh = SubResource("WestCopingMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="EastPillar" instance=ExtResource("pillar") parent="Decor"]
+position = Vector3(4.9, 0, -16)
+scale = Vector3(0.64, 0.67, 0.64)
+
+[node name="EastLamp" instance=ExtResource("standing_lantern") parent="Decor"]
+position = Vector3(4.75, 0, -6)
+
+[node name="EastLampLight" type="OmniLight3D" parent="Decor"]
+position = Vector3(4.75, 1.5, -6)
+light_color = Color(1, 0.71, 0.41, 1)
+light_energy = 0.65
+omni_range = 4.8
+
+[node name="Threshold" type="MeshInstance3D" parent="World"]
+position = Vector3(0, 0.022, -34.7)
+mesh = SubResource("ThresholdMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="WestKeeperPillar" instance=ExtResource("pillar") parent="Decor"]
+position = Vector3(-4.9, 0, -29)
+scale = Vector3(0.64, 0.67, 0.64)
+
+[node name="WestKeeperLamp" instance=ExtResource("standing_lantern") parent="Decor"]
+position = Vector3(-4.75, 0, -27.5)
+
+[node name="WestKeeperLampLight" type="OmniLight3D" parent="Decor"]
+position = Vector3(-4.75, 1.5, -27.5)
+light_color = Color(1, 0.71, 0.41, 1)
+light_energy = 0.65
+omni_range = 4.8
+
+[node name="EastKeeperPillar" instance=ExtResource("pillar") parent="Decor"]
+position = Vector3(4.9, 0, -29)
+scale = Vector3(0.64, 0.67, 0.64)
+
+[node name="EastKeeperLamp" instance=ExtResource("standing_lantern") parent="Decor"]
+position = Vector3(4.75, 0, -27.5)
+
+[node name="EastKeeperLampLight" type="OmniLight3D" parent="Decor"]
+position = Vector3(4.75, 1.5, -27.5)
+light_color = Color(1, 0.71, 0.41, 1)
+light_energy = 0.65
+omni_range = 4.8

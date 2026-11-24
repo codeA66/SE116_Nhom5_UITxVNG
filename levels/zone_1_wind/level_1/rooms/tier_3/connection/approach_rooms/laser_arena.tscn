@@ -1,0 +1,406 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://objects/combat/hazards/laser_emitter/laser_emitter.tscn" id="laser"]
+[ext_resource type="Script" path="res://objects/combat/hazards/laser_emitter/laser_timing.gd" id="laser_timing"]
+[ext_resource type="Script" path="res://objects/core/encounter/encounter.gd" id="encounter"]
+[ext_resource type="Script" path="res://objects/wind_puzzle/flag_source/flag_source.gd" id="flag"]
+[ext_resource type="PackedScene" path="res://objects/gates/victory_gate/victory_gate.tscn" id="gate"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="melee"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="ranged"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/standing_lantern.glb" id="standing_lantern"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/banner_hanging.glb" id="banner"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/pillar_square_4m.glb" id="pillar"]
+[ext_resource type="Shader" path="res://assets/shaders/environment/monkey_garden/stable_floor.gdshader" id="floor"]
+
+[sub_resource type="StandardMaterial3D" id="Wall"]
+albedo_color = Color(0.15, 0.2, 0.27, 1)
+roughness = 0.89
+
+[sub_resource type="StandardMaterial3D" id="Trim"]
+albedo_color = Color(0.24, 0.32, 0.39, 1)
+roughness = 0.89
+
+[sub_resource type="ShaderMaterial" id="Floor"]
+shader = ExtResource("floor")
+shader_parameter/stone = true
+shader_parameter/range_only = false
+shader_parameter/room_origin = Vector2(-8, -261.645)
+shader_parameter/room_half_size = Vector2(9, 30)
+shader_parameter/earth_color = Color(0.19, 0.18, 0.15, 1)
+shader_parameter/stone_color = Color(0.28, 0.31, 0.32, 1)
+shader_parameter/dirt_layout = 0
+
+[sub_resource type="Resource" id="Timing"]
+script = ExtResource("laser_timing")
+on_time = 1.00
+off_time = 3.00
+warn_time = 0.65
+max_range = 22.0
+
+[sub_resource type="BoxMesh" id="ArenaFloorMesh"]
+size = Vector3(18, 0.4, 59.645)
+
+[sub_resource type="BoxShape3D" id="ArenaFloorShape"]
+size = Vector3(18, 0.4, 59.645)
+
+[sub_resource type="BoxMesh" id="EntranceLeftMesh"]
+size = Vector3(5.3, 2.4, 0.52)
+
+[sub_resource type="BoxShape3D" id="EntranceLeftShape"]
+size = Vector3(5.3, 2.4, 0.52)
+
+[sub_resource type="BoxMesh" id="ExitLeftMesh"]
+size = Vector3(8.6, 2.4, 0.52)
+
+[sub_resource type="BoxShape3D" id="ExitLeftShape"]
+size = Vector3(8.6, 2.4, 0.52)
+
+[sub_resource type="BoxMesh" id="ExitRightMesh"]
+size = Vector3(4.6, 2.4, 0.52)
+
+[sub_resource type="BoxShape3D" id="ExitRightShape"]
+size = Vector3(4.6, 2.4, 0.52)
+
+[sub_resource type="BoxMesh" id="WestWallMesh"]
+size = Vector3(0.45, 2.5, 59)
+
+[sub_resource type="BoxShape3D" id="WestWallShape"]
+size = Vector3(0.45, 2.5, 59)
+
+[sub_resource type="BoxMesh" id="WestCopingMesh"]
+size = Vector3(0.54, 0.15, 59)
+
+[sub_resource type="BoxMesh" id="WestCoverMesh"]
+size = Vector3(1.6, 1.8, 1.8)
+
+[sub_resource type="BoxShape3D" id="WestCoverShape"]
+size = Vector3(1.6, 1.8, 1.8)
+
+[sub_resource type="BoxMesh" id="WestCoverCapMesh"]
+size = Vector3(1.72, 0.12, 1.92)
+
+[sub_resource type="BoxShape3D" id="FightTriggerShape"]
+resource_local_to_scene = true
+size = Vector3(16.4, 4, 18)
+
+[sub_resource type="BoxShape3D" id="UpperFightTriggerShape"]
+resource_local_to_scene = true
+size = Vector3(16.4, 4, 21)
+
+[node name="LaserArena" type="Node3D"]
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="Decor" type="Node3D" parent="."]
+
+[node name="Hazards" type="Node3D" parent="."]
+
+[node name="ArenaFloor" type="StaticBody3D" parent="World"]
+position = Vector3(0, -0.2, -30.1775)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/ArenaFloor"]
+mesh = SubResource("ArenaFloorMesh")
+material_override = SubResource("Floor")
+cast_shadow = 0
+
+[node name="Shape" type="CollisionShape3D" parent="World/ArenaFloor"]
+shape = SubResource("ArenaFloorShape")
+
+[node name="EntranceLeft" type="StaticBody3D" parent="World"]
+position = Vector3(-6.35, 1.2, -0.64)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/EntranceLeft"]
+mesh = SubResource("EntranceLeftMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/EntranceLeft"]
+shape = SubResource("EntranceLeftShape")
+
+[node name="EntranceRight" type="StaticBody3D" parent="World"]
+position = Vector3(6.35, 1.2, -0.64)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/EntranceRight"]
+mesh = SubResource("EntranceLeftMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/EntranceRight"]
+shape = SubResource("EntranceLeftShape")
+
+[node name="ExitLeft" type="StaticBody3D" parent="World"]
+position = Vector3(-4.7, 1.2, -59.73)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/ExitLeft"]
+mesh = SubResource("ExitLeftMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/ExitLeft"]
+shape = SubResource("ExitLeftShape")
+
+[node name="ExitRight" type="StaticBody3D" parent="World"]
+position = Vector3(6.7, 1.2, -59.73)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/ExitRight"]
+mesh = SubResource("ExitRightMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/ExitRight"]
+shape = SubResource("ExitRightShape")
+
+[node name="WestWall" type="StaticBody3D" parent="World"]
+position = Vector3(-8.8, 1.25, -30)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/WestWall"]
+mesh = SubResource("WestWallMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/WestWall"]
+shape = SubResource("WestWallShape")
+
+[node name="WestCoping" type="MeshInstance3D" parent="World"]
+position = Vector3(-8.8, 2.58, -30)
+mesh = SubResource("WestCopingMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="EastWall" type="StaticBody3D" parent="World"]
+position = Vector3(8.8, 1.25, -30)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/EastWall"]
+mesh = SubResource("WestWallMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/EastWall"]
+shape = SubResource("WestWallShape")
+
+[node name="EastCoping" type="MeshInstance3D" parent="World"]
+position = Vector3(8.8, 2.58, -30)
+mesh = SubResource("WestCopingMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="WestCover" type="StaticBody3D" parent="World"]
+position = Vector3(-5.2, 0.9, -24.65)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/WestCover"]
+mesh = SubResource("WestCoverMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/WestCover"]
+shape = SubResource("WestCoverShape")
+
+[node name="EastCover" type="StaticBody3D" parent="World"]
+position = Vector3(5.1, 0.9, -14.65)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/EastCover"]
+mesh = SubResource("WestCoverMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/EastCover"]
+shape = SubResource("WestCoverShape")
+
+[node name="WestCoverCap" type="MeshInstance3D" parent="World"]
+position = Vector3(-5.2, 1.86, -24.65)
+mesh = SubResource("WestCoverCapMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="EastCoverCap" type="MeshInstance3D" parent="World"]
+position = Vector3(5.1, 1.86, -14.65)
+mesh = SubResource("WestCoverCapMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="SouthBeam" instance=ExtResource("laser") parent="Hazards"]
+position = Vector3(-8.12, 0, -12)
+rotation = Vector3(0, -1.5708, 0)
+timing = SubResource("Timing")
+phase_offset = 1.20
+beam_width = 0.24
+
+[node name="NorthBeam" instance=ExtResource("laser") parent="Hazards"]
+position = Vector3(8.12, 0, -22)
+rotation = Vector3(0, 1.5708, 0)
+timing = SubResource("Timing")
+phase_offset = 3.20
+beam_width = 0.24
+
+[node name="EntryLamp" instance=ExtResource("standing_lantern") parent="Decor"]
+position = Vector3(-3.2, 0, -2)
+
+[node name="EntryLampLight" type="OmniLight3D" parent="Decor"]
+position = Vector3(-3.2, 1.5, -2)
+light_color = Color(1, 0.71, 0.41, 1)
+light_energy = 0.65
+omni_range = 4.8
+
+[node name="ExitLamp" instance=ExtResource("standing_lantern") parent="Decor"]
+position = Vector3(5.1, 0, -58.2)
+
+[node name="ExitLampLight" type="OmniLight3D" parent="Decor"]
+position = Vector3(5.1, 1.5, -58.2)
+light_color = Color(1, 0.71, 0.41, 1)
+light_energy = 0.65
+omni_range = 4.8
+
+[node name="BannerWest" instance=ExtResource("banner") parent="Decor"]
+position = Vector3(-4.8, 0.25, -59.36)
+scale = Vector3(0.72, 0.72, 0.72)
+
+[node name="BannerEast" instance=ExtResource("banner") parent="Decor"]
+position = Vector3(6.3, 0.25, -59.36)
+scale = Vector3(0.72, 0.72, 0.72)
+
+[node name="WestPilaster" parent="Decor" instance=ExtResource("pillar")]
+position = Vector3(-8.12, 0, -27)
+scale = Vector3(0.62, 0.68, 0.62)
+
+[node name="EastPilaster" parent="Decor" instance=ExtResource("pillar")]
+position = Vector3(8.12, 0, -27)
+scale = Vector3(0.62, 0.68, 0.62)
+
+[node name="Victory" type="Node" parent="."]
+script = ExtResource("flag")
+flag = &"level_1.t2_approach_arena_cleared"
+
+[node name="Fight" type="Node3D" parent="."]
+position = Vector3(0, 0, -17)
+script = ExtResource("encounter")
+persistent_id = &"level_1.t2_approach_arena_lower_cleared"
+trigger_size = Vector3(16.4, 4, 18)
+start_delay = 0.25
+
+[node name="Trigger" type="Area3D" parent="Fight"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fight/Trigger"]
+position = Vector3(0, 2, 0)
+shape = SubResource("FightTriggerShape")
+
+[node name="Enemies" type="Node3D" parent="Fight"]
+
+[node name="LeftGuard" instance=ExtResource("melee") parent="Fight/Enemies"]
+position = Vector3(-4.2, 0, 0.4)
+
+[node name="RightGuard" instance=ExtResource("melee") parent="Fight/Enemies"]
+position = Vector3(4.2, 0, -2)
+
+[node name="Wisp" instance=ExtResource("ranged") parent="Fight/Enemies"]
+position = Vector3(-2.6, 0, -6.7)
+
+[node name="VictoryGate" node_paths=PackedStringArray("sources") instance=ExtResource("gate") parent="."]
+position = Vector3(2, 0, -59.35)
+sources = [NodePath("../Victory")]
+persistent_id = &"level_1.t2_approach_arena_cleared"
+
+[node name="WestCoverUpper" type="StaticBody3D" parent="World"]
+position = Vector3(-5.2, 0.9, -51.65)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/WestCoverUpper"]
+mesh = SubResource("WestCoverMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/WestCoverUpper"]
+shape = SubResource("WestCoverShape")
+
+[node name="WestCoverCapUpper" type="MeshInstance3D" parent="World"]
+position = Vector3(-5.2, 1.86, -51.65)
+mesh = SubResource("WestCoverCapMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="EastCoverUpper" type="StaticBody3D" parent="World"]
+position = Vector3(5.1, 0.9, -39.65)
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="World/EastCoverUpper"]
+mesh = SubResource("WestCoverMesh")
+material_override = SubResource("Wall")
+
+[node name="Shape" type="CollisionShape3D" parent="World/EastCoverUpper"]
+shape = SubResource("WestCoverShape")
+
+[node name="EastCoverCapUpper" type="MeshInstance3D" parent="World"]
+position = Vector3(5.1, 1.86, -39.65)
+mesh = SubResource("WestCoverCapMesh")
+material_override = SubResource("Trim")
+cast_shadow = 0
+
+[node name="UpperSouthBeam" instance=ExtResource("laser") parent="Hazards"]
+position = Vector3(-8.12, 0, -37)
+rotation = Vector3(0, -1.5708, 0)
+timing = SubResource("Timing")
+phase_offset = 1.20
+beam_width = 0.24
+
+[node name="UpperNorthBeam" instance=ExtResource("laser") parent="Hazards"]
+position = Vector3(8.12, 0, -49)
+rotation = Vector3(0, 1.5708, 0)
+timing = SubResource("Timing")
+phase_offset = 3.20
+beam_width = 0.24
+
+[node name="MiddleWestLamp" instance=ExtResource("standing_lantern") parent="Decor"]
+position = Vector3(-5.8, 0, -29)
+
+[node name="MiddleWestLampLight" type="OmniLight3D" parent="Decor"]
+position = Vector3(-5.8, 1.5, -29)
+light_color = Color(1, 0.71, 0.41, 1)
+light_energy = 0.65
+omni_range = 4.8
+
+[node name="MiddleEastLamp" instance=ExtResource("standing_lantern") parent="Decor"]
+position = Vector3(5.8, 0, -29)
+
+[node name="MiddleEastLampLight" type="OmniLight3D" parent="Decor"]
+position = Vector3(5.8, 1.5, -29)
+light_color = Color(1, 0.71, 0.41, 1)
+light_energy = 0.65
+omni_range = 4.8
+
+[node name="UpperWestPilaster" parent="Decor" instance=ExtResource("pillar")]
+position = Vector3(-8.12, 0, -44)
+scale = Vector3(0.62, 0.68, 0.62)
+
+[node name="UpperEastPilaster" parent="Decor" instance=ExtResource("pillar")]
+position = Vector3(8.12, 0, -44)
+scale = Vector3(0.62, 0.68, 0.62)
+
+[node name="UpperFight" type="Node3D" parent="."]
+position = Vector3(0, 0, -42)
+script = ExtResource("encounter")
+persistent_id = &"level_1.t2_approach_arena_cleared"
+required_flag = &"level_1.t2_approach_arena_lower_cleared"
+trigger_size = Vector3(16.4, 4, 21)
+start_delay = 0.25
+
+[node name="Trigger" type="Area3D" parent="UpperFight"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="UpperFight/Trigger"]
+position = Vector3(0, 2, 0)
+shape = SubResource("UpperFightTriggerShape")
+
+[node name="Enemies" type="Node3D" parent="UpperFight"]
+
+[node name="LeftGuard" parent="UpperFight/Enemies" instance=ExtResource("melee")]
+position = Vector3(-4.2, 0, 1)
+
+[node name="RightGuard" parent="UpperFight/Enemies" instance=ExtResource("melee")]
+position = Vector3(4.2, 0, -2.4)
+
+[node name="Wisp" parent="UpperFight/Enemies" instance=ExtResource("ranged")]
+position = Vector3(3.7, 0, -7.2)

@@ -5,6 +5,9 @@
 [ext_resource type="Material" path="res://assets/models/map_wind/tier_3_monkey_garden/garden_vertex_color.tres" id="3_wpu8r"]
 [ext_resource type="PackedScene" path="res://entities/npcs/gatekeeper/gatekeeper.tscn" id="4_gatekeeper"]
 [ext_resource type="PackedScene" path="res://entities/npcs/gatekeeper/toll_barrier/toll_barrier.tscn" id="5_toll_barrier"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/approach_rooms/laser_arena.tscn" id="6_arena"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/approach_rooms/crumbling_laser_walk.tscn" id="7_platforms"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/approach_rooms/keeper_court.tscn" id="8_keeper"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tier3_toll"]
 size = Vector3(9, 5, 0.5)
@@ -66,8 +69,19 @@ blend_shape_mode = 0
 
 [node name="Tier3Connection" type="Node3D" unique_id=814340064]
 
+[node name="ApproachRooms" type="Node3D" parent="."]
+
+[node name="LaserArena" parent="ApproachRooms" instance=ExtResource("6_arena")]
+position = Vector3(0, 0, 144)
+
+[node name="CrumblingLaserWalk" parent="ApproachRooms" instance=ExtResource("7_platforms")]
+position = Vector3(2, 0, 84)
+
+[node name="KeeperCourt" parent="ApproachRooms" instance=ExtResource("8_keeper")]
+position = Vector3(0, 0, 36)
+
 [node name="Tier3TollBarrier" parent="." instance=ExtResource("5_toll_barrier")]
-position = Vector3(0, 0, -14.1775)
+position = Vector3(0, 0, -3.75)
 
 [node name="CollisionShape3D" parent="Tier3TollBarrier/Blocker" index="0"]
 position = Vector3(0, 2.3, 0)
@@ -87,7 +101,7 @@ position = Vector3(3.65, 0, 0)
 scale = Vector3(2.35, 1, 1)
 
 [node name="Tier3Gatekeeper" parent="." node_paths=PackedStringArray("barrier") instance=ExtResource("4_gatekeeper")]
-position = Vector3(1.65, 0, -12.95)
+position = Vector3(2.75, 0, 4.5)
 barrier = NodePath("../Tier3TollBarrier")
 
 [node name="TollService" parent="Tier3Gatekeeper" index="6"]
