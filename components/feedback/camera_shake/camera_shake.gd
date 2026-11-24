@@ -7,7 +7,7 @@ extends Node
 
 @export_group("Shake")
 ## Lệch ngang / dọc tối đa khi trauma = 1 (m, theo h_offset / v_offset). Camera game xa ~30 m nên cần lớn mới thấy
-@export var max_offset: float = 1.8
+@export var max_offset: float = 0.93
 ## Nghiêng tối đa (độ) khi trauma = 1
 @export var max_roll_degrees: float = 1.2
 ## Tốc độ nhiễu (càng cao rung càng nhanh)
@@ -39,6 +39,9 @@ func _ready() -> void:
 	# Tạo noise một lần, dùng lại mọi frame
 	_noise = FastNoiseLite.new()
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	# Tần số nhiễu mặc định của FastNoiseLite là 0.01: nhiễu đổi rất chậm nên camera chỉ trôi một chiều, không rung.
+	# Đặt 1 để tốc độ rung do export frequency quyết định
+	_noise.frequency = 1.0
 	_noise.seed = randi()
 	# Bắt đầu ở điểm ngẫu nhiên: gần gốc toạ độ simplex noise xấp xỉ 0 nên rung yếu
 	_time = randf() * 1000.0 / frequency

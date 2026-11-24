@@ -13,3 +13,6 @@ extends Resource
 @export_range(0.0, 2.0, 0.01) var pulse_speed: float = 0.35
 @export_range(0, 4) var sparkle_count: int = 3
 @export_range(0.0, 0.2, 0.005) var sparkle_size: float = 0.10
+@export var aura_shader: Shader
+@export var aura_texture: Texture2D
+@export_range(0.0, 1.5, 0.01, "suffix:s") var aura_open_duration: float = 0.58

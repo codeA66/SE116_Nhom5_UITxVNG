@@ -1,0 +1,78 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://tests/player/game/special_charm/test_special_charm.tscn" id="sandbox"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/weapon/weapon_pickup.tscn" id="weapon_pickup"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="charm_pickup"]
+[ext_resource type="PackedScene" path="res://objects/core/checkpoint/checkpoint.tscn" id="checkpoint"]
+[ext_resource type="PackedScene" path="res://objects/combat/training_dummy/wooden_training_dummy.tscn" id="dummy"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/sword.tres" id="sword"]
+[ext_resource type="Resource" path="res://resources/combat/weapons/bow.tres" id="bow"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/special/timebreak_charm.tres" id="skystrike"]
+
+[sub_resource type="StandardMaterial3D" id="Bronze"]
+albedo_color = Color(0.43, 0.32, 0.20, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="Stand"]
+material = SubResource("Bronze")
+top_radius = 0.64
+bottom_radius = 0.76
+height = 0.16
+radial_segments = 8
+rings = 0
+
+[sub_resource type="StandardMaterial3D" id="LaneStone"]
+albedo_color = Color(0.31, 0.29, 0.26, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="LaneEdge"]
+material = SubResource("LaneStone")
+size = Vector3(0.14, 0.035, 10.0)
+
+[node name="SkystrikeSandbox" instance=ExtResource("sandbox")]
+manual_preview = true
+
+[node name="Gear" type="Node3D" parent="."]
+
+[node name="Sword" parent="Gear" instance=ExtResource("weapon_pickup")]
+position = Vector3(-4, 0, 0)
+weapon = ExtResource("sword")
+
+[node name="Bow" parent="Gear" instance=ExtResource("weapon_pickup")]
+weapon = ExtResource("bow")
+
+[node name="Charm" parent="Gear" instance=ExtResource("charm_pickup")]
+position = Vector3(4, 0, 0)
+charm = ExtResource("skystrike")
+beam_color = Color(1, 0.77, 0.39, 1)
+
+[node name="Stands" type="Node3D" parent="Gear"]
+
+[node name="SwordStand" type="MeshInstance3D" parent="Gear/Stands"]
+position = Vector3(-4, 0.08, 0)
+mesh = SubResource("Stand")
+
+[node name="BowStand" type="MeshInstance3D" parent="Gear/Stands"]
+position = Vector3(0, 0.08, 0)
+mesh = SubResource("Stand")
+
+[node name="CharmStand" type="MeshInstance3D" parent="Gear/Stands"]
+position = Vector3(4, 0.08, 0)
+mesh = SubResource("Stand")
+
+[node name="Training" type="Node3D" parent="."]
+
+[node name="Checkpoint" parent="Training" instance=ExtResource("checkpoint")]
+position = Vector3(4, 0, 3.7)
+checkpoint_id = &"skystrike_sandbox_checkpoint"
+
+[node name="Dummy" parent="Training" instance=ExtResource("dummy")]
+position = Vector3(-4, 0, -3.5)
+
+[node name="LeftLine" type="MeshInstance3D" parent="Training"]
+position = Vector3(-2.3, 0.018, -6.9)
+mesh = SubResource("LaneEdge")
+
+[node name="RightLine" type="MeshInstance3D" parent="Training"]
+position = Vector3(2.3, 0.018, -6.9)
+mesh = SubResource("LaneEdge")

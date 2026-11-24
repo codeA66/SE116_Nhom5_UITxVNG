@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/hud/energy/special/special_charge_ring.gd" id="ring"]
+[ext_resource type="Script" path="res://components/feedback/loot_beam/ability_acquire/ui/panel/key_glyph.gd" id="key"]
+
+[node name="SpecialChargeRing" type="Control"]
+visible = false
+mouse_filter = 2
+script = ExtResource("ring")
+
+[node name="Key" type="Control" parent="."]
+visible = false
+mouse_filter = 2
+script = ExtResource("key")
+text = ""
+font_size = 14
+text_color = Color(1, 0.93, 0.72, 1)
+border_color = Color(0.94, 0.69, 0.32, 0.9)
+padding = Vector2(5, 1.5)
+corner_radius = 3.0

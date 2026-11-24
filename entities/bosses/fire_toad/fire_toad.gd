@@ -47,6 +47,8 @@ var court: FireToadCourt
 var seated: bool = false
 
 var _sentinels: Array[Enemy] = []
+var _observed_cast_player: Player
+var _cast_target_hidden: bool = false
 ## Tăng mỗi lần rút nhện: lượt gọi đang chờ lệch giờ thấy số đổi thì dừng, không gọi nhện sau khi đã rút
 var _summon_gen: int = 0
 var _hover_pending: bool = false
@@ -117,7 +119,7 @@ func consume_hover_request(hover_state: StringName) -> bool:
 
 ## Court cho dùng skill này lúc này không (không có court thì luôn được)
 func can_use_skill(skill: StringName) -> bool:
-	return court == null or court.allows_skill(self, skill)
+	return (not _cast_target_hidden or skill == &"Hover") and (court == null or court.allows_skill(self, skill))
 
 
 ## Court gọi: rời ngai nhảy xuống sân đánh
@@ -166,6 +168,8 @@ func home_point() -> Vector3:
 
 
 func find_target() -> Player:
+	if _cast_target_hidden and is_instance_valid(_observed_cast_player):
+		return null
 	if not is_instance_valid(target_player):
 		_find_player()
 	return target_player
@@ -190,6 +194,8 @@ func clamp_to_arena(point: Vector3) -> Vector3:
 
 
 func drop_fireball(target: Vector3, warn_time: float, radius: float) -> void:
+	if _cast_target_hidden:
+		return
 	var fireball := _rain_pool.acquire() as FallingFireball
 	if not fireball.finished.is_connected(_rain_pool.release):
 		fireball.finished.connect(_rain_pool.release)
@@ -197,6 +203,8 @@ func drop_fireball(target: Vector3, warn_time: float, radius: float) -> void:
 
 
 func spawn_lava(where: Vector3, radius: float, lifetime: float) -> void:
+	if _cast_target_hidden:
+		return
 	var pool := _lava_pool.acquire() as LavaPool
 	if not pool.finished.is_connected(_lava_pool.release):
 		pool.finished.connect(_lava_pool.release)
@@ -207,6 +215,8 @@ func spawn_lava(where: Vector3, radius: float, lifetime: float) -> void:
 ## Quả giữa luôn nhắm thẳng chỗ player đang đứng; lead 0..1: player đang chạy thì quạt nới rộng cho một mép phủ tới
 ## chỗ player sẽ tới, nên chạy thẳng một hướng vẫn bị trúng. Thổi Gió phản lại được, trúng boss thì mất máu
 func shoot_fan(count: int, spread_degrees: float, lead: float) -> void:
+	if _cast_target_hidden:
+		return
 	var floor_y := arena_floor_point(Vector2.ZERO).y + data.shot_height
 	var origin := Vector3(mouth.global_position.x, floor_y, mouth.global_position.z)
 	var target := player_position()
@@ -292,6 +302,8 @@ func fly_to(target: Vector3, time: float) -> void:
 
 
 func face_player() -> void:
+	if _cast_target_hidden:
+		return
 	var to_player := player_position() - global_position
 	to_player.y = 0.0
 	if to_player.length_squared() > 0.01:
@@ -329,7 +341,26 @@ func _find_player() -> void:
 		var players := get_tree().current_scene.find_children("*", "Player", true, false)
 		if not players.is_empty():
 			found = players[0] as Player
-	target_player = found
+	if found != _observed_cast_player:
+		if is_instance_valid(_observed_cast_player):
+			_observed_cast_player.targetability_changed.disconnect(_on_cast_targetability_changed)
+		_observed_cast_player = found
+		if found:
+			found.targetability_changed.connect(_on_cast_targetability_changed)
+	_cast_target_hidden = is_instance_valid(found) and not found.is_targetable()
+	target_player = null if _cast_target_hidden else found
+
+
+func _on_cast_targetability_changed(targetable: bool) -> void:
+	_cast_target_hidden = not targetable
+	target_player = _observed_cast_player if targetable else null
+	if not targetable:
+		_interrupt_rain_windup.call_deferred()
+
+
+func _interrupt_rain_windup() -> void:
+	if _cast_target_hidden and state_machine.current_state != null and state_machine.current_state.name == &"FireRain":
+		state_machine.transition_to(&"Idle")
 
 
 func _on_health_changed(current: int, max_value: int) -> void:

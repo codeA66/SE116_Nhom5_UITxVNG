@@ -3,7 +3,8 @@
 [ext_resource type="Script" uid="uid://findks0ymxbe" path="res://components/utility/shader_warmup/shader_warmup_data.gd" id="1_data"]
 [ext_resource type="PackedScene" path="res://objects/combat/projectiles/arrow/arrow.tscn" id="2_arrow"]
 [ext_resource type="PackedScene" uid="uid://ogf07s4t0ew7" path="res://assets/models/shared/weapons/bow_visual.tscn" id="3_bow"]
+[ext_resource type="PackedScene" path="res://assets/vfx/shared/charms/charm_ultimate/skystrike_vfx.tscn" id="4_skystrike"]
 
 [resource]
 script = ExtResource("1_data")
-extra_scenes = Array[PackedScene]([ExtResource("2_arrow"), ExtResource("3_bow")])
+extra_scenes = Array[PackedScene]([ExtResource("2_arrow"), ExtResource("3_bow"), ExtResource("4_skystrike")])

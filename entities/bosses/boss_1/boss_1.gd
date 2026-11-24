@@ -34,6 +34,7 @@ var shield_stacks: int:
 	set(value):
 		health.shield_stacks = maxi(value, 0)
 var target_player: Node3D = null
+var _observed_cast_player: Player
 
 
 var _is_current_anim_finished: bool = false
@@ -100,9 +101,16 @@ func _on_player_spawned(p: Player) -> void:
 
 
 func set_target_player(player: Node3D) -> void:
-	target_player = player
-	if player == null:
+	var actor: Player = player as Player
+	if is_instance_valid(_observed_cast_player):
+		if _observed_cast_player.targetability_changed.is_connected(_on_cast_targetability_changed):
+			_observed_cast_player.targetability_changed.disconnect(_on_cast_targetability_changed)
+	_observed_cast_player = actor
+	target_player = player if actor == null or actor.is_targetable() else null
+	if not is_instance_valid(player):
 		return
+	if actor:
+		actor.targetability_changed.connect(_on_cast_targetability_changed)
 	var callback: Callable = _on_player_removed.bind(player)
 	if not player.tree_exiting.is_connected(callback):
 		player.tree_exiting.connect(callback, CONNECT_ONE_SHOT)
@@ -111,6 +119,22 @@ func set_target_player(player: Node3D) -> void:
 func _on_player_removed(player: Node3D) -> void:
 	if target_player == player:
 		target_player = null
+	if _observed_cast_player == player:
+		_observed_cast_player = null
+
+
+func _on_cast_targetability_changed(targetable: bool) -> void:
+	target_player = _observed_cast_player if targetable else null
+	if not targetable:
+		_cancel_cast_targeted_attack.call_deferred()
+
+
+func _cancel_cast_targeted_attack() -> void:
+	if is_instance_valid(target_player) or health.is_dead() or state_machine.current_state == null:
+		return
+	var current: StringName = state_machine.current_state.name
+	if current in [&"Chase", &"Charge", &"JumpSlam", &"MagmaStomp", &"CastFireball"]:
+		state_machine.transition_to(&"Idle")
 
 
 func _find_zone_root() -> ZoneRoot:

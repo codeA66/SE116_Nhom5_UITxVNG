@@ -9,6 +9,9 @@ signal trauma_added(amount: float)
 const MAX_TRAUMA := 1.0
 ## Chặn chia cho time_scale quá nhỏ
 const MIN_REAL_DELTA_SCALE := 0.001
+## Một frame bị đứng (biên dịch shader lần đầu, tải dữ liệu) chỉ được trừ trauma tối đa bấy nhiêu giây:
+## không chặn thì cú nổ vừa gọi rung đã bị frame đứng 0.3 s ăn hết trauma, người chơi không thấy rung
+const MAX_REAL_STEP := 1.0 / 30.0
 
 ## Trauma giảm bao nhiêu mỗi giây
 @export var decay: float = 1.6
@@ -28,7 +31,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	# delta bị Engine.time_scale co lại; chia ngược để decay theo giây thật
-	var real_delta := delta / maxf(Engine.time_scale, MIN_REAL_DELTA_SCALE)
+	var real_delta := minf(delta / maxf(Engine.time_scale, MIN_REAL_DELTA_SCALE), MAX_REAL_STEP)
 	trauma = maxf(trauma - decay * real_delta, 0.0)
 	if trauma <= 0.0:
 		set_process(false)
