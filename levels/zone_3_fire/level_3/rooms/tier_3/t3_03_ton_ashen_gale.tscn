@@ -1,289 +1,87 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://buqjdxcvlwjad"]
 
-[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_03_ton_ashen_gale.gd" id="room"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_carried_flame/ton_carried_flame.tscn" id="flame"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_flame_station/ton_flame_station.tscn" id="station"]
+[ext_resource type="Script" uid="uid://brtyaadm1y3ai" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_03_ton_ashen_gale.gd" id="room"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_wind_screen/ton_wind_screen.tscn" id="screen"]
-[ext_resource type="Script" path="res://objects/wind_puzzle/wind_zone/wind_data.gd" id="return_wind_data"]
-
-[ext_resource type="PackedScene" path="res://components/core/interaction/world_hint/world_hint.tscn" id="world_hint"]
-[ext_resource type="PackedScene" path="res://objects/core/portal/vortex/vortex_portal_visual.tscn" id="portal_visual"]
-[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interactable"]
-[ext_resource type="Texture2D" path="res://ui/hud/icons/fire.svg" id="fire_icon"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/seal_gem/seal_gem.tscn" id="seal_gem"]
-
-[sub_resource type="Resource" id="ReturnWindData"]
-script = ExtResource("return_wind_data")
-strength = 1.65
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_flame_station/ton_flame_station.tscn" id="station"]
+[ext_resource type="Script" uid="uid://1safs58a5ahc" path="res://objects/wind_puzzle/wind_zone/wind_data.gd" id="wind_data"]
 
 [sub_resource type="StandardMaterial3D" id="Stone"]
 albedo_color = Color(0.064, 0.055, 0.052, 1)
 roughness = 0.95
 
-[sub_resource type="StandardMaterial3D" id="Metal"]
-albedo_color = Color(0.095, 0.067, 0.055, 1)
-metallic = 0.38
-
-[sub_resource type="StandardMaterial3D" id="Inlay"]
-albedo_color = Color(0.16, 0.065, 0.024, 1)
-shading_mode = 0
-
-[sub_resource type="StandardMaterial3D" id="Abyss"]
-albedo_color = Color(0.025, 0.012, 0.015, 1)
-shading_mode = 0
-disable_fog = true
-
-[sub_resource type="PlaneMesh" id="AbyssMesh"]
-material = SubResource("Abyss")
-size = Vector2(42, 61)
-
-[sub_resource type="BoxMesh" id="EntranceMesh"]
-size = Vector3(5.4, 1, 10.1)
+[sub_resource type="BoxMesh" id="LeftLaneMesh"]
 material = SubResource("Stone")
+size = Vector3(4.4, 1, 38)
 
-[sub_resource type="BoxMesh" id="FirstLaneMesh"]
-size = Vector3(4.65, 1, 13.5)
+[sub_resource type="BoxShape3D" id="LeftLaneShape"]
+size = Vector3(4.4, 1, 38)
+
+[sub_resource type="BoxMesh" id="CrossingMesh"]
 material = SubResource("Stone")
+size = Vector3(8.8, 1, 2.8)
 
-[sub_resource type="BoxMesh" id="FirstNookMesh"]
-size = Vector3(6.9, 1, 3.5)
+[sub_resource type="BoxShape3D" id="CrossingShape"]
+size = Vector3(8.8, 1, 2.8)
+
+[sub_resource type="BoxMesh" id="MiddleLaneMesh"]
 material = SubResource("Stone")
+size = Vector3(3.2, 1, 18)
 
-[sub_resource type="BoxMesh" id="FalseTrailMesh"]
-size = Vector3(5.7, 1, 13.1)
+[sub_resource type="BoxShape3D" id="MiddleLaneShape"]
+size = Vector3(3.2, 1, 18)
+
+[sub_resource type="BoxMesh" id="BlindBranchMesh"]
 material = SubResource("Stone")
+size = Vector3(5.6, 1, 2.8)
 
-[sub_resource type="BoxMesh" id="BendLaneMesh"]
-size = Vector3(11, 1, 4.7)
+[sub_resource type="BoxShape3D" id="BlindBranchShape"]
+size = Vector3(5.6, 1, 2.8)
+
+[sub_resource type="BoxMesh" id="LowerBridgeMesh"]
 material = SubResource("Stone")
+size = Vector3(15.8, 1, 2.8)
 
-[sub_resource type="BoxMesh" id="SecondNookMesh"]
-size = Vector3(5.5, 1, 6.2)
+[sub_resource type="BoxShape3D" id="LowerBridgeShape"]
+size = Vector3(15.8, 1, 2.8)
+
+[sub_resource type="BoxMesh" id="LowerRampMesh"]
 material = SubResource("Stone")
+size = Vector3(3.2, 1, 7.707788)
 
-[sub_resource type="BoxMesh" id="FinalLaneMesh"]
-size = Vector3(5.25, 1, 18.2)
+[sub_resource type="BoxShape3D" id="LowerRampShape"]
+size = Vector3(3.2, 1, 7.707788)
+
+[sub_resource type="BoxMesh" id="TorchLandingMesh"]
 material = SubResource("Stone")
+size = Vector3(5.2, 1, 3.2)
 
-[sub_resource type="BoxMesh" id="SealLandingMesh"]
-size = Vector3(8.2, 1, 5.3)
+[sub_resource type="BoxShape3D" id="TorchLandingShape"]
+size = Vector3(5.2, 1, 3.2)
+
+[sub_resource type="BoxMesh" id="UpperRampMesh"]
 material = SubResource("Stone")
+size = Vector3(3.2, 1, 9.867117)
 
-[sub_resource type="BoxMesh" id="ShortcutMouthMesh"]
-size = Vector3(4.65, 1, 3.25)
+[sub_resource type="BoxShape3D" id="UpperRampShape"]
+size = Vector3(3.2, 1, 9.867117)
+
+[sub_resource type="BoxMesh" id="HighBridgeMesh"]
 material = SubResource("Stone")
+size = Vector3(26.4, 1, 3)
 
-[sub_resource type="BoxMesh" id="ShortcutLaneMesh"]
-size = Vector3(2.35, 1, 10.99875)
-material = SubResource("Stone")
+[sub_resource type="BoxShape3D" id="HighBridgeShape"]
+size = Vector3(26.4, 1, 3)
 
-[sub_resource type="BoxMesh" id="ShortcutJoinMesh"]
-size = Vector3(15.55, 1, 2.4)
-material = SubResource("Stone")
+[sub_resource type="BoxShape3D" id="Catch"]
+size = Vector3(49, 1, 50)
 
-[sub_resource type="BoxMesh" id="EntryLeftMesh"]
-size = Vector3(0.24, 0.75, 9)
-material = SubResource("Metal")
+[sub_resource type="BoxShape3D" id="Fall"]
+size = Vector3(49, 2.5, 50)
 
-[sub_resource type="BoxMesh" id="EntryRightMesh"]
-size = Vector3(0.24, 0.75, 3.65)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="NookRailMesh"]
-size = Vector3(0.23, 0.58, 3.1)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="FalseTrailEndMesh"]
-size = Vector3(5.7, 0.75, 0.22)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="TurnRailMesh"]
-size = Vector3(0.22, 0.66, 5.55)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="SealBackMesh"]
-size = Vector3(7.25, 0.65, 0.2)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="SealMarkMesh"]
-size = Vector3(1.9, 0.023, 1.9)
-material = SubResource("Inlay")
-
-[sub_resource type="BoxMesh" id="FirstVentMesh"]
-size = Vector3(0.8, 1.6, 1.65)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="SecondVentMesh"]
-size = Vector3(1.7, 1.6, 0.8)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="FinalVentMesh"]
-size = Vector3(0.78, 1.6, 1.65)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="VentMouth1Mesh"]
-size = Vector3(0.05, 0.94, 1.15)
-material = SubResource("Inlay")
-
-[sub_resource type="BoxMesh" id="VentMouth2Mesh"]
-size = Vector3(1.15, 0.94, 0.05)
-material = SubResource("Inlay")
-
-[sub_resource type="BoxMesh" id="VentMouth3Mesh"]
-size = Vector3(0.05, 0.94, 1.15)
-material = SubResource("Inlay")
-
-[sub_resource type="BoxMesh" id="Pylon1Mesh"]
-size = Vector3(0.35, 1.19, 0.29)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="Pylon2Mesh"]
-size = Vector3(0.35, 1.19, 0.29)
-material = SubResource("Metal")
-
-[sub_resource type="BoxMesh" id="ShortcutRimMesh"]
-size = Vector3(0.08, 0.028, 41.1)
-material = SubResource("Inlay")
-
-[sub_resource type="BoxMesh" id="ReturnSlopeMesh"]
-size = Vector3(7.341, 1, 2.4)
-material = SubResource("Stone")
-
-[sub_resource type="BoxShape3D" id="ReturnSlopeShape"]
-size = Vector3(7.341, 1, 2.4)
-
-[sub_resource type="BoxMesh" id="ShelterFloorMesh"]
-size = Vector3(4.8, 1, 5.4)
-material = SubResource("Stone")
-
-[sub_resource type="BoxShape3D" id="ShelterFloorShape"]
-size = Vector3(4.8, 1, 5.4)
-
-[sub_resource type="BoxMesh" id="ShelterWallMesh"]
-size = Vector3(0.33, 2.4, 3.5)
-material = SubResource("Metal")
-
-[sub_resource type="BoxShape3D" id="ShelterWallShape"]
-size = Vector3(0.33, 2.4, 3.5)
-
-[sub_resource type="StandardMaterial3D" id="SealNeon"]
-shading_mode = 0
-disable_fog = true
-albedo_color = Color(1, 0.66, 0.28, 1)
-
-[sub_resource type="BoxMesh" id="SealSolidBar"]
-size = Vector3(0.095, 0.026, 1.02)
-material = SubResource("SealNeon")
-
-[sub_resource type="BoxMesh" id="SealSplitBar"]
-size = Vector3(0.095, 0.026, 0.44)
-material = SubResource("SealNeon")
-
-[sub_resource type="BoxMesh" id="EntryGateMesh"]
-size = Vector3(5.4, 2.66, 0.36)
-material = SubResource("Metal")
-
-[sub_resource type="BoxShape3D" id="EntranceShape"]
-size = Vector3(5.4, 1, 10.1)
-
-[sub_resource type="BoxShape3D" id="FirstLaneShape"]
-size = Vector3(4.65, 1, 13.5)
-
-[sub_resource type="BoxShape3D" id="FirstNookShape"]
-size = Vector3(6.9, 1, 3.5)
-
-[sub_resource type="BoxShape3D" id="FalseTrailShape"]
-size = Vector3(5.7, 1, 13.1)
-
-[sub_resource type="BoxShape3D" id="FalseTrailEndShape"]
-size = Vector3(5.7, 0.75, 0.22)
-
-[sub_resource type="BoxShape3D" id="BendLaneShape"]
-size = Vector3(11, 1, 4.7)
-
-[sub_resource type="BoxShape3D" id="SecondNookShape"]
-size = Vector3(5.5, 1, 6.2)
-
-[sub_resource type="BoxShape3D" id="FinalLaneShape"]
-size = Vector3(5.25, 1, 18.2)
-
-[sub_resource type="BoxShape3D" id="SealLandingShape"]
-size = Vector3(8.2, 1, 5.3)
-
-[sub_resource type="BoxShape3D" id="ShortcutMouthShape"]
-size = Vector3(4.65, 1, 3.25)
-
-[sub_resource type="BoxShape3D" id="ShortcutLaneShape"]
-size = Vector3(2.35, 1, 44.2)
-
-[sub_resource type="BoxShape3D" id="ShortcutJoinShape"]
-size = Vector3(15.55, 1, 2.4)
-
-[sub_resource type="BoxShape3D" id="EntryGateShape"]
-size = Vector3(5.4, 2.66, 0.36)
-
-[sub_resource type="BoxShape3D" id="PresenceShape"]
-size = Vector3(45, 17, 59.2)
-
-[sub_resource type="BoxShape3D" id="FallShape"]
-size = Vector3(44, 2.5, 58.8)
-
-[sub_resource type="BoxShape3D" id="UpperCornerShape"]
-size = Vector3(3, 1, 4.45)
-
-[sub_resource type="BoxMesh" id="UpperCornerMesh"]
-size = Vector3(3, 1, 4.45)
-material = SubResource("Stone")
-
-[sub_resource type="BoxShape3D" id="LowerCornerShape"]
-size = Vector3(12.4, 1, 6.95)
-
-[sub_resource type="BoxMesh" id="LowerCornerMesh"]
-size = Vector3(12.4, 1, 6.95)
-material = SubResource("Stone")
-
-[sub_resource type="BoxShape3D" id="FalseTrailDeckShape"]
-size = Vector3(5.7, 1, 12.8)
-
-[sub_resource type="BoxMesh" id="FalseTrailApproachMesh"]
-size = Vector3(5.7, 1, 1)
-material = SubResource("Stone")
-
-[sub_resource type="BoxMesh" id="FalseTrailDeckMesh"]
-size = Vector3(5.7, 1, 11.8)
-material = SubResource("Stone")
-
-[sub_resource type="BoxMesh" id="ExtensionLitDeckMesh"]
-size = Vector3(5.7, 1, 7.86)
-material = SubResource("Stone")
-
-[sub_resource type="BoxMesh" id="ExtensionLitJoinMesh"]
-size = Vector3(5.7, 1, 3.84)
-material = SubResource("Stone")
-
-[sub_resource type="BoxMesh" id="ExtensionDarkJoinMesh"]
-size = Vector3(5.7, 1, 4.08)
-material = SubResource("Stone")
-
-[sub_resource type="PlaneMesh" id="ExtensionAbyssMesh"]
-material = SubResource("Abyss")
-size = Vector2(24, 54)
-
-[sub_resource type="BoxMesh" id="ExtensionDeckMesh"]
-material = SubResource("Stone")
-size = Vector3(5.7, 1, 7.92)
-
-[sub_resource type="BoxShape3D" id="ExtensionDeckShape"]
-size = Vector3(5.7, 1, 47.52)
-
-[sub_resource type="BoxShape3D" id="ExtensionPresenceShape"]
-size = Vector3(25, 17, 54)
-
-[sub_resource type="BoxShape3D" id="ExtensionFallShape"]
-size = Vector3(24, 2.5, 54)
-
-[sub_resource type="BoxShape3D" id="PortalReach"]
-size = Vector3(2.8, 2.5, 2.4)
+[sub_resource type="BoxShape3D" id="Presence"]
+size = Vector3(49, 28, 50)
 
 [sub_resource type="StandardMaterial3D" id="TonGemMaterial"]
 albedo_color = Color(0.22, 0.85, 0.39, 1)
@@ -293,682 +91,329 @@ emission_enabled = true
 emission = Color(0.22, 0.85, 0.39, 1)
 emission_energy_multiplier = 0.45
 
-[node name="TonAshenGale" type="Node3D"]
+[sub_resource type="Resource" id="BridgeWind"]
+script = ExtResource("wind_data")
+strength = 1.65
+
+[node name="TonAshenGale" type="Node3D" unique_id=1714886636]
 script = ExtResource("room")
 
-[node name="Geometry" type="StaticBody3D" parent="."]
+[node name="Geometry" type="StaticBody3D" parent="." unique_id=836705660]
 collision_mask = 0
 
-[node name="UpperCorner" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(25.69, -0.182, 5.925)
-mesh = SubResource("UpperCornerMesh")
+[node name="LeftLane" type="MeshInstance3D" parent="Geometry" unique_id=618131610]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 19)
+mesh = SubResource("LeftLaneMesh")
 
-[node name="UpperCornerCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(25.69, -0.182, 5.925)
-shape = SubResource("UpperCornerShape")
+[node name="LeftLaneCollision" type="CollisionShape3D" parent="Geometry" unique_id=885171483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.18, 19)
+shape = SubResource("LeftLaneShape")
 
-[node name="LowerCorner" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(20.405, -0.182, 49.3)
-mesh = SubResource("LowerCornerMesh")
+[node name="Crossing" type="MeshInstance3D" parent="Geometry" unique_id=1158550037]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6, -0.18, 18)
+mesh = SubResource("CrossingMesh")
 
-[node name="LowerCornerCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(20.405, -0.182, 49.3)
-shape = SubResource("LowerCornerShape")
+[node name="CrossingCollision" type="CollisionShape3D" parent="Geometry" unique_id=155410861]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6, -0.18, 18)
+shape = SubResource("CrossingShape")
 
-[node name="Abyss" type="MeshInstance3D" parent="Geometry"]
-visible = false
-position = Vector3(12, -4.2, 27)
-cast_shadow = 0
-mesh = SubResource("AbyssMesh")
+[node name="MiddleLane" type="MeshInstance3D" parent="Geometry" unique_id=945201281]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6, -0.18, 20.5)
+mesh = SubResource("MiddleLaneMesh")
 
-[node name="ReturnSlope" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(21.355, 0.907, 5)
-rotation = Vector3(0, 0, -0.2955)
-mesh = SubResource("ReturnSlopeMesh")
+[node name="MiddleLaneCollision" type="CollisionShape3D" parent="Geometry" unique_id=817412782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6, -0.18, 20.5)
+shape = SubResource("MiddleLaneShape")
 
-[node name="ShelterFloor" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(26.45, -0.18, 26.2)
-mesh = SubResource("ShelterFloorMesh")
+[node name="BlindBranch" type="MeshInstance3D" parent="Geometry" unique_id=1396465776]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, -0.18, 12.9)
+mesh = SubResource("BlindBranchMesh")
 
-[node name="ShelterWall" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(25.05, 1.52, 26.2)
-mesh = SubResource("ShelterWallMesh")
+[node name="BlindBranchCollision" type="CollisionShape3D" parent="Geometry" unique_id=497538782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, -0.18, 12.9)
+shape = SubResource("BlindBranchShape")
 
-[node name="TonNeon" type="Node3D" parent="Geometry"]
-visible = false
-position = Vector3(9.55, 2.488, 5)
+[node name="LowerBridge" type="MeshInstance3D" parent="Geometry" unique_id=1936147094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.1, -0.18, 28.1)
+mesh = SubResource("LowerBridgeMesh")
 
-[node name="SolidTop" type="MeshInstance3D" parent="Geometry/TonNeon"]
-position = Vector3(-0.23, 0, 0)
-mesh = SubResource("SealSolidBar")
-cast_shadow = 0
+[node name="LowerBridgeCollision" type="CollisionShape3D" parent="Geometry" unique_id=1662610936]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.1, -0.18, 28.1)
+shape = SubResource("LowerBridgeShape")
 
-[node name="SolidMiddle" type="MeshInstance3D" parent="Geometry/TonNeon"]
-mesh = SubResource("SealSolidBar")
-cast_shadow = 0
+[node name="LowerRamp" type="MeshInstance3D" parent="Geometry" unique_id=1842852850]
+transform = Transform3D(1, 0, 0, 0, 0.9211463, -0.3892166, 0, 0.3892166, 0.9211463, 28.4, 1.359427, 22.955393)
+mesh = SubResource("LowerRampMesh")
 
-[node name="SplitLeft" type="MeshInstance3D" parent="Geometry/TonNeon"]
-position = Vector3(0.23, 0, -0.29)
-mesh = SubResource("SealSplitBar")
-cast_shadow = 0
+[node name="LowerRampCollision" type="CollisionShape3D" parent="Geometry" unique_id=652259494]
+transform = Transform3D(1, 0, 0, 0, 0.9211463, -0.3892166, 0, 0.3892166, 0.9211463, 28.4, 1.359427, 22.955393)
+shape = SubResource("LowerRampShape")
 
-[node name="SplitRight" type="MeshInstance3D" parent="Geometry/TonNeon"]
-position = Vector3(0.23, 0, 0.29)
-mesh = SubResource("SealSplitBar")
-cast_shadow = 0
+[node name="TorchLanding" type="MeshInstance3D" parent="Geometry" unique_id=1145380741]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.4, 2.82, 18)
+mesh = SubResource("TorchLandingMesh")
 
-[node name="FlameEmblem" type="Sprite3D" parent="Geometry"]
-position = Vector3(9.55, 2.498, 5)
-rotation = Vector3(-1.5707963, -1.5707963, 0)
-pixel_size = 0.029
-texture = ExtResource("fire_icon")
+[node name="TorchLandingCollision" type="CollisionShape3D" parent="Geometry" unique_id=857098428]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.4, 2.82, 18)
+shape = SubResource("TorchLandingShape")
 
-[node name="Entrance" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(0, -0.18, 5)
-mesh = SubResource("EntranceMesh")
+[node name="UpperRamp" type="MeshInstance3D" parent="Geometry" unique_id=1413970611]
+transform = Transform3D(1, 0, 0, 0, 0.95265913, -0.3040404, 0, 0.3040404, 0.95265913, 28.4, 4.34367, 11.54798)
+mesh = SubResource("UpperRampMesh")
 
-[node name="FirstLane" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(0, -0.18, 16.75)
-mesh = SubResource("FirstLaneMesh")
+[node name="UpperRampCollision" type="CollisionShape3D" parent="Geometry" unique_id=311625409]
+transform = Transform3D(1, 0, 0, 0, 0.95265913, -0.3040404, 0, 0.3040404, 0.95265913, 28.4, 4.34367, 11.54798)
+shape = SubResource("UpperRampShape")
 
-[node name="FirstNook" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(0.15, -0.18, 25.25)
-mesh = SubResource("FirstNookMesh")
+[node name="HighBridge" type="MeshInstance3D" parent="Geometry" unique_id=557903629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8, 5.82, 5.5)
+mesh = SubResource("HighBridgeMesh")
 
-[node name="FalseTrail" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-0.12, -0.18, 33.45)
-mesh = SubResource("FalseTrailMesh")
+[node name="HighBridgeCollision" type="CollisionShape3D" parent="Geometry" unique_id=519902490]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8, 5.82, 5.5)
+shape = SubResource("HighBridgeShape")
 
-[node name="BendLane" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(9, -0.18, 25.25)
-mesh = SubResource("BendLaneMesh")
+[node name="FallCatch" type="CollisionShape3D" parent="Geometry" unique_id=163009801]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -8.65, 20)
+shape = SubResource("Catch")
 
-[node name="SecondNook" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(17, -0.18, 26)
-mesh = SubResource("SecondNookMesh")
-
-[node name="FinalLane" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(17, -0.18, 38.2)
-mesh = SubResource("FinalLaneMesh")
-
-[node name="SealLanding" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(17.9, -0.18, 49.95)
-mesh = SubResource("SealLandingMesh")
-
-[node name="ShortcutMouth" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(24.3, -0.18, 50.6)
-mesh = SubResource("ShortcutMouthMesh")
-
-[node name="ShortcutLane" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(25.45, -0.18, 10.479375)
-mesh = SubResource("ShortcutLaneMesh")
-
-[node name="ShortcutLaneMidA" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(25.45, -0.18, 21.478125)
-mesh = SubResource("ShortcutLaneMesh")
-
-[node name="ShortcutLaneMidB" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(25.45, -0.18, 32.476875)
-mesh = SubResource("ShortcutLaneMesh")
-
-[node name="ShortcutLaneCorner" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(25.45, -0.18, 43.475625)
-mesh = SubResource("ShortcutLaneMesh")
-
-[node name="ShortcutJoin" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(10.225, 1.95, 5)
-mesh = SubResource("ShortcutJoinMesh")
-
-[node name="EntryLeft" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-2.53, 0.69, 4.8)
-mesh = SubResource("EntryLeftMesh")
-
-[node name="EntryRight" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(2.53, 0.69, 2.1)
-mesh = SubResource("EntryRightMesh")
-
-[node name="NookRail" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-3.14, 0.61, 25.25)
-mesh = SubResource("NookRailMesh")
-
-[node name="TurnRail" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(19.6, 0.65, 26)
-mesh = SubResource("TurnRailMesh")
-
-[node name="SealBack" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(17.55, 0.66, 52.44)
-mesh = SubResource("SealBackMesh")
-
-[node name="SealMark" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(8.15, 2.463, 5)
-mesh = SubResource("SealMarkMesh")
-
-[node name="FirstVent" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-2.65, 1.12, 16.25)
-mesh = SubResource("FirstVentMesh")
-
-[node name="SecondVent" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(9, 1.12, 28.1)
-mesh = SubResource("SecondVentMesh")
-
-[node name="FinalVent" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(20.02, 1.12, 38.2)
-mesh = SubResource("FinalVentMesh")
-
-[node name="VentMouth1" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-2.22, 1.12, 16.25)
-mesh = SubResource("VentMouth1Mesh")
-
-[node name="VentMouth2" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(9, 1.12, 27.68)
-mesh = SubResource("VentMouth2Mesh")
-
-[node name="VentMouth3" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(19.6, 1.12, 38.2)
-mesh = SubResource("VentMouth3Mesh")
-
-[node name="Pylon1" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(-2.18, 0.91, 10.1)
-mesh = SubResource("Pylon1Mesh")
-
-[node name="Pylon2" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(2.18, 0.91, 10.1)
-mesh = SubResource("Pylon2Mesh")
-
-[node name="ShortcutRim" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(25.45, 0.358, 28.55)
-mesh = SubResource("ShortcutRimMesh")
-
-[node name="ReturnSlopeCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(21.355, 0.907, 5)
-rotation = Vector3(0, 0, -0.2955)
-shape = SubResource("ReturnSlopeShape")
-
-[node name="ShelterFloorCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(26.45, -0.18, 26.2)
-shape = SubResource("ShelterFloorShape")
-
-[node name="ShelterWallCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(25.05, 1.52, 26.2)
-shape = SubResource("ShelterWallShape")
-
-[node name="EntranceCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(0, -0.18, 5)
-shape = SubResource("EntranceShape")
-
-[node name="FirstLaneCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(0, -0.18, 16.75)
-shape = SubResource("FirstLaneShape")
-
-[node name="FirstNookCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(0.15, -0.18, 25.25)
-shape = SubResource("FirstNookShape")
-
-[node name="FalseTrailCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(-0.12, -0.18, 33.45)
-shape = SubResource("FalseTrailShape")
-
-[node name="BendLaneCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(9, -0.18, 25.25)
-shape = SubResource("BendLaneShape")
-
-[node name="SecondNookCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(17, -0.18, 26)
-shape = SubResource("SecondNookShape")
-
-[node name="FinalLaneCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(17, -0.18, 38.2)
-shape = SubResource("FinalLaneShape")
-
-[node name="SealLandingCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(17.9, -0.18, 49.95)
-shape = SubResource("SealLandingShape")
-
-[node name="ShortcutMouthCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(24.3, -0.18, 50.6)
-shape = SubResource("ShortcutMouthShape")
-
-[node name="ShortcutLaneCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(25.45, -0.18, 27.08)
-shape = SubResource("ShortcutLaneShape")
-
-[node name="ShortcutJoinCollision" type="CollisionShape3D" parent="Geometry"]
-position = Vector3(10.225, 1.95, 5)
-shape = SubResource("ShortcutJoinShape")
-
-[node name="EntryGate" type="StaticBody3D" parent="."]
-position = Vector3(0, 1.65, 9.65)
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="EntryGate"]
-mesh = SubResource("EntryGateMesh")
-
-[node name="Collision" type="CollisionShape3D" parent="EntryGate"]
-shape = SubResource("EntryGateShape")
-
-[node name="Presence" type="Area3D" parent="."]
-position = Vector3(12.5, -2, 29.35)
+[node name="Fall" type="Area3D" parent="." unique_id=511099859]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -7, 20)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
 
-[node name="Collision" type="CollisionShape3D" parent="Presence"]
-shape = SubResource("PresenceShape")
+[node name="Collision" type="CollisionShape3D" parent="Fall" unique_id=1898339955]
+shape = SubResource("Fall")
 
-[node name="ExtensionCollision" type="CollisionShape3D" parent="Presence"]
-position = Vector3(-12.62, 0, 48.65)
-shape = SubResource("ExtensionPresenceShape")
-
-[node name="Fall" type="Area3D" parent="."]
-position = Vector3(12.5, -2.55, 29.5)
+[node name="Presence" type="Area3D" parent="." unique_id=1154738548]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2, 20)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
 
-[node name="Collision" type="CollisionShape3D" parent="Fall"]
-shape = SubResource("FallShape")
+[node name="Collision" type="CollisionShape3D" parent="Presence" unique_id=669697881]
+shape = SubResource("Presence")
 
-[node name="ExtensionCollision" type="CollisionShape3D" parent="Fall"]
-position = Vector3(-12.62, 0, 48.5)
-shape = SubResource("ExtensionFallShape")
+[node name="Restart" type="Marker3D" parent="." unique_id=670681]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.39, 2.65)
 
-[node name="Restart" type="Marker3D" parent="."]
-position = Vector3(0, 0.39, 2.65)
+[node name="CarriedFlame" parent="." unique_id=1399850004 instance=ExtResource("flame")]
 
-[node name="CarriedFlame" parent="." instance=ExtResource("flame")]
+[node name="TorchLighting" type="Node3D" parent="." unique_id=1290401520]
 
-[node name="FalseTrailFloor" type="StaticBody3D" parent="."]
-position = Vector3(-0.12, -0.18, 46.4)
-collision_mask = 0
-
-[node name="FloorCollision" type="CollisionShape3D" parent="FalseTrailFloor"]
-shape = SubResource("FalseTrailDeckShape")
-
-[node name="Visual" type="Node3D" parent="FalseTrailFloor"]
-
-[node name="Approach" type="MeshInstance3D" parent="FalseTrailFloor/Visual"]
-position = Vector3(0, 0, -5.9)
-mesh = SubResource("FalseTrailApproachMesh")
-
-[node name="Deck" type="MeshInstance3D" parent="FalseTrailFloor/Visual"]
-position = Vector3(0, 0, 0.5)
-layers = 257
-mesh = SubResource("FalseTrailDeckMesh")
-
-[node name="CorridorExtension" type="StaticBody3D" parent="."]
-position = Vector3(-0.12, -0.18, 76.5)
-collision_mask = 0
-
-[node name="FloorCollision" type="CollisionShape3D" parent="CorridorExtension"]
-shape = SubResource("ExtensionDeckShape")
-
-[node name="Deck1" type="MeshInstance3D" parent="CorridorExtension"]
-position = Vector3(0, 0, -19.77)
-layers = 257
-mesh = SubResource("ExtensionLitDeckMesh")
-
-[node name="Deck2Near" type="MeshInstance3D" parent="CorridorExtension"]
-position = Vector3(0, 0, -13.92)
-layers = 257
-mesh = SubResource("ExtensionLitJoinMesh")
-
-[node name="Deck2" type="MeshInstance3D" parent="CorridorExtension"]
-position = Vector3(0, 0, -9.96)
-mesh = SubResource("ExtensionDarkJoinMesh")
-
-[node name="Deck3" type="MeshInstance3D" parent="CorridorExtension"]
-position = Vector3(0, 0, -3.96)
-mesh = SubResource("ExtensionDeckMesh")
-
-[node name="Deck4" type="MeshInstance3D" parent="CorridorExtension"]
-position = Vector3(0, 0, 3.96)
-mesh = SubResource("ExtensionDeckMesh")
-
-[node name="Deck5" type="MeshInstance3D" parent="CorridorExtension"]
-position = Vector3(0, 0, 11.88)
-mesh = SubResource("ExtensionDeckMesh")
-
-[node name="Deck6" type="MeshInstance3D" parent="CorridorExtension"]
-position = Vector3(0, 0, 19.80)
-mesh = SubResource("ExtensionDeckMesh")
-
-[node name="Abyss" type="MeshInstance3D" parent="CorridorExtension"]
-visible = false
-position = Vector3(0, -4.02, 1.5)
-cast_shadow = 0
-mesh = SubResource("ExtensionAbyssMesh")
-
-[node name="EndCollision" type="CollisionShape3D" parent="CorridorExtension"]
-position = Vector3(0, 0.875, 23.65)
-shape = SubResource("FalseTrailEndShape")
-
-[node name="EndRail" type="MeshInstance3D" parent="CorridorExtension"]
-position = Vector3(0, 0.875, 23.65)
-mesh = SubResource("FalseTrailEndMesh")
-
-[node name="ReturnPortal" type="Node3D" parent="."]
-position = Vector3(-0.12, 0.32, 98)
-
-[node name="Vortex" parent="ReturnPortal" instance=ExtResource("portal_visual")]
-rotation = Vector3(0, 3.1415927, 0)
-scale = Vector3(0.72, 0.72, 0.72)
-
-[node name="Interactable" type="Area3D" parent="ReturnPortal"]
-position = Vector3(0, 0, -1.7)
-collision_layer = 32
-collision_mask = 0
-monitoring = false
-script = ExtResource("interactable")
-prompt_text = "dịch chuyển về"
-prompt_offset = Vector3(0, 1.7, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ReturnPortal/Interactable"]
-position = Vector3(0, 1, 0)
-shape = SubResource("PortalReach")
-
-[node name="ReturnArrival" type="Marker3D" parent="."]
-position = Vector3(-0.4, 0.36, 25.25)
-rotation = Vector3(0, 1.5707963, 0)
-
-[node name="TorchLighting" type="Node3D" parent="."]
-
-[node name="First" type="Node3D" parent="TorchLighting"]
+[node name="Source" type="Node3D" parent="TorchLighting" unique_id=1965373172]
 visible = false
 
-[node name="Light1" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(0.1, 2.05, 15)
+[node name="TorchLight" type="OmniLight3D" parent="TorchLighting/Source" unique_id=1546813691]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 2, 5.5)
 light_color = Color(1, 0.63, 0.36, 1)
 light_energy = 6.1
-omni_range = 5.8
-omni_attenuation = 1.15
+omni_range = 7.0
 
-[node name="Light2" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(0.1, 2.05, 20)
+[node name="PathLight" type="OmniLight3D" parent="TorchLighting/Source" unique_id=441123169]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 9)
 light_color = Color(1, 0.63, 0.36, 1)
 light_energy = 6.1
-omni_range = 5.8
-omni_attenuation = 1.15
+omni_range = 7.0
 
-[node name="Light3" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(0.1, 2.05, 25)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 5.8
-omni_attenuation = 1.15
-
-[node name="Light4" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(0.1, 2.05, 30)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 5.8
-omni_attenuation = 1.15
-
-[node name="Light5" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(4.7, 2.05, 25.25)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 4.9
-omni_attenuation = 1.15
-
-[node name="Light6" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(8.1, 2.05, 25.25)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 4.9
-omni_attenuation = 1.15
-
-[node name="Guide1" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(0.1, 2.05, 38)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 6.7
-omni_attenuation = 1.15
-
-[node name="Guide2" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(0.1, 2.05, 44.25)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 6.7
-omni_attenuation = 1.15
-
-[node name="Guide3" type="OmniLight3D" parent="TorchLighting/First"]
-position = Vector3(12.1, 2.05, 25.25)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 6.7
-omni_attenuation = 1.15
-
-[node name="Second" type="Node3D" parent="TorchLighting"]
+[node name="FirstTorch" type="Node3D" parent="TorchLighting" unique_id=1857672953]
 visible = false
 
-[node name="Light1" type="OmniLight3D" parent="TorchLighting/Second"]
-position = Vector3(17, 2.05, 28.4)
+[node name="TorchLight" type="OmniLight3D" parent="TorchLighting/FirstTorch" unique_id=1049432673]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, 18)
 light_color = Color(1, 0.63, 0.36, 1)
 light_energy = 6.1
-omni_range = 5.8
-omni_attenuation = 1.15
+omni_range = 7.0
 
-[node name="Light2" type="OmniLight3D" parent="TorchLighting/Second"]
-position = Vector3(17, 2.05, 33.3)
+[node name="PathLight" type="OmniLight3D" parent="TorchLighting/FirstTorch" unique_id=1921084286]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.9, 18)
 light_color = Color(1, 0.63, 0.36, 1)
 light_energy = 6.1
-omni_range = 5.8
-omni_attenuation = 1.15
+omni_range = 7.0
 
-[node name="Light3" type="OmniLight3D" parent="TorchLighting/Second"]
-position = Vector3(17, 2.05, 38.2)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 5.8
-omni_attenuation = 1.15
-
-[node name="Light4" type="OmniLight3D" parent="TorchLighting/Second"]
-position = Vector3(17, 2.05, 42)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 5.8
-omni_attenuation = 1.15
-
-[node name="Return" type="Node3D" parent="TorchLighting"]
+[node name="FalseTrailTorch" type="Node3D" parent="TorchLighting" unique_id=1124915058]
 visible = false
 
-[node name="Light1" type="OmniLight3D" parent="TorchLighting/Return"]
-position = Vector3(25.45, 2.05, 11.1)
+[node name="TorchLight" type="OmniLight3D" parent="TorchLighting/FalseTrailTorch" unique_id=147785730]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, 34)
 light_color = Color(1, 0.63, 0.36, 1)
 light_energy = 6.1
-omni_range = 4.4
-omni_attenuation = 1.15
+omni_range = 7.0
 
-[node name="Light2" type="OmniLight3D" parent="TorchLighting/Return"]
-position = Vector3(25.45, 2.05, 15)
+[node name="PathLight" type="OmniLight3D" parent="TorchLighting/FalseTrailTorch" unique_id=1439554743]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 29)
 light_color = Color(1, 0.63, 0.36, 1)
 light_energy = 6.1
-omni_range = 4.4
-omni_attenuation = 1.15
+omni_range = 7.0
 
-[node name="Light3" type="OmniLight3D" parent="TorchLighting/Return"]
-position = Vector3(25.45, 2.05, 19)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 4.4
-omni_attenuation = 1.15
-
-[node name="Light4" type="OmniLight3D" parent="TorchLighting/Return"]
-position = Vector3(25.7, 2.05, 22.8)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 4.4
-omni_attenuation = 1.15
-
-[node name="Light5" type="OmniLight3D" parent="TorchLighting/Return"]
-position = Vector3(26.5, 2.05, 26.45)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.1
-omni_range = 4.9
-omni_attenuation = 1.15
-
-[node name="Corner" type="Node3D" parent="TorchLighting"]
+[node name="MiddleTorch" type="Node3D" parent="TorchLighting" unique_id=1968901001]
 visible = false
 
-[node name="Light1" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(25.45, 2.3, 38.7)
+[node name="TorchLight" type="OmniLight3D" parent="TorchLighting/MiddleTorch" unique_id=381517394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, 2, 18)
 light_color = Color(1, 0.63, 0.36, 1)
 light_energy = 6.1
-omni_range = 4.7
-omni_attenuation = 1.15
+omni_range = 7.0
 
-[node name="Light2" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(25.45, 2.4, 43.35)
+[node name="PathLight" type="OmniLight3D" parent="TorchLighting/MiddleTorch" unique_id=131315276]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6, 1.9, 14)
 light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.3
-omni_range = 5.6
-omni_attenuation = 1.15
+light_energy = 6.1
+omni_range = 7.0
 
-[node name="Light3" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(25.45, 2.5, 47.65)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 6.7
-omni_range = 6.3
-omni_attenuation = 1.15
-
-[node name="Light4" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(24.65, 2.45, 51)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 7.1
-omni_range = 6.7
-omni_attenuation = 1.15
-
-[node name="Light5" type="OmniLight3D" parent="TorchLighting/Corner"]
-position = Vector3(21.2, 2.6, 49.25)
-light_color = Color(1, 0.63, 0.36, 1)
-light_energy = 7.35
-omni_range = 6.7
-omni_attenuation = 1.15
-
-[node name="FalseTrail" type="Node3D" parent="TorchLighting"]
+[node name="LowerTorch" type="Node3D" parent="TorchLighting" unique_id=794887487]
 visible = false
 
-[node name="Light1" type="OmniLight3D" parent="TorchLighting/FalseTrail"]
-position = Vector3(-0.12, 2.2, 44.6)
-light_color = Color(1, 0.66, 0.4, 1)
-light_energy = 7.4
-light_cull_mask = 256
-omni_range = 7.1
-omni_attenuation = 1.15
+[node name="TorchLight" type="OmniLight3D" parent="TorchLighting/LowerTorch" unique_id=815725491]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 2, 28.3)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 7.0
 
-[node name="Light2" type="OmniLight3D" parent="TorchLighting/FalseTrail"]
-position = Vector3(-0.12, 2.2, 51.35)
-light_color = Color(1, 0.66, 0.4, 1)
-light_energy = 9.0
-light_cull_mask = 256
-omni_range = 10.3
-omni_attenuation = 1.15
+[node name="PathLight" type="OmniLight3D" parent="TorchLighting/LowerTorch" unique_id=522035874]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 1.9, 28.1)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 7.0
 
-[node name="Light3" type="OmniLight3D" parent="TorchLighting/FalseTrail"]
-position = Vector3(-0.12, 2.2, 59.9)
-light_color = Color(1, 0.66, 0.4, 1)
-light_energy = 8.4
-light_cull_mask = 256
-omni_range = 7.3
-omni_attenuation = 1.15
+[node name="CornerTorch" type="Node3D" parent="TorchLighting" unique_id=1045983799]
+visible = false
 
-[node name="Stations" type="Node3D" parent="."]
+[node name="TorchLight" type="OmniLight3D" parent="TorchLighting/CornerTorch" unique_id=1413544344]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.3, 2, 28.4)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 7.0
 
-[node name="Source" parent="Stations" instance=ExtResource("station")]
-position = Vector3(-1, 0.32, 4.6)
+[node name="PathLight" type="OmniLight3D" parent="TorchLighting/CornerTorch" unique_id=514901043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.4, 3.8, 23.5)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 7.0
+
+[node name="ReturnTorch" type="Node3D" parent="TorchLighting" unique_id=145008136]
+visible = false
+
+[node name="TorchLight" type="OmniLight3D" parent="TorchLighting/ReturnTorch" unique_id=260284843]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.8, 5, 18)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 7.0
+
+[node name="PathLight" type="OmniLight3D" parent="TorchLighting/ReturnTorch" unique_id=173555568]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.4, 6.4, 13)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 7.0
+
+[node name="UpperTorch" type="Node3D" parent="TorchLighting" unique_id=791963734]
+visible = false
+
+[node name="TorchLight" type="OmniLight3D" parent="TorchLighting/UpperTorch" unique_id=68663705]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.2, 8, 5.5)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 7.0
+
+[node name="PathLight" type="OmniLight3D" parent="TorchLighting/UpperTorch" unique_id=1328149011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 7.9, 5.5)
+light_color = Color(1, 0.63, 0.36, 1)
+light_energy = 6.1
+omni_range = 7.0
+
+[node name="Stations" type="Node3D" parent="." unique_id=1305434178]
+
+[node name="Source" parent="Stations" unique_id=1684537731 node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 0.32, 5.5)
 role = 0
+shaped_lights = NodePath("../../TorchLighting/Source")
 
-[node name="EntranceTorch" parent="Stations" instance=ExtResource("station")]
-position = Vector3(1.55, 0.32, 8.15)
-role = 1
+[node name="FirstTorch" parent="Stations" unique_id=1124688697 node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.32, 18)
+shaped_lights = NodePath("../../TorchLighting/FirstTorch")
 
-[node name="FirstTorch" parent="Stations" node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
-position = Vector3(-2.24, 0.32, 25.5)
-role = 1
-shaped_lights = NodePath("../../TorchLighting/First")
+[node name="FalseTrailTorch" parent="Stations" unique_id=1285501900 node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.32, 34)
+shaped_lights = NodePath("../../TorchLighting/FalseTrailTorch")
 
-[node name="SecondTorch" parent="Stations" node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
-position = Vector3(18.64, 0.32, 27.9)
-role = 1
-shaped_lights = NodePath("../../TorchLighting/Second")
+[node name="MiddleTorch" parent="Stations" unique_id=1122365611 node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, 0.32, 18)
+shaped_lights = NodePath("../../TorchLighting/MiddleTorch")
 
-[node name="FalseTrailTorch" parent="Stations" node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
-position = Vector3(-0.12, 0.32, 51.35)
-role = 1
-shaped_lights = NodePath("../../TorchLighting/FalseTrail")
+[node name="LowerTorch" parent="Stations" unique_id=1816820142 node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 0.32, 28.3)
+shaped_lights = NodePath("../../TorchLighting/LowerTorch")
 
-[node name="ForwardHint" parent="Stations/FalseTrailTorch" instance=ExtResource("world_hint")]
-monitoring = false
-label_offset = Vector3(0, 2.3, 0)
+[node name="CornerTorch" parent="Stations" unique_id=1980481385 node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.3, 0.32, 28.4)
+shaped_lights = NodePath("../../TorchLighting/CornerTorch")
 
-[node name="EndTorch" parent="Stations" instance=ExtResource("station")]
-position = Vector3(-1.7, 0.32, 93.7)
-role = 1
+[node name="ReturnTorch" parent="Stations" unique_id=1994100509 node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.8, 3.32, 18)
+shaped_lights = NodePath("../../TorchLighting/ReturnTorch")
 
-[node name="ReturnTorch" parent="Stations" node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
-position = Vector3(27.0, 0.32, 26.2)
-role = 1
-shaped_lights = NodePath("../../TorchLighting/Return")
+[node name="UpperTorch" parent="Stations" unique_id=1077607957 node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.2, 6.32, 5.5)
+shaped_lights = NodePath("../../TorchLighting/UpperTorch")
 
-[node name="CornerTorch" parent="Stations" node_paths=PackedStringArray("shaped_lights") instance=ExtResource("station")]
-position = Vector3(25.45, 0.32, 50.55)
-role = 1
-shaped_lights = NodePath("../../TorchLighting/Corner")
-
-[node name="Seal" parent="Stations" instance=ExtResource("station")]
-position = Vector3(8.15, 2.45, 5)
+[node name="Seal" parent="Stations" unique_id=2104906287 instance=ExtResource("station")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.3, 6.32, 5.5)
 role = 2
 
+[node name="Foot" parent="Stations/Seal" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
+
+[node name="Stem" parent="Stations/Seal" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.61, 0)
+
+[node name="Bowl" parent="Stations/Seal" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.08, 0)
+
 [node name="Ember" parent="Stations/Seal" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.23, 0)
 visible = false
 
-[node name="Interactable" parent="Stations/Seal" index="7"]
-prompt_text = "truyền lửa và lấy ngọc"
+[node name="Flame" parent="Stations/Seal" index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.48, 0)
 
-[node name="TonGem" parent="Stations/Seal" instance=ExtResource("seal_gem")]
-position = Vector3(0, 1.55, 0)
+[node name="Light" parent="Stations/Seal" index="5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="FireFeedback" parent="Stations/Seal" index="6"]
+transform = Transform3D(0.92, 0, 0, 0, 0.92, 0, 0, 0, 0.92, 0, 1.24, 0)
+
+[node name="CollisionShape3D" parent="Stations/Seal/Interactable" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="TonGem" parent="Stations/Seal" unique_id=71033148 instance=ExtResource("seal_gem")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 0)
 
 [node name="Gem" parent="Stations/Seal/TonGem" index="0"]
 material_override = SubResource("TonGemMaterial")
 
-[node name="WindClusters" type="Node3D" parent="."]
+[node name="WindClusters" type="Node3D" parent="." unique_id=604010295]
 
-[node name="First" parent="WindClusters" instance=ExtResource("screen")]
-position = Vector3(0, 1.24, 16.85)
-rotation = Vector3(0, -1.57079633, 0)
-size = Vector3(11.8, 4, 5.6)
+[node name="First" parent="WindClusters" unique_id=1888103562 instance=ExtResource("screen")]
+transform = Transform3D(3.1391647e-07, 0, -1, 0, 1, 0, 1, 0, 3.1391647e-07, 0, 1.24, 11.5)
 travel = 8.0
-screen_speed = 2.6
-reverse_path = false
+size = Vector3(9, 4, 4.8)
 
-[node name="Bend" parent="WindClusters" instance=ExtResource("screen")]
-position = Vector3(9, 1.24, 25.25)
-rotation = Vector3(0, 0, 0)
-size = Vector3(11, 4, 5.6)
+[node name="Middle" parent="WindClusters" unique_id=419556426 instance=ExtResource("screen")]
+transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12.6, 1.24, 23)
 travel = 8.0
-screen_speed = 2.2
-reverse_path = false
+size = Vector3(9, 4, 4.8)
 
-[node name="Final" parent="WindClusters" instance=ExtResource("screen")]
-position = Vector3(17, 1.24, 38.5)
-rotation = Vector3(0, 1.57079633, 0)
-size = Vector3(16.6, 4, 5.8)
-travel = 11.0
-screen_speed = 2.7
-reverse_path = true
+[node name="Bottom" parent="WindClusters" unique_id=1173824388 instance=ExtResource("screen")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.8, 1.24, 28.1)
+travel = 8.0
+data = SubResource("BridgeWind")
+size = Vector3(9, 4, 4.8)
 
-[node name="Return" parent="WindClusters" instance=ExtResource("screen")]
-position = Vector3(25.45, 1.24, 27.4)
-rotation = Vector3(0, -1.57079633, 0)
-data = SubResource("ReturnWindData")
-size = Vector3(37.2, 4, 7.0)
-travel = 36.6
-screen_speed = 3.6
-reverse_path = true
-paired_screen_delay = 1.45
-screen_home_offset = Vector3(-14.3, 0, 0.17)
-paired_track_offset = 0.35
-fixed_cover = AABB(-2.95, -0.92, 0.235, 3.5, 2.4, 0.33)
+[node name="Branch" parent="WindClusters" unique_id=13149821 instance=ExtResource("screen")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 1.24, 12.9)
+travel = 8.0
+size = Vector3(9, 4, 4.8)
 
 [editable path="Stations/Seal"]
 [editable path="Stations/Seal/TonGem"]

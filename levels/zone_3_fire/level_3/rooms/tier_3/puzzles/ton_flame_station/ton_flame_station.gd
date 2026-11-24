@@ -30,6 +30,12 @@ func is_lit() -> bool:
 
 
 func set_lit(lit: bool) -> void:
+	if role == Role.SEAL:
+		_interaction.prompt_text = "Lấy đá"
+	elif lit:
+		_interaction.prompt_text = "Lấy lửa"
+	else:
+		_interaction.prompt_text = "Thắp đuốc"
 	_flame.visible = lit
 	_light.visible = lit and shaped_lights == null
 	if shaped_lights:
