@@ -7,7 +7,7 @@ extends Node
 
 @export_group("Shake")
 ## Lệch ngang / dọc tối đa khi trauma = 1 (m, theo h_offset / v_offset). Camera game xa ~30 m nên cần lớn mới thấy
-@export var max_offset: float = 1.8
+@export var max_offset: float = 0.93
 ## Nghiêng tối đa (độ) khi trauma = 1
 @export var max_roll_degrees: float = 1.2
 ## Tốc độ nhiễu (càng cao rung càng nhanh)
