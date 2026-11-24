@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="4_hx1aj"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_bagaw"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="6_fsjdw"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/crag_001.glb" id="7_pkhbq"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_c7rjj"]
 size = Vector3(4, 0.32, 4)
@@ -476,9 +475,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.65
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.65, 0.32, -9.65)
 
 [node name="Decor" type="Node3D" parent="." unique_id=2008618996]
-
-[node name="crag_001" type="Node3D" parent="Decor" unique_id=917174300 instance=ExtResource("7_pkhbq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.32, -6)
 
 [node name="Collision" type="StaticBody3D" parent="." unique_id=808328832]
 collision_mask = 0

@@ -320,7 +320,7 @@ const CELLAR_TORCHES: Array[Vector3] = [
 	Vector3(19, 0.32, 27), Vector3(33, 0.32, 27), Vector3(19, 0.32, 37), Vector3(33, 0.32, 37),
 	# Bốn góc phòng 3 (số 5..8): thắp đủ thì phòng sáng và quái xuất hiện
 	Vector3(34.5, 0.32, 10), Vector3(49.5, 0.32, 10), Vector3(34.5, 0.32, 22), Vector3(49.5, 0.32, 22),
-	Vector3(52.5, 0.32, 28.5),
+	Vector3(52.5, 0.32, 29.5),  # lùi khỏi lan can bắc của đường (trước đây cắm vào thanh lan can)
 ]
 # Một rào ở chân bậc thang đường bẫy địa nhiệt (cạnh cửa tây phòng 5): chặn lối lên phòng 3 và 2, mặt trước quay về nam
 const BURNABLE_BARRIERS: Array[Dictionary] = [
@@ -468,6 +468,13 @@ func _stack_foundation(parent: Node, owner_node: Node, local_xz: Vector3, top_lo
 		level -= 4.0
 
 
+func _is_cellar_room(id: String) -> bool:
+	for sec: Dictionary in CELLAR_SECTIONS:
+		if sec.get("room", "") == id:
+			return true
+	return false
+
+
 func _build_room(room: Dictionary) -> Node3D:
 	var r: Array = room.r
 	var x0: float = r[0]; var z0: float = r[1]; var x1: float = r[2]; var z1: float = r[3]
@@ -535,6 +542,9 @@ func _build_room(room: Dictionary) -> Node3D:
 		var a0: float = x0 if along_x else z0
 		var a1: float = x1 if along_x else z1
 		var a: float = a0 + 2.0
+		# Phòng hầm có mái che: CellarCover đặt tường cao 4 m thay tường thấp phía nam và đông; không đặt tường thấp
+		# ở đó nữa (trước đây hai tường trùng chỗ, mặt chồng nhau). Va chạm tường thấp vẫn giữ
+		var replaced_by_cellar: bool = low and side in ["S", "E"] and _is_cellar_room(str(room.id))
 		while a < a1:
 			if not (a in gaps):
 				var pos: Vector3
@@ -542,7 +552,8 @@ func _build_room(room: Dictionary) -> Node3D:
 				elif side == "S": pos = Vector3(a - cx, T, z1 - 0.35 - cz)
 				elif side == "W": pos = Vector3(x0 + 0.35 - cx, T, a - cz)
 				else: pos = Vector3(x1 - 0.35 - cx, T, a - cz)
-				_place(wall_g, root, wall_file, pos, 0.0 if along_x else 90.0)
+				if not replaced_by_cellar:
+					_place(wall_g, root, wall_file, pos, 0.0 if along_x else 90.0)
 				var size: Vector3 = Vector3(4, wall_h, 0.7) if along_x else Vector3(0.7, wall_h, 4)
 				_box(body, root, pos + Vector3(0, wall_h * 0.5, 0), size)
 			a += 4.0
@@ -697,7 +708,9 @@ func _build_connectors(paths: Array) -> Node3D:
 				_box(body, root, p + Vector3(0, T * 0.5, 0), Vector3(4, T, 4))
 			else:
 				var along_x: bool = absf(d_in.x) > 0.5
-				_place(g, root, KIT + "bridge_4m.glb", p, 90.0 if along_x else 0.0)
+				# Mặt đường hẹp 3 m: sàn phẳng thu bề ngang (mẫu bridge_4m có gờ hai bên, lan can đặt đè lên gờ thành chồng model)
+				var deck: Node3D = _place(g, root, KIT + "floor_4m.glb", p, 90.0 if along_x else 0.0, "deck_4m")
+				deck.scale = Vector3(3.0 / 4.0, 1.0, 1.0)
 				_box(body, root, p + Vector3(0, T * 0.5, 0), Vector3(4, T, 3) if along_x else Vector3(3, T, 4))
 			_add_rails(g, root, body, c, p, top_y, d_in, junction or d_in.dot(d_out) < 0.5 or cells.size() == 1, occupied)
 			# Đường đi trên nền đá liền; đoạn qua hồ dung nham để trống thành cầu
@@ -980,6 +993,8 @@ func _build_cellar_cover() -> Node3D:
 	root.name = "CellarCover"
 	var body: StaticBody3D = _body(root, root)
 	var cut_scene: PackedScene = load(CUTAWAY_SCENE)
+	# Mái gom lại rồi mới dựng: đầu / mép mái lấn sang phòng khác hoặc mái khác thì cắt phần thò ra (_trim_roof)
+	var roofs: Array[Dictionary] = []
 	for sec: Dictionary in CELLAR_SECTIONS:
 		var g: Node3D = _group(root, root, str(sec.name))
 		var roof: Node3D = _group(g, root, "Roof")
@@ -995,7 +1010,7 @@ func _build_cellar_cover() -> Node3D:
 			var w: float = float(r[2]) - float(r[0])
 			var dz: float = float(r[3]) - float(r[1])
 			var rc: Vector3 = Vector3((float(r[0]) + float(r[2])) * 0.5, y + T + CELLAR_WALL_H, (float(r[1]) + float(r[3])) * 0.5)
-			_gable_roof(roof, root, rc, maxf(w, dz), minf(w, dz), w >= dz)
+			roofs.append(_roof_spec(roof, str(room.id), rc, maxf(w, dz), minf(w, dz), w >= dz))
 			# Tường cao 4 m thay chỗ tường thấp phía nam và đông (phía camera); cửa vẫn chừa trống
 			for side: String in ["S", "E"]:
 				var gaps: Array[float] = []
@@ -1011,7 +1026,8 @@ func _build_cellar_cover() -> Node3D:
 						_box(body, root, wp + Vector3(0, 2.0, 0), Vector3(4, 4, 0.7) if along_x else Vector3(0.7, 4, 4))
 					a += 4.0
 		else:
-			# Mái đường nối trong hầm: mỗi ô đường có tâm nằm trong các hộp của khu này
+			# Mái đường nối trong hầm: gom các ô đường có tâm nằm trong các hộp của khu này, rồi gộp theo đoạn thẳng
+			var roof_cells: Array[Dictionary] = []
 			for points: Array in CONNECTORS:
 				var cells: Array[Dictionary] = _path_cells(points)
 				for ci: int in range(cells.size()):
@@ -1027,9 +1043,14 @@ func _build_cellar_cover() -> Node3D:
 					var top: float = pc.y
 					if c.kind == "stair":
 						top = (pc.y if c.dy > 0.0 else pc.y + c.dy) + 2.0
-					# Mái nhỏ hai dốc cho từng ô đường, nóc chạy theo hướng đi
 					var cdir: Vector3 = c.dir if c.dir != Vector3.ZERO else (cells[ci + 1].dir if ci + 1 < cells.size() else Vector3.FORWARD)
-					_gable_roof(roof, root, Vector3(pc.x, top + T + CELLAR_WALL_H, pc.z), 4.0, 4.0, absf(cdir.x) > 0.5)
+					roof_cells.append({"p": Vector3(pc.x, top + T + CELLAR_WALL_H, pc.z), "along_x": absf(cdir.x) > 0.5})
+			# Mỗi ô một mái riêng thì phần thò ra ở hai đầu xuyên vào nhau (bậc thang so le, góc rẽ): một mái cho mỗi đoạn
+			for run: Dictionary in _merge_roof_runs(roof_cells):
+				var spec: Dictionary = _roof_spec(roof, "Paths", run.center, run.length, 4.0, run.along_x)
+				spec.over_neg = run.over_neg
+				spec.over_pos = run.over_pos
+				roofs.append(spec)
 		var cut: Area3D = cut_scene.instantiate()
 		cut.name = "Cutaway"
 		g.add_child(cut)
@@ -1040,23 +1061,164 @@ func _build_cellar_cover() -> Node3D:
 		cut.set("boxes", bxs)
 		var targets: Array[Node3D] = [roof, walls]
 		cut.set("targets", targets)
+	for spec: Dictionary in roofs:
+		_trim_roof(spec, roofs)
+	for spec: Dictionary in roofs:
+		_gable_roof(spec.holder, root, spec.center, spec.length, spec.span, spec.along_x, spec.over_neg, spec.over_pos, spec.eave_neg, spec.eave_pos)
 	return root
+
+
+func _roof_spec(holder: Node3D, owner_id: String, center: Vector3, length: float, span: float, along_x: bool) -> Dictionary:
+	return {"holder": holder, "name": owner_id, "center": center, "length": length, "span": span, "along_x": along_x,
+		"over_neg": ROOF_OVERHANG, "over_pos": ROOF_OVERHANG, "eave_neg": ROOF_OVERHANG, "eave_pos": ROOF_OVERHANG}
+
+
+## Mặt bằng (không tính phần thò ra) của mái
+func _roof_footprint(r: Dictionary) -> Rect2:
+	var c: Vector3 = r.center
+	var half_l: float = r.length * 0.5
+	var half_s: float = r.span * 0.5
+	return Rect2(c.x - half_l, c.z - half_s, r.length, r.span) if r.along_x else Rect2(c.x - half_s, c.z - half_l, r.span, r.length)
+
+
+## Đầu mái (gồm cả góc) hay mép mái thò sang phòng khác (cùng tầng cao, tính cả tường) hoặc mái khác cùng độ cao
+## thì bỏ phần thò ra: mái giáp nhau bằng mép tường, không chồng lên nhau
+func _trim_roof(r: Dictionary, all: Array[Dictionary]) -> void:
+	var y: float = (r.center as Vector3).y
+	var blocks: Array[Rect2] = []
+	for rm: Dictionary in ROOMS:
+		var floor_y: float = float(rm.y) + T
+		if str(rm.id) != r.name and y > floor_y - 0.5 and y - 2.0 < floor_y + CELLAR_WALL_H + 0.5:
+			var rr: Array = rm.r
+			blocks.append(Rect2(float(rr[0]), float(rr[1]), float(rr[2]) - float(rr[0]), float(rr[3]) - float(rr[1])))
+	for o: Dictionary in all:
+		if o != r and o.name != r.name and absf((o.center as Vector3).y - y) < 0.5:
+			blocks.append(_roof_footprint(o))
+	var fp: Rect2 = _roof_footprint(r)
+	var o_: float = ROOF_OVERHANG
+	var ax: bool = r.along_x
+	for end: int in [-1, 1]:
+		var band: Rect2
+		if ax:
+			band = Rect2((fp.position.x - o_) if end < 0 else fp.end.x, fp.position.y - o_ + 0.05, o_, fp.size.y + o_ * 2.0 - 0.1)
+		else:
+			band = Rect2(fp.position.x - o_ + 0.05, (fp.position.y - o_) if end < 0 else fp.end.y, fp.size.x + o_ * 2.0 - 0.1, o_)
+		for b: Rect2 in blocks:
+			if band.intersects(b):
+				r["over_neg" if end < 0 else "over_pos"] = 0.0
+	for sd: int in [-1, 1]:
+		var band: Rect2
+		if ax:
+			band = Rect2(fp.position.x + 0.3, (fp.position.y - o_) if sd < 0 else fp.end.y, fp.size.x - 0.6, o_)
+		else:
+			band = Rect2((fp.position.x - o_) if sd < 0 else fp.end.x, fp.position.y + 0.3, o_, fp.size.y - 0.6)
+		for b: Rect2 in blocks:
+			if band.intersects(b):
+				r["eave_neg" if sd < 0 else "eave_pos"] = 0.0
+
+
+## Gộp mái ô đường (p = tâm đáy mái, along_x = nóc theo X) thành một mái cho mỗi đoạn thẳng cùng hướng, cùng hàng, liền nhau.
+## Đoạn bậc thang lấy cao độ ô cao nhất. Ô ngã ba (hai bên là ô hướng kia) thuộc về mái đi thông qua.
+## Đầu mái chạm mái vuông góc thì kéo tới nóc mái kia, không thò ra (giao mái chữ T / chữ L); đầu tự do giữ ROOF_OVERHANG.
+func _merge_roof_runs(cells: Array[Dictionary]) -> Array[Dictionary]:
+	const CELL: float = 4.0
+	for c: Dictionary in cells:
+		var side: Vector3 = Vector3(0, 0, CELL) if c.along_x else Vector3(CELL, 0, 0)
+		var a: Dictionary = _roof_cell_at(cells, c.p - side)
+		var b: Dictionary = _roof_cell_at(cells, c.p + side)
+		if not a.is_empty() and not b.is_empty() and a.along_x != c.along_x and b.along_x != c.along_x:
+			c.along_x = a.along_x
+	var groups: Dictionary = {}
+	for c: Dictionary in cells:
+		var p: Vector3 = c.p
+		var key: String = "%s_%d" % ["x" if c.along_x else "z", roundi(p.z if c.along_x else p.x)]
+		if not groups.has(key):
+			groups[key] = []
+		groups[key].append(c)
+	var runs: Array[Dictionary] = []
+	for key: String in groups:
+		var list: Array = groups[key]
+		var along_x: bool = list[0].along_x
+		list.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return _roof_axis(a.p, along_x) < _roof_axis(b.p, along_x))
+		var seg: Array = [list[0]]
+		for i: int in range(1, list.size()):
+			if absf(_roof_axis(list[i].p, along_x) - _roof_axis(seg[-1].p, along_x) - CELL) < 0.1:
+				seg.append(list[i])
+			else:
+				runs.append(_roof_run(seg, along_x))
+				seg = [list[i]]
+		runs.append(_roof_run(seg, along_x))
+	for r: Dictionary in runs:
+		var ext_neg: float = 0.0
+		var ext_pos: float = 0.0
+		for end: int in [-1, 1]:
+			var tip: Vector3 = r.first if end < 0 else r.last
+			var probe: Vector3 = tip + (Vector3(end, 0, 0) if r.along_x else Vector3(0, 0, end)) * CELL
+			for o: Dictionary in runs:
+				if o == r or o.along_x == r.along_x or not _roof_run_covers(o, probe):
+					continue
+				if end < 0:
+					ext_neg = CELL * 0.5
+					r.over_neg = 0.0
+				else:
+					ext_pos = CELL * 0.5
+					r.over_pos = 0.0
+		var a0: float = _roof_axis(r.first, r.along_x) - CELL * 0.5 - ext_neg
+		var a1: float = _roof_axis(r.last, r.along_x) + CELL * 0.5 + ext_pos
+		r.length = a1 - a0
+		var line: float = r.first.z if r.along_x else r.first.x
+		var mid: float = (a0 + a1) * 0.5
+		r.center = Vector3(mid, r.base, line) if r.along_x else Vector3(line, r.base, mid)
+	return runs
+
+
+func _roof_cell_at(cells: Array[Dictionary], p: Vector3) -> Dictionary:
+	for c: Dictionary in cells:
+		var q: Vector3 = c.p
+		if absf(q.x - p.x) < 0.1 and absf(q.z - p.z) < 0.1 and absf(q.y - p.y) < 0.1:
+			return c
+	return {}
+
+
+func _roof_run(seg: Array, along_x: bool) -> Dictionary:
+	var base: float = -INF
+	for c: Dictionary in seg:
+		base = maxf(base, (c.p as Vector3).y)
+	return {"first": seg[0].p, "last": seg[-1].p, "along_x": along_x, "base": base,
+		"over_neg": ROOF_OVERHANG, "over_pos": ROOF_OVERHANG}
+
+
+func _roof_run_covers(r: Dictionary, p: Vector3) -> bool:
+	var line: float = r.first.z if r.along_x else r.first.x
+	if absf((p.z if r.along_x else p.x) - line) > 0.1:
+		return false
+	var a: float = _roof_axis(p, r.along_x)
+	return a > _roof_axis(r.first, r.along_x) - 0.1 and a < _roof_axis(r.last, r.along_x) + 0.1
+
+
+func _roof_axis(p: Vector3, along_x: bool) -> float:
+	return p.x if along_x else p.z
 
 
 ## Mái hai dốc (kiểu mái nhà) phủ hình chữ nhật length × span, đáy mái ở base (tâm, cao độ đỉnh tường).
 ## Nóc chạy theo trục X nếu ridge_along_x, ngược lại theo Z. Lưới dựng bằng SurfaceTool, tô màu đỉnh từng hàng ngói
 ## xen kẽ đậm nhạt (dùng vật liệu vertex color chung của bộ kit lửa); hai đầu hồi tam giác bằng gạch, nóc có thanh chặn.
-func _gable_roof(parent: Node3D, owner_node: Node, base: Vector3, length: float, span: float, ridge_along_x: bool) -> void:
+## over_neg / over_pos: phần mái thò ra ở đầu âm / dương của nóc (0 khi đầu đó cắm vào mái khác).
+## eave_neg / eave_pos: phần mép thò ra hai bên sườn mái (bên âm / dương của trục ngang).
+func _gable_roof(parent: Node3D, owner_node: Node, base: Vector3, length: float, span: float, ridge_along_x: bool,
+		over_neg: float = ROOF_OVERHANG, over_pos: float = ROOF_OVERHANG, eave_neg: float = ROOF_OVERHANG, eave_pos: float = ROOF_OVERHANG) -> void:
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var half_l: float = length * 0.5 + ROOF_OVERHANG
+	var xn: float = -length * 0.5 - over_neg
+	var xp: float = length * 0.5 + over_pos
 	var half_s: float = span * 0.5
 	var slope: float = tan(deg_to_rad(ROOF_PITCH))
 	var ridge_h: float = half_s * slope
-	var eave: float = half_s + ROOF_OVERHANG
-	var eave_y: float = -ROOF_OVERHANG * slope
 	# Hệ cục bộ: x theo nóc, z ngang mái, y lên. Đổi sang thế giới bằng _roof_pt
 	for side: float in [-1.0, 1.0]:
+		var side_over: float = eave_neg if side < 0.0 else eave_pos
+		var eave: float = half_s + side_over
+		var eave_y: float = -side_over * slope
 		var rows: int = maxi(2, int(ceil(eave / ROOF_TILE_ROW)))
 		for k: int in range(rows):
 			var z0: float = side * eave * (1.0 - float(k) / rows)
@@ -1064,9 +1226,12 @@ func _gable_roof(parent: Node3D, owner_node: Node, base: Vector3, length: float,
 			var y0: float = ridge_h - absf(z0) * slope
 			var y1: float = ridge_h - absf(z1) * slope
 			var col: Color = ROOF_COLOR_A if k % 2 == 0 else ROOF_COLOR_B
-			_roof_quad(st, [Vector3(-half_l, y0, z0), Vector3(half_l, y0, z0), Vector3(half_l, y1, z1), Vector3(-half_l, y1, z1)], col, side > 0.0, ridge_along_x)
+			_roof_quad(st, [Vector3(xn, y0, z0), Vector3(xp, y0, z0), Vector3(xp, y1, z1), Vector3(xn, y1, z1)], col, side > 0.0, ridge_along_x)
 		# Mép mái dày: dải đứng ở mép dưới để mái không mỏng như tờ giấy
-		_roof_quad(st, [Vector3(-half_l, eave_y, side * eave), Vector3(half_l, eave_y, side * eave), Vector3(half_l, eave_y - ROOF_THICK, side * eave), Vector3(-half_l, eave_y - ROOF_THICK, side * eave)], ROOF_EDGE, side < 0.0, ridge_along_x)
+		_roof_quad(st, [Vector3(xn, eave_y, side * eave), Vector3(xp, eave_y, side * eave), Vector3(xp, eave_y - ROOF_THICK, side * eave), Vector3(xn, eave_y - ROOF_THICK, side * eave)], ROOF_EDGE, side < 0.0, ridge_along_x)
+		# Mặt dưới của tấm mái (dày ROOF_THICK): không có thì nhìn từ dưới phần mái thò ra bị bỏ vẽ (mặt một chiều),
+		# thấy lọt lan can / tường bên dưới như đè lên mái
+		_roof_quad(st, [Vector3(xn, ridge_h - ROOF_THICK, 0.0), Vector3(xp, ridge_h - ROOF_THICK, 0.0), Vector3(xp, eave_y - ROOF_THICK, side * eave), Vector3(xn, eave_y - ROOF_THICK, side * eave)], ROOF_EDGE, side < 0.0, ridge_along_x)
 	# Hai đầu hồi tam giác (gạch), mặt hướng ra ngoài
 	for end: float in [-1.0, 1.0]:
 		var x: float = end * length * 0.5
@@ -1077,14 +1242,18 @@ func _gable_roof(parent: Node3D, owner_node: Node, base: Vector3, length: float,
 			st.set_color(ROOF_GABLE)
 			st.add_vertex(_roof_pt(v, ridge_along_x))
 		# Mép dày ở đầu mái
+		var xe: float = xn if end < 0.0 else xp
 		for sd: float in [-1.0, 1.0]:
-			var a: Vector3 = Vector3(end * half_l, ridge_h, 0.0)
-			var b: Vector3 = Vector3(end * half_l, eave_y, sd * eave)
+			var side_over: float = eave_neg if sd < 0.0 else eave_pos
+			var eave: float = half_s + side_over
+			var eave_y: float = -side_over * slope
+			var a: Vector3 = Vector3(xe, ridge_h, 0.0)
+			var b: Vector3 = Vector3(xe, eave_y, sd * eave)
 			_roof_quad(st, [a, b, b - Vector3(0, ROOF_THICK, 0), a - Vector3(0, ROOF_THICK, 0)], ROOF_EDGE, (end * sd) > 0.0, ridge_along_x)
 	# Thanh nóc
 	var cap: float = 0.22
 	for sd: float in [-1.0, 1.0]:
-		_roof_quad(st, [Vector3(-half_l, ridge_h + cap, 0.0), Vector3(half_l, ridge_h + cap, 0.0), Vector3(half_l, ridge_h - cap * slope * 0.5, sd * cap), Vector3(-half_l, ridge_h - cap * slope * 0.5, sd * cap)], ROOF_RIDGE, sd > 0.0, ridge_along_x)
+		_roof_quad(st, [Vector3(xn, ridge_h + cap, 0.0), Vector3(xp, ridge_h + cap, 0.0), Vector3(xp, ridge_h - cap * slope * 0.5, sd * cap), Vector3(xn, ridge_h - cap * slope * 0.5, sd * cap)], ROOF_RIDGE, sd > 0.0, ridge_along_x)
 	st.generate_normals()
 	var mi: MeshInstance3D = MeshInstance3D.new()
 	mi.name = "GableRoof"
@@ -1306,14 +1475,13 @@ bounce_light = NodePath("../FireLighting/LavaBounceLight")
 world_environment = NodePath("../FireLighting/Environment")
 use_carried_light = false
 ' % ", ".join(aabbs)
-	# Lửa trại lớn giữa phòng 5: cháy rồi thì lại gần bấm tương tác nhận gậy đã đốt, thành đuốc soi đường trong hầm
+	# Lửa trại lớn giữa phòng 5 (cháy sẵn): lại gần bấm tương tác nhận gậy đã đốt, thành đuốc soi đường trong hầm
 	text = text.insert(text.find("[sub_resource"), '[ext_resource type="PackedScene" path="%s" id="campfire_scene"]
 
 ' % [CAMPFIRE_SCENE])
 	text += '
 [node name="Room5Campfire" parent="." instance=ExtResource("campfire_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, %s, %s, %s)
-persistent_id = &"level_3.room5_campfire_lit"
 ' % [CAMPFIRE_POS.x, CAMPFIRE_POS.y, CAMPFIRE_POS.z]
 	text += '
 [node name="CellarTorches" type="Node3D" parent="."]

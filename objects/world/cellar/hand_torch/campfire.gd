@@ -1,15 +1,13 @@
 class_name Campfire
 extends StaticBody3D
-## Lửa trại lớn: lúc đầu tắt (chỉ có củi), trúng Phun lửa (nguồn lửa bất kỳ) thì bùng cháy.
-## Khi đang cháy, player tới gần tương tác thì nhận ngay một cây gậy đã châm thành đuốc sáng; đang cầm đuốc thì châm lại
-## cho đầy giờ nếu sắp tắt. Gợi ý chỉ hiện khi lửa đã cháy. Có persistent_id thì nhớ đã đốt qua lần chơi sau.
-## Hiệu năng: chỉ nghe signal ignited của BurnableComponent; cháy rồi thì tắt luôn vùng bắt lửa.
+## Lửa trại lớn: luôn cháy sẵn từ lúc vào khu (không cần Phun lửa để nhóm).
+## Player tới gần tương tác thì nhận ngay một cây gậy đã châm thành đuốc sáng; đang cầm đuốc thì châm lại
+## cho đầy giờ nếu sắp tắt.
+## Hiệu năng: không có _process; ánh lửa chập chờn do FlameFeedback lo.
 
 signal torch_lit(actor: Node3D)
 signal activated
 
-## Cờ lưu trạng thái đã đốt. Để trống = mỗi lần vào khu lại tắt
-@export var persistent_id: StringName
 @export var lit_energy: float = 2.5
 @export_group("Gợi ý châm đuốc")
 @export var light_prompt: String = "THẮP ĐUỐC"
@@ -23,10 +21,6 @@ signal activated
 var is_lit: bool = false
 
 @onready var _interactable: InteractableComponent = $InteractableComponent
-## Gợi ý + tàn lửa lúc chưa cháy để người chơi biết đây là thứ đốt được
-@onready var _hint: WorldHint = $UnlitHint
-@onready var _embers: GPUParticles3D = $Embers
-@onready var _burnable: BurnableComponent = $BurnableComponent
 @onready var _light: OmniLight3D = $Light
 @onready var _feedback: FlameFeedback = $FlameFeedback
 # glTF có thể thêm hậu tố vào tên node ngọn lửa
@@ -38,42 +32,19 @@ func _ready() -> void:
 	_feedback.setup(_flame, _light, lit_energy)
 	_interactable.availability_check = _can_light_torch
 	_interactable.interacted.connect(_on_interacted)
-	_hint.visible_check = func() -> bool: return not is_lit
-	if not persistent_id.is_empty() and GameState.has_flag(persistent_id):
-		_light_up(true)
-		return
-	_light.light_energy = 0.0
-	_light.visible = false
-	if _flame:
-		_flame.visible = false
-	_burnable.ignited.connect(_on_ignited)
+	_light_up()
 
 
 func is_active() -> bool:
 	return is_lit
 
 
-func _on_ignited() -> void:
-	if is_lit:
-		return
-	if not persistent_id.is_empty():
-		GameState.set_flag(persistent_id)
-	_light_up(false)
-
-
-func _light_up(instant: bool) -> void:
+func _light_up() -> void:
 	is_lit = true
-	_burnable.set_enabled(false)
-	_embers.emitting = false
-	_embers.visible = false
-	_hint.refresh()
 	if _flame:
 		_flame.visible = true
 	_light.visible = true
-	if instant:
-		_feedback.start_quiet()
-	else:
-		_feedback.ignite()
+	_feedback.start_quiet()
 	activated.emit()
 
 

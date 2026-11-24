@@ -31,7 +31,7 @@ func _run() -> void:
 	await _frames(30)
 	_player.get_node("HurtboxComponent").set_invincible(9999.0)
 	var barrier2: BurnableBarrier = _level.get_node("BurnableBarriers/IgniteChainBarrier") as BurnableBarrier
-	var book: Node3D = _level.get_node("Pickups/Room4BookReveal/FlameBreathBook") as Node3D
+	var book: Node3D = _flame_book()
 	_check(not _player.has_ability(&"flame_breath"), "lúc đầu chưa có Phun lửa")
 	# 1. Đi về phía bắc đâm vào rào
 	_player.teleport(Vector3(54, 4.4, 44), Vector3.FORWARD)
@@ -157,6 +157,15 @@ func _press(action: StringName) -> void:
 	Input.action_press(action)
 	await _frames(2)
 	Input.action_release(action)
+
+
+## Sách Phun Lửa đang nằm trong khu (rơi từ Room4BookDrop); null nếu chưa có
+func _flame_book() -> Node3D:
+	for n: Node in _level.find_children("*", "AbilityPickup", true, false):
+		var p := n as AbilityPickup
+		if p.ability != null and p.ability.id == &"flame_breath" and p.is_inside_tree():
+			return p
+	return null
 
 
 func _frames(n: int) -> void:

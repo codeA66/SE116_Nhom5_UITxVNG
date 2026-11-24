@@ -113,20 +113,12 @@ func _t_cracked_wall() -> void:
 	var hp := _player.health.current_health
 	await _frames(240)
 	_check(_player.health.current_health == hp, "đứng trong Hang băng 4 s không mất máu (%d → %d)" % [hp, _player.health.current_health])
-	# Lửa trại hang băng giống phòng 5 tier 1: lúc đầu tắt, trúng lửa thì cháy, cháy rồi lấy được đuốc
+	# Lửa trại hang băng giống phòng 5 tier 1: cháy sẵn, lại gần lấy được đuốc
 	var fire := _node("Tier2Mechanics/IceCaveCampfire") as Campfire
 	var space := get_viewport().get_world_3d().direct_space_state
 	var ground := space.intersect_ray(PhysicsRayQueryParameters3D.create(fire.global_position + Vector3(0.9, 2.0, 0.9), fire.global_position + Vector3(0.9, -3.0, 0.9)))
 	_check(not ground.is_empty() and absf(ground.position.y - fire.global_position.y) < 0.05, "lửa trại hang băng đặt trên sàn")
-	_check(not fire.is_lit and not fire.get_node("Light").visible, "lửa trại hang băng lúc đầu tắt")
-	_teleport(fire.global_position + Vector3(1.8, 0.1, 0.0), Vector3.LEFT)
-	await _frames(10)
-	await _tap(&"interact")
-	await _frames(5)
-	_check(HandTorch.find_on(_player) == null, "lửa trại tắt: interact không nhận được đuốc")
-	fire.get_node("BurnableComponent").ignite()
-	await _frames(40)
-	_check(fire.is_lit and fire.get_node("Light").visible and GameState.has_flag(fire.persistent_id), "trúng lửa: lửa trại hang băng cháy, lưu cờ")
+	_check(fire.is_lit and fire.get_node("Light").visible, "lửa trại hang băng cháy sẵn khi vào khu")
 	_teleport(fire.global_position + Vector3(1.8, 0.1, 0.0), Vector3.LEFT)
 	await _frames(10)
 	await _tap(&"interact")

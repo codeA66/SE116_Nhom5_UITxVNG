@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_4m.glb" id="1_q1rij"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/foundation_edge_4m.glb" id="2_7hjmf"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/bridge_4m.glb" id="3_lajis"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="3_lajis"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/fence_rail_2m.glb" id="4_eh3nq"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/fence_post.glb" id="5_vdnw8"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/stair_4m.glb" id="6_y3jn3"]
@@ -706,8 +706,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 298, -8, 86)
 
 [node name="Path01" type="Node3D" parent="." unique_id=1437268113]
 
-[node name="bridge_4m2" parent="Path01" unique_id=527864498 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 218, 4, 50)
+[node name="deck_4m2" parent="Path01" unique_id=527864498 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 218, 4, 50)
 
 [node name="fence_rail_2m2" parent="Path01" unique_id=1878244246 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 217, 4.32, 48.85)
@@ -721,8 +721,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 217, 4.32, 51.15)
 [node name="fence_rail_2m5" parent="Path01" unique_id=2009926077 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 219, 4.32, 51.15)
 
-[node name="bridge_4m3" parent="Path01" unique_id=517756317 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 222, 4, 50)
+[node name="deck_4m3" parent="Path01" unique_id=517756317 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 222, 4, 50)
 
 [node name="fence_rail_2m6" parent="Path01" unique_id=1532004075 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 221, 4.32, 48.85)
@@ -768,8 +768,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 222, 4.32, 51.15)
 
 [node name="Path02" type="Node3D" parent="." unique_id=1786224995]
 
-[node name="bridge_4m2" parent="Path02" unique_id=2087347250 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 258, 4, 50)
+[node name="deck_4m2" parent="Path02" unique_id=2087347250 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 258, 4, 50)
 
 [node name="fence_rail_2m2" parent="Path02" unique_id=1017540084 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 257, 4.32, 48.85)
@@ -783,8 +783,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 257, 4.32, 51.15)
 [node name="fence_rail_2m5" parent="Path02" unique_id=592847551 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 259, 4.32, 51.15)
 
-[node name="bridge_4m3" parent="Path02" unique_id=618628782 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 262, 4, 50)
+[node name="deck_4m3" parent="Path02" unique_id=618628782 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 262, 4, 50)
 
 [node name="fence_rail_2m6" parent="Path02" unique_id=507502779 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 261, 4.32, 48.85)
@@ -830,8 +830,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 262, 4.32, 51.15)
 
 [node name="Path03" type="Node3D" parent="." unique_id=2033826178]
 
-[node name="bridge_4m2" parent="Path03" unique_id=1993474804 instance=ExtResource("3_lajis")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278, 4, 34)
+[node name="deck_4m2" parent="Path03" unique_id=1993474804 instance=ExtResource("3_lajis")]
+transform = Transform3D(0.75, 0, 0, 0, 1, 0, 0, 0, 1, 278, 4, 34)
 
 [node name="fence_rail_2m2" parent="Path03" unique_id=1904999753 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 276.85, 4.32, 35)
@@ -919,8 +919,8 @@ transform = Transform3D(-4.3711392e-08, 0, 1, 0.44721362, 0.89442724, 1.9548327e
 
 [node name="Path04" type="Node3D" parent="." unique_id=530478202]
 
-[node name="bridge_4m2" parent="Path04" unique_id=1605999209 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 290, 8, 14)
+[node name="deck_4m2" parent="Path04" unique_id=1605999209 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 290, 8, 14)
 
 [node name="fence_rail_2m2" parent="Path04" unique_id=1429478513 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 289, 8.32, 12.85)
@@ -934,8 +934,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 289, 8.32, 15.15)
 [node name="fence_rail_2m5" parent="Path04" unique_id=1592969372 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 291, 8.32, 15.15)
 
-[node name="bridge_4m3" parent="Path04" unique_id=956104939 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 294, 8, 14)
+[node name="deck_4m3" parent="Path04" unique_id=956104939 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 294, 8, 14)
 
 [node name="fence_rail_2m6" parent="Path04" unique_id=1248165584 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 293, 8.32, 12.85)
@@ -981,8 +981,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 294, 8.32, 15.15)
 
 [node name="Path05" type="Node3D" parent="." unique_id=1597766564]
 
-[node name="bridge_4m2" parent="Path05" unique_id=1754667664 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 322, 8, 14)
+[node name="deck_4m2" parent="Path05" unique_id=1754667664 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 322, 8, 14)
 
 [node name="fence_rail_2m2" parent="Path05" unique_id=1482355502 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 321, 8.32, 12.85)
@@ -996,8 +996,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 321, 8.32, 15.15)
 [node name="fence_rail_2m5" parent="Path05" unique_id=618273100 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 323, 8.32, 15.15)
 
-[node name="bridge_4m3" parent="Path05" unique_id=1091209291 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 326, 8, 14)
+[node name="deck_4m3" parent="Path05" unique_id=1091209291 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 326, 8, 14)
 
 [node name="fence_rail_2m6" parent="Path05" unique_id=1147691710 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 325, 8.32, 12.85)
@@ -1043,8 +1043,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 326, 8.32, 15.15)
 
 [node name="Path06" type="Node3D" parent="." unique_id=1290602604]
 
-[node name="bridge_4m2" parent="Path06" unique_id=1245096461 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 294, 4, 50)
+[node name="deck_4m2" parent="Path06" unique_id=1245096461 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 294, 4, 50)
 
 [node name="fence_rail_2m2" parent="Path06" unique_id=1750512833 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 293, 4.32, 48.85)
@@ -1058,8 +1058,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 293, 4.32, 51.15)
 [node name="fence_rail_2m5" parent="Path06" unique_id=1284374507 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 295, 4.32, 51.15)
 
-[node name="bridge_4m3" parent="Path06" unique_id=233360416 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 298, 4, 50)
+[node name="deck_4m3" parent="Path06" unique_id=233360416 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 298, 4, 50)
 
 [node name="fence_rail_2m6" parent="Path06" unique_id=536619025 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 297, 4.32, 48.85)
@@ -1105,8 +1105,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 298, 4.32, 51.15)
 
 [node name="Path07" type="Node3D" parent="." unique_id=1968417203]
 
-[node name="bridge_4m2" parent="Path07" unique_id=1948209229 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 322, 4, 50)
+[node name="deck_4m2" parent="Path07" unique_id=1948209229 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 322, 4, 50)
 
 [node name="fence_rail_2m2" parent="Path07" unique_id=338093310 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 321, 4.32, 48.85)
@@ -1120,8 +1120,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 321, 4.32, 51.15)
 [node name="fence_rail_2m5" parent="Path07" unique_id=1191679606 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 323, 4.32, 51.15)
 
-[node name="bridge_4m3" parent="Path07" unique_id=70546062 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 326, 4, 50)
+[node name="deck_4m3" parent="Path07" unique_id=70546062 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 326, 4, 50)
 
 [node name="fence_rail_2m6" parent="Path07" unique_id=119249169 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 325, 4.32, 48.85)
@@ -1167,8 +1167,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 326, 4.32, 51.15)
 
 [node name="Path08" type="Node3D" parent="." unique_id=680509732]
 
-[node name="bridge_4m2" parent="Path08" unique_id=1705518535 instance=ExtResource("3_lajis")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 278, 4, 66)
+[node name="deck_4m2" parent="Path08" unique_id=1705518535 instance=ExtResource("3_lajis")]
+transform = Transform3D(0.75, 0, 0, 0, 1, 0, 0, 0, 1, 278, 4, 66)
 
 [node name="fence_rail_2m2" parent="Path08" unique_id=1468150034 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 276.85, 4.32, 67)
@@ -1256,8 +1256,8 @@ transform = Transform3D(-4.3711392e-08, 0, 1, 0.44721362, 0.89442724, 1.9548327e
 
 [node name="Path09" type="Node3D" parent="." unique_id=977909688]
 
-[node name="bridge_4m2" parent="Path09" unique_id=949660617 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 294, 0, 86)
+[node name="deck_4m2" parent="Path09" unique_id=949660617 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 294, 0, 86)
 
 [node name="fence_rail_2m2" parent="Path09" unique_id=532079697 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 293, 0.32, 84.85)
@@ -1271,8 +1271,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 293, 0.32, 87.15)
 [node name="fence_rail_2m5" parent="Path09" unique_id=1816263997 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 295, 0.32, 87.15)
 
-[node name="bridge_4m3" parent="Path09" unique_id=2021031058 instance=ExtResource("3_lajis")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 298, 0, 86)
+[node name="deck_4m3" parent="Path09" unique_id=2021031058 instance=ExtResource("3_lajis")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -0.75, 0, -4.371139e-08, 298, 0, 86)
 
 [node name="fence_rail_2m6" parent="Path09" unique_id=1925963761 instance=ExtResource("4_eh3nq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 297, 0.32, 84.85)

@@ -6,8 +6,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="4_mjjid"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_6a11q"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="6_abwnd"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/chest_big_001.glb" id="7_b1bud"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/gold_pile_big_001.glb" id="8_cyq33"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/switch_obelisk.glb" id="9_t1eud"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_i8rdd"]
@@ -413,12 +411,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.65
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.65, 0.32, -9.65)
 
 [node name="Decor" type="Node3D" parent="." unique_id=585923729]
-
-[node name="Chest" type="Node3D" parent="Decor" unique_id=119695107 instance=ExtResource("7_b1bud")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, -2)
-
-[node name="gold_pile_big_001" type="Node3D" parent="Decor" unique_id=444108417 instance=ExtResource("8_cyq33")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.32, 2)
 
 [node name="SwitchObelisk" type="Node3D" parent="Decor" unique_id=2139305888 instance=ExtResource("9_t1eud")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.32, -6)

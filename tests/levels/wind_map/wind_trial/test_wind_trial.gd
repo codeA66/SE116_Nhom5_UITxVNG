@@ -250,6 +250,11 @@ func _collect_book() -> bool:
 			fx.close_reveal()
 		await get_tree().physics_frame
 	await _frames(120)
+	# Bảng đóng là trả điều khiển ngay; sau đó camera bay tới cổng đá vừa mở (tạm khoá điều khiển): chờ cảnh đó xong
+	for _frame: int in 600:
+		if _player.controls_enabled and not get_tree().paused:
+			break
+		await get_tree().physics_frame
 	_check(_player.controls_enabled and _player.global_position.distance_to(landing) < 1.0,
 		"TC00 học xong không bị dịch chuyển, được trả điều khiển (dời %.2f m)" % _player.global_position.distance_to(landing))
 	return _check(_walk_gate.is_open, "TC00 học Gió xong cổng đá lên 5.1 mở để tự đi bộ")

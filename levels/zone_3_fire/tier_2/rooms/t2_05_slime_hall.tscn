@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="5_gp1qa"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="6_0fbgd"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/pedestal_001.glb" id="7_jox1p"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/inferno_kit/rock_mid_002.glb" id="8_ny7yn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_r7b6d"]
 size = Vector3(4, 0.32, 4)
@@ -610,9 +609,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 11.6
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.65, 0.32, -11.65)
 
 [node name="Decor" type="Node3D" parent="." unique_id=1010184166]
-
-[node name="rock_mid_002" type="Node3D" parent="Decor" unique_id=31168870 instance=ExtResource("8_ny7yn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.32, 8)
 
 [node name="Collision" type="StaticBody3D" parent="." unique_id=2128739944]
 collision_mask = 0

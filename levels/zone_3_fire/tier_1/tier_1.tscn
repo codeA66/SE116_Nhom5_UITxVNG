@@ -36,12 +36,11 @@
 [ext_resource type="PackedScene" path="res://objects/core/encounter/encounter.tscn" id="encounter_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/portal/power/energy_stone_pickup.tscn" id="energy_stone_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/encounter/final_trial/final_trial.tscn" id="final_trial_scene"]
-[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/fire/fire_ability_pickup.tscn" id="fire_ability_pickup_scene"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/fire/flame_breath_book.tscn" id="flame_breath_book_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/fire/fire_checkpoint.tscn" id="fire_checkpoint_scene"]
 [ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_spider/fire_spider.tscn" id="fire_spider_scene"]
 [ext_resource type="Script" uid="uid://bs2bp43e7e800" path="res://objects/combat/spawner_cage/flag_reveal.gd" id="flag_reveal_script"]
 [ext_resource type="Script" uid="uid://b8bgtpep1x3cb" path="res://objects/wind_puzzle/flag_source/flag_source.gd" id="flag_source_script"]
-[ext_resource type="Resource" uid="uid://bbpu4dp2vnrxy" path="res://abilities/flame_breath/flame_breath.tres" id="flame_breath_data"]
 [ext_resource type="PackedScene" path="res://objects/core/encounter/hostage_rescue/hostage_rescue.tscn" id="hostage_rescue_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/key/key_drop.tscn" id="key_drop_scene"]
 [ext_resource type="PackedScene" path="res://objects/gates/stone_gate/key_lock.tscn" id="key_lock_scene"]
@@ -83,7 +82,7 @@ size = Vector2(193, 127)
 
 [sub_resource type="Resource" id="Zone3CameraView"]
 script = ExtResource("camera_view_data_script")
-distance = 32.0
+distance = 38.0
 yaw_degrees = 45.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ifwvh"]
@@ -235,14 +234,12 @@ view = SubResource("Zone3CameraView")
 
 [node name="Pickups" type="Node3D" parent="." unique_id=1323047747]
 
-[node name="Room4BookReveal" type="Node3D" parent="Pickups" unique_id=92803360]
-script = ExtResource("flag_reveal_script")
-flag = &"level_3.room4_cage_cleared"
-
-[node name="FlameBreathBook" parent="Pickups/Room4BookReveal" unique_id=537060560 instance=ExtResource("fire_ability_pickup_scene")]
+[node name="Room4BookDrop" parent="Pickups" unique_id=92803360 node_paths=PackedStringArray("encounter") instance=ExtResource("key_drop_scene")]
+editor_description = "Phá lồng phòng 4 + hạ hết quái thì sách Phun Lửa rơi đúng chỗ con quái cuối gục (kiểu Ấn Gió map Gió). Nạp lại khi đã dọn mà chưa nhặt: sách nằm ở vị trí node này."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 8.32, 13)
-ability = ExtResource("flame_breath_data")
-persistent_id = &"level_3.flame_breath_book"
+encounter = NodePath("../../Room4SpawnerCage")
+key_scene = ExtResource("flame_breath_book_scene")
+key_id = &"level_3.flame_breath_book"
 
 [node name="StartCheckpoint" parent="." unique_id=331036534 instance=ExtResource("fire_checkpoint_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.39, 4.32, 92.61)
@@ -278,7 +275,6 @@ use_carried_light = false
 
 [node name="Room5Campfire" parent="." unique_id=93420968 instance=ExtResource("campfire_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 59.5, 4.32, 37.5)
-persistent_id = &"level_3.room5_campfire_lit"
 
 [node name="CellarTorches" type="Node3D" parent="." unique_id=2110186059]
 
@@ -299,7 +295,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.5, 0.32, 22)
 persistent_id = &"level_3.cellar_torch_08"
 
 [node name="CellarTorch09" parent="CellarTorches" unique_id=823466439 instance=ExtResource("brazier_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52.5, 0.32, 28.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52.5, 0.32, 29.5)
 persistent_id = &"level_3.cellar_torch_09"
 
 [node name="Room3" type="Node3D" parent="." unique_id=240644925]

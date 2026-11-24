@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="5_hlh3g"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="6_amnme"]
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="7_em3vn"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/crate_stack.glb" id="8_auo1a"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fw23v"]
 size = Vector3(4, 0.32, 4)
@@ -370,9 +369,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.65
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.65, 0.32, -7.65)
 
 [node name="Decor" type="Node3D" parent="." unique_id=2125244807]
-
-[node name="crate_stack2" type="Node3D" parent="Decor" unique_id=432737786 instance=ExtResource("8_auo1a")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.32, 5)
 
 [node name="Collision" type="StaticBody3D" parent="." unique_id=960233578]
 collision_mask = 0

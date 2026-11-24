@@ -10,8 +10,6 @@
 [ext_resource type="Script" path="res://objects/core/portal/vortex/vortex_portal_visual.gd" id="8_ja0qn"]
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="9_s2h7w"]
 [ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_torch_standing.tscn" id="10_ofh4n"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/barrel.glb" id="11_h0dc2"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/crate_stack.glb" id="12_rrny1"]
 [ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_fire_pillar.tscn" id="13_6loss"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8ct4u"]
@@ -573,15 +571,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.32, -9)
 
 [node name="torch_standing4" type="Node3D" parent="Decor" unique_id=1770569819 instance=ExtResource("10_ofh4n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.32, 9)
-
-[node name="barrel2" type="Node3D" parent="Decor" unique_id=786391583 instance=ExtResource("11_h0dc2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.32, 10)
-
-[node name="barrel3" type="Node3D" parent="Decor" unique_id=2066914649 instance=ExtResource("11_h0dc2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8000002, 0.32, 8.800003)
-
-[node name="crate_stack2" type="Node3D" parent="Decor" unique_id=432737786 instance=ExtResource("12_rrny1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 10)
 
 [node name="fire_pillar2" type="Node3D" parent="Decor" unique_id=1186148008 instance=ExtResource("13_6loss")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.32, -5.5)
