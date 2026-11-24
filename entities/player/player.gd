@@ -108,6 +108,8 @@ var _blink_clock: float = 0.0
 ## Lần chết này có nháy đỏ trước không (state Dead đọc một lần)
 var _lethal_flash_pending: bool = false
 var _local_respawn: Callable
+## Checkpoint loé sáng khi cảnh hồi sinh bắt đầu (begin_respawn -> state Respawn)
+var _revive_anchor: Node3D
 var _flash_material: StandardMaterial3D
 var _model_meshes: Array[MeshInstance3D] = []
 var _flash_tween: Tween
@@ -872,6 +874,33 @@ func revive_locally(target_position: Vector3, facing: Vector3) -> void:
 	health.heal_full()
 	teleport(target_position, facing)
 	_hurtbox.set_invincible(recovery_invincibility)
+	# Hồi sinh tại chỗ cũng diễn cảnh hồi sinh (không có miếu loé)
+	begin_respawn(null)
+
+
+## Bắt đầu cảnh hồi sinh (cáo nằm, hiện dần từ đầu xuống chân, đứng dậy). anchor = checkpoint chứa điểm xuất hiện,
+## có play_revive() thì loé sáng theo; null = hồi sinh tại chỗ. Không có state Respawn thì đứng sẵn như cũ
+func begin_respawn(anchor: Node3D) -> void:
+	if not state_machine.has_node(NodePath(String(PlayerState.RESPAWN))):
+		return
+	_revive_anchor = anchor
+	state_machine.transition_to(PlayerState.RESPAWN)
+
+
+## State Respawn lấy checkpoint cần loé (đọc xong thì xoá)
+func consume_revive_anchor() -> Node3D:
+	var anchor := _revive_anchor
+	_revive_anchor = null
+	return anchor if is_instance_valid(anchor) else null
+
+
+## Bất tử trong duration giây; blink = cáo nhấp nháy như lúc vừa bị đánh (tắt khi đang diễn cảnh hồi sinh)
+func grant_invincibility(duration: float, blink: bool = true) -> void:
+	if duration <= 0.0:
+		return
+	_hurtbox.set_invincible(duration)
+	if blink:
+		_start_blink(duration)
 
 
 func receive_environment_hit(info: DamageInfo) -> bool:

@@ -27,6 +27,10 @@ var _lookahead: Vector3 = Vector3.ZERO
 var _peek: Vector3 = Vector3.ZERO
 var _peek_target: Vector3 = Vector3.ZERO
 var _peek_time_left: float = 0.0
+## Vị trí camera theo góc nhìn hiện tại (chưa zoom); zoom co vị trí này về tâm rig
+var _base_camera_position: Vector3
+var _zoom_ratio: float = 1.0
+var _zoom_tween: Tween
 
 @onready var _target: Node3D = get_parent()
 ## Không phải CharacterBody3D thì không có vận tốc để nhìn trước, chỉ đi theo
@@ -39,6 +43,8 @@ func _ready() -> void:
 	# Rig tự nội suy theo nhịp hiển thị; rung/teleport không bị nội suy vật lý lần thứ hai.
 	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	add_to_group(GROUP)
+	if _camera != null:
+		_base_camera_position = _camera.position
 	snap()
 
 
@@ -74,6 +80,35 @@ func peek_at(point: Vector3, hold: float) -> void:
 	_peek_time_left = hold
 
 
+## Tiến camera về phía nhân vật (ratio < 1 = gần hơn, 1 = khoảng cách thường) trong duration giây thật.
+## Chạy theo thời gian thật để vẫn mượt khi game đang chậm (slow-mo lúc chết)
+func zoom_to(ratio: float, duration: float) -> void:
+	if _camera == null:
+		return
+	if _zoom_tween and _zoom_tween.is_valid():
+		_zoom_tween.kill()
+	if duration <= 0.0:
+		_set_zoom(ratio)
+		return
+	_zoom_tween = create_tween().set_ignore_time_scale(true).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_zoom_tween.tween_method(_set_zoom, _zoom_ratio, ratio, duration)
+
+
+## Khoảng cách camera tới tâm rig theo góc nhìn hiện tại (chưa zoom), mét
+func get_base_distance() -> float:
+	return _base_camera_position.length()
+
+
+## Về khoảng cách thường ngay (hồi sinh tại chỗ)
+func reset_zoom() -> void:
+	zoom_to(1.0, 0.0)
+
+
+func _set_zoom(ratio: float) -> void:
+	_zoom_ratio = ratio
+	_camera.position = _base_camera_position * ratio
+
+
 func _get_desired_lookahead() -> Vector3:
 	if _target_body == null or lookahead_distance <= 0.0:
 		return Vector3.ZERO
@@ -87,5 +122,7 @@ func apply_view(view: CameraViewData) -> void:
 	if view == null or _camera == null:
 		return
 	_camera.transform = view.get_local_transform()
+	_base_camera_position = _camera.position
+	_camera.position = _base_camera_position * _zoom_ratio
 	_camera.fov = view.fov
 	_camera.reset_physics_interpolation()

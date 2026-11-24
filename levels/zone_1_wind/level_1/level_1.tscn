@@ -73,7 +73,7 @@ shader_parameter/stretch = 2.2
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_pta3x"]
 material = SubResource("ShaderMaterial_11p2m")
-size = Vector2(700, 700)
+size = Vector2(700, 920)
 
 [sub_resource type="BoxShape3D" id="OldStairRailShape"]
 size = Vector3(4, 1.12, 0.4)
@@ -95,7 +95,7 @@ size = Vector3(120, 18, 158)
 size = Vector3(200, 50, 132)
 
 [sub_resource type="BoxShape3D" id="Tier3VisibilityShape"]
-size = Vector3(260, 90, 250)
+size = Vector3(260, 90, 394)
 
 [node name="Level1" type="Node3D" unique_id=497319913]
 script = ExtResource("1_5r1qf")
@@ -103,7 +103,7 @@ script = ExtResource("1_5r1qf")
 [node name="Lighting" parent="." unique_id=1496860166 instance=ExtResource("2_ycmv8")]
 
 [node name="CloudSea" type="MeshInstance3D" parent="." unique_id=1422220299]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -9, -40)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -9, -150)
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_pta3x")
 
@@ -144,8 +144,8 @@ transform = Transform3D(0.31202844, 0, -1.0548167, 0, 1.1, 0, 1.0548167, 0, 0.31
 cast_shadow = 0
 
 [node name="SafetyNet" parent="." unique_id=904097796 instance=ExtResource("6_272vo")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -14, -150)
-size = Vector3(400, 2, 620)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -14, -198)
+size = Vector3(400, 2, 716)
 
 [node name="Rooms" type="Node3D" parent="." unique_id=921644482]
 
@@ -300,7 +300,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -176)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -176)
 
 [node name="Tier3" parent="Rooms" unique_id=1842536933 instance=ExtResource("tier3_map")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -300)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -444)
 standalone_test = false
 
 [node name="SecretZone" parent="." unique_id=429125787 node_paths=PackedStringArray("hide_when_inside", "show_when_inside", "sun", "world_environment") instance=ExtResource("26_t5yoq")]
@@ -342,10 +342,10 @@ shape = SubResource("BoxShape3D_tier1")
 wind_direction = Vector3(0.6, 0, -1)
 
 [node name="Tier3Bridge" parent="." unique_id=1995548834 instance=ExtResource("tier3_bridge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -231.645)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -375.645)
 
 [node name="Tier3Zone" parent="." unique_id=1038946771 node_paths=PackedStringArray("hide_when_inside") instance=ExtResource("26_t5yoq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -324)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -468)
 hide_when_inside = [NodePath("../Rooms/Tier1"), NodePath("../Rooms/Tier2")]
 
 [node name="Shape" parent="Tier3Zone" index="0"]
@@ -363,11 +363,11 @@ charm = ExtResource("heart_charm")
 tutorial = ExtResource("tut_charm")
 
 [node name="Tier3EntryCheckpoint" parent="." unique_id=2090428911 instance=ExtResource("tier3_checkpoint")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -263)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -407)
 checkpoint_id = &"level_1.tier3_entry"
 
 [node name="Tier3VisibilityZone" parent="." unique_id=697991845 node_paths=PackedStringArray("show_when_inside", "suspend_when_outside") instance=ExtResource("26_t5yoq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -295)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 26, -367)
 show_when_inside = [NodePath("../Rooms/Tier3"), NodePath("../Tier3Bridge")]
 suspend_when_outside = [NodePath("../Rooms/Tier3"), NodePath("../Tier3Bridge")]
 initialize_outside = true

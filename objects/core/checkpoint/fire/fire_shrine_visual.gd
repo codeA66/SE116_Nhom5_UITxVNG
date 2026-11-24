@@ -67,6 +67,19 @@ func set_active(enabled: bool, _legacy_material: Material = null, _spin_degrees:
 		_tween.tween_callback(_light.hide)
 
 
+## Hồi sinh tại bệ: đèn chớp sáng rồi hạ về, bung hạt + vòng sáng như lúc kích hoạt
+func play_revive() -> void:
+	if Engine.is_editor_hint() or not is_node_ready():
+		return
+	if _tween:
+		_tween.kill()
+	_light.visible = true
+	_tween = create_tween()
+	_tween.tween_property(_light, ^"light_energy", flash_energy, flash_time)
+	_tween.tween_property(_light, ^"light_energy", lit_energy if _last_target else 0.0, activation_time)
+	_play_activation_fx()
+
+
 ## Hạt, vòng sáng và âm thanh khi kích hoạt. Chỉ chạy một lần theo sự kiện, không xử lý mỗi frame.
 func _play_activation_fx() -> void:
 	if Engine.is_editor_hint():

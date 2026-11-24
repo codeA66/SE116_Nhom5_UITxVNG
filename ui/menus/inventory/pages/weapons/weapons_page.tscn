@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/menus/inventory/pages/weapons/weapons_page.gd" id="1_page"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/pages/page_weapons.svg" id="2_icon"]
 
 [node name="WeaponsPage" type="Control"]
 layout_mode = 3
@@ -12,6 +13,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_page")
 page_title = "Vũ khí"
+page_icon = ExtResource("2_icon")
 
 [node name="Scroll" type="ScrollContainer" parent="."]
 layout_mode = 1

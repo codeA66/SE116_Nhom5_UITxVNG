@@ -72,6 +72,12 @@ func is_active() -> bool:
 	return GameState.get_checkpoint_zone() == _zone_path() and GameState.get_checkpoint_spawn_id() == checkpoint_id
 
 
+## Player vừa hồi sinh tại checkpoint này (ZoneRoot gọi qua điểm xuất hiện): miếu loé sáng
+func play_revive() -> void:
+	if _visual:
+		_visual.play_revive()
+
+
 func _on_body_entered(body: Node3D) -> void:
 	if body is Player:
 		if not _player_inside:

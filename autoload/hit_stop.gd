@@ -33,6 +33,14 @@ func slow_motion(duration: float, time_scale: float) -> void:
 		Engine.time_scale = 1.0
 
 
+## Huỷ hitstop / slow-mo đang chạy, trả time_scale về 1 ngay (hồi sinh giữa lúc đang chậm). Không đụng cutscene
+func cancel() -> void:
+	if is_instance_valid(_cinematic):
+		return
+	_request_id += 1
+	Engine.time_scale = 1.0
+
+
 func begin_cinematic(cinematic: Node, time_scale: float) -> void:
 	_request_id += 1
 	_cinematic = cinematic

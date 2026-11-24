@@ -145,6 +145,20 @@ func play_action(anim_name: StringName, speed: float = 1.0, blend: float = -1.0)
 	_anim.seek(0.0, true)
 
 
+## Chạy ngược animation hành động từ khung cuối (đứng dậy = clip ngã chạy ngược). speed 0 = giữ ở khung cuối
+func play_action_reversed(anim_name: StringName, speed: float = 1.0, blend: float = 0.0) -> void:
+	var clip := _action_clip(anim_name)
+	# Cùng clip đang phát (giữ khung cuối) thì play() không chạy lại từ cuối: dừng hẳn rồi mới phát ngược
+	if _anim.current_animation == clip:
+		_anim.stop()
+	_anim.play(clip, blend, -speed, true)
+
+
+## Tên clip thật của một animation hành động; model đổi tên clip (Foxy) thì ghi đè
+func _action_clip(anim_name: StringName) -> StringName:
+	return anim_name
+
+
 ## Thời điểm (giây trong clip, chưa chia tốc độ) của marker trong animation; -1 nếu không có
 func get_action_marker_time(anim_name: StringName, marker: StringName) -> float:
 	if marker.is_empty() or not _anim.has_animation(anim_name):

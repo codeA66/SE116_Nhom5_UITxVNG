@@ -6,6 +6,8 @@ extends Player
 const LIBRARY_NAME: StringName = &"foxy"
 const BOW_ANIMATIONS: GDScript = preload("res://entities/player/foxy/foxy_bow_animations.gd")
 const TOON_SHADER: Shader = preload("res://assets/shaders/character/foxy_toon.gdshader")
+## Viền + chấm sáng mắt: màu phẳng nhưng vẫn tan biến cùng thân lúc chết (StandardMaterial3D không tan được)
+const FLAT_SHADER: Shader = preload("res://assets/shaders/character/foxy_flat.gdshader")
 const BLINK_SHAPE: StringName = &"Blink"
 ## Chuyển cảnh mặc định của clip hành động khi state không yêu cầu riêng
 const ACTION_BLEND: float = 0.05
@@ -313,6 +315,12 @@ func _on_bow_draw_changed(amount: float) -> void:
 		_anim.seek(amount * _clip_length(clip), true)
 
 
+func _action_clip(anim_name: StringName) -> StringName:
+	_landing_remaining = 0.0
+	_anim.speed_scale = 1.0
+	return _resolve_clip(anim_name)
+
+
 func _resolve_clip(anim_name: StringName) -> StringName:
 	var clip: StringName
 	if anim_name == Player.ANIM_IDLE:
@@ -413,20 +421,20 @@ func _make_material(source: BaseMaterial3D) -> Material:
 	var source_name := String(source.resource_name)
 	if source_name.contains("Outline"):
 		# Viền dạng inverted hull đã bake trong mesh, chỉ cần màu phẳng
-		var outline := StandardMaterial3D.new()
-		outline.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		outline.albedo_color = outline_color
-		outline.cull_mode = BaseMaterial3D.CULL_BACK
-		return outline
+		return _make_flat_material(outline_color)
 	if source_name.contains("Highlight"):
-		var glint := StandardMaterial3D.new()
-		glint.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		glint.albedo_color = Color.WHITE
-		return glint
+		return _make_flat_material(Color.WHITE)
 	var toon := ShaderMaterial.new()
 	toon.shader = TOON_SHADER
 	toon.set_shader_parameter(&"albedo", source.albedo_color)
 	return toon
+
+
+func _make_flat_material(color: Color) -> ShaderMaterial:
+	var flat := ShaderMaterial.new()
+	flat.shader = FLAT_SHADER
+	flat.set_shader_parameter(&"color", color)
+	return flat
 
 
 func _find_face(root: Node) -> MeshInstance3D:

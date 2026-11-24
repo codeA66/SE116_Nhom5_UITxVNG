@@ -196,7 +196,7 @@ func _show_stats(entry: DetailEntry) -> void:
 		_stats.add_child(label)
 		_stat_labels.append(label)
 	for index in _stat_labels.size():
-		var row := index / 2
+		var row: int = floori(index / 2.0)
 		var used := row < stats.size()
 		_stat_labels[index].visible = used
 		if used:

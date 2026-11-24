@@ -1,9 +1,5 @@
 shader_type canvas_item;
 
-uniform float scarf_lift : hint_range(0.0, 0.02) = 0.012;
-uniform float banner_sway : hint_range(0.0, 0.02) = 0.009;
-uniform float gust_interval : hint_range(1.0, 12.0) = 5.2;
-uniform float banner_delay : hint_range(0.0, 2.0) = 0.45;
 uniform float fog_strength : hint_range(0.0, 0.2) = 0.11;
 uniform float fog_speed : hint_range(0.0, 0.15) = 0.04;
 uniform float lantern_strength : hint_range(0.0, 0.3) = 0.085;
@@ -13,28 +9,10 @@ float ellipse_mask(vec2 uv, vec2 center, vec2 radius) {
 	return 1.0 - smoothstep(0.18, 1.0, dot(scaled, scaled));
 }
 
-float gust(float time) {
-	float phase = fract(time / gust_interval);
-	return smoothstep(0.02, 0.26, phase) * (1.0 - smoothstep(0.30, 0.74, phase));
-}
-
 void fragment() {
 	vec2 uv = UV;
-	vec2 sample_uv = uv;
-	// Giảm lực về sát cổ để giữ nguyên dáng đứng của Foxy.
-	float scarf = ellipse_mask(uv, vec2(0.622, 0.641), vec2(0.055, 0.045));
-	float scarf_tip = 1.0 - smoothstep(0.604, 0.693, uv.x);
-	float ripple = sin(TIME * 3.4 + uv.x * 52.0);
-	sample_uv.y += scarf_lift * scarf * scarf_tip * (gust(TIME) * (0.78 + 0.22 * ripple) + 0.09 * ripple);
-
-	// Giữ chân cờ và vòm đá đứng yên trong lúc mép vải lay.
-	float left_banner = ellipse_mask(uv, vec2(0.607, 0.133), vec2(0.047, 0.090));
-	float right_banner = ellipse_mask(uv, vec2(0.690, 0.162), vec2(0.057, 0.116));
-	float banner_tip = smoothstep(0.045, 0.190, uv.y);
-	float banner_time = TIME - banner_delay;
-	float banner_wave = 0.7 * gust(banner_time) + 0.3 * sin(banner_time * 2.7 - uv.y * 31.0);
-	sample_uv.x -= banner_sway * banner_tip * banner_wave * max(left_banner * 0.76, right_banner);
-	vec3 art = texture(TEXTURE, sample_uv).rgb;
+	// Khăn và cờ là lớp riêng (dock/cloth_wave): nền này chỉ còn sương trôi và đèn lồng
+	vec3 art = texture(TEXTURE, uv).rgb;
 
 	// Hai dải trôi lệch tốc độ để sương có chiều sâu sau bến.
 	float drift = uv.x - TIME * fog_speed;
