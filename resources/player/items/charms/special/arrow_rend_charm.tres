@@ -4,7 +4,9 @@
 [ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
 [ext_resource type="Script" path="res://resources/player/items/effects/special/arrow_rend/arrow_rend_effect.gd" id="effect"]
 [ext_resource type="Script" path="res://resources/player/items/charms/_rarity/charm_rarity.gd" id="rarity"]
-[ext_resource type="Texture2D" path="res://ui/hud/icons/bow.svg" id="icon"]
+[ext_resource type="Texture2D" path="res://ui/menus/inventory/effects/charm_rarity/arrow_rend/arrow_rend_charm.png" id="icon"]
+[ext_resource type="Shader" path="res://ui/menus/inventory/effects/charm_rarity/arrow_rend/arrow_rend_aura.gdshader" id="aura"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/glow/soft_round.tres" id="glow"]
 
 [sub_resource type="Resource" id="RendEffect"]
 script = ExtResource("effect")
@@ -16,9 +18,13 @@ boss_scene_paths = PackedStringArray("res://entities/bosses/boss_1/boss_1.tscn",
 script = ExtResource("rarity")
 display_name = "ĐẶC BIỆT"
 sort_priority = 20
-tint = Color(0.91, 0.67, 0.33, 1)
-highlight = Color(1, 0.93, 0.75, 1)
+tint = Color(0.63, 0.73, 0.86, 1)
+highlight = Color(0.96, 0.95, 1, 1)
 glow_strength = 0.88
+pulse_speed = 0.38
+aura_shader = ExtResource("aura")
+aura_texture = ExtResource("glow")
+aura_open_duration = 0.62
 
 [resource]
 script = ExtResource("charm")

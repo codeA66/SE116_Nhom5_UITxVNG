@@ -117,7 +117,7 @@ func _on_sword_prepared(hurtbox: HurtboxComponent, info: DamageInfo) -> void:
 		return
 	# Tính vào cùng nhát kiếm để i-frame, khiên và các ngưỡng máu boss xử lý một lần.
 	info.amount += extra_damage
-	var observer: Callable = _on_sword_hurt.bind(info, target_id, extra_damage * mark.arrows_per_damage)
+	var observer: Callable = _on_sword_hurt.bind(info, target_id, extra_damage * mark.arrows_per_damage, hurtbox)
 	_sword_observers[info] = observer
 	hurtbox.hurt.connect(observer)
 
@@ -131,16 +131,21 @@ func _on_sword_checked(hurtbox: HurtboxComponent, info: DamageInfo) -> void:
 		hurtbox.hurt.disconnect(observer)
 
 
-func _on_sword_hurt(info: DamageInfo, damage_taken: int, expected: DamageInfo, target_id: int, spent: int) -> void:
+func _on_sword_hurt(info: DamageInfo, damage_taken: int, expected: DamageInfo, target_id: int, spent: int,
+		hurtbox: HurtboxComponent) -> void:
 	if info != expected or damage_taken <= 0:
 		return
 	var mark: Mark = _marks.get(target_id) as Mark
 	if mark == null:
 		return
+	var shape: Node3D = hurtbox.get_node_or_null(^"CollisionShape3D") as Node3D
+	var impact_position: Vector3 = shape.global_position if shape else hurtbox.global_position
+	var flash_count: int = spent
 	for index: int in range(mini(mark.arrows.size(), spent)):
 		var visual: ArrowRendVfx = mark.arrows.pop_back()
 		if visual:
-			visual.retract(-info.direction)
+			visual.retract(-info.direction, impact_position, flash_count)
+			flash_count = 0
 	if mark.arrows.is_empty():
 		_marks.erase(target_id)
 		set_physics_process(not _marks.is_empty())

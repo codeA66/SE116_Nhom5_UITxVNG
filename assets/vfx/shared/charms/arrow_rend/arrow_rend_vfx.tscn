@@ -3,14 +3,109 @@
 [ext_resource type="Script" path="res://assets/vfx/shared/charms/arrow_rend/arrow_rend_vfx.gd" id="1"]
 [ext_resource type="Shader" path="res://assets/shaders/combat/death/combat_particle.gdshader" id="3"]
 
-[sub_resource type="ShaderMaterial" id="SparkMaterial"]
+[sub_resource type="Shader" id="PullShader"]
+code = "shader_type spatial;
+render_mode unshaded, blend_mix, depth_draw_never, cull_disabled, shadows_disabled;
+
+uniform vec4 violet : source_color = vec4(0.60, 0.30, 0.88, 1.0);
+uniform vec4 silver : source_color = vec4(0.86, 0.91, 1.0, 1.0);
+uniform float age : hint_range(0.0, 1.0) = 0.0;
+
+void vertex() {
+	vec3 center = MODEL_MATRIX[3].xyz;
+	vec3 axis = MODEL_MATRIX[1].xyz;
+	vec3 view = normalize(INV_VIEW_MATRIX[3].xyz - center);
+	vec3 side = cross(normalize(axis), view);
+	vec3 world = center + axis * VERTEX.y
+		+ side / max(length(side), 0.0001) * VERTEX.x * length(MODEL_MATRIX[0].xyz);
+	POSITION = PROJECTION_MATRIX * VIEW_MATRIX * vec4(world, 1.0);
+}
+
+void fragment() {
+	float along = 1.0 - UV.y;
+	float lateral = UV.x * 2.0 - 1.0;
+	float shape = smoothstep(0.0, 0.34, along) * (1.0 - smoothstep(0.82, 1.0, along));
+	float bend = 0.13 * sin(along * PI);
+	float weave = abs(lateral + bend);
+	float core = 1.0 - smoothstep(0.08, 0.28, weave);
+	float fringe = 1.0 - smoothstep(0.22, 0.88, weave);
+	float edge = (1.0 - smoothstep(0.035, 0.13, abs(lateral - 0.39 * shape))) * shape;
+	float fade = 1.0 - smoothstep(0.46, 0.99, age);
+	ALBEDO = mix(violet.rgb, silver.rgb, min(core + 0.62 * edge, 1.0));
+	ALPHA = min(core * 0.94 + fringe * 0.49 + edge * 0.48, 1.0) * shape * fade;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="PullMaterial"]
+resource_local_to_scene = true
+render_priority = 2
+shader = SubResource("PullShader")
+
+[sub_resource type="QuadMesh" id="PullMesh"]
+size = Vector2(0.74, 1)
+
+[sub_resource type="Shader" id="ExtractFlashShader"]
+code = "shader_type spatial;
+render_mode unshaded, blend_mix, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled;
+
+uniform vec4 rim_color : source_color = vec4(0.69, 0.39, 1.0, 1.0);
+uniform vec4 silver : source_color = vec4(0.95, 0.96, 1.0, 1.0);
+uniform float camera_bias : hint_range(0.0, 2.0) = 0.67;
+uniform float age : hint_range(0.0, 1.0) = 0.0;
+
+void vertex() {
+	vec3 center = MODEL_MATRIX[3].xyz;
+	vec3 view = normalize(INV_VIEW_MATRIX[3].xyz - center);
+	float width = length(MODEL_MATRIX[0].xyz);
+	float height = length(MODEL_MATRIX[1].xyz);
+	vec3 world = center + view * camera_bias
+		+ INV_VIEW_MATRIX[0].xyz * VERTEX.x * width + INV_VIEW_MATRIX[1].xyz * VERTEX.y * height;
+	POSITION = PROJECTION_MATRIX * VIEW_MATRIX * vec4(world, 1.0);
+}
+
+void fragment() {
+	vec2 p = (UV * 2.0 - 1.0) * vec2(1.0, 1.06);
+	float r = length(p);
+	float ramp = 1.0 - (1.0 - age) * (1.0 - age);
+	float ring_radius = mix(0.21, 0.90, ramp);
+	float d = abs(r - ring_radius);
+	float angle = atan(p.y, p.x + 0.0001);
+	float break_up = mix(1.0, smoothstep(-0.25, 0.62, cos(angle * 3.0 + 0.58)), ramp * 0.94);
+	float ring_life = (1.0 - smoothstep(0.36, 0.98, age)) * break_up;
+	float edge = (1.0 - smoothstep(0.012, 0.083, d)) * ring_life;
+	float halo = (1.0 - smoothstep(0.065, 0.23, d)) * ring_life;
+	float slash_axis = abs(dot(p, vec2(0.68, 0.73)));
+	float spark_reach = abs(dot(p, vec2(0.73, -0.68)));
+	float bevel = (1.0 - smoothstep(0.019, 0.085, slash_axis)) * (1.0 - smoothstep(0.17, 0.54, spark_reach));
+	float snap = (1.0 - smoothstep(0.10, 0.47, age));
+	float center = (1.0 - smoothstep(0.03, 0.32, r)) * snap;
+	float bright = min(edge * (0.75 - 0.38 * age) + bevel * snap + center, 1.0);
+	ALBEDO = mix(rim_color.rgb, silver.rgb, bright);
+	ALPHA = min(edge * 0.89 + halo * 0.45 + bevel * snap * 0.81 + center * 0.66, 1.0)
+		* (1.0 - smoothstep(0.88, 1.0, r));
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ExtractFlashMaterial"]
+resource_local_to_scene = true
+render_priority = 3
+shader = SubResource("ExtractFlashShader")
+
+[sub_resource type="QuadMesh" id="ExtractFlashMesh"]
+size = Vector2(2.3, 2.3)
+
+[sub_resource type="ShaderMaterial" id="ShardMaterial"]
 shader = ExtResource("3")
-shader_parameter/tint = Color(0.72, 0.44, 1, 1)
-shader_parameter/intensity = 2.0
+shader_parameter/tint = Color(0.72, 0.40, 1, 1)
+shader_parameter/intensity = 1.8
 shader_parameter/streak = true
 
-[sub_resource type="QuadMesh" id="SparkMesh"]
-size = Vector2(0.37, 1.85)
+[sub_resource type="QuadMesh" id="ShardMesh"]
+size = Vector2(0.16, 0.42)
+
+[sub_resource type="Gradient" id="ShardFade"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.79, 0.62, 1, 0.82, 0.58, 0.37, 1, 0)
 
 [sub_resource type="Shader" id="ShaftShader"]
 code = "shader_type spatial;
@@ -67,8 +162,42 @@ extra_cull_margin = 1.1
 material_override = SubResource("ShaftMaterial")
 mesh = SubResource("ShaftMesh")
 
-[node name="Spark" type="MeshInstance3D" parent="."]
+[node name="PullTrail" type="MeshInstance3D" parent="."]
 visible = false
 cast_shadow = 0
-material_override = SubResource("SparkMaterial")
-mesh = SubResource("SparkMesh")
+extra_cull_margin = 2.5
+material_override = SubResource("PullMaterial")
+mesh = SubResource("PullMesh")
+
+[node name="Impact" type="Node3D" parent="."]
+top_level = true
+visible = false
+
+[node name="Flash" type="MeshInstance3D" parent="Impact"]
+cast_shadow = 0
+extra_cull_margin = 1.4
+material_override = SubResource("ExtractFlashMaterial")
+mesh = SubResource("ExtractFlashMesh")
+
+[node name="Shards" type="CPUParticles3D" parent="Impact"]
+cast_shadow = 0
+material_override = SubResource("ShardMaterial")
+mesh = SubResource("ShardMesh")
+emitting = false
+amount = 10
+lifetime = 0.29
+one_shot = true
+explosiveness = 1.0
+randomness = 0.25
+local_coords = false
+direction = Vector3(0, 1, 0)
+spread = 79.0
+gravity = Vector3(0, -4, 0)
+initial_velocity_min = 3.6
+initial_velocity_max = 6.3
+damping_min = 1.0
+damping_max = 2.0
+particle_flag_align_y = true
+scale_amount_min = 0.6
+scale_amount_max = 1.25
+color_ramp = SubResource("ShardFade")
