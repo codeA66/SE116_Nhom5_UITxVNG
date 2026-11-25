@@ -1,0 +1,122 @@
+# CI của project: mỗi PR vào main và mỗi lần push lên main.
+# - check-and-test: import project bằng Godot headless (báo lỗi script / resource hỏng), chạy bộ test trong
+#   dev/ci/ci_suite.txt bằng dev/ci/run_tests.sh.
+# - build-windows: chỉ khi push lên main và job trên xanh; export preset "Windows Desktop" bản release,
+#   đưa lên mục Artifacts của lần chạy (giữ 14 ngày) để cả nhóm tải về chơi thử.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: "4.7.2"
+  GODOT_RELEASE_URL: https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable
+
+jobs:
+  check-and-test:
+    name: Kiểm tra + test
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-linux
+
+      - name: Tải Godot ${{ env.GODOT_VERSION }}
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot
+          curl -fsSL -o /tmp/godot.zip "$GODOT_RELEASE_URL/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q /tmp/godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          chmod +x ~/godot/godot
+
+      - name: Import project
+        run: |
+          ~/godot/godot --headless --path . --import 2>&1 | tee import.log
+          if grep -nE "SCRIPT ERROR|Parse Error|Failed loading resource|Failed to load script" import.log; then
+            echo "::error::Import có lỗi script / resource, xem log ở trên"
+            exit 1
+          fi
+
+      - name: Chạy test
+        run: GODOT="$HOME/godot/godot" LOG_DIR="$PWD/test_logs" bash dev/ci/run_tests.sh
+
+      - name: Lưu log test
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: |
+            test_logs/
+            import.log
+          retention-days: 7
+
+  build-windows:
+    name: Build Windows
+    needs: check-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-linux
+
+      - name: Tải Godot ${{ env.GODOT_VERSION }}
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot
+          curl -fsSL -o /tmp/godot.zip "$GODOT_RELEASE_URL/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q /tmp/godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          chmod +x ~/godot/godot
+
+      - name: Cache export template
+        id: templates-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable
+          key: godot-templates-${{ env.GODOT_VERSION }}
+
+      - name: Tải export template
+        if: steps.templates-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL -o /tmp/templates.tpz "$GODOT_RELEASE_URL/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q /tmp/templates.tpz -d /tmp/templates
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mv /tmp/templates/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/
+
+      - name: Import project
+        run: ~/godot/godot --headless --path . --import
+
+      - name: Export Windows
+        run: |
+          mkdir -p build
+          ~/godot/godot --headless --path . --export-release "Windows Desktop" "$PWD/build/Foxy.exe"
+          test -f build/Foxy.exe
+
+      - name: Đưa bản build lên Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Foxy-windows-${{ github.sha }}
+          path: build/
+          retention-days: 14

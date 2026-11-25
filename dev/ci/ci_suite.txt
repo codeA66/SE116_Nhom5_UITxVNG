@@ -1,0 +1,37 @@
+# Bộ test CI chạy trên mỗi PR vào main / push lên main (dev/ci/run_tests.sh).
+# Mỗi dòng: <scene res://...> [tham số truyền sau --]. Chỉ đưa vào test tự thoát và đang PASS.
+# Thêm test mới: thêm một dòng ở đây, không cần sửa workflow.
+
+# Player
+res://tests/player/hurtbox/test_hurtbox_invincibility.tscn
+res://tests/player/juice/test_juice.tscn
+res://tests/player/game/currency/test_currency.tscn
+res://tests/player/game/loot/test_loot_drop.tscn
+res://tests/player/game/restore/test_restore.tscn
+res://tests/player/game/charms/test_all_charms.tscn
+
+# Quái
+res://tests/enemies/enemy_1/test_enemy_1.tscn
+res://tests/enemies/enemy_2/test_enemy_2.tscn
+
+# Lửa
+res://tests/fire/igniter/test_igniter.tscn
+res://tests/fire/burnable_crate/test_burnable_crate.tscn
+res://tests/fire/fire_vortex/test_fire_vortex.tscn
+res://tests/fire/fusion_fire/test_fusion_fire.tscn
+
+# Gió
+res://tests/wind/reactive/test_wind_reactive.tscn
+res://tests/wind/shrine/test_wind_shrine.tscn
+res://tests/wind/spellbook/test_wind_spellbook.tscn
+
+# UI
+res://tests/ui/hud/test_hud.tscn
+res://tests/ui/inventory/test_inventory_menu.tscn
+res://tests/ui/main_menu/test_main_menu.tscn
+res://tests/ui/tutorials/test_tutorials.tscn
+
+# NPC / map
+res://tests/npcs/test_gatekeeper.tscn
+res://tests/levels/hub/test_hub.tscn
+res://tests/levels/wind_map/wind_trial/test_wind_trial_unit.tscn
