@@ -1,7 +1,7 @@
 extends Node
 ## Sân thử Mưa Hỏa Tiễn (Phun lửa cấp 2, kiểu chiêu R của Rumble). Viết TRƯỚC khi code (TDD).
-## Chơi tay: nhặt 2 Ấn Lửa (F) -> Tab, trang Nguyên tố -> nâng cấp Phun lửa -> giữ Q tại điểm đầu, rê chuột chọn hướng,
-## thả Q để gọi mưa cầu lửa. Tắt tự lưu và đổi thư mục lưu khi mở sân: không ghi vào save thật đang chơi dở.
+## Chơi tay: nhặt sách lửa (F) -> Phun lửa lên cấp 2 -> giữ Q tại điểm đầu, rê chuột chọn hướng, thả Q để gọi mưa cầu lửa.
+## Bản tự kiểm tra nâng cấp bằng code (thêm Ấn Lửa) vì màn giới thiệu khi nhặt sách chờ người chơi đóng bảng. Tắt tự lưu và đổi thư mục lưu khi mở sân: không ghi vào save thật đang chơi dở.
 ## Chạy `-- --verify` để tự bấm phím thật và đo hành vi rồi thoát (0 = đạt).
 ##
 ## ===== USE CASE =====

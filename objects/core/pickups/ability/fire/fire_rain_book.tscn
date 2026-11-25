@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/pickups/ability/skill_upgrade_pickup.gd" id="1_pickup"]
+[ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="2_interact"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/fire/fire_spellbook_visual.tscn" id="3_book_visual"]
+[ext_resource type="PackedScene" path="res://components/feedback/loot_beam/ability_acquire/ability_acquire_vfx.tscn" id="4_acquisition"]
+[ext_resource type="Resource" uid="uid://bbpu4dp2vnrxy" path="res://abilities/flame_breath/flame_breath.tres" id="5_skill"]
+
+[sub_resource type="SphereShape3D" id="Range"]
+radius = 1.5
+
+[node name="FireRainBook" type="Node3D"]
+editor_description = "Sách nâng cấp Phun lửa lên cấp kế tiếp (cấp 2 = Mưa Hỏa Tiễn), không tốn Ấn Lửa. Chưa có Phun lửa thì không nhặt được."
+script = ExtResource("1_pickup")
+skill = ExtResource("5_skill")
+beam_color = Color(1, 0.55, 0.15, 1)
+locked_prompt = "Cần Phun lửa"
+spin_speed = 0.45
+
+[node name="Visual" parent="." instance=ExtResource("3_book_visual")]
+position = Vector3(0, 1.05, 0)
+rotation = Vector3(0, 0.25, 0)
+
+[node name="InteractableComponent" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("2_interact")
+prompt_text = "NHẶT"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Range")
+
+[node name="AbilityAcquireVfx" parent="." node_paths=PackedStringArray("source_visual") instance=ExtResource("4_acquisition")]
+source_visual = NodePath("../Visual")
