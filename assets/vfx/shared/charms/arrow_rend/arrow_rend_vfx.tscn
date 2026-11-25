@@ -1,0 +1,74 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/shared/charms/arrow_rend/arrow_rend_vfx.gd" id="1"]
+[ext_resource type="Shader" path="res://assets/shaders/combat/death/combat_particle.gdshader" id="3"]
+
+[sub_resource type="ShaderMaterial" id="SparkMaterial"]
+shader = ExtResource("3")
+shader_parameter/tint = Color(0.72, 0.44, 1, 1)
+shader_parameter/intensity = 2.0
+shader_parameter/streak = true
+
+[sub_resource type="QuadMesh" id="SparkMesh"]
+size = Vector2(0.37, 1.85)
+
+[sub_resource type="Shader" id="ShaftShader"]
+code = "shader_type spatial;
+render_mode unshaded, blend_mix, depth_draw_never, cull_disabled, shadows_disabled;
+
+uniform vec4 tail_color : source_color = vec4(0.85, 0.31, 0.92, 1.0);
+uniform vec4 tip_color : source_color = vec4(0.62, 0.70, 1.0, 1.0);
+uniform vec4 core_color : source_color = vec4(1.0, 0.93, 1.0, 1.0);
+
+void vertex() {
+	vec3 center = MODEL_MATRIX[3].xyz;
+	vec3 axis = MODEL_MATRIX[1].xyz;
+	vec3 to_camera = normalize(INV_VIEW_MATRIX[3].xyz - center);
+	vec3 side = cross(normalize(axis), to_camera);
+	vec3 world = center + axis * VERTEX.y
+		+ side / max(length(side), 0.0001) * VERTEX.x * length(MODEL_MATRIX[0].xyz);
+	POSITION = PROJECTION_MATRIX * VIEW_MATRIX * vec4(world, 1.0);
+}
+
+void fragment() {
+	vec2 point = vec2(2.0 * UV.x - 1.0, 1.0 - UV.y);
+	float t = point.y;
+	float feather = 0.55 * max(0.0, min(t / 0.09, (0.32 - t) / 0.23));
+	float head = 0.72 * max(0.0, min((t - 0.65) / 0.14, (1.0 - t) / 0.21));
+	float stem = 0.075 * smoothstep(0.02, 0.08, t) * (1.0 - smoothstep(0.87, 1.0, t));
+	float width = max(stem, max(feather, head));
+	float x = abs(point.x + 0.10 * sin(t * 3.1416));
+	float aa = max(fwidth(point.x) * 0.65, 0.02);
+	float shape = 1.0 - smoothstep(width - aa, width + aa, x);
+	float rim = 1.0 - smoothstep(width + aa, width + aa + 0.23, x);
+	float core = 1.0 - smoothstep(0.0, max(width * 0.68, aa), x);
+	float ends = smoothstep(0.0, 0.035, t) * (1.0 - smoothstep(0.96, 1.0, t));
+	vec3 color = mix(tail_color.rgb, tip_color.rgb, smoothstep(0.32, 0.69, t));
+	ALBEDO = mix(color, core_color.rgb, core * 0.86);
+	ALPHA = ends * max(shape * 0.98, rim * 0.24);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaftMaterial"]
+shader = SubResource("ShaftShader")
+
+[sub_resource type="QuadMesh" id="ShaftMesh"]
+size = Vector2(0.32, 2.12)
+
+[node name="ArrowRendVfx" type="Node3D"]
+top_level = true
+physics_interpolation_mode = 2
+script = ExtResource("1")
+
+[node name="Shaft" type="MeshInstance3D" parent="."]
+rotation = Vector3(1.5707964, 0, 0)
+cast_shadow = 0
+extra_cull_margin = 1.1
+material_override = SubResource("ShaftMaterial")
+mesh = SubResource("ShaftMesh")
+
+[node name="Spark" type="MeshInstance3D" parent="."]
+visible = false
+cast_shadow = 0
+material_override = SubResource("SparkMaterial")
+mesh = SubResource("SparkMesh")

@@ -7,6 +7,7 @@ extends Character
 signal bow_cooldown_started(duration: float)
 signal bow_projectile_fired(primary: bool)
 signal bow_enemy_hit
+signal bow_enemy_hit_contact(hurtbox: HurtboxComponent, position: Vector3, direction: Vector3)
 signal targetability_changed(targetable: bool)
 ## Vừa dùng kỹ năng gió, bắt đầu thời gian hồi (tính cả thời gian ra đòn)
 signal wind_blast_cooldown_started(duration: float)
@@ -1101,6 +1102,9 @@ func _launch_projectile(weapon: WeaponData, attack: AttackData, direction: Vecto
 	var damage_confirmed: Callable = _on_arrow_enemy_damaged.bind(arrow)
 	if not arrow.enemy_damaged.is_connected(damage_confirmed):
 		arrow.enemy_damaged.connect(damage_confirmed)
+	var contact_confirmed: Callable = _on_bow_hit_contact.bind(arrow)
+	if not arrow.enemy_damage_confirmed.is_connected(contact_confirmed):
+		arrow.enemy_damage_confirmed.connect(contact_confirmed)
 	var element: ElementData = GameState.get_fused_element(weapon.slot) if primary else null
 	var fusion: FusionData = _get_bow_projectile_fusion(primary) if weapon.slot == WeaponData.Slot.BOW else (_fusion_table.get_fusion(weapon.slot, element.id) if element else null)
 	if fusion:
@@ -1148,6 +1152,11 @@ func _on_projectile_finished(arrow: ArrowProjectile) -> void:
 func _on_arrow_enemy_damaged(arrow: ArrowProjectile) -> void:
 	if _weapon_damage_projectiles.has(arrow) and not health.is_dead():
 		bow_enemy_hit.emit()
+
+
+func _on_bow_hit_contact(hurtbox: HurtboxComponent, position: Vector3, direction: Vector3, arrow: ArrowProjectile) -> void:
+	if _weapon_damage_projectiles.has(arrow) and not health.is_dead():
+		bow_enemy_hit_contact.emit(hurtbox, position, direction)
 
 
 func _prepare_bow_model(bow: WeaponData) -> void:
