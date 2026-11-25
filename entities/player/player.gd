@@ -91,6 +91,8 @@ var controls_enabled: bool = true
 var _terrain_speed_scales: Dictionary[Node, float] = {}
 var _terrain_speed: float = 1.0
 var last_hit: DamageInfo
+## Lúc nhận đòn làm khựng gần nhất (ms, Time.get_ticks_msec): hai đòn liền nhau thì bị hất ngã
+var _last_stagger_msec: int = -1000000
 ## Vũ khí đang chờ gắn vào tay trong state PickUp
 var pending_weapon: WeaponData
 ## Bấm đổi trong một hành động: thực hiện sau khi hành động kết thúc.
@@ -1263,6 +1265,14 @@ func _on_hurt(info: DamageInfo, _damage_taken: int) -> void:
 	_start_blink(_hurtbox.invincibility_time)
 	# Đòn không làm khựng (tick cháy) giống quái: chỉ nháy + mất máu, không chuyển Hurt, không huỷ dash / đòn đang đánh
 	if not info.staggers:
+		return
+	var now := Time.get_ticks_msec()
+	var since_last := float(now - _last_stagger_msec) / 1000.0
+	_last_stagger_msec = now
+	# Đòn mạnh hoặc đòn thứ hai liền nhau: hất ngã (thoát khỏi chỗ bị vây). Không có state Knockdown thì khựng như cũ
+	var knockdown := state_machine.get_node_or_null(NodePath(String(PlayerState.KNOCKDOWN)))
+	if knockdown and knockdown.has_method(&"should_knock_down") and knockdown.call(&"should_knock_down", info, since_last):
+		state_machine.transition_to(PlayerState.KNOCKDOWN)
 		return
 	state_machine.transition_to(PlayerState.HURT)
 

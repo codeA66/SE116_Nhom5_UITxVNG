@@ -21,6 +21,9 @@ extends Resource
 @export var damage_type: DamageInfo.Type = DamageInfo.Type.PHYSICAL
 @export var knockback: float = 5.0
 @export var hitstop: float = 0.05
+## Đòn mạnh: trúng player là player bị hất ngã (state Knockdown), kể cả khi chỉ trúng một đòn.
+## Đòn thường chỉ làm player khựng; trúng hai đòn liền nhau thì vẫn ngã
+@export var knocks_down: bool = false
 
 @export_group("Timing")
 ## Hitbox bật trong khoảng [active_start, active_end)
