@@ -12,6 +12,7 @@ extends Node3D
 var _showing: bool = false
 var _fade_clock: float = -1.0
 var _fade_time: float = 0.2
+var _just_shown: bool = false
 
 @onready var _line: MeshInstance3D = $Line
 @onready var _material: ShaderMaterial = _line.material_override as ShaderMaterial
@@ -41,12 +42,17 @@ func show_line(start: Vector3, direction: Vector3, length: float, width: float) 
 		_material.set_shader_parameter(&"commit", 0.0)
 		_material.set_shader_parameter(&"cancel", 0.0)
 		_line.show()
+		_just_shown = true
 		set_process(false)
 	var center := start + direction * length * 0.5 + Vector3.UP * lift
 	# PlaneMesh 1 x 1 nằm trên mặt XZ: trục X = bề ngang, trục Z = dọc đường (-Z hướng về cuối đường)
 	var back := -direction
 	var side := Vector3.UP.cross(back).normalized()
 	global_transform = Transform3D(Basis(side * width, Vector3.UP, back * length), center)
+	# Game bật physics interpolation: vừa hiện lại thì đặt thẳng chỗ mới, không trượt từ chỗ lần ngắm trước
+	if _just_shown:
+		reset_physics_interpolation()
+		_just_shown = false
 	_material.set_shader_parameter(&"size", Vector2(width, length))
 
 

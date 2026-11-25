@@ -5,8 +5,10 @@ extends Node3D
 ## - Mỗi điểm chạm: quả cầu lửa vàng bùng to (Blast), khói đen cuộn lên (Smoke), tia lửa văng (Spark),
 ##   vết nổ dưới chân (lóe + vòng sóng + tia nứt), rồi một cụm lửa cháy tại chỗ tới hết dải cháy (Cluster).
 ##   Lửa thành từng cụm theo điểm rơi, có khoảng trống giữa các cụm như tham khảo, không trải đều.
-## - Strip: nền đất cháy xém + nứt dung nham + viền mảnh bao vùng đốt, hiện dần theo các quả đã rơi; tắt lửa thì
-##   nguội thành vết xém rồi mờ. Embers: tàn lửa bay khắp phần dải đã cháy.
+## - Strip: vết cháy xém + quầng sáng cam dưới mỗi cụm lửa (không vẽ nứt sáng: nhìn ra dung nham), hiện dần theo các
+##   quả đã rơi; tắt lửa thì quầng tắt, vết xém mờ dần. Cụm lửa có thêm lưỡi lửa nhỏ bốc nhanh (Tongue). Embers: tàn lửa bay khắp phần dải đã cháy.
+## Node gốc tắt physics interpolation: mọi lớp do _process dời chỗ (cầu lửa bay, vết nổ / cụm lửa dùng lại ở chỗ mới),
+## để interpolation bật thì chúng trượt từ chỗ cũ sang, nhìn như nhảy lung tung.
 ## Mỗi lớp một material. Không dùng đèn điểm: bật đèn lần đầu làm renderer Compatibility biên dịch thêm biến thể
 ## shader (giật lần đầu). Node theo từng điểm chạm tạo theo số quả lớn nhất từng dùng rồi giữ lại
 ## (FireRain nằm trong pool nên không tạo lại). Chỉ chạy _process khi đang có gì chuyển động.
@@ -25,9 +27,9 @@ extends Node3D
 @export_range(0.01, 2.0, 0.01) var heat_in_time: float = 0.15
 @export_range(0.01, 2.0, 0.01) var heat_out_time: float = 0.45
 ## Cụm lửa tại mỗi điểm chạm: chiếm bấy nhiêu phần bề ngang / đoạn đường của quả đó
-@export_range(0.05, 1.0, 0.05) var cluster_spread: float = 0.14
+@export_range(0.05, 1.0, 0.05) var cluster_spread: float = 0.22
 @export_range(0.1, 4.0, 0.05) var cluster_max_spread: float = 0.55
-@export_range(0.1, 2.0, 0.05) var cluster_scale: float = 0.85
+@export_range(0.1, 2.0, 0.05) var cluster_scale: float = 1.15
 ## Tàn lửa trên mỗi m² dải cháy, kẹp trong khoảng cho phép (giới hạn hạt)
 @export_range(0.1, 10.0, 0.1) var embers_per_m2: float = 0.7
 @export var ember_amount_range: Vector2i = Vector2i(6, 40)
@@ -53,6 +55,8 @@ var _sparks: Array[CPUParticles3D] = []
 var _smokes: Array[CPUParticles3D] = []
 var _blasts: Array[CPUParticles3D] = []
 var _clusters: Array[CPUParticles3D] = []
+## Lưỡi lửa nhỏ bốc nhanh trong mỗi cụm: làm lửa "sống", không chỉ là vài ngọn đứng yên
+var _tongues: Array[CPUParticles3D] = []
 
 @onready var _bolt_template: MeshInstance3D = $BoltTemplate
 @onready var _impact_template: MeshInstance3D = $ImpactTemplate
@@ -60,6 +64,7 @@ var _clusters: Array[CPUParticles3D] = []
 @onready var _smoke_template: CPUParticles3D = $SmokeTemplate
 @onready var _blast_template: CPUParticles3D = $BlastTemplate
 @onready var _cluster_template: CPUParticles3D = $ClusterTemplate
+@onready var _tongue_template: CPUParticles3D = $TongueTemplate
 @onready var _strip: MeshInstance3D = $Strip
 @onready var _embers: CPUParticles3D = $Embers
 @onready var _strip_mat: ShaderMaterial = _strip.material_override as ShaderMaterial
@@ -68,7 +73,7 @@ var _clusters: Array[CPUParticles3D] = []
 
 func _ready() -> void:
 	for template: GeometryInstance3D in [_bolt_template, _impact_template, _spark_template, _smoke_template,
-			_blast_template, _cluster_template]:
+			_blast_template, _cluster_template, _tongue_template]:
 		template.hide()
 		if template is CPUParticles3D:
 			(template as CPUParticles3D).emitting = false
@@ -104,6 +109,10 @@ func play(data: FireRainData, points: PackedVector3Array, landed: PackedByteArra
 			0.05, minf(segment * cluster_spread, cluster_max_spread))
 		cluster.scale_amount_min = flame_scale * _cluster_template.scale_amount_min
 		cluster.scale_amount_max = flame_scale * _cluster_template.scale_amount_max
+		var tongue: CPUParticles3D = _tongues[index]
+		tongue.emission_box_extents = cluster.emission_box_extents
+		tongue.scale_amount_min = flame_scale * _tongue_template.scale_amount_min
+		tongue.scale_amount_max = flame_scale * _tongue_template.scale_amount_max
 		for burst: CPUParticles3D in [_sparks[index], _smokes[index], _blasts[index]]:
 			burst.scale_amount_min = burst_scale * 0.76
 			burst.scale_amount_max = burst_scale * 1.22
@@ -114,6 +123,7 @@ func play(data: FireRainData, points: PackedVector3Array, landed: PackedByteArra
 	_strip.scale = Vector3(data.line_width, 1.0, data.line_length)
 	_strip.position = Vector3(0.0, lift, 0.0)
 	_strip_mat.set_shader_parameter(&"size", Vector2(data.line_width, data.line_length))
+	_strip_mat.set_shader_parameter(&"pool_count", float(points.size()))
 	_push_strip()
 	_strip.show()
 	_embers.show()
@@ -143,12 +153,12 @@ func impact(index: int, point: Vector3, landed: bool) -> void:
 		burst.restart()
 		burst.emitting = true
 	if _data.burn_lifetime > 0.0:
-		var cluster := _clusters[index]
-		cluster.global_position = point + Vector3.UP * 0.05
-		cluster.global_basis = global_basis
-		cluster.show()
-		cluster.restart()
-		cluster.emitting = true
+		for flames: CPUParticles3D in [_clusters[index], _tongues[index]]:
+			flames.global_position = point + Vector3.UP * 0.05
+			flames.global_basis = global_basis
+			flames.show()
+			flames.restart()
+			flames.emitting = true
 	# Quả đầu tiên có sàn: dải bắt đầu cháy
 	if _heat_target < 1.0 and _linger_clock < 0.0:
 		_heat_target = 1.0 if _data.burn_lifetime > 0.0 else 0.0
@@ -167,8 +177,9 @@ func burn_end() -> void:
 	_heat_target = 0.0
 	_scorch = 1.0
 	_embers.emitting = false
-	for cluster in _clusters:
-		cluster.emitting = false
+	for index in _clusters.size():
+		_clusters[index].emitting = false
+		_tongues[index].emitting = false
 	_linger_clock = 0.0
 
 
@@ -234,7 +245,7 @@ func _update_impacts(delta: float) -> bool:
 		busy = true
 	for index in _sparks.size():
 		busy = busy or _sparks[index].emitting or _smokes[index].emitting or _blasts[index].emitting \
-			or _clusters[index].emitting
+			or _clusters[index].emitting or _tongues[index].emitting
 	return busy
 
 
@@ -266,6 +277,7 @@ func _ensure_slots(count: int) -> void:
 		_smokes.append(_spawn(_smoke_template) as CPUParticles3D)
 		_blasts.append(_spawn(_blast_template) as CPUParticles3D)
 		_clusters.append(_spawn(_cluster_template) as CPUParticles3D)
+		_tongues.append(_spawn(_tongue_template) as CPUParticles3D)
 
 
 func _spawn(template: Node3D) -> Node3D:
@@ -286,7 +298,7 @@ func _reset() -> void:
 		bolt.hide()
 	for decal in _impacts:
 		decal.hide()
-	for group: Array[CPUParticles3D] in [_sparks, _smokes, _blasts, _clusters]:
+	for group: Array[CPUParticles3D] in [_sparks, _smokes, _blasts, _clusters, _tongues]:
 		for particles in group:
 			particles.emitting = false
 			particles.hide()
