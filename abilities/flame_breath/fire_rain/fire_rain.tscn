@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://abilities/flame_breath/fire_rain/fire_rain.gd" id="1_rain"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_rain/fire_rain_vfx.tscn" id="2_visual"]
+
+[sub_resource type="BoxShape3D" id="StripShape"]
+size = Vector3(2.5, 2.5, 10)
+
+[node name="FireRain" type="Node3D"]
+script = ExtResource("1_rain")
+
+[node name="Strip" type="Area3D" parent="."]
+
+[node name="Shape" type="CollisionShape3D" parent="Strip"]
+shape = SubResource("StripShape")
+
+[node name="FireRainVfx" parent="." instance=ExtResource("2_visual")]
+
+[connection signal="launched" from="." to="FireRainVfx" method="play"]
+[connection signal="impacted" from="." to="FireRainVfx" method="impact"]
+[connection signal="burn_started" from="." to="FireRainVfx" method="burn_start"]
+[connection signal="burn_ended" from="." to="FireRainVfx" method="burn_end"]

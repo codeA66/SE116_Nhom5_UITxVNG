@@ -1,0 +1,74 @@
+# Chạy TOÀN BỘ test (dev/ci/full_suite.txt) mỗi đêm trên nhánh main, chia nhóm chạy song song cho kịp giới hạn
+# thời gian của GitHub. CI thường (ci.yml) chỉ chạy bộ test nhanh; workflow này bắt test hỏng dần ở phần còn lại.
+# Hỏng thì GitHub gửi email báo cho người bật workflow; log từng nhóm nằm ở mục Artifacts của lần chạy.
+# Chạy tay: tab Actions > Nightly tests > Run workflow.
+name: Nightly tests
+
+on:
+  schedule:
+    # 19:00 UTC = 2 giờ sáng giờ Việt Nam
+    - cron: "0 19 * * *"
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: "4.7.2"
+  GODOT_RELEASE_URL: https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable
+
+jobs:
+  tests:
+    name: Test ${{ matrix.group.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        group:
+          - { name: player, filter: "tests/player/" }
+          - { name: enemies, filter: "tests/enemies/" }
+          - { name: fire, filter: "tests/fire/" }
+          - { name: fire-level-3, filter: "tests/levels/fire_level_3/[a-z0-9_]+\\.tscn" }
+          - { name: fire-level-3-tier-2, filter: "tests/levels/fire_level_3/tier_2/" }
+          - { name: other-levels, filter: "tests/levels/(boat|hub|monkey|wind)" }
+          - { name: wind-ui-npc, filter: "tests/(wind|ui|npcs|breakables|kits)/" }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-linux
+
+      - name: Tải Godot ${{ env.GODOT_VERSION }}
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot
+          curl -fsSL -o /tmp/godot.zip "$GODOT_RELEASE_URL/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q /tmp/godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          chmod +x ~/godot/godot
+
+      - name: Cache kết quả import
+        uses: actions/cache@v4
+        with:
+          path: .godot
+          key: godot-import-${{ env.GODOT_VERSION }}-${{ hashFiles('**/*.import', 'project.godot') }}
+          restore-keys: godot-import-${{ env.GODOT_VERSION }}-
+
+      # Máy trắng có lỗi tạm lúc khởi động (con trỏ chuột được nạp trước khi import); lỗi thật do CI thường bắt
+      - name: Import project
+        run: ~/godot/godot --headless --path . --import > import.log 2>&1 || true
+
+      - name: Chạy test nhóm ${{ matrix.group.name }}
+        run: |
+          GODOT="$HOME/godot/godot" LOG_DIR="$PWD/test_logs" TEST_TIMEOUT=300 TEST_FILTER="${{ matrix.group.filter }}" \
+            bash dev/ci/run_tests.sh dev/ci/full_suite.txt
+
+      - name: Lưu log test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-logs-${{ matrix.group.name }}
+          path: test_logs/
+          retention-days: 7

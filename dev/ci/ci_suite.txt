@@ -1,0 +1,32 @@
+# Bộ test CI chạy trên mỗi PR vào main / push lên main (dev/ci/run_tests.sh).
+# Mỗi dòng: <scene res://...> [tham số truyền sau --] [@data=<thư mục>]. Chỉ đưa vào test tự thoát và đang PASS.
+# Thêm test mới: thêm một dòng ở đây, không cần sửa workflow.
+#
+# Đã chạy thử 22 test ngày 2026-11-25; 11 test cũ (game đã đổi thiết kế) tạm bỏ, sửa xong thì thêm lại:
+#   tests/player/juice/test_juice.tscn, tests/player/game/currency/test_currency.tscn,
+#   tests/player/game/charms/test_all_charms.tscn, tests/enemies/enemy_1/test_enemy_1.tscn,
+#   tests/enemies/enemy_2/test_enemy_2.tscn, tests/fire/fire_vortex/test_fire_vortex.tscn,
+#   tests/fire/fusion_fire/test_fusion_fire.tscn, tests/ui/hud/test_hud.tscn, tests/ui/main_menu/test_main_menu.tscn,
+#   tests/wind/shrine/test_wind_shrine.tscn (@data=.godot/shrine_runtime),
+#   tests/wind/spellbook/test_wind_spellbook.tscn (@data=.godot/spellbook_runtime)
+
+# Player
+res://tests/player/hurtbox/test_hurtbox_invincibility.tscn
+res://tests/player/game/loot/test_loot_drop.tscn
+res://tests/player/game/restore/test_restore.tscn
+
+# Lửa
+res://tests/fire/igniter/test_igniter.tscn
+res://tests/fire/burnable_crate/test_burnable_crate.tscn
+
+# Gió
+res://tests/wind/reactive/test_wind_reactive.tscn
+
+# UI
+res://tests/ui/inventory/test_inventory_menu.tscn
+res://tests/ui/tutorials/test_tutorials.tscn
+
+# NPC / map
+res://tests/npcs/test_gatekeeper.tscn
+res://tests/levels/hub/test_hub.tscn
+res://tests/levels/wind_map/wind_trial/test_wind_trial_unit.tscn

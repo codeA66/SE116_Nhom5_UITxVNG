@@ -7,6 +7,7 @@
 [ext_resource type="Material" path="res://resources/feedback/ability_acquire/effects/fire_breath.tres" id="fx_fire"]
 [ext_resource type="Resource" uid="uid://dltyldt3gx0hc" path="res://resources/player/items/upgrades/fire_seal.tres" id="seal_fire"]
 [ext_resource type="Script" uid="uid://cqf3owa675hcj" path="res://resources/player/items/_base/skill_upgrade_data.gd" id="up_script"]
+[ext_resource type="Resource" path="res://abilities/flame_breath/fire_rain/fire_rain.tres" id="rain"]
 
 [sub_resource type="Resource" id="FlameAttack"]
 script = ExtResource("2_attack")
@@ -25,8 +26,10 @@ count = 2
 
 [sub_resource type="Resource" id="Upgrade1"]
 script = ExtResource("up_script")
-description = "(Chữ tạm) Luồng lửa dài hơn, cháy lâu hơn."
+display_name = "Mưa Hỏa Tiễn"
+description = "Giữ Q chọn đường, thả để gọi cầu lửa rơi dọc đường và để lại dải đất cháy."
 requirements = Array[ExtResource("cost_script")]([SubResource("Cost1")])
+evolves_into = ExtResource("rain")
 
 [sub_resource type="Resource" id="Cost2"]
 script = ExtResource("cost_script")

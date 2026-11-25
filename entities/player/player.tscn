@@ -43,6 +43,9 @@
 [ext_resource type="Script" path="res://entities/player/states/action/wind_tornado.gd" id="95_tornadostate"]
 [ext_resource type="Script" path="res://components/core/object_pool/object_pool.gd" id="96_pool"]
 [ext_resource type="PackedScene" path="res://abilities/wind_tornado/wind_tornado.tscn" id="97_tornado"]
+[ext_resource type="Script" path="res://abilities/flame_breath/fire_rain/fire_rain_state.gd" id="fr_state"]
+[ext_resource type="PackedScene" path="res://abilities/flame_breath/fire_rain/fire_rain.tscn" id="fr_scene"]
+[ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_rain/fire_rain_aim_vfx.tscn" id="fr_aim"]
 [ext_resource type="Script" path="res://components/elements/fire/igniter/igniter_area.gd" id="47_igniter"]
 [ext_resource type="PackedScene" path="res://components/elements/fire/fire_wind/fire_wind.tscn" id="48_firewind"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/fire_sword/fire_sword_vfx.tscn" id="49_firesword"]
@@ -293,6 +296,17 @@ script = ExtResource("95_tornadostate")
 script = ExtResource("96_pool")
 scene = ExtResource("97_tornado")
 initial_size = 1
+
+[node name="FireRain" type="Node" parent="StateMachine" node_paths=PackedStringArray("aim_visual")]
+script = ExtResource("fr_state")
+aim_visual = NodePath("AimVfx")
+
+[node name="Pool" type="Node" parent="StateMachine/FireRain"]
+script = ExtResource("96_pool")
+scene = ExtResource("fr_scene")
+initial_size = 1
+
+[node name="AimVfx" parent="StateMachine/FireRain" instance=ExtResource("fr_aim")]
 
 [node name="CameraShake" type="Node" parent="CameraRig/Camera3D"]
 script = ExtResource("29_shake")
