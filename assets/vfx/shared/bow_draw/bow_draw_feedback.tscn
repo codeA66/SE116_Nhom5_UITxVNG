@@ -72,14 +72,6 @@ cast_shadow = 0
 mesh = SubResource("UnitPlane")
 material_override = SubResource("ArcMaterial")
 
-[node name="ReadyLight" type="OmniLight3D" parent="."]
-visible = false
-light_color = Color(1, 0.6, 0.22, 1)
-light_energy = 2.2
-shadow_enabled = false
-omni_range = 3.5
-omni_attenuation = 1.6
-
 [node name="WindGather" type="CPUParticles3D" parent="."]
 cast_shadow = 0
 material_override = SubResource("StreakMaterial")

@@ -2,7 +2,8 @@ class_name BowDrawFeedback
 extends Node3D
 ## Báo độ kéo cung theo kiểu Death's Door: mọi tín hiệu nằm trên hướng bắn ngang tầm ngực, không vẽ gì dưới chân.
 ## - Đang kéo: mũi tên chỉ hướng màu lạnh, dài dần theo độ kéo, kèm vạch ngắm mảnh mờ phía trước.
-## - Kéo đầy: đổi hẳn sang màu ấm (mũi tên + vạch), hiện vòng cung sáng trước ngực, đèn ấm hắt xuống sàn.
+## - Kéo đầy: đổi hẳn sang màu ấm (mũi tên + vạch), hiện vòng cung sáng trước ngực. Không dùng đèn điểm: đèn bật
+##   lần đầu làm renderer Compatibility biên dịch thêm biến thể shader, đứng hình 0.1 s lần đầu kéo cung (đã đo).
 ##   Đổi màu đột ngột chính là tín hiệu "thả là bắn".
 ## - Thả sớm (hủy): mũi tên xám rồi tắt + khói tối, báo phát này không bắn.
 ## - Chất riêng của game (cáo + gió): sợi gió lạnh tụ dần vào đầu mũi tên khi kéo; tia lửa ấm bật ra một nhịp khi đầy.
@@ -27,8 +28,6 @@ extends Node3D
 ## Vòng cung trước ngực: bán kính (m) và nhịp bật ra lúc vừa đầy (s)
 @export_range(0.1, 4.0, 0.05) var arc_size: float = 1.15
 @export_range(0.01, 0.5, 0.01) var arc_pop_time: float = 0.12
-## Đèn ấm hắt xuống sàn khi đầy
-@export_range(0.0, 10.0, 0.1) var light_energy: float = 0.9
 
 @export_group("Hủy / kết thúc")
 @export_range(0.05, 1.0, 0.01) var cancel_time: float = 0.25
@@ -44,7 +43,6 @@ var _cancel_clock: float = -1.0
 @onready var _pointer: MeshInstance3D = $Pointer
 @onready var _aim_line: MeshInstance3D = $AimLine
 @onready var _arc: MeshInstance3D = $ReadyArc
-@onready var _light: OmniLight3D = $ReadyLight
 @onready var _puff: CPUParticles3D = $CancelPuff
 @onready var _wind: CPUParticles3D = $WindGather
 @onready var _sparks: CPUParticles3D = $ReadySparks
@@ -68,10 +66,9 @@ func _process(delta: float) -> void:
 	_place()
 	if _ready_clock >= 0.0:
 		_ready_clock += delta
-		# Vòng cung bật to hơn một chút rồi về cỡ thường; đèn chớp rồi về mức giữ
+		# Vòng cung bật to hơn một chút rồi về cỡ thường
 		var t := clampf(_ready_clock / arc_pop_time, 0.0, 1.0)
 		_arc.scale = Vector3.ONE * arc_size * lerpf(1.3, 1.0, t)
-		_light.light_energy = light_energy * lerpf(2.0, 1.0, t)
 		if t >= 1.0:
 			_ready_clock = -1.0
 		busy = true
@@ -90,7 +87,6 @@ func _process(delta: float) -> void:
 		_pointer_mat.set_shader_parameter(&"opacity", 1.0 - t)
 		_line_mat.set_shader_parameter(&"opacity", (1.0 - t) * 0.35)
 		_arc_mat.set_shader_parameter(&"opacity", 1.0 - t)
-		_light.light_energy = light_energy * (1.0 - t)
 		if t >= 1.0:
 			_fade_clock = -1.0
 			_hide_layers()
@@ -125,7 +121,6 @@ func _on_cancelled() -> void:
 	_wind.emitting = false
 	_aim_line.hide()
 	_arc.hide()
-	_light.hide()
 	_pointer_mat.set_shader_parameter(&"cancel", 1.0)
 	_cancel_clock = 0.0
 	_puff.global_position = _pointer.global_position
@@ -146,7 +141,6 @@ func _start_aim() -> void:
 	_line_mat.set_shader_parameter(&"ready", 0.0)
 	_line_mat.set_shader_parameter(&"opacity", 0.35)
 	_arc.hide()
-	_light.hide()
 	_pointer.show()
 	_aim_line.show()
 	_place()
@@ -160,8 +154,6 @@ func _play_ready() -> void:
 	_line_mat.set_shader_parameter(&"ready", 1.0)
 	_arc_mat.set_shader_parameter(&"opacity", 1.0)
 	_arc.show()
-	_light.light_energy = light_energy * 2.0
-	_light.show()
 	_ready_clock = 0.0
 	_place()
 	# Gió đã tụ xong: tắt sợi gió, bật tia lửa ấm một nhịp
@@ -192,7 +184,6 @@ func _place() -> void:
 	if _ready_clock < 0.0:
 		_arc.scale = Vector3.ONE * arc_size
 	_arc.global_transform = Transform3D(Basis(side, Vector3.UP, forward).scaled(_arc.scale), grip)
-	_light.global_position = grip + forward * 0.4
 	_wind.global_position = line_start
 	_sparks.global_position = line_start
 
@@ -201,7 +192,6 @@ func _hide_layers() -> void:
 	_pointer.hide()
 	_aim_line.hide()
 	_arc.hide()
-	_light.hide()
 
 
 func _hide_all() -> void:
