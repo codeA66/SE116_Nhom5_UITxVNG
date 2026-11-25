@@ -3,7 +3,10 @@ extends State
 enum Phase { RISE, AIM, FLIGHT, DESCEND }
 
 const WORLD_MASK: int = 1
-const ENEMY_MASK: int = 4
+const TARGET_MASK: int = 4
+
+@export_group("Aim Feedback")
+@export_range(0.0, 0.12, 0.005, "suffix:s") var aim_display_grace: float = 0.04
 
 var _player: Player
 var _owner: CharmUltimate
@@ -14,7 +17,8 @@ var _age: float = 0.0
 var _origin: Vector3
 var _impact: Vector3
 var _impact_normal: Vector3
-var _cursor: Vector2 = Vector2.INF
+var _aim_projection: Vector3 = Vector3.INF
+var _aim_display_left: float = 0.0
 var _aim_valid: bool = false
 var _fire_requested: bool = false
 var _cancel_requested: bool = false
@@ -23,6 +27,7 @@ var _forces_before: bool = true
 var _controls_before: bool = true
 var _descent_from: float = 0.0
 var _probe: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()
+var _probe_exclusions: Array[RID] = []
 var _blast: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
 var _sphere: SphereShape3D = SphereShape3D.new()
 
@@ -32,7 +37,7 @@ func configure(player: Player, caster: CharmUltimate) -> void:
 	_owner = caster
 	_data = caster.data
 	_probe.collision_mask = WORLD_MASK
-	_blast.collision_mask = ENEMY_MASK
+	_blast.collision_mask = TARGET_MASK
 	_blast.collide_with_areas = true
 	_blast.collide_with_bodies = false
 	_blast.shape = _sphere
@@ -52,7 +57,8 @@ func enter(_previous: StringName) -> void:
 	_fire_requested = false
 	_cancel_requested = false
 	_aim_valid = false
-	_cursor = Vector2.INF
+	_aim_projection = Vector3.INF
+	_aim_display_left = 0.0
 	_controls_before = _player.controls_enabled
 	_forces_before = _player.external_forces_enabled
 	_player.set_damage_protection(self, true)
@@ -118,16 +124,24 @@ func _rise(delta: float) -> void:
 
 func _aim(delta: float) -> void:
 	_drive_to(_origin.y + _data.lift_height, delta)
-	if _cursor != _owner.get_cursor() or _fire_requested:
-		_cursor = _owner.get_cursor()
-		_aim_valid = _measure_target(_cursor)
+	# Camera còn trôi sau lúc cất cánh nên vị trí chuột trên màn hình chưa đủ để cache điểm ngắm.
+	var projection: Vector3 = _player.project_cursor_to_height(_owner.get_cursor(), _origin.y)
+	if not projection.is_finite():
+		_aim_projection = Vector3.INF
+		_aim_valid = false
+	elif _aim_projection != projection or _fire_requested or (not _aim_valid and _aim_display_left > 0.0):
+		_aim_projection = projection
+		_aim_valid = _measure_target(projection)
 		if _aim_valid:
 			var facing: Vector3 = _impact - _origin
 			facing.y = 0.0
 			if not facing.is_zero_approx():
 				_player.face_instantly(facing)
+	# Giữ vòng qua một nhịp hụt ngắn, còn phát bắn chỉ dùng kết quả va chạm mới.
+	_aim_display_left = aim_display_grace if _aim_valid else maxf(_aim_display_left - delta, 0.0)
 	_visual.aim(_player.global_position, _player.model.global_basis, _impact,
-		_impact_normal, _data.radius, _aim_valid, _age, 1.0 - _age / maxf(_data.aim_time, delta))
+		_impact_normal, _data.radius, _aim_valid or _aim_display_left > 0.0, _age,
+		1.0 - _age / maxf(_data.aim_time, delta))
 	if _fire_requested:
 		_fire_requested = false
 		if _aim_valid:
@@ -182,16 +196,26 @@ func _drive_to(height: float, delta: float) -> void:
 	_player.velocity = offset / maxf(delta, 0.001)
 
 
-func _measure_target(cursor: Vector2) -> bool:
-	var on_plane: Vector3 = _player.project_cursor_to_height(cursor, _origin.y)
-	if not on_plane.is_finite():
-		return false
+func _measure_target(on_plane: Vector3) -> bool:
 	var space: PhysicsDirectSpaceState3D = _player.get_world_3d().direct_space_state
+	_probe_exclusions.clear()
+	_probe.exclude = _probe_exclusions
 	_probe.from = on_plane + Vector3.UP * _data.floor_probe_above
 	_probe.to = on_plane - Vector3.UP * _data.floor_probe_below
+	_probe.hit_from_inside = true
 	var floor_hit: Dictionary = space.intersect_ray(_probe)
+	_probe.hit_from_inside = false
 	if floor_hit.is_empty():
 		return false
+	var cage: SpawnerCage = floor_hit["collider"] as SpawnerCage
+	if cage:
+		# Lấy mặt sàn dưới bệ để có thể ngắm chính giữa mà tường và khiên vẫn chặn tia.
+		_probe_exclusions.append(cage.get_rid())
+		_probe.exclude = _probe_exclusions
+	if cage or floor_hit["normal"] == Vector3.ZERO:
+		floor_hit = space.intersect_ray(_probe)
+		if floor_hit.is_empty():
+			return false
 	var normal: Vector3 = floor_hit["normal"]
 	if normal.y < 0.5:
 		return false
@@ -209,13 +233,18 @@ func _apply_impact() -> void:
 	_sphere.radius = maxf(_data.radius, 0.01)
 	_blast.transform = Transform3D(Basis.IDENTITY, _impact)
 	var space: PhysicsDirectSpaceState3D = _player.get_world_3d().direct_space_state
-	var touched: Dictionary[Character, bool] = {}
+	var touched: Dictionary[Node, bool] = {}
 	for result: Dictionary in space.intersect_shape(_blast, 128):
 		var hurtbox: HurtboxComponent = result["collider"] as HurtboxComponent
-		var enemy: Character = hurtbox.owner as Character if hurtbox else null
-		if enemy == null or touched.has(enemy):
+		var target: Node = hurtbox.owner if hurtbox else null
+		if not (target is Character or target is SpawnerCage) or touched.has(target):
 			continue
-		touched[enemy] = true
+		if target is SpawnerCage:
+			var cage: SpawnerCage = target as SpawnerCage
+			# Truy vấn hình vẫn thấy hurtbox tắt monitorable khi lồng còn khiên.
+			if cage.is_broken or cage.is_shielded() or not hurtbox.monitorable:
+				continue
+		touched[target] = true
 		var info: DamageInfo = DamageInfo.new(_data.damage, DamageInfo.Type.PHYSICAL, Vector3.ZERO, _player)
 		info.set_contact(hurtbox.global_position, Vector3.DOWN)
 		hurtbox.receive_hit(info)
