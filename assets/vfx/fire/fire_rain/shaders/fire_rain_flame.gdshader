@@ -7,6 +7,7 @@ uniform vec4 core_color : source_color = vec4(1.0, 0.94, 0.67, 1.0);
 uniform vec4 hot_color : source_color = vec4(1.0, 0.62, 0.16, 1.0);
 uniform vec4 outer_color : source_color = vec4(0.84, 0.16, 0.03, 1.0);
 
+uniform sampler2D flame_mask : filter_linear, repeat_disable;
 varying float particle_seed;
 
 float hash(float n) {
@@ -20,15 +21,20 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 p = vec2(UV.x * 2.0 - 1.0, 1.0 - UV.y);
-	// Bề ngang giọt lửa: phình ở 25% chiều cao rồi nhọn dần lên đỉnh, mép gợn
-	float profile = sin(clamp(p.y, 0.0, 1.0) * 3.14159 * 0.85 + 0.35) * (1.0 - p.y * 0.55);
-	float wobble = 0.12 * sin(p.y * 10.0 - TIME * 14.0 + particle_seed * 20.0) * p.y;
-	float d = abs(p.x - wobble) / max(profile, 0.001);
-	float body = smoothstep(1.0, 0.55, d) * smoothstep(0.0, 0.08, p.y) * smoothstep(1.0, 0.75, p.y);
-	float core = smoothstep(0.6, 0.0, d) * (1.0 - smoothstep(0.1, 0.55, p.y));
-	vec3 color = mix(outer_color.rgb, hot_color.rgb, clamp(body * 1.3 - p.y * 0.4, 0.0, 1.0));
-	color = mix(color, core_color.rgb, core);
-	ALBEDO = color * COLOR.rgb;
-	ALPHA = body * COLOR.a;
+	float rise = 1.0 - UV.y;
+	float step_time = floor(TIME * 12.0 + particle_seed * 10.0);
+	float lean = sin(step_time * 0.83 + particle_seed * 6.0) * rise * rise * 0.075;
+	vec2 brush_uv = vec2(clamp(UV.x - lean, 0.0, 1.0), UV.y);
+	// Dùng riêng nửa bên trái của atlas để mỗi ngọn có một thân lửa rõ ở camera xa.
+	vec2 atlas_uv = vec2(mix(0.02, 0.465, brush_uv.x), mix(0.04, 0.475, brush_uv.y));
+	vec4 stamp = texture(flame_mask, atlas_uv);
+	float bend = (0.16 + lean) * rise * rise;
+	float width = max(0.035, mix(0.41, 0.035, rise) * smoothstep(-0.12, 0.18, rise));
+	float silhouette = 1.0 - smoothstep(width * 0.82, width, abs(UV.x - 0.46 - bend));
+	float edge = silhouette * smoothstep(0.0, 0.10, rise) * (1.0 - smoothstep(0.88, 1.0, rise));
+	edge *= mix(0.74, 1.0, smoothstep(0.04, 0.55, stamp.a));
+	float core = smoothstep(0.56, 0.94, stamp.r) * (1.0 - smoothstep(0.28, 0.84, rise));
+	vec3 tint = mix(outer_color.rgb, hot_color.rgb, smoothstep(0.23, 0.69, stamp.r));
+	ALBEDO = mix(tint, core_color.rgb, core) * COLOR.rgb;
+	ALPHA = edge * COLOR.a;
 }

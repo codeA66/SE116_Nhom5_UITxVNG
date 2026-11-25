@@ -13,17 +13,10 @@ float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
 
-float noise(vec2 p) {
-	vec2 i = floor(p);
-	vec2 f = fract(p);
-	vec2 u = f * f * (3.0 - 2.0 * f);
-	return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
-}
-
 void vertex() {
 	vec3 scale = vec3(length(MODEL_MATRIX[0].xyz), length(MODEL_MATRIX[1].xyz), length(MODEL_MATRIX[2].xyz));
 	MODELVIEW_MATRIX = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0] * scale.x, INV_VIEW_MATRIX[1] * scale.y, INV_VIEW_MATRIX[2] * scale.z, MODEL_MATRIX[3]);
-	particle_seed = hash(MODEL_MATRIX[3].xz * 3.7 + float(INSTANCE_ID));
+	particle_seed = hash(vec2(float(INSTANCE_ID), 17.0));
 }
 
 void fragment() {
@@ -31,10 +24,10 @@ void fragment() {
 	float r = length(p);
 	float angle = atan(p.y, p.x);
 	// Mép gợn như cụm khói: bán kính dao động theo góc
-	float lobes = noise(vec2(angle * 2.2 + particle_seed * 30.0, particle_seed * 10.0 + TIME * 0.6));
-	float radius = 0.72 + 0.22 * lobes;
-	float body = smoothstep(radius, radius - softness, r);
-	float core = smoothstep(0.55, 0.0, r) * core_boost;
+	float lobes = sin(angle * 3.0 + particle_seed * 6.28) * 0.57 + sin(angle * 5.0 - particle_seed * 4.0) * 0.43;
+	float radius = 0.79 + 0.12 * lobes;
+	float body = (1.0 - smoothstep(radius - softness, radius, r));
+	float core = (1.0 - smoothstep(0.13, 0.60, r)) * core_boost;
 	ALBEDO = COLOR.rgb * (1.0 + core);
 	ALPHA = body * COLOR.a;
 }

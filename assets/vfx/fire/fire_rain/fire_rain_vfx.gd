@@ -17,13 +17,17 @@ extends Node3D
 @export_range(0.0, 80.0, 1.0) var fall_tilt_degrees: float = 38.0
 ## Đời vết nổ dưới chân (s)
 @export_range(0.1, 3.0, 0.05) var impact_life: float = 0.9
-## Bán kính vết nổ so với bề ngang đường
-@export_range(0.1, 2.0, 0.05) var impact_radius_ratio: float = 0.7
+## Giới hạn kích thước để một quả trên đường dài không phủ cả dải.
+@export_range(0.1, 2.0, 0.05) var impact_radius_ratio: float = 0.57
+@export_range(0.1, 8.0, 0.05) var max_impact_radius: float = 2.15
+@export_range(0, 40) var prewarm_slots: int = 6
 ## Dải lửa bùng lên / tắt lửa (s)
 @export_range(0.01, 2.0, 0.01) var heat_in_time: float = 0.15
 @export_range(0.01, 2.0, 0.01) var heat_out_time: float = 0.45
 ## Cụm lửa tại mỗi điểm chạm: chiếm bấy nhiêu phần bề ngang / đoạn đường của quả đó
-@export_range(0.05, 1.0, 0.05) var cluster_spread: float = 0.22
+@export_range(0.05, 1.0, 0.05) var cluster_spread: float = 0.14
+@export_range(0.1, 4.0, 0.05) var cluster_max_spread: float = 0.55
+@export_range(0.1, 2.0, 0.05) var cluster_scale: float = 0.85
 ## Tàn lửa trên mỗi m² dải cháy, kẹp trong khoảng cho phép (giới hạn hạt)
 @export_range(0.1, 10.0, 0.1) var embers_per_m2: float = 0.7
 @export var ember_amount_range: Vector2i = Vector2i(6, 40)
@@ -69,6 +73,7 @@ func _ready() -> void:
 		if template is CPUParticles3D:
 			(template as CPUParticles3D).emitting = false
 	_reset()
+	_ensure_slots(prewarm_slots)
 
 
 ## FireRain.launched
@@ -87,12 +92,21 @@ func play(data: FireRainData, points: PackedVector3Array, landed: PackedByteArra
 	_impact_ages.resize(points.size())
 	_impact_ages.fill(-1.0)
 	var segment := data.line_length / points.size()
-	var radius := maxf(data.line_width * impact_radius_ratio, segment * 0.5)
-	for index in _impacts.size():
+	var radius: float = minf(data.line_width * impact_radius_ratio, max_impact_radius)
+	var flame_scale: float = clampf(minf(data.line_width, segment) * 0.60, 0.16, cluster_scale)
+	var burst_scale: float = clampf(radius / 1.25, 0.25, 1.45)
+	for index: int in points.size():
 		_impacts[index].hide()
 		_bolts[index].hide()
 		_impacts[index].scale = Vector3(radius * 2.0, 1.0, radius * 2.0)
-		_clusters[index].emission_box_extents = Vector3(data.line_width * cluster_spread, 0.05, segment * cluster_spread)
+		var cluster: CPUParticles3D = _clusters[index]
+		cluster.emission_box_extents = Vector3(minf(data.line_width * cluster_spread, cluster_max_spread),
+			0.05, minf(segment * cluster_spread, cluster_max_spread))
+		cluster.scale_amount_min = flame_scale * _cluster_template.scale_amount_min
+		cluster.scale_amount_max = flame_scale * _cluster_template.scale_amount_max
+		for burst: CPUParticles3D in [_sparks[index], _smokes[index], _blasts[index]]:
+			burst.scale_amount_min = burst_scale * 0.76
+			burst.scale_amount_max = burst_scale * 1.22
 	# Cầu lửa lao tới từ phía điểm đầu (phía người gọi): đuôi chĩa lên trời, nghiêng về sau đường
 	var back := global_basis.z.normalized()
 	_trail_dir = (Vector3.UP * cos(deg_to_rad(fall_tilt_degrees)) + back * sin(deg_to_rad(fall_tilt_degrees))).normalized()
@@ -102,6 +116,7 @@ func play(data: FireRainData, points: PackedVector3Array, landed: PackedByteArra
 	_strip_mat.set_shader_parameter(&"size", Vector2(data.line_width, data.line_length))
 	_push_strip()
 	_strip.show()
+	_embers.show()
 	_embers.amount = clampi(roundi(data.line_width * data.line_length * embers_per_m2), ember_amount_range.x, ember_amount_range.y)
 	_active = true
 	set_process(true)
@@ -119,6 +134,7 @@ func impact(index: int, point: Vector3, landed: bool) -> void:
 		return
 	var decal := _impacts[index]
 	decal.global_position = point + Vector3.UP * lift * 2.0
+	(decal.material_override as ShaderMaterial).set_shader_parameter(&"age", 0.0)
 	decal.show()
 	_impact_ages[index] = 0.0
 	for burst: CPUParticles3D in [_sparks[index], _smokes[index], _blasts[index]]:
@@ -131,10 +147,11 @@ func impact(index: int, point: Vector3, landed: bool) -> void:
 		cluster.global_position = point + Vector3.UP * 0.05
 		cluster.global_basis = global_basis
 		cluster.show()
+		cluster.restart()
 		cluster.emitting = true
 	# Quả đầu tiên có sàn: dải bắt đầu cháy
 	if _heat_target < 1.0 and _linger_clock < 0.0:
-		_heat_target = 1.0
+		_heat_target = 1.0 if _data.burn_lifetime > 0.0 else 0.0
 		_embers.emitting = _data.burn_lifetime > 0.0
 
 
@@ -275,5 +292,6 @@ func _reset() -> void:
 			particles.hide()
 	_impact_ages.fill(-1.0)
 	_embers.emitting = false
+	_embers.hide()
 	_strip.hide()
 	set_process(false)

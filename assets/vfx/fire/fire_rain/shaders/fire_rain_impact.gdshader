@@ -8,7 +8,9 @@ uniform float seed = 0.0;
 uniform vec4 core_color : source_color = vec4(1.0, 0.94, 0.67, 1.0);
 uniform vec4 hot_color : source_color = vec4(1.0, 0.55, 0.1, 1.0);
 uniform vec4 char_color : source_color = vec4(0.19, 0.065, 0.025, 1.0);
-uniform float crack_count = 7.0;
+uniform float crack_count = 4.0;
+uniform float flash_fraction = 0.085;
+uniform float flash_radius = 0.66;
 
 float hash(float n) {
 	return fract(sin(n * 127.1 + seed * 311.7) * 43758.5453);
@@ -19,8 +21,8 @@ void fragment() {
 	float r = length(p);
 	float angle = atan(p.y, p.x);
 	// Lóe tâm: tắt trong 30% đầu đời
-	float flash_t = clamp(age / 0.3, 0.0, 1.0);
-	float flash = (1.0 - smoothstep(0.0, mix(0.55, 0.2, flash_t), r)) * (1.0 - flash_t);
+	float flash_t = clamp(age / max(flash_fraction, 0.001), 0.0, 1.0);
+	float flash = (1.0 - smoothstep(0.0, mix(flash_radius, 0.32, flash_t), r)) * (1.0 - smoothstep(0.68, 1.0, flash_t));
 	// Vòng sóng
 	float wave_t = 1.0 - pow(1.0 - clamp(age / 0.55, 0.0, 1.0), 2.0);
 	float ring_r = mix(0.15, 0.95, wave_t);
@@ -33,9 +35,11 @@ void fragment() {
 	float crack = smoothstep(0.06 * (1.0 - r / crack_len), 0.0, abs(angle - center_angle) * r) * step(r, crack_len);
 	float cool = clamp((age - 0.15) / 0.85, 0.0, 1.0);
 	float scorch = (1.0 - smoothstep(0.25, 0.6, r)) * 0.55;
+	float blast = (1.0 - smoothstep(0.12, 0.63, r)) * smoothstep(0.02, 0.08, age)
+		* (1.0 - smoothstep(0.12, 0.36, age));
 	vec3 color = mix(hot_color.rgb, char_color.rgb, cool);
-	color = mix(color, core_color.rgb, clamp(flash * 1.5 + ring * 0.6, 0.0, 1.0));
+	color = mix(color, core_color.rgb, clamp(flash * 2.6 + ring * 0.35, 0.0, 1.0));
 	float fade = 1.0 - smoothstep(0.7, 1.0, age);
 	ALBEDO = color;
-	ALPHA = clamp(flash + ring + crack * (1.0 - cool * 0.5) + scorch * cool, 0.0, 1.0) * fade;
+	ALPHA = clamp(flash + blast * 0.92 + ring * 0.66 + crack * (1.0 - cool) * 0.64 + scorch * cool, 0.0, 1.0) * fade;
 }

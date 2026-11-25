@@ -6,8 +6,10 @@
 [ext_resource type="Shader" path="res://assets/vfx/fire/fire_rain/shaders/fire_rain_strip.gdshader" id="4_strip"]
 [ext_resource type="Shader" path="res://assets/vfx/fire/fire_rain/shaders/fire_rain_flame.gdshader" id="5_flame"]
 [ext_resource type="Shader" path="res://assets/vfx/fire/fire_rain/shaders/fire_rain_puff.gdshader" id="6_puff"]
+[ext_resource type="Texture2D" path="res://assets/vfx/fire/flame_breath/textures/flame_masks.svg" id="7_flame_mask"]
 
 [sub_resource type="ShaderMaterial" id="BoltMat"]
+resource_local_to_scene = true
 render_priority = 3
 shader = ExtResource("2_bolt")
 
@@ -22,6 +24,7 @@ shader = ExtResource("3_impact")
 size = Vector2(1, 1)
 
 [sub_resource type="ShaderMaterial" id="StripMat"]
+resource_local_to_scene = true
 shader = ExtResource("4_strip")
 
 [sub_resource type="StandardMaterial3D" id="SparkMat"]
@@ -34,7 +37,7 @@ billboard_keep_scale = true
 
 [sub_resource type="QuadMesh" id="SparkMesh"]
 material = SubResource("SparkMat")
-size = Vector2(0.14, 0.14)
+size = Vector2(0.09, 0.25)
 
 [sub_resource type="Gradient" id="SparkColor"]
 offsets = PackedFloat32Array(0, 0.3, 1)
@@ -47,10 +50,11 @@ point_count = 2
 [sub_resource type="ShaderMaterial" id="FlameMat"]
 render_priority = 2
 shader = ExtResource("5_flame")
+shader_parameter/flame_mask = ExtResource("7_flame_mask")
 
 [sub_resource type="QuadMesh" id="FlameMesh"]
 material = SubResource("FlameMat")
-size = Vector2(0.75, 1.15)
+size = Vector2(0.96, 1.32)
 
 [sub_resource type="Gradient" id="FlameColor"]
 offsets = PackedFloat32Array(0, 0.18, 0.65, 1)
@@ -64,7 +68,7 @@ point_count = 3
 render_priority = 1
 shader = ExtResource("6_puff")
 shader_parameter/core_boost = 0.0
-shader_parameter/softness = 0.45
+shader_parameter/softness = 0.25
 
 [sub_resource type="QuadMesh" id="SmokeMesh"]
 material = SubResource("SmokeMat")
@@ -72,7 +76,7 @@ size = Vector2(1.1, 1.1)
 
 [sub_resource type="Gradient" id="SmokeColor"]
 offsets = PackedFloat32Array(0, 0.15, 0.6, 1)
-colors = PackedColorArray(0.16, 0.1, 0.07, 0, 0.11, 0.08, 0.07, 0.85, 0.16, 0.14, 0.13, 0.55, 0.24, 0.22, 0.21, 0)
+colors = PackedColorArray(0.12, 0.08, 0.07, 0, 0.09, 0.065, 0.06, 0.90, 0.19, 0.14, 0.13, 0.68, 0.24, 0.22, 0.21, 0)
 
 [sub_resource type="Curve" id="SmokeSize"]
 _data = [Vector2(0, 0.45), 0.0, 0.0, 0, 0, Vector2(1, 1.6), 0.0, 0.0, 0, 0]
@@ -82,15 +86,15 @@ point_count = 2
 render_priority = 4
 shader = ExtResource("6_puff")
 shader_parameter/core_boost = 0.6
-shader_parameter/softness = 0.3
+shader_parameter/softness = 0.21
 
 [sub_resource type="QuadMesh" id="BlastMesh"]
 material = SubResource("BlastMat")
-size = Vector2(1.6, 1.6)
+size = Vector2(1.82, 1.64)
 
 [sub_resource type="Gradient" id="BlastColor"]
 offsets = PackedFloat32Array(0, 0.35, 1)
-colors = PackedColorArray(1, 0.97, 0.75, 1, 1, 0.66, 0.15, 0.95, 0.85, 0.2, 0.04, 0)
+colors = PackedColorArray(1, 0.7, 0.22, 1, 1, 0.43, 0.05, 0.95, 0.81, 0.14, 0.035, 0)
 
 [sub_resource type="Curve" id="BlastSize"]
 _data = [Vector2(0, 0.55), 0.0, 0.0, 0, 0, Vector2(1, 1.35), 0.0, 0.0, 0, 0]
@@ -109,6 +113,7 @@ script = ExtResource("1_vfx")
 
 [node name="BoltTemplate" type="MeshInstance3D" parent="."]
 cast_shadow = 0
+custom_aabb = AABB(-6, -6, -6, 12, 12, 12)
 mesh = SubResource("BoltMesh")
 material_override = SubResource("BoltMat")
 
@@ -120,7 +125,7 @@ material_override = SubResource("ImpactMat")
 [node name="SparkTemplate" type="CPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 16
+amount = 13
 lifetime = 0.6
 one_shot = true
 explosiveness = 0.9
@@ -139,10 +144,10 @@ color_ramp = SubResource("SparkColor")
 [node name="SmokeTemplate" type="CPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 7
+amount = 6
 lifetime = 1.1
 one_shot = true
-explosiveness = 0.8
+explosiveness = 0.55
 randomness = 0.4
 mesh = SubResource("SmokeMesh")
 direction = Vector3(0, 1, 0)
@@ -160,14 +165,14 @@ color_ramp = SubResource("SmokeColor")
 [node name="BlastTemplate" type="CPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 6
-lifetime = 0.35
+amount = 5
+lifetime = 0.31
 one_shot = true
 explosiveness = 1.0
 randomness = 0.3
 mesh = SubResource("BlastMesh")
 direction = Vector3(0, 1, 0)
-spread = 180.0
+spread = 74.0
 gravity = Vector3(0, 0, 0)
 initial_velocity_min = 1.5
 initial_velocity_max = 3.0
@@ -179,7 +184,7 @@ color_ramp = SubResource("BlastColor")
 [node name="ClusterTemplate" type="CPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 5
+amount = 4
 lifetime = 0.75
 randomness = 0.4
 mesh = SubResource("FlameMesh")
