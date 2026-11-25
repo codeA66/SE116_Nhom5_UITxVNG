@@ -1,0 +1,221 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/vfx/fire/fire_rain/fire_rain_vfx.gd" id="1_vfx"]
+[ext_resource type="Shader" path="res://assets/vfx/fire/fire_rain/shaders/fire_rain_bolt.gdshader" id="2_bolt"]
+[ext_resource type="Shader" path="res://assets/vfx/fire/fire_rain/shaders/fire_rain_impact.gdshader" id="3_impact"]
+[ext_resource type="Shader" path="res://assets/vfx/fire/fire_rain/shaders/fire_rain_strip.gdshader" id="4_strip"]
+[ext_resource type="Shader" path="res://assets/vfx/fire/fire_rain/shaders/fire_rain_flame.gdshader" id="5_flame"]
+[ext_resource type="Shader" path="res://assets/vfx/fire/fire_rain/shaders/fire_rain_puff.gdshader" id="6_puff"]
+
+[sub_resource type="ShaderMaterial" id="BoltMat"]
+render_priority = 3
+shader = ExtResource("2_bolt")
+
+[sub_resource type="QuadMesh" id="BoltMesh"]
+size = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ImpactMat"]
+render_priority = 1
+shader = ExtResource("3_impact")
+
+[sub_resource type="PlaneMesh" id="GroundMesh"]
+size = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="StripMat"]
+shader = ExtResource("4_strip")
+
+[sub_resource type="StandardMaterial3D" id="SparkMat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="SparkMesh"]
+material = SubResource("SparkMat")
+size = Vector2(0.14, 0.14)
+
+[sub_resource type="Gradient" id="SparkColor"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(1, 0.95, 0.7, 1, 1, 0.55, 0.12, 1, 0.8, 0.15, 0.03, 0)
+
+[sub_resource type="Curve" id="SparkSize"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.2), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="ShaderMaterial" id="FlameMat"]
+render_priority = 2
+shader = ExtResource("5_flame")
+
+[sub_resource type="QuadMesh" id="FlameMesh"]
+material = SubResource("FlameMat")
+size = Vector2(0.75, 1.15)
+
+[sub_resource type="Gradient" id="FlameColor"]
+offsets = PackedFloat32Array(0, 0.18, 0.65, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 0.85, 0.75, 0.85, 0.7, 0.5, 0.45, 0)
+
+[sub_resource type="Curve" id="FlameSize"]
+_data = [Vector2(0, 0.4), 0.0, 0.0, 0, 0, Vector2(0.3, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.25), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="ShaderMaterial" id="SmokeMat"]
+render_priority = 1
+shader = ExtResource("6_puff")
+shader_parameter/core_boost = 0.0
+shader_parameter/softness = 0.45
+
+[sub_resource type="QuadMesh" id="SmokeMesh"]
+material = SubResource("SmokeMat")
+size = Vector2(1.1, 1.1)
+
+[sub_resource type="Gradient" id="SmokeColor"]
+offsets = PackedFloat32Array(0, 0.15, 0.6, 1)
+colors = PackedColorArray(0.16, 0.1, 0.07, 0, 0.11, 0.08, 0.07, 0.85, 0.16, 0.14, 0.13, 0.55, 0.24, 0.22, 0.21, 0)
+
+[sub_resource type="Curve" id="SmokeSize"]
+_data = [Vector2(0, 0.45), 0.0, 0.0, 0, 0, Vector2(1, 1.6), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="ShaderMaterial" id="BlastMat"]
+render_priority = 4
+shader = ExtResource("6_puff")
+shader_parameter/core_boost = 0.6
+shader_parameter/softness = 0.3
+
+[sub_resource type="QuadMesh" id="BlastMesh"]
+material = SubResource("BlastMat")
+size = Vector2(1.6, 1.6)
+
+[sub_resource type="Gradient" id="BlastColor"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 0.97, 0.75, 1, 1, 0.66, 0.15, 0.95, 0.85, 0.2, 0.04, 0)
+
+[sub_resource type="Curve" id="BlastSize"]
+_data = [Vector2(0, 0.55), 0.0, 0.0, 0, 0, Vector2(1, 1.35), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="QuadMesh" id="EmberMesh"]
+material = SubResource("SparkMat")
+size = Vector2(0.08, 0.08)
+
+[sub_resource type="Gradient" id="EmberColor"]
+offsets = PackedFloat32Array(0, 0.2, 1)
+colors = PackedColorArray(1, 0.8, 0.4, 0, 1, 0.55, 0.12, 1, 0.75, 0.12, 0.03, 0)
+
+[node name="FireRainVfx" type="Node3D"]
+script = ExtResource("1_vfx")
+
+[node name="BoltTemplate" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("BoltMesh")
+material_override = SubResource("BoltMat")
+
+[node name="ImpactTemplate" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("GroundMesh")
+material_override = SubResource("ImpactMat")
+
+[node name="SparkTemplate" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 16
+lifetime = 0.6
+one_shot = true
+explosiveness = 0.9
+randomness = 0.4
+mesh = SubResource("SparkMesh")
+direction = Vector3(0, 1, 0)
+spread = 60.0
+gravity = Vector3(0, -14, 0)
+initial_velocity_min = 4.0
+initial_velocity_max = 8.5
+scale_amount_min = 0.6
+scale_amount_max = 1.3
+scale_amount_curve = SubResource("SparkSize")
+color_ramp = SubResource("SparkColor")
+
+[node name="SmokeTemplate" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 7
+lifetime = 1.1
+one_shot = true
+explosiveness = 0.8
+randomness = 0.4
+mesh = SubResource("SmokeMesh")
+direction = Vector3(0, 1, 0)
+spread = 35.0
+gravity = Vector3(0, 0.5, 0)
+initial_velocity_min = 1.5
+initial_velocity_max = 3.5
+damping_min = 1.5
+damping_max = 2.5
+scale_amount_min = 0.7
+scale_amount_max = 1.3
+scale_amount_curve = SubResource("SmokeSize")
+color_ramp = SubResource("SmokeColor")
+
+[node name="BlastTemplate" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 6
+lifetime = 0.35
+one_shot = true
+explosiveness = 1.0
+randomness = 0.3
+mesh = SubResource("BlastMesh")
+direction = Vector3(0, 1, 0)
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 1.5
+initial_velocity_max = 3.0
+scale_amount_min = 0.7
+scale_amount_max = 1.2
+scale_amount_curve = SubResource("BlastSize")
+color_ramp = SubResource("BlastColor")
+
+[node name="ClusterTemplate" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 5
+lifetime = 0.75
+randomness = 0.4
+mesh = SubResource("FlameMesh")
+emission_shape = 3
+emission_box_extents = Vector3(0.6, 0.05, 0.6)
+direction = Vector3(0, 1, 0)
+spread = 8.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 0.5
+initial_velocity_max = 1.2
+angle_min = -10.0
+angle_max = 10.0
+scale_amount_min = 0.8
+scale_amount_max = 1.5
+scale_amount_curve = SubResource("FlameSize")
+color_ramp = SubResource("FlameColor")
+
+[node name="Strip" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("GroundMesh")
+material_override = SubResource("StripMat")
+
+[node name="Embers" type="CPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 16
+lifetime = 1.4
+randomness = 0.5
+mesh = SubResource("EmberMesh")
+emission_shape = 3
+emission_box_extents = Vector3(1, 0.05, 5)
+direction = Vector3(0, 1, 0)
+spread = 25.0
+gravity = Vector3(0, 0.6, 0)
+initial_velocity_min = 1.2
+initial_velocity_max = 2.8
+scale_amount_min = 0.6
+scale_amount_max = 1.4
+color_ramp = SubResource("EmberColor")
