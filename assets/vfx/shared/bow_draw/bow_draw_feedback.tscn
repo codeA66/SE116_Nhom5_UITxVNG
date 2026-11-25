@@ -1,27 +1,25 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://assets/vfx/shared/bow_draw/bow_draw_feedback.gd" id="1_script"]
-[ext_resource type="Shader" path="res://assets/vfx/shared/bow_draw/shaders/bow_draw_ring.gdshader" id="2_ring"]
-[ext_resource type="Shader" path="res://assets/vfx/shared/bow_draw/shaders/bow_ready_burst.gdshader" id="3_burst"]
-[ext_resource type="Shader" path="res://assets/vfx/shared/bow_draw/shaders/bow_ready_glint.gdshader" id="4_glint"]
+[ext_resource type="Shader" path="res://assets/vfx/shared/bow_draw/shaders/bow_aim_pointer.gdshader" id="2_pointer"]
+[ext_resource type="Shader" path="res://assets/vfx/shared/bow_draw/shaders/bow_aim_line.gdshader" id="3_line"]
+[ext_resource type="Shader" path="res://assets/vfx/shared/bow_draw/shaders/bow_ready_arc.gdshader" id="4_arc"]
 [ext_resource type="Shader" path="res://assets/vfx/shared/bow_draw/shaders/bow_cancel_puff.gdshader" id="5_puff"]
 
-[sub_resource type="PlaneMesh" id="FloorQuad"]
-size = Vector2(2, 2)
+[sub_resource type="PlaneMesh" id="UnitPlane"]
+size = Vector2(1, 1)
 
-[sub_resource type="QuadMesh" id="Card"]
-
-[sub_resource type="ShaderMaterial" id="RingMaterial"]
-render_priority = 1
-shader = ExtResource("2_ring")
-
-[sub_resource type="ShaderMaterial" id="BurstMaterial"]
-render_priority = 1
-shader = ExtResource("3_burst")
-
-[sub_resource type="ShaderMaterial" id="GlintMaterial"]
+[sub_resource type="ShaderMaterial" id="PointerMaterial"]
 render_priority = 2
-shader = ExtResource("4_glint")
+shader = ExtResource("2_pointer")
+
+[sub_resource type="ShaderMaterial" id="LineMaterial"]
+render_priority = 1
+shader = ExtResource("3_line")
+
+[sub_resource type="ShaderMaterial" id="ArcMaterial"]
+render_priority = 2
+shader = ExtResource("4_arc")
 
 [sub_resource type="ShaderMaterial" id="PuffMaterial"]
 shader = ExtResource("5_puff")
@@ -40,23 +38,31 @@ point_count = 2
 [node name="BowDrawFeedback" type="Node3D"]
 script = ExtResource("1_script")
 
-[node name="Ring" type="MeshInstance3D" parent="."]
+[node name="Pointer" type="MeshInstance3D" parent="."]
 visible = false
 cast_shadow = 0
-mesh = SubResource("FloorQuad")
-material_override = SubResource("RingMaterial")
+mesh = SubResource("UnitPlane")
+material_override = SubResource("PointerMaterial")
 
-[node name="ReadyBurst" type="MeshInstance3D" parent="."]
+[node name="AimLine" type="MeshInstance3D" parent="."]
 visible = false
 cast_shadow = 0
-mesh = SubResource("FloorQuad")
-material_override = SubResource("BurstMaterial")
+mesh = SubResource("UnitPlane")
+material_override = SubResource("LineMaterial")
 
-[node name="Glint" type="MeshInstance3D" parent="."]
+[node name="ReadyArc" type="MeshInstance3D" parent="."]
 visible = false
 cast_shadow = 0
-mesh = SubResource("Card")
-material_override = SubResource("GlintMaterial")
+mesh = SubResource("UnitPlane")
+material_override = SubResource("ArcMaterial")
+
+[node name="ReadyLight" type="OmniLight3D" parent="."]
+visible = false
+light_color = Color(1, 0.6, 0.22, 1)
+light_energy = 2.2
+shadow_enabled = false
+omni_range = 3.5
+omni_attenuation = 1.6
 
 [node name="CancelPuff" type="CPUParticles3D" parent="."]
 cast_shadow = 0

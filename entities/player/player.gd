@@ -546,11 +546,12 @@ func is_holding_aim() -> bool:
 	return controls_enabled and Input.is_action_pressed(&"aim")
 
 
-## Đúng khi đang giữ phím aim, có cung bắn được và đã hết thời gian hồi
+## Đúng khi đang giữ phím aim, có cung bắn được, đã hết thời gian hồi và đủ năng lượng cho một phát.
+## Thiếu năng lượng thì không cho kéo: trước đây vẫn kéo được rồi thả ra không bắn, người chơi tưởng lỗi
 func can_aim_bow() -> bool:
 	var bow := get_bow()
 	return not combat_locked() and bow != null and bow.is_ranged() and not bow.combo.is_empty() and is_holding_aim() \
-			and _bow_cooldown_timer <= 0.0
+			and _bow_cooldown_timer <= 0.0 and energy.can_spend(bow.energy_cost)
 
 
 ## Hiện cung ở BowHold và bắt đầu tư thế kéo dây
@@ -565,8 +566,9 @@ func begin_bow_aim() -> void:
 	_bow_hold.basis = Basis(limbs.cross(forward), limbs, forward)
 	_bow_model.visible = true
 	if _bow_model is BowVisual:
-		# Cung đang ghép nguyên tố: VFX tụ lực của nguyên tố thay cho cụm tụ lực mặc định
-		(_bow_model as BowVisual).default_charge_enabled = _bow_element_id() == &""
+		# Tắt cụm tụ lực mặc định của model cung (sao, vòng co): tín hiệu kéo / đầy giờ do BowDrawFeedback lo
+		# (mũi tên chỉ hướng đổi màu kiểu Death's Door); để cả hai thì quanh cung rối mắt
+		(_bow_model as BowVisual).default_charge_enabled = false
 		(_bow_model as BowVisual).set_aiming(true)
 	play_action(bow.draw_animation, 0.0)
 	set_bow_draw(0.0)
@@ -1303,6 +1305,9 @@ func _report_unaffordable_input() -> void:
 	if not _attack_blocked_by_ui and Input.is_action_just_pressed(&"attack") and has_weapon() \
 			and not energy.can_spend(get_weapon().energy_cost):
 		energy.notify_insufficient(get_weapon().energy_cost)
+	var bow := get_bow()
+	if bow and bow.is_ranged() and Input.is_action_just_pressed(&"aim") and not energy.can_spend(bow.energy_cost):
+		energy.notify_insufficient(bow.energy_cost)
 	for ability in GameState.get_abilities():
 		var skill := ability as SkillData
 		if skill and not skill.input_action.is_empty() and Input.is_action_just_pressed(skill.input_action) \
