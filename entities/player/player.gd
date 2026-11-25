@@ -6,6 +6,10 @@ extends Character
 ## Vừa bắn cung, bắt đầu thời gian hồi (HUD nghe để hiện, không phải dò mỗi frame)
 signal bow_cooldown_started(duration: float)
 signal bow_projectile_fired(primary: bool)
+## Độ kéo cung 0..1 mỗi lần đổi (VFX báo tiến độ / đã đầy); về 0 khi bắn xong hoặc thôi nhắm
+signal bow_draw_progress(amount: float)
+## Thả sớm khi chưa kéo đủ: phát này bị hủy, không bắn (VFX khói báo cho người chơi)
+signal bow_draw_cancelled
 signal bow_enemy_hit
 signal bow_enemy_hit_contact(hurtbox: HurtboxComponent, position: Vector3, direction: Vector3)
 signal targetability_changed(targetable: bool)
@@ -646,9 +650,15 @@ func set_bow_draw(amount: float) -> void:
 	if visual:
 		visual.draw_amount = amount
 	_on_bow_draw_changed(amount)
+	bow_draw_progress.emit(amount)
 	var element_id := _bow_element_id()
 	if element_id != &"":
 		fusion_bow_draw.emit(element_id, amount)
+
+
+## State kéo cung gọi khi người chơi thả sớm (chưa đủ độ kéo): báo để VFX hiện là phát này không bắn
+func notify_bow_draw_cancelled() -> void:
+	bow_draw_cancelled.emit()
 
 
 ## Buông dây sau khi bắn: dây bật về, chạy animation buông
