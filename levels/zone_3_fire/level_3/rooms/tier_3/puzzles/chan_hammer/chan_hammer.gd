@@ -53,12 +53,16 @@ func _physics_process(delta: float) -> void:
 		set_physics_process(false)
 
 
-func start(player: Player, data: ChanPuzzleData, cycle: float = 0.0, warning: float = 0.0, offset: float = 0.0) -> void:
+func start(player: Player, data: ChanPuzzleData, cycle: float = 0.0, warning: float = 0.0,
+		offset: float = 0.0, warn_on_start: bool = false) -> void:
 	_player = player
 	_data = data
 	_cycle_time = cycle if cycle > 0.0 else data.cycle_time
 	_warning_time = warning if warning > 0.0 else data.warning_time
-	_wait_for_next_warning(offset)
+	if warn_on_start:
+		_warn()
+	else:
+		_wait_for_next_warning(offset)
 
 
 func stop() -> void:
