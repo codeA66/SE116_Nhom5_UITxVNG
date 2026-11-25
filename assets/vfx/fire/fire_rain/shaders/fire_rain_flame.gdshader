@@ -3,8 +3,8 @@ shader_type spatial;
 // lõi sáng ở chân. Quad luôn quay về camera nhưng vẫn giữ cỡ hạt; màu / độ mờ theo COLOR của color_ramp.
 render_mode unshaded, cull_disabled, blend_mix, depth_draw_never, shadows_disabled;
 
-uniform vec4 core_color : source_color = vec4(1.0, 0.94, 0.67, 1.0);
-uniform vec4 hot_color : source_color = vec4(1.0, 0.62, 0.16, 1.0);
+uniform vec4 core_color : source_color = vec4(1.0, 0.78, 0.30, 1.0);
+uniform vec4 hot_color : source_color = vec4(1.0, 0.47, 0.065, 1.0);
 uniform vec4 outer_color : source_color = vec4(0.84, 0.16, 0.03, 1.0);
 
 uniform sampler2D flame_mask : filter_linear, repeat_disable;

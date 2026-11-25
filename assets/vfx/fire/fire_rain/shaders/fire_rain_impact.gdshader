@@ -9,8 +9,8 @@ uniform vec4 core_color : source_color = vec4(1.0, 0.94, 0.67, 1.0);
 uniform vec4 hot_color : source_color = vec4(1.0, 0.55, 0.1, 1.0);
 uniform vec4 char_color : source_color = vec4(0.19, 0.065, 0.025, 1.0);
 uniform float crack_count = 4.0;
-uniform float flash_fraction = 0.085;
-uniform float flash_radius = 0.66;
+uniform float flash_fraction = 0.067;
+uniform float flash_radius = 0.75;
 
 float hash(float n) {
 	return fract(sin(n * 127.1 + seed * 311.7) * 43758.5453);
@@ -22,7 +22,10 @@ void fragment() {
 	float angle = atan(p.y, p.x);
 	// Lóe tâm: tắt trong 30% đầu đời
 	float flash_t = clamp(age / max(flash_fraction, 0.001), 0.0, 1.0);
-	float flash = (1.0 - smoothstep(0.0, mix(flash_radius, 0.32, flash_t), r)) * (1.0 - smoothstep(0.68, 1.0, flash_t));
+	float flare_radius = mix(flash_radius, 0.32, flash_t);
+	float flare_edge = flare_radius * (0.72 + 0.28 * pow(abs(cos(angle * 3.0 + seed)), 5.0));
+	float flash = (1.0 - smoothstep(flare_edge * 0.18, flare_edge, r))
+		* (1.0 - smoothstep(0.48, 1.0, flash_t));
 	// Vòng sóng
 	float wave_t = 1.0 - pow(1.0 - clamp(age / 0.55, 0.0, 1.0), 2.0);
 	float ring_r = mix(0.15, 0.95, wave_t);

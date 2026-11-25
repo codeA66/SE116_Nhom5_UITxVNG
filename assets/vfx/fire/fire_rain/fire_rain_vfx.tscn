@@ -54,7 +54,7 @@ shader_parameter/flame_mask = ExtResource("7_flame_mask")
 
 [sub_resource type="QuadMesh" id="FlameMesh"]
 material = SubResource("FlameMat")
-size = Vector2(0.96, 1.32)
+size = Vector2(1.08, 0.82)
 
 [sub_resource type="Gradient" id="FlameColor"]
 offsets = PackedFloat32Array(0, 0.18, 0.65, 1)
@@ -113,7 +113,7 @@ script = ExtResource("1_vfx")
 
 [node name="BoltTemplate" type="MeshInstance3D" parent="."]
 cast_shadow = 0
-custom_aabb = AABB(-6, -6, -6, 12, 12, 12)
+custom_aabb = AABB(-7, -7, -7, 14, 14, 14)
 mesh = SubResource("BoltMesh")
 material_override = SubResource("BoltMat")
 
@@ -151,10 +151,10 @@ explosiveness = 0.55
 randomness = 0.4
 mesh = SubResource("SmokeMesh")
 direction = Vector3(0, 1, 0)
-spread = 35.0
+spread = 25.0
 gravity = Vector3(0, 0.5, 0)
-initial_velocity_min = 1.5
-initial_velocity_max = 3.5
+initial_velocity_min = 2.1
+initial_velocity_max = 4.2
 damping_min = 1.5
 damping_max = 2.5
 scale_amount_min = 0.7
@@ -193,8 +193,8 @@ emission_box_extents = Vector3(0.6, 0.05, 0.6)
 direction = Vector3(0, 1, 0)
 spread = 8.0
 gravity = Vector3(0, 0, 0)
-initial_velocity_min = 0.5
-initial_velocity_max = 1.2
+initial_velocity_min = 0.18
+initial_velocity_max = 0.55
 angle_min = -10.0
 angle_max = 10.0
 scale_amount_min = 0.8
