@@ -1,7 +1,8 @@
 class_name FireRain
 extends Node3D
-## Một lần Mưa Hỏa Tiễn: cầu lửa lần lượt chạm đất dọc đường thẳng, mỗi quả đánh trúng quái và đốt vật dễ cháy trong
-## đoạn đường của nó; quả cuối xong thì cả đường thành dải đất cháy: thứ dễ cháy đứng trong (kể cả đi vào sau) bị đốt
+## Một lần Mưa Hỏa Tiễn: cầu lửa lần lượt chạm đất dọc đường thẳng, mỗi quả châm lửa quái và vật dễ cháy trong đoạn
+## đường của nó (đòn va chạm chỉ gây sát thương khi attack.damage > 0; mặc định 0: sát thương chỉ đến từ cháy);
+## quả cuối xong thì cả đường thành dải đất cháy: thứ dễ cháy đứng trong (kể cả đi vào sau) bị đốt
 ## lại đều đặn tới hết burn_lifetime. Không đốt / đánh chính người gọi.
 ## Hình ảnh do FireRainVfx nghe signal, node này không biết gì về VFX. Dùng qua ObjectPool.
 ## Hiệu năng: mỗi quả dò va chạm đúng một lần (shape query dùng lại); dải cháy theo dõi vật vào / ra bằng signal;
@@ -169,6 +170,21 @@ func _impact(index: int) -> void:
 	_segment.size = Vector3(_data.line_width, _data.hit_height, _data.line_length / _points.size())
 	_query.transform = Transform3D(Basis.looking_at(_direction, Vector3.UP), point + Vector3.UP * (_data.hit_height * 0.5))
 	var space := get_world_3d().direct_space_state
+	# Đòn va chạm 0 sát thương (mặc định): cầu lửa chỉ châm lửa, sát thương đến từ cháy
+	if _data.attack != null and _data.attack.damage > 0:
+		_hit_hurtboxes(space, point)
+	_query.collision_mask = burnable_mask
+	for result: Dictionary in space.intersect_shape(_query, 64):
+		var burnable := result.collider as BurnableComponent
+		if burnable and not IgniterArea.belongs_to(burnable, _user):
+			burnable.ignite(_user)
+	if _data.impact_shake > 0.0:
+		ScreenShake.add_trauma_at(_data.impact_shake, point, shake_full_radius, shake_max_radius)
+	impacted.emit(index, point, true)
+
+
+## Mỗi mục tiêu trong đoạn của quả này nhận đòn va chạm (mỗi mục tiêu một lần cả chiêu)
+func _hit_hurtboxes(space: PhysicsDirectSpaceState3D, point: Vector3) -> void:
 	_query.collision_mask = hurtbox_mask
 	for result: Dictionary in space.intersect_shape(_query, 64):
 		var hurtbox := result.collider as HurtboxComponent
@@ -181,14 +197,6 @@ func _impact(index: int) -> void:
 		info.direction = away.normalized() if away.length_squared() > 0.0001 else _direction
 		info.attack = _data.attack
 		hurtbox.receive_hit(info)
-	_query.collision_mask = burnable_mask
-	for result: Dictionary in space.intersect_shape(_query, 64):
-		var burnable := result.collider as BurnableComponent
-		if burnable and not IgniterArea.belongs_to(burnable, _user):
-			burnable.ignite(_user)
-	if _data.impact_shake > 0.0:
-		ScreenShake.add_trauma_at(_data.impact_shake, point, shake_full_radius, shake_max_radius)
-	impacted.emit(index, point, true)
 
 
 func _start_burn() -> void:

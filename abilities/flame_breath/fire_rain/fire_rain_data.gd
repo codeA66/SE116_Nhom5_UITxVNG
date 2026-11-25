@@ -5,7 +5,8 @@ extends SkillData
 
 const ID := &"fire_rain"
 
-## Đòn của mỗi cầu lửa (luật game: 1 sát thương, lửa không đẩy). Mỗi mục tiêu chỉ trúng 1 lần cả chiêu
+## Đòn va chạm của cầu lửa (lửa không đẩy). Mỗi mục tiêu chỉ trúng 1 lần cả chiêu.
+## damage 0 (mặc định trong fire_rain.tres): cầu lửa chỉ châm lửa, sát thương chỉ đến từ cháy (BurnData của mục tiêu)
 @export var attack: AttackData
 
 @export_group("Aim")
