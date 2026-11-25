@@ -100,6 +100,22 @@ Chạy cả bộ test mà CI dùng (danh sách trong [dev/ci/ci_suite.txt](dev/c
 GODOT=/đường/dẫn/tới/godot bash dev/ci/run_tests.sh
 ```
 
+### Quy ước test
+
+Mục tiêu: test luôn được chạy và luôn đúng với code hiện tại, không để test hỏng nằm đó.
+
+1. **Tính năng mới kèm test.** Mỗi tính năng (kỹ năng, quái, câu đố, UI...) có một scene test trong
+   `tests/<nhóm>/<tên>/`: tự dựng tình huống, bấm phím / gọi hàm thật, mỗi mục in `PASS ...` hoặc `FAIL ...`,
+   xong thì `get_tree().quit(1 nếu có FAIL, ngược lại 0)`. Thêm một dòng vào
+   [dev/ci/full_suite.txt](dev/ci/full_suite.txt); test nhanh (dưới ~3 phút) và quan trọng thì thêm cả vào
+   [dev/ci/ci_suite.txt](dev/ci/ci_suite.txt).
+2. **Đổi hành vi thì sửa test trong cùng PR.** Ví dụ bỏ sát thương của một chiêu thì sửa luôn test đang mong chiêu đó
+   gây sát thương.
+3. **Chạy test trước khi mở PR** (lệnh ở trên). Lỗi bắt tại máy rẻ hơn chờ CI báo.
+4. **CI đỏ thì sửa trước khi merge.** Ai làm hỏng thì người đó sửa trong PR của mình.
+5. **Test hỏng sẵn:** sửa test (game đổi thiết kế), sửa game (test đúng, game sai) hoặc xoá test (tính năng đã bỏ).
+   Không để test FAIL mãi: quen nhìn đỏ thì không ai để ý đỏ nữa.
+
 ## CI
 
 GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml)) chạy trên mỗi Pull Request vào `main` và mỗi lần
@@ -111,6 +127,10 @@ push lên `main`:
    mục **Artifacts** (giữ 14 ngày).
 
 Thêm test vào CI: thêm một dòng vào `dev/ci/ci_suite.txt` (chỉ test tự thoát và đang PASS).
+
+**Test hằng đêm** ([.github/workflows/nightly.yml](.github/workflows/nightly.yml)): 2 giờ sáng mỗi ngày chạy **toàn bộ**
+test trong `dev/ci/full_suite.txt` trên `main`, chia nhóm chạy song song. Có test hỏng thì GitHub gửi email báo, log
+từng nhóm nằm ở mục Artifacts. Chạy tay: tab **Actions** > **Nightly tests** > **Run workflow**.
 
 ## Tài liệu
 

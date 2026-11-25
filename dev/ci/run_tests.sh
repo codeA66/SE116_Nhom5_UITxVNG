@@ -6,7 +6,8 @@
 # Mỗi test dùng thư mục dữ liệu riêng (user://) nên không đụng save thật trên máy.
 #
 # Cách dùng:  GODOT=/đường/dẫn/godot dev/ci/run_tests.sh [ci_suite.txt]
-# Biến môi trường: GODOT (mặc định "godot"), TEST_TIMEOUT (giây, mặc định 240), LOG_DIR (mặc định test_logs).
+# Biến môi trường: GODOT (mặc định "godot"), TEST_TIMEOUT (giây, mặc định 240), LOG_DIR (mặc định test_logs),
+# TEST_FILTER (regex: chỉ chạy dòng khớp, ví dụ "tests/fire/" - workflow hằng đêm chia bộ test chạy song song).
 
 set -u
 
@@ -24,6 +25,9 @@ failed=()
 while IFS= read -r line || [ -n "$line" ]; do
 	line="${line%%$'\r'}"
 	[[ -z "${line// }" || "$line" == \#* ]] && continue
+	if [ -n "${TEST_FILTER:-}" ] && ! grep -qE "$TEST_FILTER" <<< "$line"; then
+		continue
+	fi
 	read -r scene args <<< "$line"
 	name="$(basename "$scene" .tscn)"
 	log="$LOG_DIR/$name.log"
