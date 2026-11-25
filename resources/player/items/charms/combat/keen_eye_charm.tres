@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://resources/player/items/_base/stat_bonus_effect.gd" id="effect"]
 [ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
 [ext_resource type="Texture2D" path="res://assets/ui/charms/combat/keen_eye_charm.png" id="icon"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/_rarity/keen_eye_special.tres" id="rarity"]
 
 [sub_resource type="Resource" id="ExtraArrow"]
 script = ExtResource("effect")
@@ -17,5 +18,6 @@ display_name = "Bùa Ưng Nhãn"
 icon = ExtResource("icon")
 notch_cost = 1
 description = "Mỗi lần nhả dây bắn liên tiếp 2 mũi tên, cách nhau 0,2 giây, vẫn chỉ tốn 1 năng lượng. Chỉ mũi đầu nhận hiệu ứng ghép nguyên tố."
-lore = "Bùa thường. Ánh mắt tĩnh lặng đi trước mũi tên."
+lore = "Ánh mắt tĩnh lặng đi trước mũi tên."
 effects = Array[ExtResource("base")]([SubResource("ExtraArrow")])
+rarity = ExtResource("rarity")

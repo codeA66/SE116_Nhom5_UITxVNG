@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CharmRarity" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/charms/_rarity/charm_rarity.gd" id="rarity"]
+[ext_resource type="Shader" path="res://ui/menus/inventory/effects/charm_rarity/keen_eye/keen_eye_aura.gdshader" id="aura"]
+[ext_resource type="Texture2D" path="res://ui/menus/inventory/effects/charm_rarity/keen_eye/keen_eye_aura.png" id="mask"]
+
+[resource]
+script = ExtResource("rarity")
+display_name = "ĐẶC BIỆT"
+sort_priority = 20
+tint = Color(0.69, 0.79, 0.47, 1)
+highlight = Color(1, 0.88, 0.55, 1)
+socket_fill = Color(0.065, 0.155, 0.13, 1)
+glow_strength = 0.83
+pulse_speed = 0.34
+sparkle_count = 0
+aura_shader = ExtResource("aura")
+aura_texture = ExtResource("mask")
+aura_open_duration = 0.45
