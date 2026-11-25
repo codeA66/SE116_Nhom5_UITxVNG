@@ -42,6 +42,8 @@ extends WildEnemyData
 @export var beam_damage: int = 1
 @export var beam_tracking_start_ratio: float = 0.75
 @export var beam_tracking_max_ratio: float = 1.25
+@export var beam_reverse_pause: float = 0.20
+@export var beam_travel_time: float = 0.50
 @export var beam_recoil: float = 0.55
 @export var beam_ball_radius: float = 1.0
 @export var beam_muzzle_offset: float = 2.25
@@ -50,6 +52,8 @@ extends WildEnemyData
 @export var beam_barrier_draw_time: float = 1.65
 @export var beam_barrier_rise_time: float = 1.15
 @export var beam_barrier_fade_time: float = 0.45
+@export var beam_push_radius: float = 6.8
+@export var beam_push_speed: float = 24.0
 @export var scorch_duration: float = 6.0
 @export var finale_backup_distance: float = 2.2
 @export var finale_backup_speed: float = 3.0
@@ -79,7 +83,7 @@ extends WildEnemyData
 
 @export_group("Phase Two Fang Snap & Cross Claw")
 @export var fang_snap_speed: float = 4.6
-@export var fang_snap_homing_duration: float = 7.0
+@export var fang_snap_homing_duration: float = 9.0
 @export var fang_snap_turn_rate: float = 3.2
 @export var fang_snap_wind_push: float = 19.0
 @export var fang_snap_scale: float = 1.85

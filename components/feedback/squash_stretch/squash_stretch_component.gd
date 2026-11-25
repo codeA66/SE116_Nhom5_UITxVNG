@@ -71,6 +71,15 @@ func squash(impact_speed: float) -> void:
 	_tween.tween_property(target, "scale", _base_scale, recover_time).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
+## Hủy ngay hiệu ứng co giãn đang chạy và trả model về tỉ lệ chuẩn (dùng khi bắt đầu chuỗi chuyển pha / cắt cảnh).
+func reset_scale() -> void:
+	if _tween:
+		_tween.kill()
+		_tween = null
+	if is_instance_valid(target):
+		target.scale = _base_scale
+
+
 func _start_tween() -> void:
 	if _tween:
 		_tween.kill()

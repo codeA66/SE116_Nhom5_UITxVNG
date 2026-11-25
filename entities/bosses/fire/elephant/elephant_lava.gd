@@ -7,6 +7,7 @@ class Patch:
 	var radius: float
 	var left: float
 	var trail: bool
+	var persistent: bool
 	var mesh: MeshInstance3D
 	var erupt_delay: float = -1.0
 
@@ -61,6 +62,8 @@ const PATCH_LAYER_GAP: float = 0.011
 @export var arena_size: Vector2 = Vector2(36.0, 32.0)
 @export var pool_radius: float = 1.575
 @export var pool_lifetime: float = 15.0
+## Vũng lava từ chiêu phun mưa (rain) giữ nguyên trên sân cho đến khi voi phun đợt mưa lava tiếp theo mới biến mất.
+@export var rain_pools_persist_until_next_rain: bool = true
 @export var trail_radius: float = 1.125
 @export_range(0.1, 1.0, 0.05) var ground_slow: float = 0.5
 @export_range(0.1, 20.0, 0.1) var burn_interval: float = 1.0
@@ -120,7 +123,7 @@ func _ready() -> void:
 	var mesh_scene := PackedScene.new()
 	mesh_scene.pack(mesh_template)
 	mesh_template.free()
-	_meshes = _make_pool(mesh_scene, 32)
+	_meshes = _make_pool(mesh_scene, 72)
 	_tails = _make_pool(mesh_scene, 28, _configure_motion.bind(_make_tail(), false))
 	_impacts = _make_pool(mesh_scene, 16, _configure_motion.bind(_make_splash(), true))
 	_markers = _make_pool(mesh_scene, 28, _configure_marker)
@@ -168,6 +171,8 @@ func set_target(player: Player) -> void:
 
 
 func rain(trunk: ElephantCoat) -> void:
+	if rain_pools_persist_until_next_rain:
+		_clear_rain_pools()
 	var quadrant := arena_size * 0.5
 	var spacing := quadrant / Vector2(3, 2)
 	for index: int in 4:
@@ -269,13 +274,14 @@ func _physics_process(delta: float) -> void:
 	var wet := false
 	for i: int in range(_patches.size() - 1, -1, -1):
 		var patch := _patches[i]
-		patch.left -= delta
+		if not patch.persistent:
+			patch.left -= delta
 		if patch.erupt_delay >= 0.0:
-			patch.erupt_delay = minf(patch.erupt_delay - delta, patch.left)
+			patch.erupt_delay = (patch.erupt_delay - delta) if patch.persistent else minf(patch.erupt_delay - delta, patch.left)
 			if patch.erupt_delay <= 0.0:
 				patch.erupt_delay = -1.0
 				_erupt(patch)
-		if patch.left <= 0.0:
+		if not patch.persistent and patch.left <= 0.0:
 			_meshes.release(patch.mesh)
 			_patches.remove_at(i)
 			continue
@@ -319,12 +325,22 @@ func _leave_lava() -> void:
 	_warning_material.set_shader_parameter(&"fill", 0.0)
 
 
+func _clear_rain_pools() -> void:
+	for i: int in range(_patches.size() - 1, -1, -1):
+		var patch := _patches[i]
+		if patch.trail:
+			continue
+		_meshes.release(patch.mesh)
+		_patches.remove_at(i)
+
+
 func _add_patch(at: Vector3, radius: float, trail: bool) -> void:
 	var patch := Patch.new()
 	patch.at = at
 	patch.radius = radius
-	patch.left = pool_lifetime
 	patch.trail = trail
+	patch.persistent = rain_pools_persist_until_next_rain and not trail
+	patch.left = INF if patch.persistent else pool_lifetime
 	patch.mesh = _take_mesh(_puddle_mesh, _pool_material)
 	patch.mesh.scale = Vector3(radius, 1.0, radius)
 	patch.mesh.rotation.y = randf_range(0.0, TAU)

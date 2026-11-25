@@ -102,7 +102,8 @@ func _ready() -> void:
 		fshape.shape = fsphere
 		fwind.add_child(fshape)
 		fnode.add_child(fwind)
-		fwind.owner = _actor
+		# Không đặt owner = Enemy để lốc xoáy E (WindTornado) đẩy lùi như đạn/vật thể chứ không hút và gây sát thương nhầm về thân Hổ.
+		fwind.owner = self
 		_fang_nodes.append(fnode)
 		_fang_winds.append(fwind)
 		_fang_active.append(false)
@@ -151,6 +152,13 @@ func _ready() -> void:
 	_query.collide_with_areas = true
 	_query.collide_with_bodies = false
 	set_physics_process(false)
+
+
+func exclude_ray_rid(rid: RID) -> void:
+	if rid.is_valid() and not _ray.exclude.has(rid):
+		var excluded: Array[RID] = _ray.exclude.duplicate()
+		excluded.append(rid)
+		_ray.exclude = excluded
 
 
 func launch_fang_snap(origin: Vector3, direction: Vector3, homing_target: Node3D = null) -> void:
@@ -412,11 +420,13 @@ func _step_fangs(delta: float) -> bool:
 		_box.size = Vector3(1.12 * sc, 1.35 * sc, maxf(1.25 * sc, step_len + 0.85))
 		_query.transform = Transform3D(fang_basis, (cur + next) * 0.5)
 		var hit_player := false
+		# Chỉ nổ và biến mất khi trúng thật; nếu player đang có i-frames (lướt Dash xuyên qua) thì giữ nguyên để tiếp tục quay đầu rượt đuổi!
 		for res: Dictionary in get_world_3d().direct_space_state.intersect_shape(_query, 8):
 			var hurtbox := res.collider as HurtboxComponent
 			if hurtbox == null:
 				continue
-			hurtbox.receive_hit(DamageInfo.new(config.fang_snap_damage, DamageInfo.Type.FIRE, move_dir * 2.6, _actor))
+			if not hurtbox.receive_hit(DamageInfo.new(config.fang_snap_damage, DamageInfo.Type.FIRE, move_dir * 2.6, _actor)):
+				continue
 			CombatFx.spawn_hit(next, move_dir, Color("#ff6e1a"), 1.25)
 			ScreenShake.add_trauma_at(0.36, next, 8.0, 20.0)
 			hit_player = true

@@ -194,7 +194,12 @@ func try_next_move() -> bool:
 			_end_preview()
 			return true
 	var skill := _get_move(_next_move)
-	if not is_previewing() and not skill_ready(skill):
+	if skill == null:
+		return false
+	# Ra chiêu lần lượt đúng thứ tự ngay sau nhịp chờ 1s (không bị kẹt đứng chờ cooldown riêng dài của từng chiêu),
+	# chỉ giữ kiểm tra tầm đánh để chim bước lại gần khi player đứng ngoài tầm bổ rìu.
+	var dist := distance_to_target()
+	if not is_previewing() and (dist < skill.minimum_range or dist > skill.maximum_range):
 		return false
 	face_instantly((target.global_position - global_position).slide(Vector3.UP).normalized())
 	begin_skill(skill)

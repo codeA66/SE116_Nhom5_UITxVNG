@@ -6,6 +6,8 @@ var _body: CharacterBody3D
 var _velocity: Vector3
 
 static func push(body: CharacterBody3D, impulse: Vector3) -> void:
+	if body is Enemy and (body as Enemy).resists_knockback():
+		return
 	var component: ForcedImpulse = body.get_node_or_null("ExplosionImpulse") as ForcedImpulse
 	if component == null:
 		component = ForcedImpulse.new()
