@@ -103,17 +103,25 @@ GODOT=/đường/dẫn/tới/godot bash dev/ci/run_tests.sh
 ### Quy ước test
 
 Mục tiêu: test luôn được chạy và luôn đúng với code hiện tại, không để test hỏng nằm đó.
+CI **không bắt buộc** viết test cho mọi thay đổi; nó chỉ chạy các test đang có để chắc code mới không làm hỏng phần cũ.
 
-1. **Tính năng mới kèm test.** Mỗi tính năng (kỹ năng, quái, câu đố, UI...) có một scene test trong
-   `tests/<nhóm>/<tên>/`: tự dựng tình huống, bấm phím / gọi hàm thật, mỗi mục in `PASS ...` hoặc `FAIL ...`,
-   xong thì `get_tree().quit(1 nếu có FAIL, ngược lại 0)`. Thêm một dòng vào
+1. **Khi nào nên viết test:** phần logic dễ hỏng ngầm mà chơi thử khó thấy:
+   - luật chơi và con số (sát thương, hồi chiêu, năng lượng, điều kiện kích hoạt);
+   - lưu / nạp save, tiến trình (nhặt đồ, nâng cấp, mở khoá, cờ đã qua phòng);
+   - chuyển state của player / quái / boss;
+   - câu đố, cổng, cơ chế map (mở đúng điều kiện, không kẹt).
+
+   **Không cần test:** VFX, shader, âm thanh, ánh sáng, UI thuần hình ảnh, chỉnh thông số nhỏ, dựng map / đặt model
+   (map có quy trình riêng trong [docs/map_building_rules.md](docs/map_building_rules.md)): chơi thử hoặc chụp ảnh là đủ.
+2. **Cách viết:** scene test trong `tests/<nhóm>/<tên>/`: tự dựng tình huống, bấm phím / gọi hàm thật, mỗi mục in
+   `PASS ...` hoặc `FAIL ...`, xong thì `get_tree().quit(1 nếu có FAIL, ngược lại 0)`. Thêm một dòng vào
    [dev/ci/full_suite.txt](dev/ci/full_suite.txt); test nhanh (dưới ~3 phút) và quan trọng thì thêm cả vào
    [dev/ci/ci_suite.txt](dev/ci/ci_suite.txt).
-2. **Đổi hành vi thì sửa test trong cùng PR.** Ví dụ bỏ sát thương của một chiêu thì sửa luôn test đang mong chiêu đó
-   gây sát thương.
-3. **Chạy test trước khi mở PR** (lệnh ở trên). Lỗi bắt tại máy rẻ hơn chờ CI báo.
-4. **CI đỏ thì sửa trước khi merge.** Ai làm hỏng thì người đó sửa trong PR của mình.
-5. **Test hỏng sẵn:** sửa test (game đổi thiết kế), sửa game (test đúng, game sai) hoặc xoá test (tính năng đã bỏ).
+3. **Đổi hành vi của thứ đã có test thì sửa test trong cùng PR** (quy tắc bắt buộc duy nhất). Ví dụ bỏ sát thương của
+   một chiêu thì sửa luôn test đang mong chiêu đó gây sát thương.
+4. **Chạy test trước khi mở PR** (lệnh ở trên). Lỗi bắt tại máy rẻ hơn chờ CI báo.
+5. **CI đỏ thì sửa trước khi merge.** Ai làm hỏng thì người đó sửa trong PR của mình.
+6. **Test hỏng sẵn:** sửa test (game đổi thiết kế), sửa game (test đúng, game sai) hoặc xoá test (tính năng đã bỏ).
    Không để test FAIL mãi: quen nhìn đỏ thì không ai để ý đỏ nữa.
 
 ## CI

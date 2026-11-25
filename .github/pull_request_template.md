@@ -14,8 +14,8 @@
 ## Kiểm tra trước khi merge
 
 - [ ] Đã chạy bộ test tại máy: `GODOT=<đường dẫn godot> bash dev/ci/run_tests.sh` và không có test hỏng
-- [ ] Tính năng mới có scene test trong `tests/` và đã thêm vào `dev/ci/full_suite.txt` (test nhanh, quan trọng thì
-      thêm cả `dev/ci/ci_suite.txt`), hoặc ghi lý do không cần
+- [ ] Logic / luật chơi / save mới có scene test trong `tests/` và đã thêm vào `dev/ci/full_suite.txt` (test nhanh,
+      quan trọng thì thêm cả `dev/ci/ci_suite.txt`); VFX, chỉnh thông số, dựng map thì không cần
 - [ ] Đổi hành vi của tính năng cũ thì đã sửa test của nó trong PR này
 - [ ] Đã chơi thử trong editor phần vừa sửa
 - [ ] Không đụng file luật được bảo vệ (`CLAUDE.md`, `AGENTS.md`, `docs/map_building_rules.md`,
