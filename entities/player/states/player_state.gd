@@ -14,7 +14,6 @@ const BOW_AIM := &"BowAim"
 const HURT := &"Hurt"
 const DEAD := &"Dead"
 const RESPAWN := &"Respawn"
-const KNOCKDOWN := &"Knockdown"
 
 var player: Player
 

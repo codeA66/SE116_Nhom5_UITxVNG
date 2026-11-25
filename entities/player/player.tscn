@@ -64,7 +64,6 @@
 [ext_resource type="PackedScene" path="res://components/feedback/death_effect/player/player_death_presentation.tscn" id="97_deathfx"]
 [ext_resource type="Script" path="res://entities/player/states/status/respawn.gd" id="98_respawn"]
 [ext_resource type="PackedScene" path="res://assets/vfx/shared/bow_draw/bow_draw_feedback.tscn" id="99_bowdraw"]
-[ext_resource type="Script" path="res://entities/player/states/status/knockdown.gd" id="100_knockdown"]
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
 
@@ -273,9 +272,6 @@ script = ExtResource("23_hurt")
 [node name="Dead" type="Node" parent="StateMachine" node_paths=PackedStringArray("presentation")]
 script = ExtResource("24_dead")
 presentation = NodePath("../../DeathPresentation")
-
-[node name="Knockdown" type="Node" parent="StateMachine"]
-script = ExtResource("100_knockdown")
 
 [node name="Respawn" type="Node" parent="StateMachine" node_paths=PackedStringArray("presentation")]
 script = ExtResource("98_respawn")
