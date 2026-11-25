@@ -11,6 +11,7 @@ signal finished(arrow: ArrowProjectile)
 ## Tên trúng thứ gì đó (quái hoặc tường) tại position: buff nguyên tố của cung nghe signal này
 signal impacted(position: Vector3, direction: Vector3)
 signal enemy_damaged
+signal enemy_damage_confirmed(hurtbox: HurtboxComponent, position: Vector3, direction: Vector3)
 
 @export_flags_3d_physics var collision_mask: int = 5 # world + enemy
 
@@ -175,6 +176,8 @@ func _apply_arrow_hit(hurtbox: HurtboxComponent, info: DamageInfo) -> void:
 	if _confirmed_damage > 0:
 		_reported_enemy_damage = true
 		enemy_damaged.emit()
+		if is_instance_valid(hurtbox):
+			enemy_damage_confirmed.emit(hurtbox, info.contact_position, info.contact_direction)
 
 
 ## Quái / boss thật, hoặc hình nộm tập bắn (để thử nạp năng lượng bằng cung, như kiếm chém hình nộm cũng nạp)

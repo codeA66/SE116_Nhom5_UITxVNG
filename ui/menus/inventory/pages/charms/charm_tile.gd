@@ -134,7 +134,7 @@ func _draw_content(rect: Rect2) -> void:
 	if has_focus():
 		rim = charm.rarity.highlight if _has_rarity() else style.charm_preview_color
 	_update_rarity_geometry(center, radius)
-	draw_circle(center, radius, style.charm_socket_fill, true, -1.0, true)
+	draw_circle(center, radius, _socket_fill(style.charm_socket_fill), true, -1.0, true)
 	draw_arc(center, radius, 0.0, TAU, ARC_STEPS, rim, line, true)
 	draw_arc(center, radius * INNER_RADIUS, 0.0, TAU, ARC_STEPS, Color(rim, 0.38), line, true)
 	if not owned or charm == null:
@@ -192,7 +192,8 @@ func _draw_pendant(rect: Rect2) -> void:
 	var bail: Vector2 = center + Vector2(0.0, -radius * 0.83)
 	draw_line(anchor + Vector2(0.0, 4.0), bail, Color(gold, 0.58), line, true)
 	draw_arc(bail, maxf(style.charm_cost_mark_size, 1.0), 0.0, TAU, 12, Color(gold, 0.8), line, true)
-	draw_circle(center, radius * 0.90, Color(gold, 0.025 + 0.075 * _settle), true, -1.0, true)
+	var socket: Color = _socket_fill(Color(gold, 0.025 + 0.075 * _settle))
+	draw_circle(center, radius * 0.90, socket, true, -1.0, true)
 	draw_arc(center, radius, 0.4, PI - 0.4, ARC_STEPS, Color(gold, 0.28 + _settle * 0.5), line, true)
 	draw_arc(center, radius, PI + 0.4, TAU - 0.4, ARC_STEPS, Color(gold, 0.28 + _settle * 0.5), line, true)
 	_draw_emblem(charm.icon, center, minf(rect.size.x, rect.size.y) * style.charm_pendant_icon_ratio, Color.WHITE, tr(charm.display_name))
@@ -205,6 +206,12 @@ func _draw_pendant(rect: Rect2) -> void:
 
 func _has_rarity() -> bool:
 	return owned and charm != null and charm.rarity != null
+
+
+func _socket_fill(fallback: Color) -> Color:
+	if _has_rarity() and charm.rarity.socket_fill.a > 0.0:
+		return charm.rarity.socket_fill
+	return fallback
 
 
 func _sync_rarity() -> void:

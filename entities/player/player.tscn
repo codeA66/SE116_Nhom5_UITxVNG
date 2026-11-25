@@ -63,6 +63,7 @@
 [ext_resource type="Script" path="res://entities/player/charms/charm_holder.gd" id="96_charms"]
 [ext_resource type="PackedScene" path="res://components/feedback/death_effect/player/player_death_presentation.tscn" id="97_deathfx"]
 [ext_resource type="Script" path="res://entities/player/states/status/respawn.gd" id="98_respawn"]
+[ext_resource type="PackedScene" path="res://assets/vfx/shared/bow_draw/bow_draw_feedback.tscn" id="99_bowdraw"]
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.5, 1.4, 1.5)
 
@@ -342,3 +343,6 @@ process_callback = 0
 visual = NodePath("../Model/Visual")
 camera_rig = NodePath("../CameraRig")
 hide_on_dissolve = [NodePath("../WeaponSocket")]
+
+[node name="BowDrawFeedback" parent="." node_paths=PackedStringArray("player") instance=ExtResource("99_bowdraw")]
+player = NodePath("..")

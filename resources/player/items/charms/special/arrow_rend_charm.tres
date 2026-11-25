@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="CharmData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="charm"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
+[ext_resource type="Script" path="res://resources/player/items/effects/special/arrow_rend/arrow_rend_effect.gd" id="effect"]
+[ext_resource type="Script" path="res://resources/player/items/charms/_rarity/charm_rarity.gd" id="rarity"]
+[ext_resource type="Texture2D" path="res://ui/menus/inventory/effects/charm_rarity/arrow_rend/arrow_rend_charm.png" id="icon"]
+[ext_resource type="Shader" path="res://ui/menus/inventory/effects/charm_rarity/arrow_rend/arrow_rend_aura.gdshader" id="aura"]
+[ext_resource type="Texture2D" path="res://assets/vfx/shared/library/textures/glow/soft_round.tres" id="glow"]
+
+[sub_resource type="Resource" id="RendEffect"]
+script = ExtResource("effect")
+maximum_arrows = 6
+mark_lifetime = 8.0
+boss_scene_paths = PackedStringArray("res://entities/bosses/boss_1/boss_1.tscn", "res://entities/bosses/forge_boss/forge_boss.tscn", "res://entities/bosses/fire_toad/fire_toad.tscn", "res://entities/bosses/fire/fire_boss.tscn", "res://entities/bosses/fire/fire_sabretooth.tscn", "res://entities/bosses/fire/pyralon.tscn", "res://entities/bosses/fire/war_elephant.tscn", "res://entities/enemies/wildlife/armored_polar_bear/armored_polar_bear.tscn", "res://entities/enemies/wildlife/monkey_chieftain/monkey_chieftain.tscn")
+
+[sub_resource type="Resource" id="SpecialRarity"]
+script = ExtResource("rarity")
+display_name = "ĐẶC BIỆT"
+sort_priority = 20
+tint = Color(0.63, 0.73, 0.86, 1)
+highlight = Color(0.96, 0.95, 1, 1)
+glow_strength = 0.88
+pulse_speed = 0.38
+aura_shader = ExtResource("aura")
+aura_texture = ExtResource("glow")
+aura_open_duration = 0.62
+
+[resource]
+script = ExtResource("charm")
+id = &"arrow_rend_charm"
+display_name = "Bùa Đoạt Tiễn"
+icon = ExtResource("icon")
+notch_cost = 3
+description = "Bắn ghim tên, chém trúng để rút. Mỗi tên cộng 1 sát thương. Với boss, mỗi cặp tên cộng 1."
+effects = Array[ExtResource("base")]([SubResource("RendEffect")])
+rarity = SubResource("SpecialRarity")

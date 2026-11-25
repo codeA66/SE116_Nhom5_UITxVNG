@@ -62,7 +62,8 @@ func physics_update(delta: float) -> void:
 		if _draw >= _bow.min_draw_to_shoot - 0.0001:
 			_shoot()
 		else:
-			# Thả sớm: hủy, không bắn, không tính hồi
+			# Thả sớm: hủy, không bắn, không tính hồi; báo để VFX hiện khói hủy
+			player.notify_bow_draw_cancelled()
 			state_machine.transition_to(IDLE if player.get_move_direction().is_zero_approx() else RUN)
 
 

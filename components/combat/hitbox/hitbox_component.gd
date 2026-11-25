@@ -7,6 +7,10 @@ extends Area3D
 signal hit(hurtbox: HurtboxComponent)
 ## Chỉ phát khi receive_hit chấp nhận đòn, sau khi sát thương và i-frame đã áp dụng.
 signal hit_applied(hurtbox: HurtboxComponent)
+## Gộp hiệu ứng của vũ khí vào cùng một lần qua khiên và kháng.
+signal damage_prepared(hurtbox: HurtboxComponent, info: DamageInfo)
+## Kết thúc nghe tạm kể cả khi khiên chặn và hurtbox không phát hurt.
+signal damage_checked(hurtbox: HurtboxComponent, info: DamageInfo)
 ## Phát khi hitbox bật: vệt chém, âm thanh... bắt đầu theo đòn mà không cần state biết
 signal activated(attack: AttackData)
 ## Phát khi hitbox tắt (hết active frames hoặc bị ngắt giữa chừng): thứ đi kèm đòn (vùng gây cháy...) tắt theo
@@ -110,7 +114,9 @@ func try_hit(hurtbox: HurtboxComponent) -> bool:
 	info.direction = direction
 	info.attack = attack
 	info.apply_weapon_damage_bonus(self)
+	damage_prepared.emit(hurtbox, info)
 	var accepted: bool = hurtbox.receive_hit(info)
+	damage_checked.emit(hurtbox, info)
 	if accepted:
 		hit_applied.emit(hurtbox)
 	hit.emit(hurtbox)

@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://entities/enemies/palace/wisp_caster/wisp_caster.tscn" id="reflect_wisp"]
 [ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_caster/fire_caster.tscn" id="reflect_fire_caster"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/combat/threefold_slash_charm.tres" id="two_slash"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/special/arrow_rend_charm.tres" id="arrow_rend"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="pickup"]
 [ext_resource type="PackedScene" path="res://objects/combat/training_dummy/training_dummy.tscn" id="dummy"]
 [ext_resource type="Script" path="res://components/combat/damage_area/damage_area.gd" id="damage"]
@@ -83,6 +84,11 @@ position = Vector3(1, 0, 2)
 charm = ExtResource("fire_arrow")
 persistent_id = &"combat_charms.fire_arrow"
 
+[node name="ArrowRendCharm" parent="." instance=ExtResource("pickup")]
+position = Vector3(5.2, 0, 2)
+charm = ExtResource("arrow_rend")
+persistent_id = &"combat_charms.arrow_rend"
+
 [node name="TwoSlashCharm" parent="." instance=ExtResource("pickup")]
 position = Vector3(-9, 0, 2)
 charm = ExtResource("two_slash")
@@ -118,6 +124,9 @@ position = Vector3(-4, 0, -4)
 
 [node name="DummyBow" parent="." instance=ExtResource("dummy")]
 position = Vector3(0, 0, -6)
+
+[node name="HealthComponent" parent="DummyBow" index="2"]
+max_health = 100
 
 [node name="DummySkill" parent="." instance=ExtResource("dummy")]
 position = Vector3(4, 0, -4)
@@ -193,3 +202,5 @@ player = NodePath("../Player")
 entrance = NodePath("../BossTestPillar/InteractableComponent")
 outside_arrival = NodePath("../BossTestReturn")
 roster = Array[PackedScene]([ExtResource("war_elephant"), ExtResource("pyralon"), ExtResource("fire_sabretooth")])
+
+[editable path="DummyBow"]
