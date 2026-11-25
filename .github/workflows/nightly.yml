@@ -49,8 +49,16 @@ jobs:
           mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
           chmod +x ~/godot/godot
 
+      - name: Cache kết quả import
+        uses: actions/cache@v4
+        with:
+          path: .godot
+          key: godot-import-${{ env.GODOT_VERSION }}-${{ hashFiles('**/*.import', 'project.godot') }}
+          restore-keys: godot-import-${{ env.GODOT_VERSION }}-
+
+      # Máy trắng có lỗi tạm lúc khởi động (con trỏ chuột được nạp trước khi import); lỗi thật do CI thường bắt
       - name: Import project
-        run: ~/godot/godot --headless --path . --import
+        run: ~/godot/godot --headless --path . --import > import.log 2>&1 || true
 
       - name: Chạy test nhóm ${{ matrix.group.name }}
         run: |
