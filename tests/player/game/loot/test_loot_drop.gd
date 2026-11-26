@@ -409,7 +409,10 @@ func _tc23_echoes() -> void:
 			prev_scale = e.scale.x
 			prev = e.global_position
 	_check(shown == 4, "TC23: lúc bay 4 dư ảnh đang hiện (%d)" % shown)
-	_check(min_gap > 0.15, "TC23: các dư ảnh cách nhau theo quãng đường (gần nhất %.2f m, đã bay %.1f m)" % [min_gap, start.distance_to(pickup.global_position)])
+	# Dư ảnh cách nhau echo_spacing theo quãng đường (đường cong), khoảng cách thẳng ngắn hơn khi bay vòng gắt
+	# hoặc khung hình thưa (máy CI): ngưỡng 10% echo_spacing: chỉ bắt lỗi thật là dư ảnh chồng một chỗ (≈ 0 m)
+	var min_allowed: float = float(pickup.get(&"echo_spacing")) * 0.1
+	_check(min_gap > min_allowed, "TC23: các dư ảnh cách nhau theo quãng đường (gần nhất %.2f m > %.2f m, đã bay %.1f m)" % [min_gap, min_allowed, start.distance_to(pickup.global_position)])
 	_check(shrinking, "TC23: dư ảnh nhỏ dần về phía sau")
 	await _wait(4.0)
 	var left := 0
