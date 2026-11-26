@@ -16,26 +16,40 @@
 #   res://tests/wind/shrine/test_wind_shrine.tscn @data=.godot/shrine_runtime
 #   res://tests/wind/spellbook/test_wind_spellbook.tscn @data=.godot/spellbook_runtime
 #   res://tests/wind/wind/tornado/tornado_sandbox.tscn --verify
+#
+# Chạy đêm lần đầu (2026-11-26): test cũ đang FAIL, tạm bỏ:
+#   res://tests/fire/fire_wind/test_fire_wind.tscn
+#   res://tests/levels/fire_level_3/tier_2/fights/fights_test.tscn
+#   res://tests/player/fox/runtime_check/runtime_check.tscn
+#   res://tests/player/game/special_charm/test_special_charm.tscn --verify
+#   res://tests/enemies/wisp_caster/test_wisp_caster.tscn @data=.godot/wisp_runtime
+#
+# Treo quá 5 phút trên CI (sân thử / demo chờ người chơi, hoặc cần cửa sổ để đo điểm ảnh): không phải test tự
+# chạy được headless. Muốn đưa vào thì cho test tự thoát và in PASS / FAIL khi chạy headless:
+#   res://tests/fire/laser_statue/laser_statue_test.tscn
+#   res://tests/fire/sandbox/fire_sandbox.tscn
+#   res://tests/levels/fire_level_3/tier_2/game_feel/game_feel_test.tscn
+#   res://tests/levels/fire_level_3/tier_2/tier_2_layout_test.tscn
+#   res://tests/player/game/charms/charm_sandbox.tscn
+#   res://tests/player/game/charms/fire_bow/test_fire_bow_charm.tscn
+#   res://tests/breakables/breakable_sandbox.tscn
+#   res://tests/kits/wind_palace_kit/palace_exploration_demo.tscn --verify
+#   res://tests/ui/inventory/test_inventory_pages.tscn
+#   res://tests/wind/ambience/test_wind_ambience.tscn
+#   res://tests/enemies/burrow_beetle/burrow_beetle_demo.tscn --verify
 
-res://tests/breakables/breakable_sandbox.tscn
 res://tests/enemies/boss/test_boss_1.tscn
 res://tests/enemies/boss/test_boss_charge.tscn
 res://tests/enemies/boss/test_boss_profile.tscn
 res://tests/enemies/boss/test_wind_magma.tscn
-res://tests/enemies/burrow_beetle/burrow_beetle_demo.tscn --verify
 res://tests/enemies/fire_spider/test_fire_spider.tscn @data=.godot/spider_runtime
-res://tests/enemies/wisp_caster/test_wisp_caster.tscn @data=.godot/wisp_runtime
 res://tests/fire/burnable_crate/test_burnable_crate.tscn
 res://tests/fire/fire_caster/fire_caster_test.tscn
-res://tests/fire/fire_wind/test_fire_wind.tscn
 res://tests/fire/flame_impact/test_flame_impact.tscn
 res://tests/fire/igniter/test_igniter.tscn
-res://tests/fire/laser_statue/laser_statue_test.tscn
 res://tests/fire/lava_slime/lava_slime_test.tscn
-res://tests/fire/sandbox/fire_sandbox.tscn
 res://tests/fire/shadow_wolf/shadow_wolf_test.tscn
 res://tests/fire/soul_mask/soul_mask_test.tscn
-res://tests/kits/wind_palace_kit/palace_exploration_demo.tscn --verify
 res://tests/kits/wind_palace_kit/palace_integration_test.tscn
 res://tests/kits/wind_palace_kit/palace_route_demo.tscn --verify
 res://tests/levels/boat_integration/test_boat_integration.tscn
@@ -67,14 +81,11 @@ res://tests/levels/fire_level_3/room_focus_test.tscn
 res://tests/levels/fire_level_3/spawner_cage_test.tscn
 res://tests/levels/fire_level_3/tier_2/blackout/blackout_test.tscn
 res://tests/levels/fire_level_3/tier_2/cinder_run/cinder_run_test.tscn
-res://tests/levels/fire_level_3/tier_2/fights/fights_test.tscn
 res://tests/levels/fire_level_3/tier_2/flammables/flammables_test.tscn
 res://tests/levels/fire_level_3/tier_2/forge/forge_test.tscn
-res://tests/levels/fire_level_3/tier_2/game_feel/game_feel_test.tscn
 res://tests/levels/fire_level_3/tier_2/shard_altar/shard_altar_test.tscn
 res://tests/levels/fire_level_3/tier_2/split/split_structure_test.tscn
 res://tests/levels/fire_level_3/tier_2/split/tier_transition_test.tscn
-res://tests/levels/fire_level_3/tier_2/tier_2_layout_test.tscn
 res://tests/levels/fire_level_3/tier_2/tower/skills_checkpoints_test.tscn
 res://tests/levels/fire_level_3/tier_2/tower_floors/tower_floors_test.tscn
 res://tests/levels/fire_level_3/tier_2/tower_pads/tower_pads_test.tscn
@@ -97,22 +108,17 @@ res://tests/npcs/conversation/test_wind_conversation.tscn
 res://tests/npcs/conversation/test_wind_story_unit.tscn
 res://tests/npcs/test_gatekeeper.tscn
 res://tests/npcs/test_npc_base.tscn
-res://tests/player/fox/runtime_check/runtime_check.tscn
-res://tests/player/game/charms/charm_sandbox.tscn
 res://tests/player/game/charms/combat/test_combat_charms.tscn
-res://tests/player/game/charms/fire_bow/test_fire_bow_charm.tscn
+res://tests/player/game/charms/combat/combat_charm_sandbox.tscn --verify-mobility
 res://tests/player/game/loot/test_loot_drop.tscn
 res://tests/player/game/restore/test_restore.tscn
 res://tests/player/game/special_charm/arrow_rend/test_arrow_rend.tscn
-res://tests/player/game/special_charm/test_special_charm.tscn --verify
 res://tests/player/hurtbox/test_hurtbox_invincibility.tscn
 res://tests/ui/area_title/test_area_title.tscn
 res://tests/ui/inventory/test_charms_page_layout.tscn
 res://tests/ui/inventory/test_inventory_frame.tscn
 res://tests/ui/inventory/test_inventory_menu.tscn
-res://tests/ui/inventory/test_inventory_pages.tscn
 res://tests/ui/tutorials/test_tutorials.tscn
-res://tests/wind/ambience/test_wind_ambience.tscn
 res://tests/wind/reactive/test_wind_reactive.tscn
 res://tests/wind/vfx/test_wind_vfx.tscn
 res://tests/wind/vfx/wind_blast_review.tscn
