@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/levels/wind_map/verify/final_portal/test_wind_final_portal.gd" id="test"]
+
+[node name="WindFinalPortalTest" type="Node3D"]
+
+[node name="Runner" type="Node3D" parent="."]
+script = ExtResource("test")

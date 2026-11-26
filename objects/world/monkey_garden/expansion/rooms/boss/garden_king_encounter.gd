@@ -1,6 +1,7 @@
 class_name GardenKingEncounter
 extends Area3D
 signal cleared
+signal victory_presentation_finished
 signal intro_requested
 signal approached(player: Player)
 signal guard_registered(guard: Enemy)
@@ -24,6 +25,14 @@ var _guard_ids: Array[int] = []
 var _projectile_pools: Array[ObjectPool] = []
 var _leader_defeated: bool = false
 var _completed: bool = false
+var _finisher_pending: bool = false
+var _victory_soul_origin: Vector3 = Vector3.INF
+
+func is_victory_presentation_finished() -> bool:
+	return _completed and not _finisher_pending
+
+func get_victory_soul_origin() -> Vector3:
+	return _victory_soul_origin
 
 func _ready() -> void:
 	_setup.call_deferred()
@@ -108,6 +117,7 @@ func _hide_interface() -> void:
 func _died(enemy: Enemy) -> void:
 	_alive -= 1
 	if enemy == leader:
+		_victory_soul_origin = enemy.global_position + Vector3.UP * 0.4
 		_leader_defeated = true; fighting = false
 		# Chết theo dây chuyền ngoài callback physics, vẫn đi qua Health/FSM và hủy ngòi nổ bình thường.
 		_defeat_followers.call_deferred()
@@ -118,10 +128,14 @@ func _on_leader_hurt(info: DamageInfo, damage_taken: int) -> void:
 	var attacker := info.source as Player
 	if not started or damage_taken <= 0 or not leader.is_dead() or not is_instance_valid(attacker):
 		return
+	if _finisher_pending:
+		return
+	_finisher_pending = true
 	_play_finisher.call_deferred(attacker, leader.global_position + Vector3.UP * 1.25)
 
 func _play_finisher(attacker: Player, focus: Vector3) -> void:
 	if not is_instance_valid(attacker) or attacker.health.is_dead() or SceneManager.is_busy():
+		_end_finisher()
 		return
 	var camera := CUT.new()
 	add_child(camera)
@@ -130,6 +144,12 @@ func _play_finisher(attacker: Player, focus: Vector3) -> void:
 	await get_tree().create_timer(FINISHER_HOLD, false).timeout
 	HitStop.end_cinematic(camera)
 	await camera.finish()
+	_end_finisher()
+
+func _end_finisher() -> void:
+	_finisher_pending = false
+	if _completed:
+		victory_presentation_finished.emit()
 
 func _defeat_followers() -> void:
 	for guard: Enemy in guards:
@@ -148,3 +168,5 @@ func _complete() -> void:
 	if _completed: return
 	_completed = true
 	GameState.set_flag(encounter_flag); cleared.emit()
+	if not _finisher_pending:
+		victory_presentation_finished.emit()
