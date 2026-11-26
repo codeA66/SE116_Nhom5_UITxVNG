@@ -24,6 +24,9 @@
 #   res://tests/player/game/special_charm/test_special_charm.tscn --verify
 #   res://tests/enemies/wisp_caster/test_wisp_caster.tscn @data=.godot/wisp_runtime
 #
+# Chập chờn trên CI (lúc PASS lúc FAIL dù đã chặn sát thương), bỏ theo ý chủ repo 2026-11-26:
+#   res://tests/levels/fire_level_3/level_3_rail_test.tscn
+#
 # Treo quá 5 phút trên CI (sân thử / demo chờ người chơi, hoặc cần cửa sổ để đo điểm ảnh): không phải test tự
 # chạy được headless. Muốn đưa vào thì cho test tự thoát và in PASS / FAIL khi chạy headless:
 #   res://tests/fire/laser_statue/laser_statue_test.tscn
@@ -67,7 +70,6 @@ res://tests/levels/fire_level_3/hand_torch_test.tscn
 res://tests/levels/fire_level_3/lava_boots_test.tscn
 res://tests/levels/fire_level_3/lava_fx_test.tscn
 res://tests/levels/fire_level_3/lava_geyser_test.tscn
-res://tests/levels/fire_level_3/level_3_rail_test.tscn
 res://tests/levels/fire_level_3/level_3_route_test.tscn
 res://tests/levels/fire_level_3/level_3_walk_test.tscn
 res://tests/levels/fire_level_3/locked_hint_test.tscn
