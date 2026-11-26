@@ -33,6 +33,7 @@ const MAX_HEALTH_STAT := &"max_health"
 const MAX_ENERGY_STAT: StringName = &"max_energy"
 const WEAPON_DAMAGE_BONUS_STAT: StringName = &"weapon_damage_bonus"
 const BOW_EXTRA_PROJECTILES_STAT: StringName = &"bow_extra_projectiles"
+const CHARM_WALK_SPEED_STAT: StringName = &"charm_walk_speed"
 const MAX_BOW_VOLLEY_PROJECTILES: int = 8
 const MAX_BOW_VOLLEY_RESERVE: int = 64
 const BOW_VOLLEY_PREWARM_COUNT: int = 2
@@ -840,7 +841,8 @@ func get_terrain_speed() -> float:
 
 
 func move_toward_direction(direction: Vector3, delta: float) -> void:
-	super(direction * _terrain_speed, delta)
+	var charm_walk_factor: float = clampf(stats.get_multiplier(CHARM_WALK_SPEED_STAT), 0.1, 5.0)
+	super(direction * (_terrain_speed * charm_walk_factor), delta)
 
 
 ## Kỹ năng chủ động vừa được bấm và dùng được ngay (đã mở khóa, không đang ghép vào vũ khí, có lệnh trong buffer,

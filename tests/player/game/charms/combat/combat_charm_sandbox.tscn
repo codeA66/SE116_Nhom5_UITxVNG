@@ -24,6 +24,10 @@
 [ext_resource type="PackedScene" path="res://entities/bosses/fire/pyralon.tscn" id="pyralon"]
 [ext_resource type="PackedScene" path="res://entities/bosses/fire/fire_sabretooth.tscn" id="fire_sabretooth"]
 [ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interactable"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/utility/ash_bind_charm.tres" id="ash_bind"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/utility/light_step_charm.tres" id="light_step"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/ability/fire/fire_rain_book.tscn" id="rain_book"]
+[ext_resource type="PackedScene" path="res://entities/enemies/palace/enemy_1/enemy_1.tscn" id="slow_target"]
 
 [sub_resource type="BoxShape3D" id="HurtShape"]
 size = Vector3(1.4, 1.8, 1.4)
@@ -78,6 +82,23 @@ persistent_id = &"combat_charms.keen"
 [node name="CharmCheckpoint" parent="."]
 position = Vector3(3, 0, 2)
 checkpoint_id = &"combat_charms_checkpoint"
+
+[node name="AshBindCharm" parent="." instance=ExtResource("pickup")]
+position = Vector3(-0.4, 0, 5)
+charm = ExtResource("ash_bind")
+persistent_id = &"combat_charms.ash_bind"
+
+[node name="LightStepCharm" parent="." instance=ExtResource("pickup")]
+position = Vector3(1.8, 0, 5)
+charm = ExtResource("light_step")
+persistent_id = &"combat_charms.light_step"
+
+[node name="FireRainBook" parent="." instance=ExtResource("rain_book")]
+position = Vector3(4.2, 0, 5)
+persistent_id = &"combat_charms.fire_rain_book"
+
+[node name="AshSlowTarget" parent="." instance=ExtResource("slow_target")]
+position = Vector3(-13, 0, 1)
 
 [node name="FireArrowCharm" parent="." instance=ExtResource("pickup")]
 position = Vector3(1, 0, 2)

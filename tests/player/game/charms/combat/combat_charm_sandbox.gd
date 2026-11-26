@@ -33,6 +33,10 @@ func _ready() -> void:
 	var zone: ZoneRoot = get_parent() as ZoneRoot
 	if not zone.is_combat_ready():
 		await zone.combat_ready
+	if OS.get_cmdline_user_args().has("--verify-mobility"):
+		var mobility_checks: RefCounted = load("res://tests/player/game/charms/combat/mobility/test_mobility_charms.gd").new()
+		await mobility_checks.run(zone)
+		return
 	for dummy_name: String in ["DummySword", "DummyBow", "DummySkill"]:
 		var dummy: Node = zone.get_node(NodePath(dummy_name))
 		var hurtbox: HurtboxComponent = dummy.get_node(^"HurtboxComponent") as HurtboxComponent
