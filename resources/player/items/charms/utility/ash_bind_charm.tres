@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="CharmData" format=3]
+
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_data.gd" id="charm"]
+[ext_resource type="Script" path="res://resources/player/items/_base/charm_effect.gd" id="base"]
+[ext_resource type="Script" path="res://resources/player/items/_base/stat_multiplier_effect.gd" id="multiplier"]
+[ext_resource type="Texture2D" path="res://assets/ui/charms/utility/ash_bind_charm.png" id="icon"]
+
+[sub_resource type="Resource" id="AshBind"]
+script = ExtResource("multiplier")
+stat = &"fire_rain_enemy_slow"
+multiplier = 0.9
+
+[resource]
+script = ExtResource("charm")
+id = &"ash_bind_charm"
+display_name = "Bùa Tro Ghìm"
+icon = ExtResource("icon")
+notch_cost = 1
+description = "Quái đi bộ trong dải Mưa Hỏa Tiễn di chuyển chậm hơn 10%."
+lore = "Tro níu chân những kẻ còn đứng trên đường lửa."
+effects = Array[ExtResource("base")]([SubResource("AshBind")])

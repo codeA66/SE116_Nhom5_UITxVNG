@@ -19,8 +19,10 @@
 [ext_resource type="Resource" path="res://resources/player/items/charms/combat/threefold_slash_charm.tres" id="two_slash"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/special/timebreak_charm.tres" id="skystrike"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/special/arrow_rend_charm.tres" id="arrow_rend"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/utility/ash_bind_charm.tres" id="ash_bind"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/utility/light_step_charm.tres" id="light_step"]
 
 [resource]
 script = ExtResource("1")
 items = Array[ExtResource("2")]([ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7")])
-charms = Array[ExtResource("3")]([ExtResource("challenge_charm"), ExtResource("swift_slash_charm"), ExtResource("heart_charm"), ExtResource("wrath"), ExtResource("keen"), ExtResource("spirit"), ExtResource("fire_arrow"), ExtResource("sword_reflect"), ExtResource("two_slash"), ExtResource("skystrike"), ExtResource("arrow_rend")])
+charms = Array[ExtResource("3")]([ExtResource("challenge_charm"), ExtResource("swift_slash_charm"), ExtResource("heart_charm"), ExtResource("wrath"), ExtResource("keen"), ExtResource("spirit"), ExtResource("fire_arrow"), ExtResource("sword_reflect"), ExtResource("two_slash"), ExtResource("skystrike"), ExtResource("arrow_rend"), ExtResource("ash_bind"), ExtResource("light_step")])

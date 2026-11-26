@@ -41,6 +41,8 @@ var last_hit: DamageInfo
 var home_position: Vector3
 var _attack_cooldown_left: float = 0.0
 var _flash_tween: Tween
+var _area_speed_factors: Dictionary[Node, float] = {}
+var _area_speed_factor: float = 1.0
 
 @onready var hitbox: HitboxComponent = $Model/Hitbox
 @onready var health: HealthComponent = $HealthComponent
@@ -72,7 +74,19 @@ func _pre_state_update(delta: float) -> void:
 	_attack_cooldown_left = maxf(_attack_cooldown_left - delta, 0.0)
 
 func move_toward_direction(direction: Vector3, delta: float) -> void:
-	super(spacing.steer(direction) if spacing != null else direction, delta)
+	var steered_direction: Vector3 = spacing.steer(direction) if spacing != null else direction
+	super(steered_direction * _area_speed_factor, delta)
+
+
+## Giữ từng nguồn riêng để rời một vùng không gỡ luôn vùng còn chồng lên quái.
+func set_area_speed_modifier(area_source: Node, factor: float) -> void:
+	if factor < 1.0:
+		_area_speed_factors[area_source] = clampf(factor, 0.1, 1.0)
+	else:
+		_area_speed_factors.erase(area_source)
+	_area_speed_factor = 1.0
+	for area_factor: float in _area_speed_factors.values():
+		_area_speed_factor = minf(_area_speed_factor, area_factor)
 
 
 # ---------- Mục tiêu ----------
@@ -244,6 +258,8 @@ func _on_wind_pushed(_impulse: Vector3) -> void:
 
 
 func _on_died() -> void:
+	_area_speed_factors.clear()
+	_area_speed_factor = 1.0
 	state_machine.transition_to(EnemyState.DEAD)
 	died.emit(self)
 
