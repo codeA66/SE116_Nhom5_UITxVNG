@@ -95,10 +95,33 @@ def material(name: str, color: tuple[float, float, float], roughness: float = 0.
 	return mat
 
 
+def tinted_image(prefix: str, tint: tuple[float, float, float]) -> bpy.types.Image:
+	"""Ảnh Diffuse đã nhân màu, lưu trong textures/tinted/ (tạo một lần, lần sau dùng lại file đã có)."""
+	key = "_".join(f"{c:.2f}" for c in tint).replace(".", "")
+	folder = os.path.join(TEX_DIR, "tinted")
+	path = os.path.join(folder, f"{prefix}_{key}_Diffuse.jpg")
+	if not os.path.exists(path):
+		import numpy
+		os.makedirs(folder, exist_ok=True)
+		source = bpy.data.images.load(os.path.join(TEX_DIR, f"{prefix}_Diffuse.jpg"), check_existing=True)
+		width, height = source.size
+		pixels = numpy.empty(width * height * 4, dtype=numpy.float32)
+		source.pixels.foreach_get(pixels)
+		pixels = pixels.reshape(-1, 4)
+		pixels[:, :3] = numpy.clip(pixels[:, :3] * numpy.array(tint, dtype=numpy.float32), 0.0, 1.0)
+		out = bpy.data.images.new(f"{prefix}_{key}_Diffuse", width, height)
+		out.pixels.foreach_set(pixels.ravel())
+		out.filepath_raw = path
+		out.file_format = "JPEG"
+		out.save()
+		bpy.data.images.remove(out)
+	return bpy.data.images.load(path, check_existing=True)
+
+
 def tex_material(name: str, prefix: str, tint: tuple[float, float, float] | None = None) -> bpy.types.Material:
-	"""Vật liệu PBR từ texture Poly Haven (Diffuse / Rough / nor_gl).
-	tint: nhân màu (ví dụ nhuộm đá cung Sét sang tím). glTF không xuất nút nhân màu: khi xuất sang game phải nướng
-	(bake) màu đã nhuộm vào ảnh, hoặc nhuộm lại bằng albedo_color của StandardMaterial3D trong Godot."""
+	"""Vật liệu PBR từ texture Poly Haven (Diffuse / Rough / nor_gl), ảnh nối thẳng vào shader để glTF xuất được.
+	tint: nhân màu (ví dụ nhuộm đá cung Sét sang tím). glTF không xuất nút nhân màu nên màu nhuộm được nướng sẵn vào
+	một ảnh Diffuse mới (textures/tinted/), không dùng nút Mix."""
 	mat = bpy.data.materials.get(name) or bpy.data.materials.new(name)
 	mat.use_nodes = True
 	nodes = mat.node_tree.nodes
@@ -116,16 +139,9 @@ def tex_material(name: str, prefix: str, tint: tuple[float, float, float] | None
 		return node
 
 	diffuse = image("Diffuse", False)
-	if tint is None:
-		links.new(diffuse.outputs["Color"], shader.inputs["Base Color"])
-	else:
-		mix = nodes.new("ShaderNodeMix")
-		mix.data_type = "RGBA"
-		mix.blend_type = "MULTIPLY"
-		mix.inputs["Factor"].default_value = 1.0
-		links.new(diffuse.outputs["Color"], mix.inputs[6])
-		mix.inputs[7].default_value = (*tint, 1.0)
-		links.new(mix.outputs[2], shader.inputs["Base Color"])
+	if tint is not None:
+		diffuse.image = tinted_image(prefix, tint)
+	links.new(diffuse.outputs["Color"], shader.inputs["Base Color"])
 	links.new(image("Rough", True).outputs["Color"], shader.inputs["Roughness"])
 	normal_map = nodes.new("ShaderNodeNormalMap")
 	normal_map.inputs["Strength"].default_value = 0.9
