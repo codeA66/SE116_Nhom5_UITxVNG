@@ -5,10 +5,10 @@ extends Node
 ## UC1  Chơi mới -> xuất hiện ở quảng trường (START_ZONE = hub).
 ## UC2  Cổng Gió khóa khi chưa có chìa: không đi xuyên qua được, cổng dịch chuyển tắt, bảng ghi "Cần chìa khóa".
 ## UC3  Nhặt chìa (bấm tương tác thật) -> cổng Gió mở, phát opened đúng 1 lần.
-## UC4  Phá khu Gió (cờ) -> dấu Gió sáng; cổng Lửa vẫn đóng vì chưa có chìa Lửa; cổng Băng còn khóa.
-## UC4b Chìa Lửa trên bệ riêng gần cổng Lửa: bấm tương tác thật -> có chìa, cổng Lửa mở (dẫn tới level_3, đến điểm "start").
+## UC4  Chưa thắng boss Gió: cổng Lửa đóng, bảng ghi "Đánh bại boss Khu Gió", hub không còn chìa Lửa.
+##      Thắng boss Gió (cờ zone.wind.cleared) -> dấu Gió sáng, cổng Lửa mở 1 lần (dẫn tới map lửa, điểm "start"); cổng Băng còn khóa.
 ## UC5  Đủ 4 khu -> cửa đền mở (tắt va chạm).
-## UC6  Lưu / nạp lại -> chìa Gió + chìa Lửa không xuất hiện lại, cổng Gió + cổng Lửa vẫn mở.
+## UC6  Lưu / nạp lại -> chìa Gió không xuất hiện lại, cổng Gió + cổng Lửa vẫn mở.
 ## UC7  Bước vào cổng Gió đã mở -> SceneManager bắt đầu chuyển sang khu Gió.
 ## UC8  Bước vào cổng Lửa -> nạp map lửa (level_3), player đứng ở điểm spawn phòng 1.
 ## UC9  Vào map lửa với tay trắng: có sẵn kiếm (đang cầm, hiện trên tay), cung, kỹ năng Gió; chưa dung hợp.
@@ -44,8 +44,7 @@ func _run() -> void:
 	await _uc2_locked()
 	await _uc3_key()
 	await _uc4_wind_cleared()
-	await _capture("hub_fire_key.png")
-	await _uc4b_fire_key()
+	await _capture("hub_fire_open.png")
 	await _uc5_temple()
 	await _uc6_reload()
 	await _uc7_enter_gate()
@@ -113,32 +112,21 @@ func _uc3_key() -> void:
 
 func _uc4_wind_cleared() -> void:
 	var seal := _hub.get_node("Temple/SealWind") as ElementSeal
+	var fire := _gate("FireGate")
+	var label := fire.get_node("Label") as Label3D
 	_check(not seal.is_lit(), "UC4: dấu Gió tối khi chưa phá khu")
+	_check(not fire.is_open() and label.text.contains("Đánh bại boss Khu Gió"), "UC4: chưa thắng boss Gió -> cổng Lửa đóng ('%s')" % label.text.replace("
+", " / "))
+	_check(not _hub.has_node("FireKeyPedestal"), "UC4: hub không còn bệ chìa Lửa")
+	var opened := [0]
+	fire.opened.connect(func() -> void: opened[0] += 1)
 	GameState.set_flag(&"zone.wind.cleared")
 	await get_tree().process_frame
 	_check(seal.is_lit(), "UC4: phá khu Gió -> dấu Gió sáng")
 	_check(not (_hub.get_node("Temple/SealFire") as ElementSeal).is_lit(), "UC4: dấu Lửa vẫn tối")
-	var fire := _gate("FireGate")
-	_check(not fire.is_open() and (fire.get_node("Label") as Label3D).text.contains("Cần chìa khóa Lửa"), "UC4: cổng Lửa đóng vì chưa có chìa Lửa ('%s')" % (fire.get_node("Label") as Label3D).text.replace("\n", " / "))
+	var portal := fire.get_node("Portal") as Portal
+	_check(fire.is_open() and opened[0] == 1 and portal.target_zone == "res://levels/zone_3_fire/tier_1/tier_1.tscn" and portal.target_portal_id == &"start", "UC4: thắng boss Gió -> cổng Lửa mở (opened %d lần), dẫn tới map lửa / start" % opened[0])
 	_check(not _gate("IceGate").is_open(), "UC4: cổng Băng còn khóa")
-
-
-func _uc4b_fire_key() -> void:
-	var gate := _gate("FireGate")
-	var opened := [0]
-	gate.opened.connect(func() -> void: opened[0] += 1)
-	var key := _hub.get_node("FireKeyPedestal/FireKey") as Node3D
-	_check(key.global_position.distance_to(gate.global_position) < 12.0, "UC4b: bệ chìa Lửa gần cổng Lửa (%.1f m)" % key.global_position.distance_to(gate.global_position))
-	_p.teleport(key.global_position + Vector3(0, 0, 1.4), Vector3(0, 0, -1))
-	await _wait(0.4)
-	Input.action_press(&"interact")
-	await get_tree().physics_frame
-	await get_tree().physics_frame
-	Input.action_release(&"interact")
-	await _wait(0.3)
-	_check(GameState.has_flag(&"hub.fire_key") and not is_instance_valid(key), "UC4b: bấm tương tác -> có chìa Lửa, chìa biến mất")
-	var portal := gate.get_node("Portal") as Portal
-	_check(gate.is_open() and opened[0] == 1 and portal.target_zone == "res://levels/zone_3_fire/tier_1/tier_1.tscn" and portal.target_portal_id == &"start", "UC4b: cổng Lửa mở (opened %d lần), dẫn tới level_3 / start" % opened[0])
 
 
 func _uc5_temple() -> void:
@@ -162,7 +150,7 @@ func _uc6_reload() -> void:
 	await _load_hub()
 	_check(not _hub.has_node("KeyPedestal/WindKey"), "UC6: nạp lại -> chìa không xuất hiện lại")
 	_check(_gate("WindGate").is_open(), "UC6: nạp lại -> cổng Gió vẫn mở")
-	_check(not _hub.has_node("FireKeyPedestal/FireKey") and _gate("FireGate").is_open(), "UC6: nạp lại -> chìa Lửa không xuất hiện lại, cổng Lửa vẫn mở")
+	_check(_gate("FireGate").is_open(), "UC6: nạp lại -> cổng Lửa vẫn mở")
 
 
 func _uc7_enter_gate() -> void:

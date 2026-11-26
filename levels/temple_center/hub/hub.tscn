@@ -21,7 +21,6 @@
 [ext_resource type="PackedScene" path="res://levels/temple_center/hub/hub_scenery.tscn" id="19_scenery"]
 [ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="20_title"]
 [ext_resource type="Resource" path="res://resources/world/zones/hub.tres" id="21_hub"]
-[ext_resource type="PackedScene" path="res://objects/hub/hub_key/fire_key.tscn" id="22_fire_key"]
 [ext_resource type="PackedScene" path="res://objects/core/triggers/tutorial_trigger/tutorial_trigger.tscn" id="23_tut_trigger"]
 [ext_resource type="Resource" uid="uid://djc1eu6arm3uk" path="res://resources/tutorials/data/tut_movement.tres" id="24_tut_movement"]
 [ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="25_jxn7q"]
@@ -36,10 +35,10 @@ hint = "Phá đảo cả 4 khu"
 script = ExtResource("11_key_unlock")
 key_id = &"hub.wind_key"
 
-[sub_resource type="Resource" id="FireKeyUnlock"]
-script = ExtResource("11_key_unlock")
-key_id = &"hub.fire_key"
-hint = "Cần chìa khóa Lửa"
+[sub_resource type="Resource" id="AfterWind"]
+script = ExtResource("12_cleared")
+zones = Array[ExtResource("14_zdata")]([ExtResource("7_wind")])
+hint = "Đánh bại boss Khu Gió"
 
 [sub_resource type="Resource" id="AfterFire"]
 script = ExtResource("12_cleared")
@@ -105,7 +104,7 @@ conditions = Array[ExtResource("13_cond")]([SubResource("WindKeyUnlock")])
 [node name="FireGate" parent="Gates" unique_id=209507450 instance=ExtResource("3_gate")]
 transform = Transform3D(0.8638, 0, 0.5038, 0, 1, 0, -0.5038, 0, 0.8638, -14, 0, -24)
 zone = ExtResource("8_fire")
-conditions = Array[ExtResource("13_cond")]([SubResource("FireKeyUnlock")])
+conditions = Array[ExtResource("13_cond")]([SubResource("AfterWind")])
 
 [node name="IceGate" parent="Gates" unique_id=1949413747 instance=ExtResource("3_gate")]
 transform = Transform3D(0.8638, 0, -0.5038, 0, 1, 0, 0.5038, 0, 0.8638, 14, 0, -24)
@@ -130,21 +129,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 shape = SubResource("PedestalShape")
 
 [node name="WindKey" parent="KeyPedestal" unique_id=145185092 instance=ExtResource("6_key")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-
-[node name="FireKeyPedestal" type="StaticBody3D" parent="." unique_id=1903886707]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -16)
-collision_mask = 0
-
-[node name="Mesh" type="MeshInstance3D" parent="FireKeyPedestal" unique_id=1351700972]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-mesh = SubResource("PedestalMesh")
-
-[node name="Shape" type="CollisionShape3D" parent="FireKeyPedestal" unique_id=846093973]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-shape = SubResource("PedestalShape")
-
-[node name="FireKey" parent="FireKeyPedestal" unique_id=705685775 instance=ExtResource("22_fire_key")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 
 [node name="Start" type="Marker3D" parent="." unique_id=162548025]
