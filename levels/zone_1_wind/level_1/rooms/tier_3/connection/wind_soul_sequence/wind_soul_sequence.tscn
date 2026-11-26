@@ -1,0 +1,228 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/wind_soul_sequence/wind_soul_sequence.gd" id="sequence"]
+[ext_resource type="Shader" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/wind_soul_sequence/vfx/wind_soul.gdshader" id="soul"]
+[ext_resource type="Shader" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/wind_soul_sequence/vfx/wind_rift.gdshader" id="rift"]
+[ext_resource type="Script" path="res://objects/core/portal/portal.gd" id="portal"]
+[ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
+[ext_resource type="Shader" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/wind_soul_sequence/vfx/ghost/wind_boss_ghost.gdshader" id="ghost"]
+[ext_resource type="Shader" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/wind_soul_sequence/vfx/trail/wind_soul_trail.gdshader" id="trail"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/blenderimport/monkey_chieftain/Monkey_Chieftain.glb" id="monkey_rig"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/blenderimport/werewolf/Werewolf.glb" id="wolf_rig"]
+[ext_resource type="PackedScene" path="res://assets/models/enemies/blenderimport/armored_polar_bear/Armored_Polar_Bear_Large.glb" id="bear_rig"]
+[ext_resource type="AnimationLibrary" path="res://assets/models/enemies/blenderimport/armored_polar_bear/animations/general.tres" id="bear_pose"]
+
+[sub_resource type="BoxShape3D" id="Audience"]
+size = Vector3(35, 8, 26)
+
+[sub_resource type="BoxShape3D" id="Crossing"]
+size = Vector3(2.5, 2.9, 0.84)
+
+[sub_resource type="SphereMesh" id="Orb"]
+radius = 0.38
+height = 0.85
+radial_segments = 18
+rings = 9
+
+[sub_resource type="PlaneMesh" id="TrailMesh"]
+size = Vector2(1, 1)
+subdivide_width = 26
+subdivide_depth = 1
+
+[sub_resource type="StandardMaterial3D" id="MoteMat"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="PrismMesh" id="MoteMesh"]
+material = SubResource("MoteMat")
+size = Vector3(0.10, 0.23, 0.07)
+
+[sub_resource type="Curve" id="MoteScale"]
+_data = [Vector2(0, 0.35), 0.0, 0.0, 0, 0, Vector2(0.24, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="ShaderMaterial" id="Jade"]
+shader = ExtResource("soul")
+shader_parameter/tint = Color(0.32, 0.83, 0.58, 1)
+
+[sub_resource type="ShaderMaterial" id="Amber"]
+shader = ExtResource("soul")
+shader_parameter/tint = Color(0.96, 0.61, 0.25, 1)
+
+[sub_resource type="ShaderMaterial" id="Ice"]
+shader = ExtResource("soul")
+shader_parameter/tint = Color(0.34, 0.66, 0.95, 1)
+
+[sub_resource type="QuadMesh" id="RiftMesh"]
+size = Vector2(3.6, 4.2)
+
+[sub_resource type="ShaderMaterial" id="RiftMat"]
+resource_local_to_scene = true
+shader = ExtResource("rift")
+
+[node name="WindSoulSequence" type="Node3D"]
+process_mode = 3
+physics_interpolation_mode = 2
+script = ExtResource("sequence")
+ghost_shader = ExtResource("ghost")
+trail_shader = ExtResource("trail")
+
+[node name="Audience" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="Audience"]
+position = Vector3(0, 2.5, 3)
+shape = SubResource("Audience")
+
+[node name="ShotCamera" type="Camera3D" parent="."]
+fov = 43.0
+
+[node name="Ghosts" type="Node3D" parent="."]
+
+[node name="Monkey" type="Node3D" parent="Ghosts"]
+visible = false
+
+[node name="Rig" parent="Ghosts/Monkey" instance=ExtResource("monkey_rig")]
+rotation = Vector3(0, 0.44, 0)
+scale = Vector3(0.504, 0.504, 0.504)
+
+[node name="Wolf" type="Node3D" parent="Ghosts"]
+visible = false
+
+[node name="Rig" parent="Ghosts/Wolf" instance=ExtResource("wolf_rig")]
+rotation = Vector3(0, 0.58, 0)
+
+[node name="Bear" type="Node3D" parent="Ghosts"]
+visible = false
+
+[node name="Visual" type="Node3D" parent="Ghosts/Bear"]
+rotation = Vector3(0, 0.53, 0)
+
+[node name="Rig" parent="Ghosts/Bear/Visual" instance=ExtResource("bear_rig")]
+scale = Vector3(0.68, 0.68, 0.68)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Ghosts/Bear"]
+root_node = NodePath("..")
+libraries = {
+&"General": ExtResource("bear_pose")
+}
+
+[node name="Souls" type="Node3D" parent="."]
+
+[node name="Monkey" type="MeshInstance3D" parent="Souls"]
+visible = false
+cast_shadow = 0
+mesh = SubResource("Orb")
+material_override = SubResource("Jade")
+
+[node name="Trail" type="MeshInstance3D" parent="Souls/Monkey"]
+visible = false
+cast_shadow = 0
+custom_aabb = AABB(-8, -8, -8, 16, 16, 16)
+mesh = SubResource("TrailMesh")
+
+[node name="Motes" type="CPUParticles3D" parent="Souls/Monkey"]
+cast_shadow = 0
+emitting = false
+amount = 9
+lifetime = 0.48
+mesh = SubResource("MoteMesh")
+spread = 80.0
+gravity = Vector3(0, 0.55, 0)
+initial_velocity_min = 0.3
+initial_velocity_max = 1.3
+angular_velocity_min = -85.0
+angular_velocity_max = 85.0
+scale_amount_min = 0.35
+scale_amount_max = 0.78
+scale_amount_curve = SubResource("MoteScale")
+color = Color(0.62, 1, 0.73, 0.8)
+
+[node name="Wolf" type="MeshInstance3D" parent="Souls"]
+visible = false
+cast_shadow = 0
+mesh = SubResource("Orb")
+material_override = SubResource("Amber")
+
+[node name="Trail" type="MeshInstance3D" parent="Souls/Wolf"]
+visible = false
+cast_shadow = 0
+custom_aabb = AABB(-8, -8, -8, 16, 16, 16)
+mesh = SubResource("TrailMesh")
+
+[node name="Motes" type="CPUParticles3D" parent="Souls/Wolf"]
+cast_shadow = 0
+emitting = false
+amount = 9
+lifetime = 0.48
+mesh = SubResource("MoteMesh")
+spread = 80.0
+gravity = Vector3(0, 0.55, 0)
+initial_velocity_min = 0.3
+initial_velocity_max = 1.3
+angular_velocity_min = -85.0
+angular_velocity_max = 85.0
+scale_amount_min = 0.35
+scale_amount_max = 0.78
+scale_amount_curve = SubResource("MoteScale")
+color = Color(1, 0.76, 0.42, 0.8)
+
+[node name="Bear" type="MeshInstance3D" parent="Souls"]
+visible = false
+cast_shadow = 0
+mesh = SubResource("Orb")
+material_override = SubResource("Ice")
+
+[node name="Trail" type="MeshInstance3D" parent="Souls/Bear"]
+visible = false
+cast_shadow = 0
+custom_aabb = AABB(-8, -8, -8, 16, 16, 16)
+mesh = SubResource("TrailMesh")
+
+[node name="Motes" type="CPUParticles3D" parent="Souls/Bear"]
+cast_shadow = 0
+emitting = false
+amount = 9
+lifetime = 0.48
+mesh = SubResource("MoteMesh")
+spread = 80.0
+gravity = Vector3(0, 0.55, 0)
+initial_velocity_min = 0.3
+initial_velocity_max = 1.3
+angular_velocity_min = -85.0
+angular_velocity_max = 85.0
+scale_amount_min = 0.35
+scale_amount_max = 0.78
+scale_amount_curve = SubResource("MoteScale")
+color = Color(0.48, 0.77, 1, 0.8)
+
+[node name="Portal" type="Node3D" parent="."]
+position = Vector3(5.5, 0, 5.5)
+script = ExtResource("portal")
+portal_id = &"wind_final_departure"
+target_zone = "res://levels/zone_1_wind/final_boss/wind_final_arena.tscn"
+target_portal_id = &"wind_final_entry"
+
+[node name="Rift" type="MeshInstance3D" parent="Portal"]
+visible = false
+position = Vector3(0, 2.02, 0)
+cast_shadow = 0
+mesh = SubResource("RiftMesh")
+material_override = SubResource("RiftMat")
+
+[node name="Trigger" type="Area3D" parent="Portal"]
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="Portal/Trigger"]
+position = Vector3(0, 1.45, 0)
+shape = SubResource("Crossing")
+
+[node name="Arrival" type="Marker3D" parent="Portal"]
+position = Vector3(0, 0, 2.3)
+script = ExtResource("spawn")

@@ -28,6 +28,10 @@ func _ready() -> void:
 	var player := get_node_or_null(^"Player") as Player
 	if player == null:
 		player = PLAYER_SCENE.instantiate() as Player
+		# Đặt sẵn ở điểm xuất hiện trước khi vào cây: vào ở gốc toạ độ rồi mới dời thì vùng kích hoạt phủ gốc toạ độ
+		# (trận boss, trigger...) vẫn bắt được player ở bước vật lý đầu tiên
+		if spawn:
+			player.position = to_local(spawn.global_position)
 		add_child(player)
 	var controls_were_enabled: bool = player.controls_enabled
 	player.set_controls_enabled(false)

@@ -48,6 +48,7 @@
 [ext_resource type="Resource" path="res://resources/player/items/charms/heart_charm.tres" id="heart_charm"]
 [ext_resource type="Resource" path="res://resources/tutorials/data/tut_charm.tres" id="tut_charm"]
 [ext_resource type="PackedScene" uid="uid://6b38aottgqnl" path="res://levels/zone_1_wind/level_1/rooms/tier_3/tier3_test.tscn" id="tier3_map"]
+[ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_3/connection/wind_soul_sequence/wind_soul_sequence.tscn" id="wind_final_sequence"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/room_05_2_wind_trial.tscn" id="trial_arena"]
 [ext_resource type="PackedScene" path="res://levels/zone_1_wind/level_1/rooms/tier_1/wind_trial/challenge/room_05_3_wind_challenge.tscn" id="trial_challenge"]
 [ext_resource type="Script" uid="uid://dsy4kssiihtpf" path="res://objects/core/spawn_point/spawn_point.gd" id="trial_legacy_spawn"]
@@ -302,6 +303,27 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -176)
 [node name="Tier3" parent="Rooms" unique_id=1842536933 instance=ExtResource("tier3_map")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 21.62, -444)
 standalone_test = false
+
+[node name="WindSoulSequence" parent="." node_paths=PackedStringArray("king_encounter", "monkey_origin", "wolf_origin", "bear_origin", "wolf_room", "bear_room", "wolf_cover") instance=ExtResource("wind_final_sequence")]
+position = Vector3(-8, 21.72, -483.5)
+king_encounter = NodePath("../Rooms/Tier3/Rooms/BossRoom/KingEncounter")
+monkey_origin = NodePath("ShotMarks/MonkeySoul")
+wolf_origin = NodePath("ShotMarks/WolfSoul")
+bear_origin = NodePath("ShotMarks/BearSoul")
+wolf_room = NodePath("../Rooms/Tier1/Room08RelicRoom")
+bear_room = NodePath("../Rooms/Tier2/T2Room26Treasure")
+wolf_cover = NodePath("../Rooms/Tier1/Room08RelicRoom/SecretCover")
+
+[node name="ShotMarks" type="Node3D" parent="WindSoulSequence"]
+
+[node name="MonkeySoul" type="Marker3D" parent="WindSoulSequence/ShotMarks"]
+position = Vector3(0, 0.34, -0.5)
+
+[node name="WolfSoul" type="Marker3D" parent="WindSoulSequence/ShotMarks"]
+position = Vector3(-36, -17.67, 450.5)
+
+[node name="BearSoul" type="Marker3D" parent="WindSoulSequence/ShotMarks"]
+position = Vector3(-35, -1.65, 277.5)
 
 [node name="SecretZone" parent="." unique_id=429125787 node_paths=PackedStringArray("hide_when_inside", "show_when_inside", "sun", "world_environment") instance=ExtResource("26_t5yoq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44, 6.6, -28)
