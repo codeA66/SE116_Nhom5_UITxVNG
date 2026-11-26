@@ -65,6 +65,9 @@ func _run() -> void:
 		push_error("Player không xuất hiện")
 		get_tree().quit(1)
 		return
+	# Test chỉ đo lan can có giữ player trên sàn không. Đứng ép lan can 2,5 s có lúc trúng bẫy dung nham phun / quái
+	# gần đó tới chết tuỳ nhịp bẫy (test chập chờn trên CI): chặn sát thương suốt lúc đo
+	_player.set_damage_protection(self, true)
 	var failed: int = 0
 	for c: Dictionary in CASES:
 		if not is_instance_valid(_player):
@@ -89,10 +92,14 @@ func _run() -> void:
 		for _i: int in range(20):
 			await get_tree().physics_frame
 		var pos: Vector3 = _player.global_position
-		var ok: bool = pos.y > start.y - 1.0 and not _player.health.is_dead() and pos.x < float(c.get("max_x", INF))
+		var fell: bool = pos.y <= start.y - 1.0
+		var died: bool = _player.health.is_dead()
+		var passed_gate: bool = pos.x >= float(c.get("max_x", INF))
+		var ok: bool = not fell and not died and not passed_gate
 		if not ok:
 			failed += 1
-		print("%s %s  dừng tại %s" % ["OK  " if ok else "FAIL", c.name, pos.snapped(Vector3.ONE * 0.1)])
+		var reason: String = "" if ok else "  (%s)" % ("rơi" if fell else "chết" if died else "vượt cổng khoá")
+		print("%s %s  dừng tại %s%s" % ["OK  " if ok else "FAIL", c.name, pos.snapped(Vector3.ONE * 0.1), reason])
 	print("RAIL RESULT: %d/%d OK" % [CASES.size() - failed, CASES.size()])
 	get_tree().quit(0 if failed == 0 else 1)
 
