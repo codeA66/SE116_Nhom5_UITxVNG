@@ -34,6 +34,9 @@ PLATFORM_RADIUS: float = 28.0
 PLATFORM_THICKNESS: float = 1.6
 UNDERSIDE_DEPTH: float = 22.0
 SECTOR_RADIUS: float = 17.0
+PALACE_DISTANCE: dict[str, float] = {"wind": 44.0, "fire": 44.0, "ice": 58.0, "thunder": 58.0}
+ISLE_RADIUS: float = 9.5
+GATE_LANDING_END: float = 33.0
 SECTOR_PAVING_RADIUS: float = 8.0
 DAIS_RADIUS: float = 6.0
 RAIL_HEIGHT: float = 1.1
@@ -42,7 +45,7 @@ GATE_HALF_WIDTH: float = 3.2
 STAIR_HALF_WIDTH: float = 3.5
 STAIR_DROP: float = 3.0
 STAIR_RUN: float = 8.0
-ISLAND_DISTANCE: float = 78.0
+ISLAND_DISTANCE: float = 96.0
 
 SECTORS: dict[str, float] = {"wind": 135.0, "fire": 45.0, "ice": -45.0, "thunder": 225.0}
 SOUTH_ANGLE: float = 270.0
@@ -171,7 +174,7 @@ def build_materials() -> dict[str, bpy.types.Material]:
 		"off": material("TH_Off", (0.06, 0.06, 0.07), roughness=0.6),
 		"veil": material("TH_Veil", (0.03, 0.015, 0.05), emission=(0.10, 0.03, 0.18), emission_strength=0.6,
 			alpha=0.85),
-		"cloud": material("TH_Cloud", (0.46, 0.52, 0.62), roughness=1.0),
+		"cloud": material("TH_Cloud", (0.24, 0.28, 0.36), roughness=1.0),
 		"rune": material("TH_Rune", (0.45, 0.80, 0.90), emission=(0.45, 0.85, 1.0), emission_strength=2.5),
 		"rim_rune": material("TH_RimRune", (0.35, 0.6, 1.0), emission=(0.35, 0.6, 1.0), emission_strength=4.0),
 		"waterfall": material("TH_Waterfall", (0.80, 0.90, 0.97), emission=(0.65, 0.82, 0.95), emission_strength=0.5,
@@ -524,7 +527,7 @@ def build_south_stairs(mats: dict) -> None:
 	y_top = -PLATFORM_RADIUS + 0.4
 	for i in range(steps):
 		y = y_top - run * (i + 0.5)
-		z_top = -rise * i
+		z_top = -rise * i - 0.04
 		add_box(bm, Vector((0, y, z_top - 2.0)), (STAIR_HALF_WIDTH * 2, run, 4.0))
 	landing_y = y_top - STAIR_RUN - 3.0
 	add_box(bm, Vector((0, landing_y, -STAIR_DROP - 1.5)), (STAIR_HALF_WIDTH * 2 + 2.0, 6.0, 3.0))
@@ -605,7 +608,7 @@ def build_conduits(mats: dict) -> None:
 	for element, angle in SECTORS.items():
 		bm = bmesh.new()
 		for offset, bend in ((-9.0, 1.0), (9.0, -1.0)):
-			start_r, end_r = SECTOR_RADIUS - 3.2, DAIS_RADIUS + 0.1
+			start_r, end_r = PLATFORM_RADIUS - 4.5, DAIS_RADIUS + 0.1
 			prev = None
 			for i in range(31):
 				t = i / 30
@@ -633,7 +636,7 @@ def build_gate(element: str, mats: dict, coll: bpy.types.Collection) -> None:
 	add_box(bm, Vector((base.x, base.y, 6.7)), (GATE_HALF_WIDTH * 2 + 0.8, 1.5, 0.8), rot)
 	add_box(bm, Vector((base.x, base.y, 7.35)), (GATE_HALF_WIDTH * 2 - 0.6, 1.1, 0.5), rot)
 	out = polar(angle, PLATFORM_RADIUS + 2.5)
-	add_box(bm, Vector((out.x, out.y, -0.8)), (GATE_HALF_WIDTH * 2, 5.0, 1.6), rot)
+	add_box(bm, Vector((out.x, out.y, -0.84)), (GATE_HALF_WIDTH * 2, 5.0, 1.6), rot)
 	for side in (-1, 1):
 		p = out + tangent * side * (GATE_HALF_WIDTH - 0.2)
 		add_box(bm, Vector((p.x, p.y, RAIL_HEIGHT * 0.5)), (0.4, 5.0, RAIL_HEIGHT), rot)
@@ -644,10 +647,11 @@ def build_gate(element: str, mats: dict, coll: bpy.types.Collection) -> None:
 		p = base + tangent * side * (GATE_HALF_WIDTH - 0.5)
 		add_box(bm, Vector((p.x, p.y, 3.2)), (1.18, 1.18, 0.16), rot)
 	obj_from_bm(f"Gate_{element}_Glyph", bm, lit(mats, element), coll)
-	if not AWAKE[element]:
-		bm = bmesh.new()
-		add_box(bm, Vector((base.x, base.y, 3.2)), (GATE_HALF_WIDTH * 2 - 1.9, 0.12, 6.2), rot)
-		obj_from_bm(f"Gate_{element}_Veil", bm, mats["veil"], coll)
+	bm = bmesh.new()
+	add_box(bm, Vector((base.x, base.y, 3.2)), (GATE_HALF_WIDTH * 2 - 1.9, 0.12, 6.2), rot)
+	veil = obj_from_bm(f"Gate_{element}_Veil", bm, mats["veil"], coll)
+	if veil is not None:
+		veil.hide_render = AWAKE[element]
 
 
 def build_island(element: str, mats: dict) -> None:
@@ -717,8 +721,39 @@ def add_waterfall(bm: bmesh.types.BMesh, bm_mist: bmesh.types.BMesh, center: Vec
 		bmesh.ops.translate(bm_mist, vec=q, verts=verts)
 
 
+def build_palace_isle(element: str, mats: dict, coll: bpy.types.Collection, c: Vector) -> None:
+	"""Đảo nổi dưới cung điện + cầu đá từ chiếu nghỉ ngoài cổng ra đảo (chỉ để nhìn, cổng ở mép sân là chỗ dịch chuyển)."""
+	angle = SECTORS[element]
+	rot = math.radians(angle) + math.pi * 0.5
+	bm = bmesh.new()
+	add_cyl(bm, Vector((c.x, c.y, -1.49)), ISLE_RADIUS, ISLE_RADIUS, 1.4, 64)
+	add_annulus(bm, ISLE_RADIUS, ISLE_RADIUS + 0.35, 0.0, 1.8, 64, c)
+	obj_from_bm(f"{element.capitalize()}_Isle", bm, mats["paving"], coll)
+	bm = bmesh.new()
+	verts = bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=24, radius1=ISLE_RADIUS - 0.3,
+		radius2=1.2, depth=18.0)["verts"]
+	bmesh.ops.rotate(bm, verts=verts, cent=Vector(), matrix=Matrix.Rotation(math.pi, 3, "X"))
+	bmesh.ops.translate(bm, vec=Vector((c.x, c.y, -10.4)), verts=verts)
+	for v in verts:
+		v.co.x += random.uniform(-0.7, 0.7)
+		v.co.y += random.uniform(-0.7, 0.7)
+	obj_from_bm(f"{element.capitalize()}_IsleRock", bm, mats["rock"], coll)
+	start, end = GATE_LANDING_END, PALACE_DISTANCE[element] - ISLE_RADIUS + 0.2
+	if end > start:
+		bm = bmesh.new()
+		mid = polar(angle, (start + end) * 0.5)
+		add_box(bm, Vector((mid.x, mid.y, -0.84)), (GATE_HALF_WIDTH * 2, end - start, 1.6), rot)
+		for side in (-1, 1):
+			p = mid + Vector((math.cos(rot), math.sin(rot), 0)) * side * (GATE_HALF_WIDTH - 0.2)
+			add_box(bm, Vector((p.x, p.y, RAIL_HEIGHT * 0.5)), (0.4, end - start, RAIL_HEIGHT), rot)
+		# Vòm đỡ dưới cầu
+		add_box(bm, Vector((mid.x, mid.y, -2.6)), (GATE_HALF_WIDTH * 1.2, end - start - 2.0, 2.0), rot)
+		obj_from_bm(f"{element.capitalize()}_Bridge", bm, mats["block"], coll, bevel=0.05)
+
+
 def sector_paving(element: str, mats: dict, coll: bpy.types.Collection, ground_mat: bpy.types.Material) -> Vector:
-	c = polar(SECTORS[element], SECTOR_RADIUS)
+	c = polar(SECTORS[element], PALACE_DISTANCE[element])
+	build_palace_isle(element, mats, coll, c)
 	bm = bmesh.new()
 	add_cyl(bm, Vector((c.x, c.y, 0)), SECTOR_PAVING_RADIUS, SECTOR_PAVING_RADIUS, Z_PAVING, 56)
 	obj_from_bm(f"{element.capitalize()}_Paving", bm, mats["paving"], coll)
@@ -808,7 +843,7 @@ def palace_axes(element: str, shift: float) -> tuple[Vector, Vector, Vector]:
 	angle = SECTORS[element]
 	o = polar(angle, 1.0)
 	t = Vector((-o.y, o.x, 0))
-	c = polar(angle, SECTOR_RADIUS) + o * shift
+	c = polar(angle, PALACE_DISTANCE[element]) + o * shift
 	return Vector((c.x, c.y, Z_PAVING - 0.02)), o, t
 
 
@@ -928,7 +963,7 @@ def build_fire(mats: dict) -> None:
 	z = c.z + 0.7
 	for size, h in ((6.0, 2.2), (4.4, 2.0), (3.0, 1.8)):
 		add_box(bm_stone, Vector((c.x, c.y, z + h * 0.5)), (size, size, h), rot)
-		add_box(bm_gold, Vector((c.x, c.y, z + h - 0.12)), (size + 0.12, size + 0.12, 0.24), rot)
+		add_box(bm_gold, Vector((c.x, c.y, z + h - 0.08)), (size + 0.12, size + 0.12, 0.24), rot)
 		z += h
 	add_cyl(bm_gold, Vector((c.x, c.y, z)), 1.0, 1.9, 1.0, 24)
 	obj_from_bm("Fire_Palace", bm_stone, mats["fire_wall"], coll, bevel=0.06)
@@ -1019,7 +1054,8 @@ def build_ice(mats: dict) -> None:
 	obj_from_bm("Ice_Glass", bm_glass, mats["ice"], coll, smooth=True)
 	obj_from_bm("Ice_Windows", bm_glow, lit(mats, "ice"), coll)
 	bm = bmesh.new()
-	add_cyl(bm, Vector((c.x, c.y, Z_GROUND_FX - 0.04)), 7.0, 7.0, 0.04, 56)
+	# Tâm vòng rune là tâm khu (cung lùi ra 1.2 m), chừa đúng vòng đó
+	add_annulus(bm, 2.95, 7.0, Z_GROUND_FX, 0.04, 56, polar(SECTORS["ice"], PALACE_DISTANCE["ice"]))
 	obj_from_bm("Ice_Frost", bm, mats["frost"], coll)
 	if AWAKE["ice"]:
 		bm = bmesh.new()
@@ -1237,7 +1273,7 @@ def set_camera(name: str, target: Vector, distance: float, pitch_deg: float) -> 
 
 
 def clear_built() -> None:
-	names = ("Platform", "Stairs", "Center", "Conduits", "Islands", "Backdrop", "PreviewLights")
+	names = ("Platform", "Stairs", "Center", "Conduits", "Islands", "Backdrop", "PreviewLights", "Collision")
 	for coll in list(bpy.data.collections):
 		if coll.name in names or coll.name.startswith("Sector_"):
 			for obj in list(coll.objects):
@@ -1249,6 +1285,69 @@ def clear_built() -> None:
 	for mesh in list(bpy.data.meshes):
 		if mesh.users == 0:
 			bpy.data.meshes.remove(mesh)
+
+
+def build_collision(mats: dict) -> None:
+	"""Khối va chạm đơn giản khớp hình (đuôi -colonly: Godot tạo thân va chạm, bỏ mesh): sàn, lan can, bệ tâm, cầu thang.
+	Cột cổng va chạm nằm trong scene cổng khu của Godot."""
+	coll = collection("Collision")
+	bm = bmesh.new()
+	add_cyl(bm, Vector((0, 0, -PLATFORM_THICKNESS)), PLATFORM_RADIUS, PLATFORM_RADIUS, PLATFORM_THICKNESS, 64)
+	obj_from_bm("Col_Floor-colonly", bm, mats["block"], coll)
+
+	# Lan can: thanh nối các cột, chừa lỗ ở 4 cổng + cầu thang (cùng rail_gaps với hình)
+	gaps = rail_gaps()
+	radius = PLATFORM_RADIUS - 0.45
+	bm = bmesh.new()
+	steps = 128
+	for i in range(steps):
+		a0, a1 = 360.0 * i / steps, 360.0 * (i + 1) / steps
+		if any(_angle_in(a0, lo, hi) or _angle_in(a1, lo, hi) for lo, hi in gaps):
+			continue
+		p0, p1 = polar(a0, radius), polar(a1, radius)
+		c = (p0 + p1) * 0.5
+		add_box(bm, Vector((c.x, c.y, (Z_RING + RAIL_HEIGHT) * 0.5)), ((p1 - p0).length + 0.05, 0.6,
+			Z_RING + RAIL_HEIGHT), math.atan2((p1 - p0).y, (p1 - p0).x))
+	# Đầu lan can sát lỗ cổng: lấp tới đúng mép lỗ
+	for lo, hi in gaps:
+		for a in (lo, hi):
+			pa = polar(a, radius)
+			add_box(bm, Vector((pa.x, pa.y, (Z_RING + RAIL_HEIGHT) * 0.5)), (0.6, 0.6, Z_RING + RAIL_HEIGHT),
+				math.radians(a))
+	obj_from_bm("Col_Rail-colonly", bm, mats["block"], coll)
+
+	bm = bmesh.new()
+	add_cyl(bm, Vector((0, 0, 0)), DAIS_RADIUS, DAIS_RADIUS, 1.4, 48)
+	obj_from_bm("Col_Dais-colonly", bm, mats["block"], coll)
+
+	# Cầu thang: dốc đi qua mép trước các bậc, chiếu nghỉ, lan can hai bên + đầu chiếu nghỉ
+	y_top = -PLATFORM_RADIUS + 0.4
+	landing_y = y_top - STAIR_RUN - 3.0
+	slope = math.atan2(STAIR_DROP, STAIR_RUN)
+	length = math.hypot(STAIR_DROP, STAIR_RUN)
+	bm = bmesh.new()
+	verts = bmesh.ops.create_cube(bm, size=1.0)["verts"]
+	bmesh.ops.scale(bm, vec=Vector((STAIR_HALF_WIDTH * 2, length, 0.4)), verts=verts)
+	bmesh.ops.translate(bm, vec=Vector((0, 0, -0.2)), verts=verts)
+	bmesh.ops.rotate(bm, verts=verts, cent=Vector(), matrix=Matrix.Rotation(slope, 3, "X"))
+	ramp_top = -PLATFORM_RADIUS
+	bmesh.ops.translate(bm, vec=Vector((0, ramp_top - STAIR_RUN * 0.5, -STAIR_DROP * 0.5)), verts=verts)
+	add_box(bm, Vector((0, landing_y, -STAIR_DROP - 1.5)), (STAIR_HALF_WIDTH * 2 + 2.0, 6.0, 3.0))
+	for side in (-1, 1):
+		rail = bmesh.ops.create_cube(bm, size=1.0)["verts"]
+		bmesh.ops.scale(bm, vec=Vector((0.5, length, RAIL_HEIGHT)), verts=rail)
+		bmesh.ops.translate(bm, vec=Vector((0, 0, RAIL_HEIGHT * 0.5)), verts=rail)
+		bmesh.ops.rotate(bm, verts=rail, cent=Vector(), matrix=Matrix.Rotation(slope, 3, "X"))
+		bmesh.ops.translate(bm, vec=Vector((side * (STAIR_HALF_WIDTH + 0.25), ramp_top - STAIR_RUN * 0.5,
+			-STAIR_DROP * 0.5)), verts=rail)
+		add_box(bm, Vector((side * (STAIR_HALF_WIDTH + 1.0), landing_y, -STAIR_DROP + RAIL_HEIGHT * 0.5)),
+			(0.42, 6.0, RAIL_HEIGHT))
+	add_box(bm, Vector((0, landing_y - 3.0, -STAIR_DROP + RAIL_HEIGHT * 0.5)), (STAIR_HALF_WIDTH * 2 + 2.4, 0.42,
+		RAIL_HEIGHT))
+	obj_from_bm("Col_Stairs-colonly", bm, mats["block"], coll)
+	for obj in coll.objects:
+		obj.hide_render = True
+		obj.display_type = "WIRE"
 
 
 def build() -> None:
@@ -1263,6 +1362,7 @@ def build() -> None:
 	build_ice(mats)
 	build_thunder(mats)
 	build_backdrop(mats)
+	build_collision(mats)
 	setup_scene()
 
 

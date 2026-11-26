@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_ROOT = os.path.dirname(HERE)
 
 GROUPS: dict[str, list[str]] = {
-	"platform/temple_platform.gltf": ["Platform", "Stairs", "Conduits"],
+	"platform/temple_platform.gltf": ["Platform", "Stairs", "Conduits", "Collision"],
 	"center/temple_center.gltf": ["Center"],
 	"palaces/palace_wind.gltf": ["Sector_Wind"],
 	"palaces/palace_fire.gltf": ["Sector_Fire"],
@@ -29,10 +29,28 @@ GROUPS: dict[str, list[str]] = {
 }
 
 
+## Độ sáng phát quang chỉnh cho render Cycles (AgX); Godot (filmic + glow) cháy trắng nên nén lại khi xuất
+EMISSION_KNEE: float = 1.0
+EMISSION_SCALE: float = 0.25
+
+
+def _soften_emission() -> None:
+	"""Nén phần phát sáng trên 1: s -> 1 + (s - 1) * EMISSION_SCALE. Chỉ đổi bản xuất, không lưu vào .blend."""
+	for mat in bpy.data.materials:
+		if not mat.use_nodes:
+			continue
+		for node in mat.node_tree.nodes:
+			if node.type == "BSDF_PRINCIPLED" and "Emission Strength" in node.inputs:
+				socket = node.inputs["Emission Strength"]
+				if socket.default_value > EMISSION_KNEE:
+					socket.default_value = EMISSION_KNEE + (socket.default_value - EMISSION_KNEE) * EMISSION_SCALE
+
+
 def export() -> None:
 	ns = runpy.run_path(os.path.join(HERE, "build_temple_hub.py"), run_name="not_main")
 	ns["build"]()
 	bpy.ops.wm.save_mainfile()
+	_soften_emission()
 	for rel_path, collections in GROUPS.items():
 		bpy.ops.object.select_all(action="DESELECT")
 		count = 0

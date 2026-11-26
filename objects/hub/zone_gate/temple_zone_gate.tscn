@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://objects/hub/zone_gate/zone_gate.tscn" id="1_gate"]
+
+[sub_resource type="BoxShape3D" id="PillarShape"]
+size = Vector3(1.4, 6.4, 1.4)
+
+[sub_resource type="BoxShape3D" id="BlockShape"]
+size = Vector3(4.2, 4, 1.2)
+
+[sub_resource type="BoxShape3D" id="PortalTrigger"]
+size = Vector3(4.2, 2.4, 0.8)
+
+[node name="TempleZoneGate" instance=ExtResource("1_gate")]
+
+[node name="PillarL" parent="Frame" index="0"]
+visible = false
+
+[node name="PillarR" parent="Frame" index="1"]
+visible = false
+
+[node name="Lintel" parent="Frame" index="2"]
+visible = false
+
+[node name="ShapeL" parent="Frame" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 3.2, 0)
+shape = SubResource("PillarShape")
+
+[node name="ShapeR" parent="Frame" index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 3.2, 0)
+shape = SubResource("PillarShape")
+
+[node name="CollisionShape3D" parent="Blocker" index="0"]
+shape = SubResource("BlockShape")
+
+[node name="Label" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 0)
+
+[node name="CollisionShape3D" parent="Portal/Trigger" index="0"]
+shape = SubResource("PortalTrigger")

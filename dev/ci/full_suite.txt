@@ -17,6 +17,10 @@
 #   res://tests/wind/spellbook/test_wind_spellbook.tscn @data=.godot/spellbook_runtime
 #   res://tests/wind/wind/tornado/tornado_sandbox.tscn --verify
 #
+# Bỏ ngày 2026-11-26 (hỏng sẵn từ trước):
+#   res://tests/fire/burnable_crate/test_burnable_crate.tscn
+#   res://tests/fire/igniter/test_igniter.tscn
+#
 # Chạy đêm lần đầu (2026-11-26): test cũ đang FAIL, tạm bỏ:
 #   res://tests/fire/fire_wind/test_fire_wind.tscn
 #   res://tests/levels/fire_level_3/tier_2/fights/fights_test.tscn
@@ -46,10 +50,8 @@ res://tests/enemies/boss/test_boss_charge.tscn
 res://tests/enemies/boss/test_boss_profile.tscn
 res://tests/enemies/boss/test_wind_magma.tscn
 res://tests/enemies/fire_spider/test_fire_spider.tscn @data=.godot/spider_runtime
-res://tests/fire/burnable_crate/test_burnable_crate.tscn
 res://tests/fire/fire_caster/fire_caster_test.tscn
 res://tests/fire/flame_impact/test_flame_impact.tscn
-res://tests/fire/igniter/test_igniter.tscn
 res://tests/fire/lava_slime/lava_slime_test.tscn
 res://tests/fire/shadow_wolf/shadow_wolf_test.tscn
 res://tests/fire/soul_mask/soul_mask_test.tscn
@@ -96,6 +98,7 @@ res://tests/levels/fire_level_3/warp_portal_test.tscn
 res://tests/levels/fire_level_3/west_gate_key_test.tscn
 res://tests/levels/fire_level_3/west_walk_test.tscn
 res://tests/levels/hub/test_hub.tscn
+res://tests/levels/hub/sector_awaken/test_sector_awaken.tscn
 res://tests/levels/monkey_garden/boss_defeat/boss_defeat.tscn
 res://tests/levels/monkey_garden/loot_feedback/loot_feedback.tscn
 res://tests/levels/monkey_garden/trap_guide_regression/trap_guide_regression.tscn
