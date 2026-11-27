@@ -2,11 +2,13 @@ extends Node3D
 ## UC1: Ba trận hoàn tất mới có thể mở cổng và cinematic chỉ phát một lượt.
 ## UC2: Trở lại với tiến trình đã lưu cho phép qua cổng ngay.
 ## UC3: Cáo bước qua trigger thật và sang đúng điểm vào phòng boss cuối.
+## UC4: Vào phòng boss cuối lúc thiếu máu được hồi đầy và lưu đúng máu hiện tại.
 ##
 ## TC1: Thiếu một trong ba cờ thì từ chối phát và giữ portal tắt.
 ## TC2: Đủ cờ thì phát Khỉ, Sói, Gấu, hợp, mở lần lượt. Điểm đứng và điều khiển của cáo được trả.
 ## TC3: Khi tiến trình đã mở cổng, cập nhật chỉ hiển thị lại cổng.
 ## TC4: Cáo đi bộ vào cổng qua va chạm thật, phòng đích đặt cáo đúng SpawnPoint.
+## TC5: Đi qua cổng với 1 máu, phòng đích hồi tới máu tối đa và đồng bộ GameState.
 
 const SEQUENCE: String = "res://levels/zone_1_wind/level_1/rooms/tier_3/connection/wind_soul_sequence/wind_soul_sequence.tscn"
 const ARENA: String = "res://levels/zone_1_wind/final_boss/wind_final_arena.tscn"
@@ -83,6 +85,8 @@ func _run() -> void:
 	# Runner sống ngoài current_scene để đo mốc đến sau khi SceneManager dọn phòng cũ.
 	reparent(tree.root)
 	var crossing: Vector3 = restored.get_portal_position()
+	player.health.set_current_health(1)
+	_check(player.health.current_health == 1 and GameState.get_player_health() == 1, "TC5 vào cổng khi chỉ còn 1 máu")
 	player.teleport(crossing + Vector3(0, 0.05, 3), Vector3.FORWARD)
 	await tree.physics_frame
 	_check(not SceneManager.is_busy(), "TC4 đứng ngoài cổng chưa chuyển khu")
@@ -107,6 +111,8 @@ func _run() -> void:
 		var entry: SpawnPoint = SpawnPoint.find_in(world, expected) if world else null
 		var new_player: Player = world.get_node_or_null(^"Player") as Player if world else null
 		_check(entry != null and new_player != null and new_player.global_position.distance_to(entry.global_position) < 0.5, "TC4 cáo đến đúng mốc vào phòng")
+		_check(new_player != null and new_player.health.current_health == new_player.health.max_health, "TC5 hồi đầy máu khi đến phòng boss")
+		_check(new_player != null and GameState.get_player_health() == new_player.health.max_health, "TC5 GameState lưu máu đã hồi")
 	_finish()
 
 

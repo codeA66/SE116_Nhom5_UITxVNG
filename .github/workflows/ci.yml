@@ -1,7 +1,7 @@
 # CI của project: mỗi PR vào main và mỗi lần push lên main.
 # - import: import project bằng Godot headless, báo đỏ nếu có lỗi script / resource hỏng.
 # - test: chạy bộ test trong dev/ci/ci_suite.txt bằng dev/ci/run_tests.sh, chia nhóm chạy song song.
-# - build-windows: chỉ khi push lên main và test xanh; export preset "Windows Desktop" bản release,
+# - build-windows: khi push lên main hoặc chạy tay và test xanh; export preset "Windows Desktop" bản release,
 #   đưa lên mục Artifacts của lần chạy (giữ 14 ngày) để cả nhóm tải về chơi thử.
 # Kết quả import (.godot) được cache giữa các lần chạy: chỉ file đổi mới phải import lại.
 name: CI
@@ -133,7 +133,7 @@ jobs:
   build-windows:
     name: Build Windows
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
