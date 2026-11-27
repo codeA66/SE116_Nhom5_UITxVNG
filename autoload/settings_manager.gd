@@ -40,6 +40,11 @@ func _ready() -> void:
 	load_settings()
 
 
+func _exit_tree() -> void:
+	# Nhả texture con trỏ trước khi RenderingServer đóng để tránh giữ RID tới lúc thoát.
+	DisplayServer.cursor_set_custom_image(null)
+
+
 ## Test đổi sang file riêng để không đụng cài đặt thật của người chơi
 func use_config_path(path: String) -> void:
 	_path = path
