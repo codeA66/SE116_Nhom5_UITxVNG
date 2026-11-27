@@ -23,12 +23,19 @@
 [ext_resource type="Resource" uid="uid://djc1eu6arm3uk" path="res://resources/tutorials/data/tut_movement.tres" id="24_tut_movement"]
 [ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="25_jxn7q"]
 [ext_resource type="Resource" uid="uid://1qcwmfithx5u" path="res://resources/tutorials/data/tut_dash.tres" id="25_tut_dash"]
+[ext_resource type="Script" path="res://objects/hub/zone_gate/password/password_unlock.gd" id="27_password"]
+[ext_resource type="PackedScene" path="res://objects/hub/zone_gate/password/password_gate.tscn" id="28_password_gate"]
 [ext_resource type="Shader" path="res://assets/shaders/environment/portal/temple_wind_portal.gdshader" id="26_wind_portal"]
 
 [sub_resource type="Resource" id="AfterWind"]
 script = ExtResource("12_cleared")
 zones = Array[ExtResource("14_zdata")]([ExtResource("7_wind")])
 hint = "Đánh bại boss Khu Gió"
+
+[sub_resource type="Resource" id="FireAccess"]
+script = ExtResource("27_password")
+access_id = &"tester_fire"
+password_sha256 = "b0039b4ce3ad1e007b309c0baec8dbbd261b6b5353a6fe006a02b43bb9094852"
 
 [sub_resource type="Resource" id="AfterFire"]
 script = ExtResource("12_cleared")
@@ -91,8 +98,14 @@ mesh = null
 [node name="FireGate" parent="Gates" instance=ExtResource("3_gate")]
 transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, 19.587, 0, -19.587)
 zone = ExtResource("8_fire")
-conditions = Array[ExtResource("13_cond")]([SubResource("AfterWind")])
+conditions = Array[ExtResource("13_cond")]([SubResource("AfterWind"), SubResource("FireAccess")])
 
+
+[node name="PasswordGate" parent="Gates/FireGate" node_paths=PackedStringArray("gate") instance=ExtResource("28_password_gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+gate = NodePath("..")
+condition = SubResource("FireAccess")
+title_text = "Nhập mật khẩu để vào Khu Lửa"
 [node name="IceGate" parent="Gates" instance=ExtResource("3_gate")]
 transform = Transform3D(-0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, -0.7071, 19.587, 0, 19.587)
 zone = ExtResource("9_ice")

@@ -31,6 +31,7 @@ func _ready() -> void:
 
 
 func _run() -> void:
+	_grant_fire_password()
 	GameState.replace_progress(PlayerProgress.new())
 	# Bỏ đoạn camera giới thiệu (khóa điều khiển ~8 s); đoạn này kiểm tra riêng bằng ảnh chụp
 	GameState.set_flag(&"hub.intro_seen")
@@ -231,6 +232,19 @@ func _capture(file: String) -> void:
 		return
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png("res://output/fire_level_3/qa/" + file)
+
+
+## Cổng Lửa còn cần mật khẩu (bản cho người test): ghi sẵn "đã nhập đúng" vào file mật khẩu của thư mục dữ liệu test,
+## để test này chỉ kiểm luật phá khu / lễ thức. Luồng nhập mật khẩu kiểm riêng trong test_password_gate
+func _grant_fire_password() -> void:
+	var hub := (load(HUB) as PackedScene).instantiate()
+	for c in (hub.get_node("Gates/FireGate") as ZoneGate).conditions:
+		if c is PasswordUnlock:
+			var cfg := ConfigFile.new()
+			cfg.load(PasswordUnlock.store_path)
+			cfg.set_value(PasswordUnlock.SECTION, String((c as PasswordUnlock).access_id), (c as PasswordUnlock).password_sha256)
+			cfg.save(PasswordUnlock.store_path)
+	hub.free()
 
 
 func _wait(seconds: float) -> void:

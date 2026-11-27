@@ -34,6 +34,11 @@ func is_open() -> bool:
 	return _open
 
 
+## Tính lại điều kiện ngay (điều kiện không nằm trong tiến trình save, ví dụ mật khẩu nhớ theo máy, gọi sau khi đổi)
+func refresh() -> void:
+	_refresh()
+
+
 func _refresh() -> void:
 	if zone:
 		_apply(_compute_open(), false)

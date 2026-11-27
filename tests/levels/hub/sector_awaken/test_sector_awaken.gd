@@ -41,6 +41,7 @@ func _run() -> void:
 	stand_in.name = "StandIn"
 	get_tree().root.add_child(stand_in)
 	get_tree().current_scene = stand_in
+	_grant_fire_password()
 	GameState.replace_progress(PlayerProgress.new())
 	GameState.set_flag(&"hub.intro_seen")
 	await _load_hub()
@@ -171,6 +172,19 @@ func _tc6_no_scene() -> void:
 	GameState.set_flag(&"zone.fire.cleared")
 	GameState.set_flag(&"zone.ice.cleared")
 	_check(not _awake("Thunder") and _look("Thunder")[3], "TC6: Sét chưa có scene -> vẫn ngủ dù đã phá Băng")
+
+
+## Cổng Lửa còn cần mật khẩu (bản cho người test): ghi sẵn "đã nhập đúng" vào file mật khẩu của thư mục dữ liệu test,
+## để test này chỉ kiểm luật phá khu / lễ thức. Luồng nhập mật khẩu kiểm riêng trong test_password_gate
+func _grant_fire_password() -> void:
+	var hub := (load(HUB) as PackedScene).instantiate()
+	for c in (hub.get_node("Gates/FireGate") as ZoneGate).conditions:
+		if c is PasswordUnlock:
+			var cfg := ConfigFile.new()
+			cfg.load(PasswordUnlock.store_path)
+			cfg.set_value(PasswordUnlock.SECTION, String((c as PasswordUnlock).access_id), (c as PasswordUnlock).password_sha256)
+			cfg.save(PasswordUnlock.store_path)
+	hub.free()
 
 
 func _wait(seconds: float) -> void:
