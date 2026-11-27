@@ -12,12 +12,10 @@ const PORT_COUNT: int = 3
 @export var tracks_before_gate: Array[Node3D] = []
 @export var tracks_after_gate: Array[Node3D] = []
 @export var receiver_track: Node3D
-@export var receiver_zero_track: Node3D
-@export var zero_taps: Array[Node3D] = []
 @export var inverter_plates: Array[MeshInstance3D] = []
 @export var inverter_active_material: Material
 
-@onready var _track_groups: Array[Array] = [crossed_tracks, tracks_before_gate, tracks_after_gate, zero_taps]
+@onready var _track_groups: Array[Array] = [crossed_tracks, tracks_before_gate, tracks_after_gate]
 
 
 func _trace_pulse() -> bool:
@@ -27,7 +25,6 @@ func _trace_pulse() -> bool:
 		return false
 
 	var powered: bool = false
-	var received_zero: bool = false
 	for first: int in PORT_COUNT:
 		if not _trace_port(0, first):
 			continue
@@ -36,20 +33,18 @@ func _trace_pulse() -> bool:
 		if not _trace_port(1, second):
 			continue
 		tracks_before_gate[second].show()
-		tracks_after_gate[second].show()
 		var inverter: int = INVERTED_PINS.find(second + 1)
-		if inverter >= 0 and inverter < inverter_plates.size():
-			inverter_plates[inverter].material_override = inverter_active_material
+		if inverter >= 0:
+			if inverter < inverter_plates.size():
+				inverter_plates[inverter].material_override = inverter_active_material
+			continue
+		if second < tracks_after_gate.size() and tracks_after_gate[second] != null:
+			tracks_after_gate[second].show()
 		var third: int = K2_TO_K3[second] - 1
 		if not _trace_port(2, third):
 			continue
-		if inverter < 0:
-			powered = true
-		else:
-			received_zero = true
-			zero_taps[third].show()
+		powered = true
 	receiver_track.visible = powered
-	receiver_zero_track.visible = received_zero and not powered
 	return powered
 
 
@@ -64,9 +59,9 @@ func _hide_tracks() -> void:
 	_clear_socket_traces()
 	source_track.hide()
 	receiver_track.hide()
-	receiver_zero_track.hide()
 	for plate: MeshInstance3D in inverter_plates:
 		plate.material_override = null
 	for group: Array in _track_groups:
 		for track: Node3D in group:
-			track.hide()
+			if track != null:
+				track.hide()

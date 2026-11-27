@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/rotating_mirror/rotating_mirror.gd" id="mirror"]
 [ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interactable"]
+[ext_resource type="Script" path="res://components/utility/planar_mirror/planar_mirror_component.gd" id="planar_mirror"]
+[ext_resource type="Resource" path="res://resources/vfx/planar_mirror_bronze.tres" id="mirror_config"]
 
 [sub_resource type="StandardMaterial3D" id="Basalt"]
 albedo_color = Color(0.1, 0.065, 0.073, 1)
@@ -93,6 +95,11 @@ mesh = SubResource("RimMesh")
 [node name="Reflector" type="MeshInstance3D" parent="Pivot"]
 rotation = Vector3(1.570796, 0, 0)
 mesh = SubResource("FaceMesh")
+
+[node name="PlanarMirrorComponent" type="Node3D" parent="Pivot" node_paths=PackedStringArray("target_mesh")]
+script = ExtResource("planar_mirror")
+config = ExtResource("mirror_config")
+target_mesh = NodePath("../Reflector")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 position = Vector3(0, 1.65, 0)

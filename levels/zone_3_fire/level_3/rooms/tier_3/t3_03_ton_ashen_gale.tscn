@@ -1,15 +1,78 @@
 [gd_scene format=3 uid="uid://buqjdxcvlwjad"]
 
+[ext_resource type="Shader" path="res://assets/shaders/fire/dark_chamber_surface.gdshader" id="dark_shader"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_carried_flame/ton_carried_flame.tscn" id="flame"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/gate_frame_4m.glb" id="gate_frame"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="low_wall"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_pillar.glb" id="pillar"]
 [ext_resource type="Script" uid="uid://brtyaadm1y3ai" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_03_ton_ashen_gale.gd" id="room"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_wind_screen/ton_wind_screen.tscn" id="screen"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/seal_gem/seal_gem.tscn" id="seal_gem"]
+[ext_resource type="Script" path="res://objects/combat/hazards/spike_field/spike_field.gd" id="spike_field"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/ton_flame_station/ton_flame_station.tscn" id="station"]
+[ext_resource type="PackedScene" path="res://objects/world/fire_decor/lit_torch_standing.tscn" id="torch"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="wall"]
 [ext_resource type="Script" uid="uid://1safs58a5ahc" path="res://objects/wind_puzzle/wind_zone/wind_data.gd" id="wind_data"]
 
-[sub_resource type="StandardMaterial3D" id="Stone"]
-albedo_color = Color(0.064, 0.055, 0.052, 1)
-roughness = 0.95
+[sub_resource type="ShaderMaterial" id="Stone"]
+shader = ExtResource("dark_shader")
+shader_parameter/albedo_color = Color(0.08, 0.075, 0.075, 1)
+shader_parameter/metallic = 0.0
+shader_parameter/roughness = 0.92
+shader_parameter/specular = 0.25
+
+[sub_resource type="ShaderMaterial" id="PitStone"]
+shader = ExtResource("dark_shader")
+shader_parameter/albedo_color = Color(0.035, 0.03, 0.03, 1)
+shader_parameter/metallic = 0.0
+shader_parameter/roughness = 0.98
+shader_parameter/specular = 0.15
+
+[sub_resource type="ShaderMaterial" id="SpikeMaterial"]
+shader = ExtResource("dark_shader")
+shader_parameter/albedo_color = Color(0.28, 0.29, 0.33, 1)
+shader_parameter/metallic = 0.6
+shader_parameter/roughness = 0.38
+shader_parameter/specular = 0.5
+
+[sub_resource type="BoxMesh" id="PitFloorMesh"]
+material = SubResource("PitStone")
+size = Vector3(40.2, 0.4, 40.2)
+
+[sub_resource type="BoxMesh" id="PitWallNSMesh"]
+material = SubResource("PitStone")
+size = Vector3(0.72, 6.41, 40.1)
+
+[sub_resource type="BoxMesh" id="PitWallWMesh"]
+material = SubResource("PitStone")
+size = Vector3(41.54, 6.41, 0.72)
+
+[sub_resource type="BoxMesh" id="PitWallEUnderGateMesh"]
+material = SubResource("PitStone")
+size = Vector3(4.2, 6.01, 0.72)
+
+[sub_resource type="BoxMesh" id="PitWallELeftMesh"]
+material = SubResource("PitStone")
+size = Vector3(4.67, 6.41, 0.72)
+
+[sub_resource type="BoxMesh" id="PitWallERightMesh"]
+material = SubResource("PitStone")
+size = Vector3(32.67, 6.41, 0.72)
+
+[sub_resource type="BoxShape3D" id="WallNSColShape"]
+size = Vector3(0.82, 8, 40.82)
+
+[sub_resource type="BoxShape3D" id="WallWColShape"]
+size = Vector3(40.82, 8, 0.82)
+
+[sub_resource type="BoxShape3D" id="WallSColShape"]
+size = Vector3(0.82, 2, 40.82)
+
+[sub_resource type="BoxShape3D" id="WallELeftColShape"]
+size = Vector3(4.4, 4, 0.82)
+
+[sub_resource type="BoxShape3D" id="WallERightColShape"]
+size = Vector3(32.4, 2, 0.82)
 
 [sub_resource type="BoxMesh" id="LeftLaneMesh"]
 material = SubResource("Stone")
@@ -75,10 +138,10 @@ size = Vector3(26.4, 1, 3)
 size = Vector3(26.4, 1, 3)
 
 [sub_resource type="BoxShape3D" id="Catch"]
-size = Vector3(49, 1, 50)
+size = Vector3(41, 1, 41)
 
 [sub_resource type="BoxShape3D" id="Fall"]
-size = Vector3(49, 2.5, 50)
+size = Vector3(41, 2.5, 41)
 
 [sub_resource type="BoxShape3D" id="Presence"]
 size = Vector3(49, 28, 50)
@@ -93,7 +156,7 @@ emission_energy_multiplier = 0.45
 
 [sub_resource type="Resource" id="BridgeWind"]
 script = ExtResource("wind_data")
-strength = 1.65
+strength = 3.8
 
 [node name="TonAshenGale" type="Node3D" unique_id=1714886636]
 script = ExtResource("room")
@@ -174,11 +237,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8, 5.82, 5.5)
 shape = SubResource("HighBridgeShape")
 
 [node name="FallCatch" type="CollisionShape3D" parent="Geometry" unique_id=163009801]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -8.65, 20)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -6.1, 20)
 shape = SubResource("Catch")
 
 [node name="Fall" type="Area3D" parent="." unique_id=511099859]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -7, 20)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -4.4, 20)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
@@ -195,9 +258,6 @@ monitorable = false
 [node name="Collision" type="CollisionShape3D" parent="Presence" unique_id=669697881]
 shape = SubResource("Presence")
 
-[node name="Restart" type="Marker3D" parent="." unique_id=670681]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.39, 2.65)
-
 [node name="CarriedFlame" parent="." unique_id=1399850004 instance=ExtResource("flame")]
 
 [node name="TorchLighting" type="Node3D" parent="." unique_id=1290401520]
@@ -207,13 +267,13 @@ visible = false
 
 [node name="TorchLight" type="OmniLight3D" parent="TorchLighting/Source" unique_id=1546813691]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 2, 5.5)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
 [node name="PathLight" type="OmniLight3D" parent="TorchLighting/Source" unique_id=441123169]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 9)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
@@ -222,13 +282,13 @@ visible = false
 
 [node name="TorchLight" type="OmniLight3D" parent="TorchLighting/FirstTorch" unique_id=1049432673]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, 18)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
 [node name="PathLight" type="OmniLight3D" parent="TorchLighting/FirstTorch" unique_id=1921084286]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.9, 18)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
@@ -237,13 +297,13 @@ visible = false
 
 [node name="TorchLight" type="OmniLight3D" parent="TorchLighting/FalseTrailTorch" unique_id=147785730]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, 34)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
 [node name="PathLight" type="OmniLight3D" parent="TorchLighting/FalseTrailTorch" unique_id=1439554743]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 29)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
@@ -252,13 +312,13 @@ visible = false
 
 [node name="TorchLight" type="OmniLight3D" parent="TorchLighting/MiddleTorch" unique_id=381517394]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, 2, 18)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
 [node name="PathLight" type="OmniLight3D" parent="TorchLighting/MiddleTorch" unique_id=131315276]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6, 1.9, 14)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
@@ -267,13 +327,13 @@ visible = false
 
 [node name="TorchLight" type="OmniLight3D" parent="TorchLighting/LowerTorch" unique_id=815725491]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7, 2, 28.3)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
 [node name="PathLight" type="OmniLight3D" parent="TorchLighting/LowerTorch" unique_id=522035874]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5, 1.9, 28.1)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
@@ -282,13 +342,13 @@ visible = false
 
 [node name="TorchLight" type="OmniLight3D" parent="TorchLighting/CornerTorch" unique_id=1413544344]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.3, 2, 28.4)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
 [node name="PathLight" type="OmniLight3D" parent="TorchLighting/CornerTorch" unique_id=514901043]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.4, 3.8, 23.5)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
@@ -297,13 +357,13 @@ visible = false
 
 [node name="TorchLight" type="OmniLight3D" parent="TorchLighting/ReturnTorch" unique_id=260284843]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.8, 5, 18)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
 [node name="PathLight" type="OmniLight3D" parent="TorchLighting/ReturnTorch" unique_id=173555568]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.4, 6.4, 13)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
@@ -312,13 +372,13 @@ visible = false
 
 [node name="TorchLight" type="OmniLight3D" parent="TorchLighting/UpperTorch" unique_id=68663705]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.2, 8, 5.5)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
 [node name="PathLight" type="OmniLight3D" parent="TorchLighting/UpperTorch" unique_id=1328149011]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23, 7.9, 5.5)
-light_color = Color(1, 0.63, 0.36, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 6.1
 omni_range = 7.0
 
@@ -397,23 +457,418 @@ material_override = SubResource("TonGemMaterial")
 [node name="First" parent="WindClusters" unique_id=1888103562 instance=ExtResource("screen")]
 transform = Transform3D(3.1391647e-07, 0, -1, 0, 1, 0, 1, 0, 3.1391647e-07, 0, 1.24, 11.5)
 travel = 8.0
-size = Vector3(9, 4, 4.8)
+size = Vector3(9, 4, 4.48)
 
 [node name="Middle" parent="WindClusters" unique_id=419556426 instance=ExtResource("screen")]
 transform = Transform3D(3.1391647e-07, 0, 1, 0, 1, 0, -1, 0, 3.1391647e-07, 12.6, 1.24, 23)
-travel = 8.0
-size = Vector3(9, 4, 4.8)
+travel = 5.6
+screen_home_offset = Vector3(2.5, 0, 0)
+size = Vector3(9, 4, 3.28)
 
 [node name="Bottom" parent="WindClusters" unique_id=1173824388 instance=ExtResource("screen")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.8, 1.24, 28.1)
 travel = 8.0
 data = SubResource("BridgeWind")
-size = Vector3(9, 4, 4.8)
+size = Vector3(9, 4, 2.88)
 
 [node name="Branch" parent="WindClusters" unique_id=13149821 instance=ExtResource("screen")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 1.24, 12.9)
+travel = 1.8
+screen_home_offset = Vector3(3.6, 0, 0)
+size = Vector3(9, 4, 2.88)
+
+[node name="UpperRampWind" parent="WindClusters" instance=ExtResource("screen")]
+transform = Transform3D(0, 0, 1, 0.3040404, 0.95265913, 0, -0.95265913, 0.3040404, 0, 28.4, 5.696446, 11.979717)
+travel = 3.2
+screen_home_offset = Vector3(2.4, 0, 0)
+data = SubResource("BridgeWind")
+size = Vector3(6.6, 2.4, 3.28)
+
+[node name="HighBridgeWind" parent="WindClusters" instance=ExtResource("screen")]
+position = Vector3(16, 7.24, 5.5)
 travel = 8.0
-size = Vector3(9, 4, 4.8)
+data = SubResource("BridgeWind")
+size = Vector3(11, 2.4, 3.08)
+
+[node name="RoomShell" type="Node3D" parent="."]
+
+[node name="PitFloor" type="MeshInstance3D" parent="RoomShell"]
+position = Vector3(14, -5.8, 20)
+cast_shadow = 0
+mesh = SubResource("PitFloorMesh")
+
+[node name="PitSpikes" type="MultiMeshInstance3D" parent="RoomShell"]
+position = Vector3(14, -5.56, 20)
+cast_shadow = 0
+script = ExtResource("spike_field")
+spike_material = SubResource("SpikeMaterial")
+
+[node name="PitWalls" type="Node3D" parent="RoomShell"]
+
+[node name="PitWallNorth" type="MeshInstance3D" parent="RoomShell/PitWalls"]
+position = Vector3(-6.41, -2.845, 20)
+cast_shadow = 0
+mesh = SubResource("PitWallNSMesh")
+
+[node name="PitWallSouth" type="MeshInstance3D" parent="RoomShell/PitWalls"]
+position = Vector3(34.41, -2.845, 20)
+cast_shadow = 0
+mesh = SubResource("PitWallNSMesh")
+
+[node name="PitWallWest" type="MeshInstance3D" parent="RoomShell/PitWalls"]
+position = Vector3(14, -2.845, 40.41)
+cast_shadow = 0
+mesh = SubResource("PitWallWMesh")
+
+[node name="PitWallEastUnderGate" type="MeshInstance3D" parent="RoomShell/PitWalls"]
+position = Vector3(0, -3.045, -0.41)
+cast_shadow = 0
+mesh = SubResource("PitWallEUnderGateMesh")
+
+[node name="PitWallEastLeft" type="MeshInstance3D" parent="RoomShell/PitWalls"]
+position = Vector3(-4.435, -2.845, -0.41)
+cast_shadow = 0
+mesh = SubResource("PitWallELeftMesh")
+
+[node name="PitWallEastRight" type="MeshInstance3D" parent="RoomShell/PitWalls"]
+position = Vector3(18.435, -2.845, -0.41)
+cast_shadow = 0
+mesh = SubResource("PitWallERightMesh")
+
+[node name="NorthWalls" type="Node3D" parent="RoomShell"]
+
+[node name="WallN1_0" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 2)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_1" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 6)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_2" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 10)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_3" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 14)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_4" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 18)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_5" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 22)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_6" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 26)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_7" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 30)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_8" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 34)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN1_9" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 0.32, 38)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_0" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 2)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_1" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 6)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_2" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 10)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_3" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 14)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_4" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 18)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_5" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 22)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_6" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 26)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_7" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 30)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_8" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 34)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallN2_9" parent="RoomShell/NorthWalls" instance=ExtResource("wall")]
+position = Vector3(-6.41, 4.32, 38)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WestWalls" type="Node3D" parent="RoomShell"]
+
+[node name="WallW1_0" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(-4, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_1" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(0, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_2" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(4, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_3" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(8, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_4" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(12, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_5" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(16, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_6" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(20, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_7" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(24, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_8" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(28, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW1_9" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(32, 0.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_0" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(-4, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_1" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(0, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_2" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(4, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_3" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(8, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_4" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(12, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_5" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(16, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_6" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(20, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_7" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(24, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_8" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(28, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallW2_9" parent="RoomShell/WestWalls" instance=ExtResource("wall")]
+position = Vector3(32, 4.32, 40.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="SouthWalls" type="Node3D" parent="RoomShell"]
+
+[node name="WallS0" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 2)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS1" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 6)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS2" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 10)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS3" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 14)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS4" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 18)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS5" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 22)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS6" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 26)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS7" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 30)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS8" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 34)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallS9" parent="RoomShell/SouthWalls" instance=ExtResource("low_wall")]
+position = Vector3(34.41, 0.32, 38)
+rotation = Vector3(0, 1.57079633, 0)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="EastWalls" type="Node3D" parent="RoomShell"]
+
+[node name="EntranceGate" parent="RoomShell/EastWalls" instance=ExtResource("gate_frame")]
+position = Vector3(0, 0.32, 0.41)
+scale = Vector3(1, 1, 0.76)
+
+[node name="WallELeft" parent="RoomShell/EastWalls" instance=ExtResource("wall")]
+position = Vector3(-4, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallERight1" parent="RoomShell/EastWalls" instance=ExtResource("low_wall")]
+position = Vector3(4, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallERight2" parent="RoomShell/EastWalls" instance=ExtResource("low_wall")]
+position = Vector3(8, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallERight3" parent="RoomShell/EastWalls" instance=ExtResource("low_wall")]
+position = Vector3(12, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallERight4" parent="RoomShell/EastWalls" instance=ExtResource("low_wall")]
+position = Vector3(16, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallERight5" parent="RoomShell/EastWalls" instance=ExtResource("low_wall")]
+position = Vector3(20, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallERight6" parent="RoomShell/EastWalls" instance=ExtResource("low_wall")]
+position = Vector3(24, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallERight7" parent="RoomShell/EastWalls" instance=ExtResource("low_wall")]
+position = Vector3(28, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="WallERight8" parent="RoomShell/EastWalls" instance=ExtResource("low_wall")]
+position = Vector3(32, 0.32, -0.41)
+scale = Vector3(0.9852217, 1, 1)
+
+[node name="CornerPillars" type="Node3D" parent="RoomShell"]
+
+[node name="PillarNW1" parent="RoomShell/CornerPillars" instance=ExtResource("pillar")]
+position = Vector3(-6.41, 0.28, 40.41)
+scale = Vector3(0.94, 0.84, 0.94)
+
+[node name="PillarNW2" parent="RoomShell/CornerPillars" instance=ExtResource("pillar")]
+position = Vector3(-6.41, 4.48, 40.41)
+scale = Vector3(0.94, 0.8, 0.94)
+
+[node name="PillarSW1" parent="RoomShell/CornerPillars" instance=ExtResource("pillar")]
+position = Vector3(34.41, 0.28, 40.41)
+scale = Vector3(0.94, 0.84, 0.94)
+
+[node name="PillarSW2" parent="RoomShell/CornerPillars" instance=ExtResource("pillar")]
+position = Vector3(34.41, 4.48, 40.41)
+scale = Vector3(0.94, 0.8, 0.94)
+
+[node name="PillarNE" parent="RoomShell/CornerPillars" instance=ExtResource("pillar")]
+position = Vector3(-6.41, 0.28, -0.41)
+scale = Vector3(0.94, 0.84, 0.94)
+
+[node name="PillarSE" parent="RoomShell/CornerPillars" instance=ExtResource("pillar")]
+position = Vector3(34.41, 0.28, -0.41)
+scale = Vector3(0.94, 0.274, 0.94)
+
+[node name="EntranceTorches" type="Node3D" parent="RoomShell"]
+
+[node name="TorchLeft" parent="RoomShell/EntranceTorches" instance=ExtResource("torch")]
+position = Vector3(-1.85, 0.32, 1.25)
+
+[node name="TorchRight" parent="RoomShell/EntranceTorches" instance=ExtResource("torch")]
+position = Vector3(1.85, 0.32, 1.25)
+
+[node name="RoomShellCollision" type="StaticBody3D" parent="RoomShell"]
+collision_mask = 0
+
+[node name="NorthWallCol" type="CollisionShape3D" parent="RoomShell/RoomShellCollision"]
+position = Vector3(-6.41, 4.32, 20)
+shape = SubResource("WallNSColShape")
+
+[node name="WestWallCol" type="CollisionShape3D" parent="RoomShell/RoomShellCollision"]
+position = Vector3(14, 4.32, 40.41)
+shape = SubResource("WallWColShape")
+
+[node name="SouthWallCol" type="CollisionShape3D" parent="RoomShell/RoomShellCollision"]
+position = Vector3(34.41, 1, 20)
+shape = SubResource("WallSColShape")
+
+[node name="EastWallLeftCol" type="CollisionShape3D" parent="RoomShell/RoomShellCollision"]
+position = Vector3(-4.2, 2.32, -0.41)
+shape = SubResource("WallELeftColShape")
+
+[node name="EastWallRightCol" type="CollisionShape3D" parent="RoomShell/RoomShellCollision"]
+position = Vector3(18.2, 1, -0.41)
+shape = SubResource("WallERightColShape")
 
 [editable path="Stations/Seal"]
 [editable path="Stations/Seal/TonGem"]

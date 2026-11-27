@@ -22,7 +22,6 @@ var _complete: bool = false
 var _reset_pending: bool = false
 
 @onready var _flame: TonCarriedFlame = $CarriedFlame
-@onready var _restart: Marker3D = $Restart
 @onready var _presence: Area3D = $Presence
 @onready var _fall: Area3D = $Fall
 @onready var _gem: SealGem = $Stations/Seal/TonGem
@@ -31,10 +30,12 @@ var _reset_pending: bool = false
 func _ready() -> void:
 	if data == null:
 		data = DEFAULT_DATA
+	data.apply_flame_palette(_flame.get_node(^"FireFeedback"))
 	for child: Node in $Stations.get_children():
 		var station := child as TonFlameStation
 		if station:
 			_stations.append(station)
+			data.apply_flame_palette(station.get_node(^"FireFeedback"))
 			station.configure(_can_transfer)
 			station.used.connect(_on_transferred)
 	for child: Node in $WindClusters.get_children():
@@ -91,7 +92,9 @@ func _can_transfer(player: Player, station: TonFlameStation) -> bool:
 		return not _flame.is_carried_by(player)
 	if station.role == TonFlameStation.Role.SEAL:
 		return not _complete
-	return _flame.is_carried_by(player) != station.is_lit()
+	if station.is_lit():
+		return not _flame.is_carried_by(player)
+	return _flame.can_ignite(player)
 
 
 func _on_transferred(player: Player, station: TonFlameStation) -> void:
@@ -116,8 +119,6 @@ func _on_entered(body: Node3D) -> void:
 		return
 	_player = player
 	_gem.set_carrier(player)
-	player.register_local_respawn(_respawn_local)
-	player.combat_action_committed.connect(_flame.register_action)
 	player.state_machine.state_changed.connect(_on_player_state_changed)
 	_start_wind()
 
@@ -131,8 +132,6 @@ func _on_exited(body: Node3D) -> void:
 
 func _disconnect_player() -> void:
 	if is_instance_valid(_player):
-		_player.unregister_local_respawn(_respawn_local)
-		_player.combat_action_committed.disconnect(_flame.register_action)
 		_player.state_machine.state_changed.disconnect(_on_player_state_changed)
 	_player = null
 
@@ -140,25 +139,12 @@ func _disconnect_player() -> void:
 func _on_player_state_changed(_previous: StringName, next: StringName) -> void:
 	if next == PlayerState.DEAD:
 		_reset_pending = true
-	elif next == PlayerState.DASH:
-		_flame.put_out()
 
 
 func _on_fell(body: Node3D) -> void:
 	if body != _player or _reset_pending:
 		return
 	_player.on_lethal_zone_entered()
-
-
-func _respawn_local(player: Player) -> void:
-	if player != _player or not player.health.is_dead():
-		return
-	_reset_pending = false
-	_reset_attempt()
-	if player.wind_receiver:
-		player.wind_receiver.clear_push()
-	player.revive_locally(_restart.global_position, _restart.global_basis.z)
-	_start_wind()
 
 
 func _start_wind() -> void:

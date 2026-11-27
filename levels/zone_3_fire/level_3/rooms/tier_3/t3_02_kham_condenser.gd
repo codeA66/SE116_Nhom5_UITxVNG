@@ -17,10 +17,9 @@ const DEFAULT_DATA: KhamPuzzleData = preload("res://levels/zone_3_fire/level_3/r
 @export var gem_placed_flag: StringName
 
 var _reset_pending: bool = false
-var _water_bounds: AABB
 var _started: bool = false
 var _pressure_released: bool = false
-var _west_selected: bool = false
+var _valve_b_locked: bool = false
 var _complete: bool = false
 var _phase_two: bool = false
 var _hurtboxes: Dictionary[Player, HurtboxComponent] = {}
@@ -29,18 +28,23 @@ var _phase_one_bodies: Array[StaticBody3D] = []
 var _routes: Array[KhamSinkingRoute] = []
 var _bridge_tween: Tween
 var _phase_transition: Tween
+var _valve_b_locked_material: StandardMaterial3D
 
-@onready var _water_volume: CollisionShape3D = $Basin/WaterRecovery/CollisionShape3D
 @onready var _valve_a: InteractValve = $Valves/A
 @onready var _valve_b: InteractValve = $Valves/B
 @onready var _lever: InteractValve = $Valves/Lever
-@onready var _shutter: StaticBody3D = $Basin/WestWall/WindShutter
 @onready var _handle: Node3D = $Landmarks/Lever.find_child("Handle", true, false)
+@onready var _valve_b_meshes: Array[MeshInstance3D] = [
+	$Landmarks/DiverterB/Handwheel,
+	$Landmarks/DiverterB/Spoke,
+	$Landmarks/DiverterB/Mark0,
+	$Landmarks/DiverterB/Mark1,
+]
 @onready var _first: CoolingPath = $Paths/First
 @onready var _west: CoolingPath = $Paths/West
 @onready var _north: CoolingPath = $Paths/North
+@onready var _west_route: KhamSinkingRoute = $SinkingRoutes/West
 @onready var _west_vent: SteamVent = $Vents/West
-@onready var _north_wind: WindZone = $Vents/North
 @onready var _bridge: Node3D = $FoldBridge
 @onready var _presence: Area3D = $RoomPresence
 @onready var _gem: SealGem = $KhamGem
@@ -48,8 +52,6 @@ var _phase_transition: Tween
 
 
 func _ready() -> void:
-	var box: BoxShape3D = _water_volume.shape as BoxShape3D
-	_water_bounds = AABB(-box.size * 0.5, box.size)
 	if data == null:
 		data = DEFAULT_DATA
 	if entrance == null:
@@ -61,7 +63,8 @@ func _ready() -> void:
 		phase_one_platforms.append(_bridge)
 	for path: CoolingPath in [_first, _west, _north]:
 		path.configure(data)
-		path.failed.connect(reset_room)
+		path.failed.connect(_on_fatal_failure)
+		path.set_deferred(&"monitoring", true)
 	for valve: InteractValve in [_valve_a, _valve_b, _lever]:
 		valve.configure(data)
 	for child: Node in $SinkingRoutes.get_children():
@@ -73,9 +76,14 @@ func _ready() -> void:
 	_valve_b.activated.connect(_on_diverter_opened)
 	_lever.set_enabled(false)
 	_lever.activated.connect(_on_relief_opened)
+	_valve_b_locked_material = StandardMaterial3D.new()
+	_valve_b_locked_material.albedo_color = data.valve_locked_color
+	_valve_b_locked_material.roughness = 0.85
+	_valve_b_locked_material.emission_enabled = false
+	_west.heat_changed.connect(_on_west_heat_changed)
+	_north.heat_changed.connect(_on_north_heat_changed)
 	_west_vent.configure(data)
-	_west_vent.failed.connect(reset_room)
-	_north_wind.set_active(false)
+	_west_vent.failed.connect(_on_fatal_failure)
 	for body: Node in _bridge.find_children("*", "StaticBody3D", true, false):
 		_bridge_bodies.append(body as StaticBody3D)
 	for platform: Node3D in phase_one_platforms:
@@ -145,8 +153,17 @@ func _on_room_exited(body: Node3D) -> void:
 func _intercept_hit(_info: DamageInfo, player: Player) -> bool:
 	if _complete:
 		return false
-	reset_room(player)
+	_on_fatal_failure(player)
 	return true
+
+
+func _on_fatal_failure(player: Player) -> void:
+	if _reset_pending or not is_instance_valid(player) or player.health.is_dead():
+		return
+	player.on_lethal_zone_entered()
+	if not player.health.is_dead():
+		return
+	_reset_pending = true
 
 
 func _on_inlet_opened(_player: Player) -> void:
@@ -157,31 +174,28 @@ func _on_inlet_opened(_player: Player) -> void:
 		_started = true
 		_lever.set_enabled(true)
 		_west_vent.start_cycle()
-		_north_wind.set_active(true)
 
 
 func _on_diverter_opened(_player: Player) -> void:
-	if not _started or _complete or _phase_two or _reset_pending:
+	if not _started or _complete or _phase_two or _reset_pending or _valve_b_locked:
 		return
-	_west_selected = not _west_selected
-	if _west_selected:
-		_north.set_hot()
+	if not _pressure_released:
 		_west.cool_for(data.west_cold_time)
 	else:
-		_west.set_hot()
 		_north.cool_for(data.north_cold_time)
+	_set_valve_b_locked(true)
 
 
 func _on_relief_opened(_player: Player) -> void:
 	if not _started or _pressure_released or _complete or _phase_two or _reset_pending:
 		return
 	_pressure_released = true
+	_west_route.set_active(false)
+	_west.set_deferred(&"monitoring", false)
 	var closing: Tween = create_tween().set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-	closing.set_parallel(true)
 	closing.tween_property(_handle, "rotation:z", -_handle.rotation.z, maxf(data.valve_turn_time, 0.01))
-	closing.tween_property(_shutter, "position:y", 0.0, maxf(data.bridge_open_time, 0.01))
-	closing.chain().tween_callback(_north_wind.set_active.bind(false))
 	_open_bridge(false)
+	_set_valve_b_locked(false)
 
 
 func _open_bridge(immediate: bool) -> void:
@@ -208,7 +222,27 @@ func _set_bridge_collision(enabled: bool) -> void:
 
 func _can_collect_gem(actor: Node3D) -> bool:
 	return actor is Player and not _complete and not _phase_two and not _reset_pending \
-		and _pressure_released and not _west_selected and _north.heat != CoolingPath.Heat.HOT
+		and _pressure_released and _north.heat != CoolingPath.Heat.HOT
+
+
+func _on_west_heat_changed() -> void:
+	if _west.heat == CoolingPath.Heat.HOT and not _pressure_released \
+			and not _complete and not _phase_two and not _reset_pending:
+		_set_valve_b_locked(false)
+
+
+func _on_north_heat_changed() -> void:
+	if _north.heat == CoolingPath.Heat.HOT and _pressure_released \
+			and not _complete and not _phase_two and not _reset_pending:
+		_set_valve_b_locked(false)
+
+
+func _set_valve_b_locked(locked: bool) -> void:
+	_valve_b_locked = locked
+	_valve_b.set_enabled(not locked)
+	var override: Material = _valve_b_locked_material if locked else null
+	for mesh: MeshInstance3D in _valve_b_meshes:
+		mesh.material_override = override
 
 
 func _on_gem_collected(_player: Player) -> void:
@@ -219,7 +253,7 @@ func _begin_phase_two(immediate: bool = false) -> void:
 	_phase_two = true
 	_stop_phase_one()
 	$Landmarks.hide()
-	$StoneInlays.hide()
+
 	if _bridge_tween:
 		_bridge_tween.kill()
 	# Tắt va chạm trước khi hạ để sàn cũ tránh chặn vật thể của phase sau.
@@ -257,7 +291,7 @@ func _finish_puzzle() -> void:
 
 
 func _connect_return_stage() -> void:
-	_return_stage.failed.connect(reset_room)
+	_return_stage.failed.connect(_on_fatal_failure)
 	_return_stage.completed.connect(_finish_puzzle)
 
 
@@ -265,7 +299,6 @@ func _stop_phase_one() -> void:
 	for route: KhamSinkingRoute in _routes:
 		route.set_active(false)
 	_west_vent.stop()
-	_north_wind.set_active(false)
 	_west_vent.set_deferred(&"monitoring", false)
 	for path: CoolingPath in [_first, _west, _north]:
 		path.set_safe()
@@ -279,7 +312,6 @@ func _restore_progress() -> void:
 		if not _complete:
 			_complete = true
 			_gem.restore_collected()
-			_shutter.position.y = 0.0
 			_begin_phase_two(true)
 	elif _complete:
 		for player: Player in _hurtboxes:
@@ -287,28 +319,23 @@ func _restore_progress() -> void:
 			break
 
 
-func _on_water_body_entered(body: Node3D) -> void:
-	# Signal có thể đến trễ từ vị trí trước khi teleport, chỉ reset khi body còn trong hồ.
-	if body is Player and _water_bounds.has_point(_water_volume.to_local(body.global_position)):
-		reset_room(body as Player)
-
-
-func _perform_reset(player: Player) -> void:
-	if not is_instance_valid(player) or player.health.is_dead():
+func _perform_reset(player: Player, revive: bool = false) -> void:
+	if not is_instance_valid(player) or player.health.is_dead() != revive:
 		_reset_pending = false
 		return
 	if _phase_two and not _complete:
-		await _reset_return_stage(player)
+		await _reset_return_stage(player, revive)
 		return
-	for route: KhamSinkingRoute in _routes:
-		route.set_active(false)
 	var packed_room: PackedScene = load(scene_file_path) as PackedScene
 	if packed_room == null or entrance == null:
 		push_error("Khảm cần scene nguồn và mốc cửa vào để reset phòng.")
-		_reset_pending = false
+		_cancel_reset(revive)
 		return
 	var replacement: KhamCondenser = packed_room.instantiate() as KhamCondenser
 	replacement.data = data
+	replacement.gem_placed_flag = gem_placed_flag
+	for route: KhamSinkingRoute in _routes:
+		route.set_active(false)
 	var parent: Node = get_parent()
 	var room_index: int = get_index()
 	var room_name: StringName = name
@@ -324,18 +351,22 @@ func _perform_reset(player: Player) -> void:
 		_reset_pending = false
 		return
 	parent.remove_child(self)
-	player.teleport(return_position, return_facing)
 	replacement.name = room_name
 	replacement.transform = room_transform
 	parent.add_child(replacement)
 	parent.move_child(replacement, room_index)
+	_place_reset_player(player, return_position, return_facing, revive)
 	room_reset.emit(replacement, player)
 	queue_free()
 
 
-func _reset_return_stage(player: Player) -> void:
+func _reset_return_stage(player: Player, revive: bool) -> void:
 	var previous: KhamReturnStage = _return_stage
 	var packed: PackedScene = load(previous.scene_file_path) as PackedScene
+	if packed == null:
+		push_error("Khảm cần scene nguồn để reset lượt về.")
+		_cancel_reset(revive)
+		return
 	var replacement: KhamReturnStage = packed.instantiate() as KhamReturnStage
 	replacement.data = previous.data
 	previous.finish()
@@ -355,8 +386,22 @@ func _reset_return_stage(player: Player) -> void:
 	_return_stage = replacement
 	add_child(replacement)
 	_connect_return_stage()
-	player.teleport(seal.global_position, Vector3.LEFT)
+	_place_reset_player(player, seal.global_position, Vector3.LEFT, revive)
 	_gem.set_carrier(player)
 	replacement.start()
 	_reset_pending = false
 	room_reset.emit(self, player)
+
+
+func _place_reset_player(player: Player, at: Vector3, facing: Vector3, revive: bool) -> void:
+	if revive:
+		player.revive_locally(at, facing)
+	else:
+		player.teleport(at, facing)
+
+
+func _cancel_reset(revive: bool) -> void:
+	_reset_pending = false
+	if revive:
+		GameState.reset_player_health()
+		SceneManager.respawn_at_checkpoint()

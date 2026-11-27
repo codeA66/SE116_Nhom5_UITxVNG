@@ -45,6 +45,12 @@ size = Vector3(14, 1.25, 0.34)
 [sub_resource type="BoxShape3D" id="EastSouthRail"]
 size = Vector3(14, 1.25, 0.34)
 
+[sub_resource type="BoxShape3D" id="SealWallX"]
+size = Vector3(4, 1.25, 0.68)
+
+[sub_resource type="BoxShape3D" id="SealWallZ"]
+size = Vector3(0.68, 1.25, 4)
+
 [node name="Tier3WalkthroughConnectors" type="Node3D"]
 
 [node name="Hub" type="StaticBody3D" parent="."]
@@ -549,6 +555,60 @@ position = Vector3(0, 0, 0.42)
 scale = Vector3(1.72, 0.034, 0.19)
 cast_shadow = 0
 mesh = SubResource("TrigramMesh")
+
+[node name="SouthSealWall" type="StaticBody3D" parent="Hub"]
+position = Vector3(0, 0.32, 13.85)
+visible = false
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hub/SouthSealWall"]
+position = Vector3(0, 0.625, 0)
+shape = SubResource("SealWallX")
+disabled = true
+
+[node name="Mesh" parent="Hub/SouthSealWall" instance=ExtResource("wall")]
+scale = Vector3(0.968, 1, 1)
+
+[node name="NorthSealWall" type="StaticBody3D" parent="Hub"]
+position = Vector3(0, 0.32, -13.85)
+visible = false
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hub/NorthSealWall"]
+position = Vector3(0, 0.625, 0)
+shape = SubResource("SealWallX")
+disabled = true
+
+[node name="Mesh" parent="Hub/NorthSealWall" instance=ExtResource("wall")]
+scale = Vector3(0.968, 1, 1)
+
+[node name="WestSealWall" type="StaticBody3D" parent="Hub"]
+position = Vector3(-13.85, 0.32, 0)
+visible = false
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hub/WestSealWall"]
+position = Vector3(0, 0.625, 0)
+shape = SubResource("SealWallZ")
+disabled = true
+
+[node name="Mesh" parent="Hub/WestSealWall" instance=ExtResource("wall")]
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.968, 1, 1)
+
+[node name="EastSealWall" type="StaticBody3D" parent="Hub"]
+position = Vector3(13.85, 0.32, 0)
+visible = false
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hub/EastSealWall"]
+position = Vector3(0, 0.625, 0)
+shape = SubResource("SealWallZ")
+disabled = true
+
+[node name="Mesh" parent="Hub/EastSealWall" instance=ExtResource("wall")]
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(0.968, 1, 1)
 
 [node name="South" type="StaticBody3D" parent="."]
 collision_mask = 0

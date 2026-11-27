@@ -42,6 +42,7 @@ func set_active(active: bool) -> void:
 	if active:
 		_on_heat_changed()
 	else:
+		_set_hot_floor_collision(false)
 		for tile: KhamSinkingTile in _tiles:
 			tile.set_enabled(false)
 		for surface: Node3D in _surfaces:
@@ -52,6 +53,7 @@ func _on_heat_changed() -> void:
 	if not _active:
 		return
 	var hot: bool = cooling_path.heat == CoolingPath.Heat.HOT
+	_set_hot_floor_collision(hot)
 	for surface: Node3D in _surfaces:
 		surface.visible = hot
 	# Cảnh báo nóng không dựng lại những ô player đã làm sập.
@@ -59,6 +61,11 @@ func _on_heat_changed() -> void:
 		return
 	for tile: KhamSinkingTile in _tiles:
 		tile.set_enabled(not hot, cooling_path.heat == CoolingPath.Heat.SAFE)
+
+
+func _set_hot_floor_collision(enabled: bool) -> void:
+	for body: StaticBody3D in floor_bodies:
+		body.set_deferred(&"collision_layer", 1 if enabled else 0)
 
 
 func _build_tiles(collider: CollisionShape3D, box: BoxShape3D, material: Material) -> void:

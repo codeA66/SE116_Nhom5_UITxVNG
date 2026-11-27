@@ -3,6 +3,7 @@ extends Node3D
 ## Bệ chung nhận ấn và dẫn sáng từ khe về biểu tượng phòng.
 
 signal gem_placed
+signal slot_placed(index: int, actor: Node3D)
 
 const ROUTE_VERSION: StringName = &"level_3.t3_walkthrough_altar_v2"
 const LEGACY_LY: StringName = &"level_3.t3_walkthrough_ly"
@@ -13,6 +14,7 @@ const LEGACY_LY: StringName = &"level_3.t3_walkthrough_ly"
 @export_range(0.1, 5.0, 0.05) var light_time: float = 1.35
 
 var _lighting: Tween
+var _last_actor: Node3D
 
 @onready var _gems: Array[Node3D] = [$Gems/Ly, $Gems/Kham, $Gems/Ton, $Gems/Chan]
 @onready var _paths: Array[MeshInstance3D] = [$Paths/South, $Paths/North, $Paths/West, $Paths/East]
@@ -48,10 +50,11 @@ func _available_slot() -> int:
 	return -1
 
 
-func _on_interacted(_actor: Node3D) -> void:
+func _on_interacted(actor: Node3D) -> void:
 	var index: int = _available_slot()
 	if index < 0:
 		return
+	_last_actor = actor
 	_gems[index].show()
 	_lighting = create_tween()
 	_lighting.tween_method(_set_path_progress.bind(index), 0.0, 1.0, light_time)
@@ -61,7 +64,10 @@ func _on_interacted(_actor: Node3D) -> void:
 
 func _finish_light(index: int) -> void:
 	_lighting = null
+	var actor: Node3D = _last_actor
+	_last_actor = null
 	flames[index].show()
+	slot_placed.emit(index, actor)
 	gem_placed.emit()
 
 

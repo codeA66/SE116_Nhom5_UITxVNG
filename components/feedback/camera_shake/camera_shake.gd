@@ -60,7 +60,8 @@ func _process(delta: float) -> void:
 	var t := _time * frequency
 	camera.h_offset = _base_h + max_offset * power * _noise.get_noise_2d(t, NOISE_ROW_H)
 	camera.v_offset = _base_v + max_offset * power * _noise.get_noise_2d(t, NOISE_ROW_V)
-	camera.rotation.z = _base_roll + deg_to_rad(max_roll_degrees) * power * _noise.get_noise_2d(t, NOISE_ROW_ROLL)
+	if max_roll_degrees > 0.0:
+		camera.rotation.z = _base_roll + deg_to_rad(max_roll_degrees) * power * _noise.get_noise_2d(t, NOISE_ROW_ROLL)
 
 
 func _on_trauma_added(_amount: float) -> void:
@@ -70,4 +71,5 @@ func _on_trauma_added(_amount: float) -> void:
 func _restore() -> void:
 	camera.h_offset = _base_h
 	camera.v_offset = _base_v
-	camera.rotation.z = _base_roll
+	if max_roll_degrees > 0.0:
+		camera.rotation.z = _base_roll

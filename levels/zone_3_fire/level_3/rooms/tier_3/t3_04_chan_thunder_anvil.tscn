@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/chan_copper_block/chan_copper_block.tscn" id="block"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/chan_socket/chan_socket.tscn" id="socket"]
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/chan_circuit/chan_circuit.tscn" id="circuit"]
+[ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/chan_gate_receiver/chan_gate_receiver.tscn" id="gate_receiver"]
 [ext_resource type="Script" path="res://components/core/interaction/interactable_component.gd" id="interact"]
 
 [ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="fire_floor"]
@@ -44,16 +45,9 @@ emission_energy_multiplier = 2.3
 [sub_resource type="BoxMesh" id="LiveMesh"]
 material = SubResource("Live")
 
-[sub_resource type="StandardMaterial3D" id="LogicZero"]
-albedo_color = Color(1.0, 0.5, 0.14, 1)
-shading_mode = 0
-
 [sub_resource type="StandardMaterial3D" id="InverterActive"]
 albedo_color = Color(1, 0.06, 0.04, 1)
 shading_mode = 0
-
-[sub_resource type="BoxMesh" id="LogicZeroMesh"]
-material = SubResource("LogicZero")
 
 [sub_resource type="StandardMaterial3D" id="PedestalStone"]
 albedo_color = Color(0.28, 0.22, 0.23, 1)
@@ -363,12 +357,6 @@ scale = Vector3(1.02708, 1, 1.025)
 [node name="Tile12_4" parent="Geometry/FloorTiles" instance=ExtResource("fire_floor")]
 position = Vector3(47.24583, 0, 4.55)
 scale = Vector3(1.02708, 1, 1.025)
-
-[node name="WestTread" type="MeshInstance3D" parent="Geometry"]
-position = Vector3(1.5, 0.328, 0)
-scale = Vector3(2.9, 0.015, 0.14)
-cast_shadow = 0
-mesh = SubResource("GiltMesh")
 
 [node name="NorthWall" type="Node3D" parent="Geometry"]
 
@@ -716,7 +704,8 @@ position = Vector3(13.55, 0.75, -5.5)
 [node name="Sockets" type="Node3D" parent="."]
 
 [node name="TutorialSocket" parent="Sockets" instance=ExtResource("socket")]
-position = Vector3(8.3, 0.32, 0)
+position = Vector3(5.1, 0.32, -2)
+rotation = Vector3(0, 1.5708, 0)
 
 [node name="K1Port1" parent="Sockets" instance=ExtResource("socket")]
 position = Vector3(18.3, 0.32, -1.45)
@@ -750,17 +739,15 @@ sockets = [NodePath("../Sockets/TutorialSocket")]
 blocks = [NodePath("../CopperBlocks/TutorialBlock")]
 live_sections = [NodePath("Live/Section1"), NodePath("Live/Section2")]
 
-[node name="ForgeCircuit" parent="." instance=ExtResource("circuit") node_paths=PackedStringArray("sockets", "blocks", "source_track", "crossed_tracks", "tracks_before_gate", "tracks_after_gate", "receiver_track", "receiver_zero_track", "zero_taps", "inverter_plates")]
+[node name="ForgeCircuit" parent="." instance=ExtResource("circuit") node_paths=PackedStringArray("sockets", "blocks", "source_track", "crossed_tracks", "tracks_before_gate", "tracks_after_gate", "receiver_track", "inverter_plates")]
 script = ExtResource("switch_circuit")
 sockets = [NodePath("../Sockets/K1Port1"), NodePath("../Sockets/K1Port2"), NodePath("../Sockets/K1Port3"), NodePath("../Sockets/K2Port1"), NodePath("../Sockets/K2Port2"), NodePath("../Sockets/K2Port3"), NodePath("../Sockets/K3Port1"), NodePath("../Sockets/K3Port2"), NodePath("../Sockets/K3Port3")]
 blocks = [NodePath("../CopperBlocks/ForgeBlock1"), NodePath("../CopperBlocks/ForgeBlock2"), NodePath("../CopperBlocks/ForgeBlock3")]
 source_track = NodePath("Signals/Source")
 crossed_tracks = [NodePath("Signals/K1Output1"), NodePath("Signals/K1Output2"), NodePath("Signals/K1Output3")]
 tracks_before_gate = [NodePath("Signals/K2Pin1"), NodePath("Signals/K2Pin2"), NodePath("Signals/K2Pin3")]
-tracks_after_gate = [NodePath("Signals/K2Direct"), NodePath("Signals/Not2/Zero"), NodePath("Signals/Not3/Zero")]
+tracks_after_gate = [NodePath("Signals/K2Direct")]
 receiver_track = NodePath("Signals/Receiver")
-receiver_zero_track = NodePath("Signals/ReceiverZero")
-zero_taps = [NodePath("Signals/ZeroTap1"), NodePath("Signals/ZeroTap2")]
 inverter_plates = [NodePath("Signals/Not2/InverterPlate"), NodePath("Signals/Not3/InverterPlate")]
 inverter_active_material = SubResource("InverterActive")
 
@@ -1272,9 +1259,6 @@ scale = Vector3(0.255, 0.022, 0.135)
 cast_shadow = 0
 mesh = SubResource("LiveMesh")
 
-[node name="Zero" type="Node3D" parent="ForgeCircuit/Signals/Not2"]
-visible = false
-
 [node name="Not2Zero1" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
 position = Vector3(29.2, 0.344, -3.3)
 rotation = Vector3(0, 0, 0)
@@ -1296,30 +1280,6 @@ scale = Vector3(0.895, 0.022, 0.24)
 cast_shadow = 0
 mesh = SubResource("CopperMesh")
 
-[node name="Track1" type="MeshInstance3D" parent="ForgeCircuit/Signals/Not2/Zero"]
-position = Vector3(29.2, 0.361, -3.3)
-rotation = Vector3(0, 0, 0)
-scale = Vector3(1.365, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
-[node name="Track2" type="MeshInstance3D" parent="ForgeCircuit/Signals/Not2/Zero"]
-position = Vector3(30.225, 0.361, -2.375)
-rotation = Vector3(0, -1.18564, 0)
-scale = Vector3(2.06125, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
-[node name="Track3" type="MeshInstance3D" parent="ForgeCircuit/Signals/Not2/Zero"]
-position = Vector3(31.015, 0.361, -1.45)
-rotation = Vector3(0, 0, 0)
-scale = Vector3(0.895, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
-[node name="Zero" type="Node3D" parent="ForgeCircuit/Signals/Not3"]
-visible = false
-
 [node name="Not3Zero1" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
 position = Vector3(29.95, 0.344, 3.15)
 rotation = Vector3(0, 0, 0)
@@ -1340,27 +1300,6 @@ rotation = Vector3(0, 0, 0)
 scale = Vector3(0.645, 0.022, 0.24)
 cast_shadow = 0
 mesh = SubResource("CopperMesh")
-
-[node name="Track1" type="MeshInstance3D" parent="ForgeCircuit/Signals/Not3/Zero"]
-position = Vector3(29.95, 0.361, 3.15)
-rotation = Vector3(0, 0, 0)
-scale = Vector3(1.865, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
-[node name="Track2" type="MeshInstance3D" parent="ForgeCircuit/Signals/Not3/Zero"]
-position = Vector3(30.85, 0.361, 1.575)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(3.215, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
-[node name="Track3" type="MeshInstance3D" parent="ForgeCircuit/Signals/Not3/Zero"]
-position = Vector3(31.14, 0.361, 0)
-rotation = Vector3(0, 0, 0)
-scale = Vector3(0.645, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
 
 [node name="OutputTap11" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
 position = Vector3(32.885, 0.344, -1.45)
@@ -1401,16 +1340,72 @@ mesh = SubResource("CopperMesh")
 visible = false
 
 [node name="Receiver1" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
-position = Vector3(38.9, 0.344, 0)
+position = Vector3(33.6, 0.344, 0)
 rotation = Vector3(0, 0, 0)
-scale = Vector3(11.465, 0.022, 0.24)
+scale = Vector3(0.56, 0.022, 0.24)
+cast_shadow = 0
+mesh = SubResource("CopperMesh")
+
+[node name="Receiver2" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
+position = Vector3(34, 0.344, -2.41)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.24, 0.022, 5.06)
+cast_shadow = 0
+mesh = SubResource("CopperMesh")
+
+[node name="ReceiverOut1" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
+position = Vector3(35.395, 0.344, -5.5)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(1.67, 0.022, 0.24)
+cast_shadow = 0
+mesh = SubResource("CopperMesh")
+
+[node name="ReceiverOut2" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
+position = Vector3(36.35, 0.344, -4.075)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.24, 0.022, 3.09)
+cast_shadow = 0
+mesh = SubResource("CopperMesh")
+
+[node name="ReceiverOut3" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
+position = Vector3(36.84, 0.344, -2.65)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.74, 0.022, 0.24)
 cast_shadow = 0
 mesh = SubResource("CopperMesh")
 
 [node name="Track1" type="MeshInstance3D" parent="ForgeCircuit/Signals/Receiver"]
-position = Vector3(38.9, 0.361, 0)
+position = Vector3(33.626, 0.361, 0)
 rotation = Vector3(0, 0, 0)
-scale = Vector3(11.465, 0.022, 0.135)
+scale = Vector3(0.613, 0.022, 0.135)
+cast_shadow = 0
+mesh = SubResource("LiveMesh")
+
+[node name="Track2" type="MeshInstance3D" parent="ForgeCircuit/Signals/Receiver"]
+position = Vector3(34, 0.361, -2.436)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.135, 0.022, 5.008)
+cast_shadow = 0
+mesh = SubResource("LiveMesh")
+
+[node name="Out1" type="MeshInstance3D" parent="ForgeCircuit/Signals/Receiver"]
+position = Vector3(35.421, 0.361, -5.5)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(1.723, 0.022, 0.135)
+cast_shadow = 0
+mesh = SubResource("LiveMesh")
+
+[node name="Out2" type="MeshInstance3D" parent="ForgeCircuit/Signals/Receiver"]
+position = Vector3(36.35, 0.361, -4.075)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.135, 0.022, 2.985)
+cast_shadow = 0
+mesh = SubResource("LiveMesh")
+
+[node name="Out3" type="MeshInstance3D" parent="ForgeCircuit/Signals/Receiver"]
+position = Vector3(36.814, 0.361, -2.65)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(0.793, 0.022, 0.135)
 cast_shadow = 0
 mesh = SubResource("LiveMesh")
 
@@ -1454,9 +1449,6 @@ scale = Vector3(2.965, 0.022, 0.135)
 cast_shadow = 0
 mesh = SubResource("LiveMesh")
 
-[node name="ReceiverZero" type="Node3D" parent="ForgeCircuit/Signals"]
-visible = false
-
 [node name="InputBranch1" type="MeshInstance3D" parent="ForgeCircuit/Copper"]
 position = Vector3(17.516, 0.344, -1.45)
 scale = Vector3(0.565, 0.022, 0.24)
@@ -1493,40 +1485,6 @@ scale = Vector3(0.565, 0.022, 0.135)
 cast_shadow = 0
 mesh = SubResource("LiveMesh")
 
-[node name="Track1" type="MeshInstance3D" parent="ForgeCircuit/Signals/ReceiverZero"]
-position = Vector3(35.16, 0.361, 0)
-rotation = Vector3(0, 0, 0)
-scale = Vector3(3.985, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
-[node name="ZeroTap1" type="Node3D" parent="ForgeCircuit/Signals"]
-visible = false
-
-[node name="Track1" type="MeshInstance3D" parent="ForgeCircuit/Signals/ZeroTap1"]
-position = Vector3(32.885, 0.361, -1.45)
-rotation = Vector3(0, 0, 0)
-scale = Vector3(0.695, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
-[node name="Track2" type="MeshInstance3D" parent="ForgeCircuit/Signals/ZeroTap1"]
-position = Vector3(33.2, 0.361, -0.725)
-rotation = Vector3(0, -1.5708, 0)
-scale = Vector3(1.515, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
-[node name="ZeroTap2" type="Node3D" parent="ForgeCircuit/Signals"]
-visible = false
-
-[node name="Track1" type="MeshInstance3D" parent="ForgeCircuit/Signals/ZeroTap2"]
-position = Vector3(32.885, 0.361, 0)
-rotation = Vector3(0, 0, 0)
-scale = Vector3(0.695, 0.022, 0.135)
-cast_shadow = 0
-mesh = SubResource("LogicZeroMesh")
-
 [node name="Copper" type="Node3D" parent="TutorialCircuit"]
 
 [node name="Live" type="Node3D" parent="TutorialCircuit"]
@@ -1535,26 +1493,14 @@ mesh = SubResource("LogicZeroMesh")
 visible = false
 
 [node name="Section1Track1" type="MeshInstance3D" parent="TutorialCircuit/Copper"]
-position = Vector3(5.1, 0.342, 1.075)
-scale = Vector3(0.31, 0.015, 2.46)
+position = Vector3(5.1, 0.342, 0.31)
+scale = Vector3(0.31, 0.015, 3.68)
 cast_shadow = 0
 mesh = SubResource("CopperMesh")
 
 [node name="Section1Track1" type="MeshInstance3D" parent="TutorialCircuit/Live/Section1"]
-position = Vector3(5.1, 0.356, 1.075)
-scale = Vector3(0.16, 0.015, 2.31)
-cast_shadow = 0
-mesh = SubResource("LiveMesh")
-
-[node name="Section1Track2" type="MeshInstance3D" parent="TutorialCircuit/Copper"]
-position = Vector3(6.43, 0.342, 0)
-scale = Vector3(2.97, 0.015, 0.31)
-cast_shadow = 0
-mesh = SubResource("CopperMesh")
-
-[node name="Section1Track2" type="MeshInstance3D" parent="TutorialCircuit/Live/Section1"]
-position = Vector3(6.43, 0.356, 0)
-scale = Vector3(2.82, 0.015, 0.16)
+position = Vector3(5.1, 0.356, 0.31)
+scale = Vector3(0.16, 0.015, 3.68)
 cast_shadow = 0
 mesh = SubResource("LiveMesh")
 
@@ -1562,16 +1508,60 @@ mesh = SubResource("LiveMesh")
 visible = false
 
 [node name="Section2Track1" type="MeshInstance3D" parent="TutorialCircuit/Copper"]
-position = Vector3(9.66, 0.342, 0)
-scale = Vector3(1.95, 0.015, 0.31)
+position = Vector3(5.1, 0.342, -3.705)
+scale = Vector3(0.31, 0.015, 2.47)
+cast_shadow = 0
+mesh = SubResource("CopperMesh")
+
+[node name="Section2Out1" type="MeshInstance3D" parent="TutorialCircuit/Copper"]
+position = Vector3(7.0775, 0.342, -5.5)
+scale = Vector3(2.835, 0.015, 0.31)
+cast_shadow = 0
+mesh = SubResource("CopperMesh")
+
+[node name="Section2Out2" type="MeshInstance3D" parent="TutorialCircuit/Copper"]
+position = Vector3(8.65, 0.342, -4.075)
+scale = Vector3(0.31, 0.015, 3.16)
+cast_shadow = 0
+mesh = SubResource("CopperMesh")
+
+[node name="Section2Out3" type="MeshInstance3D" parent="TutorialCircuit/Copper"]
+position = Vector3(9.5075, 0.342, -2.65)
+scale = Vector3(1.405, 0.015, 0.31)
 cast_shadow = 0
 mesh = SubResource("CopperMesh")
 
 [node name="Section2Track1" type="MeshInstance3D" parent="TutorialCircuit/Live/Section2"]
-position = Vector3(9.66, 0.356, 0)
-scale = Vector3(1.8, 0.015, 0.16)
+position = Vector3(5.1, 0.356, -3.705)
+scale = Vector3(0.16, 0.015, 2.47)
 cast_shadow = 0
 mesh = SubResource("LiveMesh")
+
+[node name="Section2Out1" type="MeshInstance3D" parent="TutorialCircuit/Live/Section2"]
+position = Vector3(7.115, 0.356, -5.5)
+scale = Vector3(2.91, 0.015, 0.16)
+cast_shadow = 0
+mesh = SubResource("LiveMesh")
+
+[node name="Section2Out2" type="MeshInstance3D" parent="TutorialCircuit/Live/Section2"]
+position = Vector3(8.65, 0.356, -4.075)
+scale = Vector3(0.16, 0.015, 3.01)
+cast_shadow = 0
+mesh = SubResource("LiveMesh")
+
+[node name="Section2Out3" type="MeshInstance3D" parent="TutorialCircuit/Live/Section2"]
+position = Vector3(9.47, 0.356, -2.65)
+scale = Vector3(1.48, 0.015, 0.16)
+cast_shadow = 0
+mesh = SubResource("LiveMesh")
+
+[node name="Receivers" type="Node3D" parent="."]
+
+[node name="TutorialReceiver" parent="Receivers" instance=ExtResource("gate_receiver")]
+position = Vector3(5.1, 0.32, -5.5)
+
+[node name="ForgeReceiver" parent="Receivers" instance=ExtResource("gate_receiver")]
+position = Vector3(34, 0.32, -5.5)
 
 [node name="Seal" type="Node3D" parent="."]
 position = Vector3(47.2, 0.32, -4.5)
@@ -1663,9 +1653,6 @@ scale = Vector3(0.9881, 0.80303, 3)
 position = Vector3(0, -1.33, 1.0375)
 rotation = Vector3(0, 1.5708, 0)
 scale = Vector3(0.9881, 0.80303, 3)
-
-[node name="Respawn" type="Marker3D" parent="."]
-position = Vector3(1.42, 0.35, -1.68)
 
 [node name="WaveSpawns" type="Node3D" parent="."]
 

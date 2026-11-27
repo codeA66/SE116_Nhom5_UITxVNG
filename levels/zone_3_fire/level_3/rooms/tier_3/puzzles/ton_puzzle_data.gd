@@ -10,6 +10,17 @@ extends Resource
 @export_range(0.05, 15.0, 0.05) var exposure_limit: float = 1.6
 @export_range(0.0, 1.0, 0.05) var warning_ratio: float = 0.45
 @export_range(0.01, 8.0, 0.05) var exposure_recovery: float = 0.65
-@export_range(0.0, 10.0, 0.05) var non_fire_exposure: float = 0.55
-@export var fire_element: StringName = &"fire"
-@export var fire_skills: Array[StringName] = [&"flame_breath", &"fire_cyclone", &"slag_shield"]
+@export_range(0.05, 10.0, 0.05) var ember_rest_time: float = 1.0
+@export_range(0.01, 0.3, 0.01) var ember_intensity: float = 0.06
+@export var ember_color: Color = Color(1.0, 0.13, 0.04)
+@export var flame_palette: GradientTexture1D
+
+
+func apply_flame_palette(feedback: FlameFeedback) -> void:
+	if flame_palette == null:
+		return
+	# FlameFeedback đã tạo material riêng cho từng hệ hạt khi vào cây.
+	for path: NodePath in [^"Flame", ^"RisingEmbers"]:
+		var particles: GPUParticles3D = feedback.get_node(path)
+		var material: ParticleProcessMaterial = particles.process_material
+		material.color_ramp = flame_palette

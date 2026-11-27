@@ -88,6 +88,7 @@ func finish() -> void:
 		trap.set_enabled(false)
 	for path: CoolingPath in _paths:
 		path.set_safe()
+		path.set_deferred(&"monitoring", false)
 	for vent: SteamVent in _vents:
 		vent.stop()
 	for valve: KhamReturnValve in _valves:
