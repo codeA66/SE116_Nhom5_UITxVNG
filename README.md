@@ -47,7 +47,7 @@ Chỉ hỗ trợ bàn phím + chuột.
 | Q | Kỹ năng Lửa |
 | R | Bùa đặc biệt |
 | F | Tương tác / nhặt |
-| Tab | Túi đồ, kỹ năng, bùa (Q / E đổi trang) |
+| Tab | Túi đồ, kỹ năng, bùa (Z / C đổi trang) |
 | H | Trợ giúp |
 | Esc | Tạm dừng |
 
