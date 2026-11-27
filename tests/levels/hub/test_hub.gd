@@ -8,32 +8,29 @@ extends Node
 ## UC4  Chưa thắng boss Gió: cổng Lửa đóng, bảng ghi "Đánh bại boss Khu Gió", hub không còn chìa Lửa.
 ##      Thắng boss Gió (cờ zone.wind.cleared) -> dấu Gió sáng, cổng Lửa mở 1 lần (dẫn tới map lửa, điểm "start"); cổng Băng còn khóa.
 ## UC6  Lưu / nạp lại -> cổng Gió + cổng Lửa vẫn mở.
-## UC7  Bước vào cổng Gió đã mở -> SceneManager bắt đầu chuyển sang khu Gió.
-## UC8  Bước vào cổng Lửa -> nạp map lửa (level_3), player đứng ở điểm spawn phòng 1.
+## UC7  Bước vào cổng Gió đã mở -> chờ vào đúng khu Gió rồi mới kiểm tra cổng tiếp theo.
+## UC8  Quay lại hub, bước vào cổng Lửa -> nạp tier 1 Lửa và đứng ở điểm spawn phòng 1.
 ## UC9  Vào map lửa với tay trắng: có sẵn kiếm (đang cầm, hiện trên tay), cung, kỹ năng Gió; chưa dung hợp.
 ##      Bù lại lần nữa (hồi sinh): không nhân đôi vũ khí / kỹ năng.
 
-const HUB := "res://levels/temple_center/hub/hub.tscn"
+const HUB: String = "res://levels/temple_center/hub/hub.tscn"
+const WIND: String = "res://levels/zone_1_wind/level_1/level_1.tscn"
+const FIRE: String = "res://levels/zone_3_fire/tier_1/tier_1.tscn"
+## Chừa thời gian cho các ca kiểm tra trước UC7 trong giới hạn 240 giây của CI.
+const PORTAL_BUDGET_MS: int = 180_000
 
 var _fails: int = 0
-var _hub: Node3D
+var _hub: ZoneRoot
 var _p: Player
+var _portal_deadline_ms: int
 
 
 func _ready() -> void:
-	if GameState.progress_changed.is_connected(SaveManager.save_game):
-		GameState.progress_changed.disconnect(SaveManager.save_game)
-	if GameState.progress_committed.is_connected(SaveManager.save_game):
-		GameState.progress_committed.disconnect(SaveManager.save_game)
+	SaveManager.block_saving()
 	_run.call_deferred()
 
 
 func _run() -> void:
-	# SceneManager.change_zone thay current_scene: đặt một node rỗng làm current_scene để node test không bị giải phóng khi qua cổng
-	var stand_in := Node.new()
-	stand_in.name = "StandIn"
-	get_tree().root.add_child(stand_in)
-	get_tree().current_scene = stand_in
 	GameState.replace_progress(PlayerProgress.new())
 	# Bỏ đoạn camera giới thiệu (khóa điều khiển ~8 s); đoạn này kiểm tra riêng bằng ảnh chụp
 	GameState.set_flag(&"hub.intro_seen")
@@ -48,20 +45,29 @@ func _run() -> void:
 	await _uc4_wind_cleared()
 	await _capture("hub_fire_open.png")
 	await _uc6_reload()
-	await _uc7_enter_gate()
-	await _uc8_enter_fire_gate()
+	_portal_deadline_ms = Time.get_ticks_msec() + PORTAL_BUDGET_MS
+	if await _enter_gate("WindGate", "UC7", WIND):
+		await _uc8_enter_fire_gate()
 	print("RESULT fails=%d" % _fails)
-	get_tree().quit()
+	get_tree().quit(0 if _fails == 0 else 1)
 
 
 func _load_hub() -> void:
 	if is_instance_valid(_hub):
 		_hub.queue_free()
 		await get_tree().process_frame
-	_hub = (load(HUB) as PackedScene).instantiate() as Node3D
-	get_tree().root.add_child(_hub)
-	await _wait(1.0)
-	_p = _hub.get_node("Player") as Player
+	var hub: ZoneRoot = (load(HUB) as PackedScene).instantiate() as ZoneRoot
+	get_tree().root.add_child(hub)
+	# Để SceneManager dọn đúng map khi qua cổng. Node chạy test nằm riêng ở root.
+	get_tree().current_scene = hub
+	if not hub.is_combat_ready():
+		await hub.combat_ready
+	_use_hub(hub)
+
+
+func _use_hub(hub: ZoneRoot) -> void:
+	_hub = hub
+	_p = _hub.get_node(^"Player") as Player
 	_p.get_node("HurtboxComponent").set_invincible(9999.0)
 
 
@@ -137,7 +143,7 @@ func _uc4_wind_cleared() -> void:
 	GameState.set_flag(&"zone.wind.cleared")
 	await get_tree().process_frame
 	var portal := fire.get_node("Portal") as Portal
-	_check(fire.is_open() and opened[0] == 1 and portal.target_zone == "res://levels/zone_3_fire/tier_1/tier_1.tscn" and portal.target_portal_id == &"start", "UC4: thắng boss Gió -> cổng Lửa mở (opened %d lần), dẫn tới map lửa / start" % opened[0])
+	_check(fire.is_open() and opened[0] == 1 and portal.target_zone == FIRE and portal.target_portal_id == &"start", "UC4: thắng boss Gió -> cổng Lửa mở (opened %d lần), dẫn tới map lửa / start" % opened[0])
 	_check(not _gate("IceGate").is_open(), "UC4: cổng Băng còn khóa")
 
 
@@ -151,45 +157,35 @@ func _uc6_reload() -> void:
 	_check(_gate("FireGate").is_open(), "UC6: nạp lại -> cổng Lửa vẫn mở")
 
 
-func _uc7_enter_gate() -> void:
-	var gate := _gate("WindGate")
-	var inward := -gate.global_basis.z
+func _enter_gate(gate_name: String, use_case: String, expected_zone: String) -> bool:
+	if SceneManager.is_busy():
+		_check(false, "%s: lần chuyển khu trước chưa xong khi thử %s" % [use_case, gate_name])
+		return false
+	var gate: ZoneGate = _gate(gate_name)
+	var inward: Vector3 = -gate.global_basis.z
 	_p.teleport(gate.global_position - inward * 3.0, inward)
 	await _wait(0.2)
-	var t := 0.0
-	while t < 1.5 and not SceneManager.is_busy():
-		_hold_move(inward)
-		await get_tree().physics_frame
-		t += get_physics_process_delta_time()
-	_check(SceneManager.is_busy(), "UC7: bước vào cổng Gió -> bắt đầu chuyển khu (sau %.2f s, player %s, cổng %s)" % [t, _p.global_position, gate.global_position])
+	await _push(inward, 1.5)
+	var started: bool = SceneManager.is_busy()
+	_check(started, "%s: bước qua %s bắt đầu chuyển khu" % [use_case, gate_name])
+	if not started:
+		return false
+	return await _wait_for_zone(expected_zone, use_case)
 
 
 func _uc8_enter_fire_gate() -> void:
-	# UC7 đã bắt đầu chuyển sang khu Gió: chờ xong rồi nạp lại khu trung tâm để đi cổng Lửa
-	await _wait_idle()
-	for n: Node in get_tree().root.get_children():
-		if n is ZoneRoot and n != _hub:
-			n.queue_free()
-	await _load_hub()
-	var gate := _gate("FireGate")
-	var inward := -gate.global_basis.z
-	_p.teleport(gate.global_position - inward * 3.0, inward)
-	await _wait(0.2)
-	var t := 0.0
-	while t < 1.5 and not SceneManager.is_busy():
-		_hold_move(inward)
-		await get_tree().physics_frame
-		t += get_physics_process_delta_time()
-	_release_move()
-	_check(SceneManager.is_busy(), "UC8: bước vào cổng Lửa -> bắt đầu chuyển khu (sau %.2f s)" % t)
-	await _wait_idle()
-	_hub.queue_free()
-	var scene := get_tree().current_scene
-	var fire_player := scene.get_node_or_null("Player") as Player if scene else null
-	var spawn := scene.find_child("SpawnStart*", true, false) as Node3D if scene else null
+	SceneManager.change_zone(HUB)
+	if not await _wait_for_zone(HUB, "UC8: quay về hub"):
+		return
+	_use_hub(get_tree().current_scene as ZoneRoot)
+	if not await _enter_gate("FireGate", "UC8", FIRE):
+		return
+	var scene: ZoneRoot = get_tree().current_scene as ZoneRoot
+	var fire_player: Player = scene.get_node_or_null(^"Player") as Player
+	var spawn: SpawnPoint = SpawnPoint.find_in(scene, &"start")
 	var d: float = fire_player.global_position.distance_to(spawn.global_position) if fire_player and spawn else -1.0
+	_check(d >= 0.0 and d < 1.5, "UC8: player ở điểm spawn tier 1 Lửa (lệch %.2f m)" % d)
 	_uc9_starter_kit(scene, fire_player)
-	_check(scene != null and scene.scene_file_path == "res://levels/zone_3_fire/tier_1/tier_1.tscn" and d >= 0.0 and d < 1.5, "UC8: đã vào map lửa, player ở điểm spawn phòng 1 (cảnh %s, lệch %.2f m)" % [scene.scene_file_path if scene else "null", d])
 	await _capture("hub_to_fire.png")
 
 
@@ -205,17 +201,29 @@ func _uc9_starter_kit(scene: Node, player: Player) -> void:
 	_check(sword != null and GameState.get_weapon() == sword and mesh != null and mesh.is_visible_in_tree(), "UC9: có kiếm, đang cầm, kiếm hiện trên tay (%s)" % (mesh.get_path() if mesh else "không thấy mesh"))
 	_check(bow != null and GameState.has_ability(&"wind_blast"), "UC9: có cung và kỹ năng Gió")
 	_check(GameState.get_fused_element(WeaponData.Slot.SWORD) == null and GameState.get_fused_element(WeaponData.Slot.BOW) == null, "UC9: chưa dung hợp nguyên tố")
+	var kit: StarterKit = scene.get_node_or_null(^"StarterKit") as StarterKit
+	_check(kit != null, "UC9: tier 1 Lửa có StarterKit")
+	if kit == null:
+		return
 	var counts := [GameState.progress.weapons.size(), GameState.get_abilities().size()]
-	(scene.get_node("StarterKit") as StarterKit).apply(player)
+	kit.apply(player)
 	_check(GameState.progress.weapons.size() == counts[0] and GameState.get_abilities().size() == counts[1], "UC9: bù lần 2 không nhân đôi (%d vũ khí, %d kỹ năng)" % counts)
 
 
-func _wait_idle() -> void:
-	var t := 0.0
-	while SceneManager.is_busy() and t < 15.0:
+func _wait_for_zone(expected_zone: String, use_case: String) -> bool:
+	# Chờ cả lần chuyển và bước mở điều khiển để ca sau không chạy trên scene cũ.
+	while Time.get_ticks_msec() < _portal_deadline_ms:
+		var zone: ZoneRoot = get_tree().current_scene as ZoneRoot
+		if not SceneManager.is_busy() and (zone == null or zone.scene_file_path != expected_zone):
+			break
+		if not SceneManager.is_busy() and zone.is_combat_ready():
+			_check(true, "%s: đã vào %s" % [use_case, expected_zone])
+			return true
 		await _wait(0.1)
-		t += 0.1
-	await _wait(1.0)
+	var active_scene: Node = get_tree().current_scene
+	var active_path: String = active_scene.scene_file_path if active_scene else "chưa có scene"
+	_check(false, "%s: chưa sẵn sàng ở %s (scene hiện tại: %s, đang chuyển khu: %s)" % [use_case, expected_zone, active_path, SceneManager.is_busy()])
+	return false
 
 
 func _capture(file: String) -> void:
