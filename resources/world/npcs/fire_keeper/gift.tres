@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3]
+
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_condition.gd" id="condition"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="dialogue"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/conditions/flag_condition.gd" id="flag"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="line"]
+
+[sub_resource type="Resource" id="C0"]
+script = ExtResource("flag")
+flag = &"level_3.tiger.charm_given"
+must_be_set = false
+
+[sub_resource type="Resource" id="L0"]
+script = ExtResource("line")
+text = "Lại là ngươi, khách lạ. Bến này cạn nước từ lâu, ta chỉ còn ở lại giữ đèn."
+
+[sub_resource type="Resource" id="L1"]
+script = ExtResource("line")
+text = "Sau bức tường này là hang của con hổ lửa. Nó vồ từ rất xa, mắt thường không kịp theo."
+
+[sub_resource type="Resource" id="L2"]
+script = ExtResource("line")
+text = "Ta có thứ này cho ngươi. Đeo vào ở đống lửa ngoài cửa, rồi quay lại. Ta sẽ mở đường."
+
+[resource]
+script = ExtResource("dialogue")
+priority = 30
+conditions = Array[ExtResource("condition")]([SubResource("C0")])
+lines = Array[ExtResource("line")]([SubResource("L0"), SubResource("L1"), SubResource("L2")])
+opens_service = true

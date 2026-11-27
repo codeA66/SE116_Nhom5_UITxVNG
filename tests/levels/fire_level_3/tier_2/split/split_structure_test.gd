@@ -1,12 +1,13 @@
 extends Node
 ## Kiểm tra cấu trúc sau khi tách tier 2 thành scene riêng (levels/zone_3_fire/tier_2/tier_2.tscn):
 ## 1. Cả hai scene nạp và dựng được, không lỗi tham chiếu.
-## 2. Tier 1 (level_3.tscn) không còn phòng / cơ chế tier 2; cổng ra phòng boss 10 là cổng chuyển khu sang tier 2.
+## 2. Tier 1 không còn phòng / cơ chế tier 2; cổng phòng 10 sang đấu trường hổ, cổng ra đấu trường sang tier 2.
 ## 3. Tier 2 có ZoneRoot, điểm xuất hiện "start", đủ phòng tháp và các nhóm cơ chế.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/tier_2/split/split_structure_test.tscn
 
 const LEVEL_PATH: String = "res://levels/zone_3_fire/tier_1/tier_1.tscn"
 const TIER_2_PATH: String = "res://levels/zone_3_fire/tier_2/tier_2.tscn"
+const ARENA_PATH: String = "res://levels/zone_3_fire/tier_1/tiger_arena/tiger_arena.tscn"
 const TIER_2_NODES: Array[NodePath] = [^"Rooms/Tier2", ^"Tier2Mechanics", ^"Tier2Fights", ^"Tier2Links", ^"Tier2Zone"]
 
 var _failed: int = 0
@@ -42,11 +43,17 @@ func _check_level(level: Node) -> void:
 	for p: NodePath in TIER_2_NODES:
 		_expect(level.get_node_or_null(p) == null, "tier 1 không còn %s" % p)
 	_expect(level.get_node_or_null(^"Rooms/Tier1") != null, "tier 1 còn Rooms/Tier1")
-	var exit := level.get_node_or_null(^"Room10ExitReveal/ExitPortal") as Portal
-	_expect(exit != null, "cổng ra phòng boss 10 là Portal")
+	var door := level.get_node_or_null(^"Room10TigerPortal/Portal") as Portal
+	_expect(door != null and door.target_zone == ARENA_PATH, "cổng phòng 10 là Portal sang đấu trường hổ")
+	var arena: Node = _instance(ARENA_PATH)
+	if arena == null:
+		return
+	var exit := arena.get_node_or_null(^"ExitReveal/Portal") as Portal
+	_expect(exit != null, "cổng ra đấu trường hổ là Portal")
 	if exit != null:
 		_expect(exit.target_zone == TIER_2_PATH, "cổng ra trỏ tới scene tier 2")
 		_expect(exit.target_portal_id == &"start", "cổng ra vào điểm xuất hiện 'start'")
+	arena.free()
 
 
 func _check_tier2(tier2: Node) -> void:

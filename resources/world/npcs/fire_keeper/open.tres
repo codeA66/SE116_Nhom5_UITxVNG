@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3]
+
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_condition.gd" id="condition"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="dialogue"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/conditions/flag_condition.gd" id="flag"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue_line.gd" id="line"]
+
+[sub_resource type="Resource" id="C0"]
+script = ExtResource("flag")
+flag = &"level_3.tiger.portal_open"
+must_be_set = true
+
+[sub_resource type="Resource" id="L0"]
+script = ExtResource("line")
+text = "Cổng đã mở. Con hổ đang chờ."
+
+[sub_resource type="Resource" id="L1"]
+script = ExtResource("line")
+text = "Đừng đứng yên một chỗ. Nó luôn vồ vào chỗ ngươi vừa đứng."
+
+[resource]
+script = ExtResource("dialogue")
+priority = 10
+conditions = Array[ExtResource("condition")]([SubResource("C0")])
+lines = Array[ExtResource("line")]([SubResource("L0"), SubResource("L1")])

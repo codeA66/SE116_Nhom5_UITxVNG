@@ -1,10 +1,9 @@
 extends Node
-## Cầu gạch Nether (lửa đuổi + quái canh) và boss tạm phòng 10 (va chạm, input và node thật):
+## Cầu gạch Nether (lửa đuổi + quái canh) và phòng 10 (người chèo đò) (va chạm, input và node thật):
 ## 1. Quái canh đứng sẵn trên cầu; bước lên cầu thì chúng thức dậy.
 ## 2. Chạm mặt cầu: chờ first_delay rồi vòng cảnh báo hiện dưới chân (không chờ đứng yên), rồi lửa phụt (cột lửa shader mới);
 ##    đứng yên thì trúng lửa mất máu; vẫn tiếp tục phun theo nhịp vào chỗ đang đứng.
-## 3. Phòng 10: chưa vào thì chưa có boss, cổng ra ẩn. Bước vào: boss xuất hiện, nhắm player.
-## 4. Hạ boss: lưu cờ, cổng ra (cổng sang tier 2) hiện lên.
+## 3. Phòng 10: không còn boss; người chèo đò đứng chờ, cổng sang đấu trường hổ ẩn tới khi đeo Bùa Đoạt Tiễn.
 ## Không ghi save thật. Chạy: godot --headless --path . res://tests/levels/fire_level_3/boss_bridge_test.tscn (-- --capture để chụp ảnh)
 
 const LEVEL: PackedScene = preload("res://levels/zone_3_fire/tier_1/tier_1.tscn")
@@ -58,38 +57,13 @@ func _run() -> void:
 		if is_instance_valid(e) and not (e as Enemy).is_dead():
 			(e as Enemy).health.take_damage(9999)
 	_player.health.heal_full()
-	# 3. Phòng 10
-	var fight: BossFight = _level.get_node("Room10BossFight") as BossFight
-	var exit_reveal: FlagReveal = _level.get_node("Room10ExitReveal") as FlagReveal
-	_check(fight.boss == null and exit_reveal.get_child_count() == 0, "chưa vào phòng 10: chưa có boss, cổng ra ẩn")
-	_player.get_node("HurtboxComponent").set_invincible(9999.0)
+	# 3. Phòng 10: nay là phòng người chèo đò (boss hổ ở đấu trường riêng, test trong tiger_arena/test_tiger_arena)
+	_check(_level.get_node_or_null("Room10BossFight") == null and _level.get_node_or_null("Room10Keeper") is Npc, "phòng 10: không còn boss, có người chèo đò")
+	var tiger_portal: FlagReveal = _level.get_node("Room10TigerPortal") as FlagReveal
+	_check(tiger_portal.get_child_count() == 0, "phòng 10: chưa đeo Bùa Đoạt Tiễn thì cổng sang đấu trường hổ ẩn")
 	_player.teleport(Vector3(152, 4.4, 50))
-	await _frames(20)
-	_check(fight.boss != null and fight.boss.get(&"target_player") == _player, "bước vào phòng 10: boss xuất hiện, nhắm player")
-	await _seconds(1.5)
-	await _capture("room10_boss.png")
-	# 4. Hạ boss: Boss 1 khoá máu ở mốc 50% / 20% và dựng khiên, phải phá khiên (nổ / phản cầu lửa) mới đánh tiếp
-	var boss: Boss1 = fight.boss as Boss1
-	for _step: int in range(3):
-		var hit := DamageInfo.new(100000, DamageInfo.Type.PHYSICAL, Vector3.ZERO, null)
-		hit.ignores_invincibility = true
-		boss.hurtbox.receive_hit(hit)
-		await _frames(5)
-		while boss.is_shielded:
-			boss.on_explosion_hit(null)
-			await _frames(5)
-	var t: float = 0.0
-	while not fight.is_defeated and t < 10.0:
-		await get_tree().physics_frame
-		t += get_physics_process_delta_time()
-	await _frames(10)
-	_check(fight.is_defeated and GameState.has_flag(fight.persistent_id), "hạ boss: lưu cờ (%.1f s)" % t)
-	var exit_portal: Node3D = exit_reveal.get_node_or_null("ExitPortal") as Node3D
-	# Cổng ra là Portal đổi scene sang tier 2 (levels/zone_3_fire/tier_2/tier_2.tscn)
-	_check(exit_portal is Portal and (exit_portal as Portal).target_zone == "res://levels/zone_3_fire/tier_2/tier_2.tscn", "cổng ra phòng 10 hiện lên (đổi scene sang tier 2)")
-	_player.teleport(Vector3(166, 4.4, 50))
 	await _frames(30)
-	await _capture("room10_exit.png")
+	await _capture("room10_keeper.png")
 	print("BOSS BRIDGE RESULT: %s" % ("OK" if _failed == 0 else "%d FAIL" % _failed))
 	get_tree().quit(0 if _failed == 0 else 1)
 
