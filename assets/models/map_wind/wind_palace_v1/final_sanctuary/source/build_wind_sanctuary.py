@@ -250,7 +250,7 @@ def stone_profile(name: str, outline: list[tuple[float, float]], depth: float, y
 
 
 def curved_line(name: str, points: list[Vector], radius: float, material: bpy.types.Material,
-        group: bpy.types.Collection) -> None:
+        group: bpy.types.Collection) -> bpy.types.Object:
     data=bpy.data.curves.new(name,"CURVE")
     data.dimensions="3D"
     data.resolution_u=12
@@ -268,6 +268,7 @@ def curved_line(name: str, points: list[Vector], radius: float, material: bpy.ty
     obj.select_set(True)
     bpy.ops.object.convert(target="MESH")
     obj.select_set(False)
+    return obj
 
 
 def build_shrine(m: dict, group: bpy.types.Collection) -> None:
@@ -340,13 +341,20 @@ def build_shrine(m: dict, group: bpy.types.Collection) -> None:
             corbel.faces.new((first[i],last[i],last[(i+1)%4],first[(i+1)%4]))
         emit("RoostCorbel_%d"%index,corbel,m["edge"],group,bevel=0.05)
     for index,(x,y,z) in enumerate(((-13.2,10.9,11.2),(12.9,12.4,10),(-7.8,16.8,15))):
+        pivot = bpy.data.objects.new("BellPivot_%d" % index, None)
+        group.objects.link(pivot)
+        pivot.location = (x, y, z + 1.0)
         bell=bmesh.new()
         KIT["lathe"](bell,Vector((x,y,z-2)),[(0.7,0),(0.76,0.14),(0.62,0.24),(0.47,0.50),(0.38,1),(0.20,1.24)],64)
         KIT["add_segment"](bell,Vector((x,y,z-0.8)),Vector((x,y,z+1.0)),0.060,0.060)
-        emit("BronzeBell_%d"%index,bell,m["bronze"],group,bevel=0.02,smooth=True)
+        moving_parts = [emit("BronzeBell_%d"%index,bell,m["bronze"],group,bevel=0.02,smooth=True)]
         for ring_height,radius in ((z-1.98,0.74),(z-0.95,0.38)):
             line=[Vector((x+math.cos(i*math.tau/64)*radius,y+math.sin(i*math.tau/64)*radius,ring_height)) for i in range(65)]
-            curved_line("BellRim",line,0.040,m["bronze"],group)
+            moving_parts.append(curved_line("BellRim",line,0.040,m["bronze"],group))
+        # Chuông, dây và gờ đồng cần chung trục để điểm buộc không bị tuột.
+        for part in moving_parts:
+            part.data.transform(Matrix.Translation(-pivot.location))
+            part.parent = pivot
         cloth=bmesh.new()
         grid=[]
         for i in range(65):
@@ -365,6 +373,10 @@ def build_shrine(m: dict, group: bpy.types.Collection) -> None:
                     continue
                 cloth.faces.new((grid[i][j],grid[i+1][j],grid[i+1][j+1],grid[i][j+1]))
         obj=emit("TornSilk_%d"%index,cloth,m["cloth"],group,bevel=0,smooth=True)
+        # Giữ nguyên UV vải và đưa gốc X về mép buộc để sóng luôn bắt đầu đúng chỗ.
+        cloth_anchor = Vector((x, y, z - 1.1))
+        obj.data.transform(Matrix.Translation(-cloth_anchor))
+        obj.location = cloth_anchor
         obj.data.materials[0].use_backface_culling=False
 
 
