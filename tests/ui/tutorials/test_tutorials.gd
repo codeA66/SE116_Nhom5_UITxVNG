@@ -147,7 +147,7 @@ func _test_new_tutorials_and_skill_acquire() -> void:
 
 
 func _test_category_hierarchy_and_navigation() -> void:
-	print("\nTest 7: Màn Tab (Bùa, Vật phẩm, Nguyên tố; Q / E) và Sổ tay riêng (H)")
+	print("\nTest 7: Màn Tab (Bùa, Vật phẩm, Nguyên tố; Z / C) và Sổ tay riêng (H)")
 	var menu: InventoryMenu = MENU_SCENE.instantiate()
 	add_child(menu)
 	await get_tree().process_frame
@@ -179,7 +179,7 @@ func _test_category_hierarchy_and_navigation() -> void:
 	_assert(menu._help_pages.size() == 1, "Sổ tay chỉ có trang hướng dẫn (không còn Cài đặt / Thoát)")
 	menu._change_page(1)
 	await get_tree().process_frame
-	_assert(menu.get_current_page() is TutorialsPage, "Q / E ở Sổ tay không nhảy sang trang khác")
+	_assert(menu.get_current_page() is TutorialsPage, "Z / C ở Sổ tay không nhảy sang trang khác")
 
 	menu.close()
 	await get_tree().create_timer(0.25).timeout

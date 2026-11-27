@@ -6,7 +6,7 @@ extends Node
 ## UC1  Tab mở màn, trang Nguyên tố, con trỏ ở thẻ đầu; bảng chi tiết ghi tên, cấp 1, chấm cấp; không lộ cấp sau.
 ## (UC2-UC4 ghép nguyên tố vào vũ khí: đã bỏ khỏi màn Tab ở giai đoạn 3, xem test_inventory_pages)
 ## UC5  Enter trên thẻ nguyên tố không "cầm" gì: Esc đóng màn ngay.
-## UC6  Q / E đổi trang (4 trang): Vật phẩm hiện chìa khóa (theo cờ) và Ấn Gió x2.
+## UC6  Z / C đổi trang (4 trang): Vật phẩm hiện chìa khóa (theo cờ) và Ấn Gió x2.
 ## UC7  Bùa: có bùa thì trang Bùa hiện; ngoài khu đổi bùa không đeo được; trong khu: đeo bùa 1 ô được, bùa 3 ô báo thiếu; tháo được.
 ## UC8  NPC nâng cấp: đủ Ấn Gió -> lên cấp 2, vật phẩm bị trừ, tên thành "Lốc xoáy", chấm cấp đổi; thiếu thì không đổi.
 ## UC9  Lưu / đọc: vật phẩm, cấp kỹ năng, bùa, bùa đang đeo, số ô khắc giữ nguyên qua to_dict / from_dict.

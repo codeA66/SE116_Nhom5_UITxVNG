@@ -1,7 +1,7 @@
 class_name InventoryMenu
 extends Control
 ## Màn đồ của nhân vật, một tầng trang (kiểu Hollow Knight): bên trái là nội dung trang, bên phải là bảng chi tiết dùng chung.
-## - Tab: các trang dưới TabPages (Bùa, Vật phẩm, Nguyên tố), đổi trang bằng Q / E.
+## - Tab: các trang dưới TabPages (Bùa, Vật phẩm, Nguyên tố), đổi trang bằng Z / C.
 ## - H: Sổ tay mở riêng (các trang dưới HelpPages), không lẫn vào vòng trang của Tab.
 ## Cài đặt / thoát game chỉ nằm ở menu tạm dừng (Esc). Thêm trang = thêm MenuPage vào TabPages, không sửa file này.
 ## Game KHÔNG dừng khi mở (quái vẫn đánh); đang mở thì Player bỏ qua nút đánh (chuột trái cũng là nút chọn).
