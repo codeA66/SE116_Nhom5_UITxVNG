@@ -23,6 +23,7 @@
 [ext_resource type="Resource" uid="uid://djc1eu6arm3uk" path="res://resources/tutorials/data/tut_movement.tres" id="24_tut_movement"]
 [ext_resource type="Script" uid="uid://j74iydu2a0vu" path="res://resources/tutorials/tutorial_data.gd" id="25_jxn7q"]
 [ext_resource type="Resource" uid="uid://1qcwmfithx5u" path="res://resources/tutorials/data/tut_dash.tres" id="25_tut_dash"]
+[ext_resource type="Shader" path="res://assets/shaders/environment/portal/temple_wind_portal.gdshader" id="26_wind_portal"]
 
 [sub_resource type="Resource" id="AfterWind"]
 script = ExtResource("12_cleared")
@@ -50,6 +51,12 @@ distance = 46.0
 pitch_degrees = 38.0
 fov = 40.0
 
+[sub_resource type="ShaderMaterial" id="WindVeilMaterial"]
+shader = ExtResource("26_wind_portal")
+
+[sub_resource type="QuadMesh" id="WindVeilMesh"]
+size = Vector2(4.68, 6.45)
+
 [node name="Hub" type="Node3D" unique_id=417877023]
 script = ExtResource("1_root")
 
@@ -63,6 +70,23 @@ zone = ExtResource("7_wind")
 
 [node name="Portal" parent="Gates/WindGate" index="1"]
 portal_id = &"wind_gate"
+
+[node name="Ring" parent="Gates/WindGate/Portal" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.14, 0.16)
+material_override = SubResource("WindVeilMaterial")
+mesh = SubResource("WindVeilMesh")
+
+[node name="WindBounce" type="OmniLight3D" parent="Gates/WindGate/Portal/Ring"]
+position = Vector3(0, -2.2, 0.9)
+light_color = Color(0.53, 0.84, 0.96, 1)
+light_energy = 0.68
+light_specular = 0.15
+shadow_enabled = false
+omni_range = 3.75
+omni_attenuation = 1.65
+
+[node name="Fill" parent="Gates/WindGate/Portal" index="1"]
+mesh = null
 
 [node name="FireGate" parent="Gates" instance=ExtResource("3_gate")]
 transform = Transform3D(0.7071, 0, -0.7071, 0, 1, 0, 0.7071, 0, 0.7071, 19.587, 0, -19.587)
@@ -171,3 +195,6 @@ wait_for_cutscene = NodePath("../IntroCutscene")
 delay_after_cutscene = 0.0
 
 [connection signal="combat_ready" from="." to="AreaTitleTrigger" method="announce"]
+
+[editable path="Gates/WindGate"]
+[editable path="Gates/WindGate/Portal"]
