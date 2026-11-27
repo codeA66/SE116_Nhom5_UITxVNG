@@ -17,12 +17,17 @@ ext = [
     ("Script", "res://objects/combat/spawner_cage/flag_reveal.gd", "flag_reveal"),
     ("PackedScene", "res://objects/core/portal/portal.tscn", "portal"),
 ]
-kit = ["floor_4m", "floor_vein_4m", "wall_4m", "wall_low_4m", "fire_pillar", "spawner_cage",
-       "chain_hanging_4m", "portal_frame", "wall_broken_4m"]
+kit = ["floor_4m", "floor_vein_4m", "wall_4m", "wall_low_4m", "fire_pillar",
+       "chain_hanging_4m", "wall_broken_4m"]
 for k in kit:
     ext.append(("PackedScene", KIT + k + ".glb", "k_" + k))
 
 TOP = 0.32
+# Tam tuong kit rong 4,06 m dat cach nhau 4 m thi chong 6 cm, mat ngoai trung nhau -> loang o moi moi noi.
+# Thu ve dung 4 m de hai tam chi cham mep.
+FIT = 4.0 / 4.06
+# Tuong vuong goc o goc phong ha xuong 4 cm de mat tren khong trung do cao voi tuong canh no (chong loang)
+SINK = 0.04
 subs, nodes, shapes = [], [], []
 
 
@@ -84,28 +89,28 @@ box("Hall", -18, TOP / 2, 0, 8, TOP, 4)
 node("Walls", "Architecture", "Node3D")
 W = 13.65
 for n, x in enumerate(range(-12, 13, 4)):
-    piece("North%d" % n, "Architecture/Walls", "wall_4m", x, TOP, -W)
-    piece("South%d" % n, "Architecture/Walls", "wall_low_4m", x, TOP, W)
+    piece("North%d" % n, "Architecture/Walls", "wall_4m", x, TOP, -W, sx=FIT)
+    piece("South%d" % n, "Architecture/Walls", "wall_low_4m", x, TOP, W, sx=FIT)
 box("NorthWall", 0, TOP + 2, -W, 28.2, 4, 0.82)
 box("SouthWall", 0, TOP + 0.625, W, 28.2, 1.25, 0.82)
 # Dong: chua loi ra 4 m o z = 0
 for n, z in enumerate((-12, -8, -4, 4, 8, 12)):
-    piece("East%d" % n, "Architecture/Walls", "wall_low_4m", W, TOP, z, ry=90)
+    piece("East%d" % n, "Architecture/Walls", "wall_low_4m", W, TOP - SINK, z, ry=90, sx=FIT)
 box("EastWallN", W, TOP + 0.625, -8.03, 0.82, 1.25, 12.06)
 box("EastWallS", W, TOP + 0.625, 8.03, 0.82, 1.25, 12.06)
 # Tay: song sat rong 7,1 m o giua; moi ben 2 tam tuong keo gian phu tu 3,55 toi 13,65
 seg = (13.65 - 3.55) / 2.0
 sx = seg / 4.06
 for n, c in enumerate((3.55 + seg / 2, 3.55 + seg * 1.5)):
-    piece("WestS%d" % n, "Architecture/Walls", "wall_4m", -W, TOP, c, ry=90, sx=sx)
-    piece("WestN%d" % n, "Architecture/Walls", "wall_4m", -W, TOP, -c, ry=90, sx=sx)
+    piece("WestS%d" % n, "Architecture/Walls", "wall_4m", -W, TOP - SINK, c, ry=90, sx=sx)
+    piece("WestN%d" % n, "Architecture/Walls", "wall_4m", -W, TOP - SINK, -c, ry=90, sx=sx)
 box("WestWallN", -W, TOP + 2, -(3.55 + seg), 0.82, 4, seg * 2)
 box("WestWallS", -W, TOP + 2, 3.55 + seg, 0.82, 4, seg * 2)
 # Hanh lang vao (diem den cua cong dich chuyen)
 for n, x in enumerate((-16, -20)):
-    piece("HallN%d" % n, "Architecture/Walls", "wall_4m", x, TOP, -2.41)
-    piece("HallS%d" % n, "Architecture/Walls", "wall_low_4m", x, TOP, 2.41)
-piece("HallEnd", "Architecture/Walls", "wall_4m", -22.41, TOP, 0, ry=90)
+    piece("HallN%d" % n, "Architecture/Walls", "wall_4m", x, TOP, -2.41, sx=FIT)
+    piece("HallS%d" % n, "Architecture/Walls", "wall_low_4m", x, TOP, 2.41, sx=FIT)
+piece("HallEnd", "Architecture/Walls", "wall_4m", -22.41, TOP - SINK, 0, ry=90)
 box("HallWallN", -18, TOP + 2, -2.41, 8.1, 4, 0.82)
 box("HallWallS", -18, TOP + 0.625, 2.41, 8.1, 1.25, 0.82)
 box("HallEndWall", -22.41, TOP + 2, 0, 0.82, 4, 4.8)
@@ -116,8 +121,6 @@ for n, (x, z) in enumerate(((-11.3, -11.3), (11.3, -11.3), (-11.3, 11.3), (11.3,
     box("Brazier%d" % n, x, TOP + 1.75, z, 1.9, 3.5, 1.9)
 
 node("Den", "Architecture", "Node3D")
-piece("BrokenCage", "Architecture/Den", "spawner_cage", -4.5, TOP, -11.2, ry=20)
-box("BrokenCage", -4.5, TOP + 1.5, -11.2, 3.4, 3, 3.2)
 piece("ChainL", "Architecture/Den", "chain_hanging_4m", -1.5, TOP, -13.0)
 piece("ChainR", "Architecture/Den", "chain_hanging_4m", 1.5, TOP, -13.0)
 piece("Rubble", "Architecture/Den", "wall_broken_4m", 5.0, TOP, -11.6)
@@ -134,11 +137,11 @@ node("DenFocus", "Anchors", "Marker3D", props={"position": v3(0, TOP, -8)})
 
 node("EntryGate", ".", inst="gate", paths=["encounter"], props={"position": v3(-W, TOP, 0), "rotation": v3(0, 1.570796, 0), "encounter": 'NodePath("../TigerFight")'})
 node("TigerFight", ".", inst="boss_fight", paths=["introduction"], props={"position": v3(0, TOP, 0), "boss_scene": 'ExtResource("tiger")', "persistent_id": '&"level_3.boss_defeated"', "trigger_size": v3(24, 4, 24), "visible_before_start": "true", "introduction": 'NodePath("../TigerIntro")'})
-node("Spawn", "TigerFight", props={"position": v3(0, 0, -8), "rotation": v3(0, 3.141593, 0)})
+# Mo hinh ho nhin theo +Z: de rotation 0 de ho nhin ra giua san (phia player buoc vao)
+node("Spawn", "TigerFight", props={"position": v3(0, 0, -8)})
 node("TigerIntro", ".", inst="cutscene", paths=["focus_target", "trigger_source"], props={"data": 'ExtResource("intro_data")', "focus_target": 'NodePath("../Anchors/DenFocus")', "persistent_id": '&"level_3.tiger.intro_seen"', "trigger_source": 'NodePath("../TigerFight")', "trigger_signal": '&"intro_requested"'})
 
 node("ExitReveal", ".", "Node3D", props={"script": 'ExtResource("flag_reveal")', "flag": '&"level_3.boss_defeated"'})
-node("Frame", "ExitReveal", inst="k_portal_frame", props={"position": v3(12.2, TOP, 0), "rotation": v3(0, -1.570796, 0)})
 node("Portal", "ExitReveal", inst="portal", props={"position": v3(12.2, TOP, 0), "rotation": v3(0, -1.570796, 0), "portal_id": '&"tiger_arena_exit"', "target_zone": '"res://levels/zone_3_fire/tier_2/tier_2.tscn"', "target_portal_id": '&"start"'})
 
 out = ["[gd_scene format=3]", ""]
