@@ -10,6 +10,9 @@ signal closed(cancelled: bool)
 ## Giữ hộp thoại mở khi chuyển sang service (service hỏi tiếp bằng npc.ask(), ví dụ "Trả 100 Ngọc để qua?").
 ## Tắt khi service mở màn riêng (màn nâng cấp, cửa hàng).
 @export var keep_dialogue_open: bool = false
+## Tắt để NPC dùng lại scene có sẵn service khác mà không mở service này (ví dụ người chèo đò đứng ở phòng
+## không có bến: tắt service gọi thuyền, gắn service tặng bùa)
+@export var enabled: bool = true
 
 var npc: Npc
 var player: Player

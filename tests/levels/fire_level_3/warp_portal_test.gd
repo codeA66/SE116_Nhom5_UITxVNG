@@ -34,8 +34,8 @@ func _run() -> void:
 	var visuals: Array[Node] = _level.find_children("*", "VortexPortalVisual", true, false)
 	var old: Array[Node] = _level.find_children("portal_frame*", "", true, false)
 	var pedestals: int = visuals.filter(func(v: Node) -> bool: return v.get_node_or_null("Pedestal") != null).size()
-	var exit_reveal: FlagReveal = _level.get_node("Room10ExitReveal") as FlagReveal
-	# Cổng phòng 1, cổng 9, cổng 15 (tier 1: 3 cổng xoáy); cổng ra phòng 10 là Portal đổi scene sang tier 2 (đang ẩn tới khi hạ boss)
+	var exit_reveal: FlagReveal = _level.get_node("Room10TigerPortal") as FlagReveal
+	# Cổng phòng 1, cổng 9, cổng 15 (tier 1: 3 cổng xoáy); cổng phòng 10 là Portal sang đấu trường hổ (ẩn tới khi đeo Bùa Đoạt Tiễn)
 	_check(visuals.size() == 3 and pedestals == 3 and old.is_empty() and exit_reveal.get_child_count() == 0, "3 cổng xoáy có bệ đỡ, không còn cổng tím, cổng ra phòng 10 ẩn (%d / %d / %d)" % [visuals.size(), pedestals, old.size()])
 	# 2. Cổng 9 tắt
 	var p9: WarpPortal = _level.get_node("WarpPortals/Room9WarpPortal") as WarpPortal

@@ -115,7 +115,7 @@ func pick_dialogue(context: StringName) -> Dialogue:
 func get_service() -> NpcService:
 	for child in get_children():
 		var service := child as NpcService
-		if service and service.is_available():
+		if service and service.enabled and service.is_available():
 			return service
 	return null
 

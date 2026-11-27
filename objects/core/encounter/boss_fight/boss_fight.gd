@@ -9,6 +9,8 @@ extends Node3D
 ## Hiệu năng: chỉ nghe body_entered và signal của boss.
 
 signal started(boss: Node3D)
+## Sắp chiếu cắt cảnh mở màn (introduction nghe signal này qua trigger_source / trigger_signal)
+signal intro_requested
 signal defeated
 signal activated
 
@@ -23,6 +25,8 @@ signal activated
 @export var visible_before_start: bool = false
 ## Tầm nhìn của boss (m): player vào trong bán kính này quanh Spawn thì bắt đầu. 0 = dùng hộp trigger_size
 @export_range(0.0, 50.0, 0.5) var sight_range: float = 0.0
+## Cắt cảnh mở màn: chiếu xong trận mới bắt đầu. Đã xem (cờ của cutscene) thì đánh ngay. Để trống = không có
+@export var introduction: CameraCutscene
 
 var boss: Node3D
 var is_defeated: bool = false
@@ -69,6 +73,11 @@ func _on_body_entered(body: Node3D) -> void:
 	if _running or is_defeated or not body is Player or boss_scene == null:
 		return
 	_trigger.set_deferred(&"monitoring", false)
+	if introduction and introduction.is_pending():
+		intro_requested.emit()
+		await introduction.finished
+		if not is_inside_tree() or not is_instance_valid(body):
+			return
 	if start_delay > 0.0:
 		await get_tree().create_timer(start_delay, false).timeout
 		if not is_inside_tree() or not is_instance_valid(body):

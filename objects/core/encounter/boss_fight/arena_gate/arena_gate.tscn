@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/core/encounter/boss_fight/arena_gate/arena_gate.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/arena_gate.glb" id="2_model"]
+
+[sub_resource type="BoxShape3D" id="DoorShape"]
+size = Vector3(3.9, 4.6, 0.5)
+
+[sub_resource type="BoxShape3D" id="PostShape"]
+size = Vector3(1.6, 6.8, 1.6)
+
+[node name="ArenaGate" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Visual" parent="." instance=ExtResource("2_model")]
+
+[node name="FrameBody" type="StaticBody3D" parent="."]
+
+[node name="LeftPost" type="CollisionShape3D" parent="FrameBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.75, 3.4, 0)
+shape = SubResource("PostShape")
+
+[node name="RightPost" type="CollisionShape3D" parent="FrameBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 3.4, 0)
+shape = SubResource("PostShape")
+
+[node name="DoorBody" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DoorBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
+shape = SubResource("DoorShape")
+disabled = true

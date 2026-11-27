@@ -126,6 +126,11 @@ func begin(body_player: Player) -> void:
 	started.emit()
 
 
+## Còn chiếu được: chưa xem (hoặc không lưu cờ). Đã xem thì vật nghe cutscene không cần chờ
+func is_pending() -> bool:
+	return persistent_id.is_empty() or not GameState.has_flag(persistent_id)
+
+
 func play_for(body_player: Player) -> void:
 	if is_processing() or get_viewport().get_camera_3d() == null:
 		return

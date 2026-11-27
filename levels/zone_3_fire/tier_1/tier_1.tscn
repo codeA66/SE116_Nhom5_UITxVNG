@@ -24,7 +24,6 @@
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/tier_1/rooms/connectors.tscn" id="22_khufb"]
 [ext_resource type="PackedScene" path="res://levels/_base/area_title_trigger/area_title_trigger.tscn" id="area_title_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/encounter/boss_fight/boss_fight.tscn" id="boss_fight_scene"]
-[ext_resource type="PackedScene" uid="uid://br0cd4xxudty3" path="res://entities/bosses/boss_1/boss_1.tscn" id="boss_scene"]
 [ext_resource type="Script" uid="uid://bhqw0c4ns7cxf" path="res://objects/world/cellar/ignitable_brazier/brazier_group.gd" id="brazier_group_script"]
 [ext_resource type="PackedScene" path="res://objects/world/cellar/ignitable_brazier/ignitable_brazier.tscn" id="brazier_scene"]
 [ext_resource type="PackedScene" path="res://objects/gates/burnable_barrier/burnable_barrier.tscn" id="burnable_barrier_scene"]
@@ -40,6 +39,14 @@
 [ext_resource type="PackedScene" path="res://objects/core/checkpoint/fire/fire_checkpoint.tscn" id="fire_checkpoint_scene"]
 [ext_resource type="PackedScene" path="res://entities/enemies/volcano/fire_spider/fire_spider.tscn" id="fire_spider_scene"]
 [ext_resource type="Script" uid="uid://bs2bp43e7e800" path="res://objects/combat/spawner_cage/flag_reveal.gd" id="flag_reveal_script"]
+[ext_resource type="PackedScene" path="res://entities/npcs/ferry_attendant/ferry_attendant.tscn" id="room10_keeper_scene"]
+[ext_resource type="Script" path="res://entities/npcs/_base/dialogue/dialogue.gd" id="room10_dialogue_script"]
+[ext_resource type="Resource" path="res://resources/world/npcs/fire_keeper/gift.tres" id="room10_gift"]
+[ext_resource type="Resource" path="res://resources/world/npcs/fire_keeper/wear.tres" id="room10_wear"]
+[ext_resource type="Resource" path="res://resources/world/npcs/fire_keeper/open.tres" id="room10_open"]
+[ext_resource type="Script" path="res://entities/npcs/_base/services/charm_gift_service.gd" id="room10_gift_service"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/special/arrow_rend_charm.tres" id="room10_charm"]
+[ext_resource type="Script" path="res://objects/core/triggers/charm_worn_flag/charm_worn_flag.gd" id="room10_charm_watch"]
 [ext_resource type="Script" uid="uid://b8bgtpep1x3cb" path="res://objects/wind_puzzle/flag_source/flag_source.gd" id="flag_source_script"]
 [ext_resource type="PackedScene" path="res://objects/core/encounter/hostage_rescue/hostage_rescue.tscn" id="hostage_rescue_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/key/key_drop.tscn" id="key_drop_scene"]
@@ -622,20 +629,36 @@ hit_flash_time = 0.06
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -6)
 hit_flash_time = 0.06
 
-[node name="Room10BossFight" parent="." unique_id=868410373 instance=ExtResource("boss_fight_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 162, 4.32, 46)
-boss_scene = ExtResource("boss_scene")
-persistent_id = &"level_3.boss_defeated"
-trigger_size = Vector3(26, 4, 26)
+[node name="Room10Keeper" parent="." instance=ExtResource("room10_keeper_scene")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 162, 4.32, 38)
 
-[node name="Room10ExitReveal" type="Node3D" parent="." unique_id=1739625149]
+[node name="Story" parent="Room10Keeper"]
+dialogues = Array[ExtResource("room10_dialogue_script")]([ExtResource("room10_gift"), ExtResource("room10_wear"), ExtResource("room10_open")])
+
+[node name="FerryFareService" parent="Room10Keeper"]
+enabled = false
+
+[node name="CharmGift" type="Node" parent="Room10Keeper"]
+script = ExtResource("room10_gift_service")
+keep_dialogue_open = true
+charm = ExtResource("room10_charm")
+gift_flag = &"level_3.tiger.charm_given"
+gift_line = "Cầm lấy {charm}. Đeo nó vào rồi hẵng đi gặp con hổ."
+
+[node name="Room10CharmWatch" type="Node" parent="."]
+script = ExtResource("room10_charm_watch")
+charm_id = &"arrow_rend_charm"
+flag = &"level_3.tiger.portal_open"
+
+[node name="Room10TigerPortal" type="Node3D" parent="."]
 script = ExtResource("flag_reveal_script")
-flag = &"level_3.boss_defeated"
+flag = &"level_3.tiger.portal_open"
 
-[node name="ExitPortal" parent="Room10ExitReveal" unique_id=1200811466 instance=ExtResource("portal_scene")]
+[node name="Portal" parent="Room10TigerPortal" instance=ExtResource("portal_scene")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 173, 4.32, 46)
-target_zone = "res://levels/zone_3_fire/tier_2/tier_2.tscn"
-target_portal_id = &"start"
+portal_id = &"tiger_arena_door"
+target_zone = "res://levels/zone_3_fire/tier_1/tiger_arena/tiger_arena.tscn"
+target_portal_id = &"tiger_arena_entry"
 
 [node name="FinalTrial" parent="." unique_id=212353028 instance=ExtResource("final_trial_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 124, 4.32, 48)
