@@ -9,6 +9,9 @@ const ACQUIRE_DATA: Resource = preload("res://resources/feedback/ability_acquire
 var _style: InventoryStyle
 ## Nhãn đoạn mô tả dựng sẵn, dùng lại khi đổi ô (không tạo node mới mỗi lần chọn)
 var _section_labels: Array[Label] = []
+var _highlight_labels: Array[RichTextLabel] = []
+var _description_font: Font
+var _description_bold: FontVariation
 ## Khối riêng của ô đang hiện (xóa khi đổi ô)
 var _spawned_blocks: Array[Control] = []
 ## Nhãn bảng chỉ số dựng sẵn (cặp tên / giá trị), dùng lại khi đổi ô
@@ -37,6 +40,10 @@ var _pip_color: Color = Color.WHITE
 
 func configure(style: InventoryStyle) -> void:
 	_style = style
+	_description_font = get_theme_font(&"font", &"Label")
+	_description_bold = FontVariation.new()
+	_description_bold.base_font = _description_font
+	_description_bold.variation_embolden = style.description_embolden
 	_default_icon_size = _art_icon.custom_minimum_size
 	custom_minimum_size.x = style.detail_width
 	_art_box.custom_minimum_size.y = style.detail_art_height
@@ -136,12 +143,19 @@ func _show_sections(entry: DetailEntry) -> void:
 	var sections: Array[Dictionary] = []
 	if entry:
 		sections = entry.sections
-	var text_count := 0
+	var text_count: int = 0
+	var highlighted_count: int = 0
 	for section: Dictionary in sections:
-		if not section.has("block"):
+		if section.has("block"):
+			continue
+		if bool(section.get("highlighted", false)):
+			highlighted_count += 1
+		else:
 			text_count += 1
 	_ensure_section_labels(text_count)
-	var label_index := 0
+	_ensure_highlight_labels(highlighted_count)
+	var label_index: int = 0
+	var highlighted_index: int = 0
 	for order in sections.size():
 		var section: Dictionary = sections[order]
 		if section.has("block"):
@@ -149,6 +163,15 @@ func _show_sections(entry: DetailEntry) -> void:
 			_sections.add_child(block)
 			_sections.move_child(block, order)
 			_spawned_blocks.append(block)
+			continue
+		if bool(section.get("highlighted", false)):
+			var rich_label: RichTextLabel = _highlight_labels[highlighted_index]
+			highlighted_index += 1
+			rich_label.show()
+			_sections.move_child(rich_label, order)
+			var rich_heading: String = tr(String(section["heading"])).to_upper()
+			var rich_body: String = _style.highlight_description(tr(String(section["text"])))
+			rich_label.text = rich_body if rich_heading.is_empty() else rich_heading + "\n" + rich_body
 			continue
 		var label := _section_labels[label_index]
 		label_index += 1
@@ -160,6 +183,9 @@ func _show_sections(entry: DetailEntry) -> void:
 		label.add_theme_color_override(&"font_color", _style.warning if section["warning"] else _style.ink)
 	for index in range(label_index, _section_labels.size()):
 		_section_labels[index].visible = false
+	for index: int in range(highlighted_index, _highlight_labels.size()):
+		_highlight_labels[index].hide()
+		_highlight_labels[index].text = ""
 
 
 func _show_pips(entry: DetailEntry) -> void:
@@ -233,3 +259,23 @@ func _ensure_section_labels(count: int) -> void:
 		label.add_theme_font_size_override(&"font_size", _style.body_font)
 		_sections.add_child(label)
 		_section_labels.append(label)
+
+
+func _ensure_highlight_labels(count: int) -> void:
+	# Dùng lại nhãn để đổi bùa liên tục không tạo lại font hay cây giao diện.
+	while _highlight_labels.size() < count:
+		var label: RichTextLabel = RichTextLabel.new()
+		label.bbcode_enabled = true
+		label.fit_content = true
+		label.scroll_active = false
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.focus_mode = Control.FOCUS_NONE
+		label.add_theme_font_override(&"normal_font", _description_font)
+		label.add_theme_font_override(&"bold_font", _description_bold)
+		label.add_theme_font_size_override(&"normal_font_size", _style.body_font)
+		label.add_theme_font_size_override(&"bold_font_size", _style.body_font)
+		label.add_theme_color_override(&"default_color", _style.ink)
+		_sections.add_child(label)
+		_highlight_labels.append(label)
