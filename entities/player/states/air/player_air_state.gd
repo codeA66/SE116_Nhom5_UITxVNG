@@ -1,6 +1,6 @@
 class_name PlayerAirState
 extends PlayerState
-## Cơ sở cho các state trên không (Jump, Fall).
+## Cơ sở cho các state trên không (Fall, chiêu trên không).
 ## Gom các chuyển state chung ở một chỗ: thêm hành động trên không mới chỉ sửa file này.
 
 
@@ -9,7 +9,7 @@ func physics_update(delta: float) -> void:
 		_air_update(delta)
 
 
-## State con ghi đè: trọng lực, điều khiển trên không, chuyển giữa Jump/Fall/tiếp đất
+## State con ghi đè: trọng lực, điều khiển trên không, rơi / tiếp đất
 func _air_update(_delta: float) -> void:
 	pass
 

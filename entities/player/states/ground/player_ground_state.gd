@@ -33,9 +33,6 @@ func _try_common_transitions() -> bool:
 	if skill:
 		state_machine.transition_to(skill.state)
 		return true
-	if player.can_jump():
-		state_machine.transition_to(JUMP)
-		return true
 	if not player.is_on_floor():
 		state_machine.transition_to(FALL)
 		return true

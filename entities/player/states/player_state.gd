@@ -4,7 +4,6 @@ extends State
 
 const IDLE := &"Idle"
 const RUN := &"Run"
-const JUMP := &"Jump"
 const FALL := &"Fall"
 const PICK_UP := &"PickUp"
 const ATTACK := &"Attack"

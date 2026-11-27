@@ -365,14 +365,6 @@ func _test_shockwave_dodges() -> void:
 	_check(dash.hits.size() == 0, "dash xuyên vành (i-frame): không trúng (player đang dash %.2f..%.2f s)" % [dash.press_time, dash.press_time + 0.18])
 	var no_dash := await _slam_trial(Vector3(0.0, 0.0, 1.0), 3.0, {"unfreeze": true, "face": Vector3.FORWARD})
 	_check(no_dash.hits.size() == 1, "đối chứng dash: không dash thì trúng")
-	# Nhảy thật: bấm jump ở các mốc so với lúc vành tới
-	var results := {}
-	for lead in [0.8, 0.42, 0.25, 0.1, 0.0]:
-		var jump := await _slam_trial(Vector3(0.0, 0.0, 1.0), 3.0, {"input": &"jump", "press_at": predicted - lead, "unfreeze": true, "face": Vector3.FORWARD})
-		results[lead] = jump.hits.size()
-	print("INFO nhảy thật (bấm trước lúc vành tới bao nhiêu giây -> số lần trúng): ", results)
-	_check(results[0.25] == 0 and results[0.1] == 0, "nhảy thật bấm trước 0.25 s và 0.1 s: né được")
-	_check(results[0.8] == 1 and results[0.0] == 1, "nhảy quá sớm (0.8 s) hoặc quá muộn (0 s): trúng")
 	# Tường chắn
 	var wall := _make_box(Vector3(2.5, 1.5, 0.0), Vector3(0.4, 3.0, 8.0))
 	var behind := await _slam_trial(Vector3(1.0, 0.0, 0.0), 3.0)
@@ -590,8 +582,8 @@ func _slam_trial(player_pos: Vector3, distance_from_origin: float, options: Dict
 			pressed = true
 			press_tick = _tick
 			Input.action_press(input)
-		# Giữ nút như người chơi thật: nhảy giữ 0.3 s (nhả sớm thì cú nhảy bị cắt ngắn), dash chỉ cần nhấn
-		elif pressed and _tick - press_tick >= (18 if input == &"jump" else 2):
+		# Dash chỉ cần nhấn
+		elif pressed and _tick - press_tick >= 2:
 			Input.action_release(input)
 			input = &""
 			pressed = false
@@ -610,7 +602,6 @@ func _slam_trial(player_pos: Vector3, distance_from_origin: float, options: Dict
 		"wave_active": bearer.shockwave.is_active(),
 		"press_time": float(press_tick - enter_tick) * TICK,
 	}
-	Input.action_release(&"jump")
 	Input.action_release(&"dash")
 	_watch = null
 	_park_player()

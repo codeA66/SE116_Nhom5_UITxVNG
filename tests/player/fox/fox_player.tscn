@@ -7,7 +7,6 @@
 [ext_resource type="Script" path="res://entities/player/camera/camera_rig.gd" id="6_camrig"]
 [ext_resource type="Script" path="res://entities/player/states/ground/idle.gd" id="7_idle"]
 [ext_resource type="Script" path="res://entities/player/states/ground/run.gd" id="8_run"]
-[ext_resource type="Script" path="res://entities/player/states/air/jump.gd" id="9_jump"]
 [ext_resource type="Script" path="res://entities/player/states/air/fall/fall.gd" id="10_fall"]
 [ext_resource type="Script" path="res://entities/player/states/action/pick_up.gd" id="11_pickup"]
 [ext_resource type="Script" path="res://entities/player/states/action/attack.gd" id="12_attack"]
@@ -147,9 +146,6 @@ script = ExtResource("7_idle")
 
 [node name="Run" type="Node" parent="StateMachine"]
 script = ExtResource("8_run")
-
-[node name="Jump" type="Node" parent="StateMachine"]
-script = ExtResource("9_jump")
 
 [node name="Fall" type="Node" parent="StateMachine"]
 script = ExtResource("10_fall")

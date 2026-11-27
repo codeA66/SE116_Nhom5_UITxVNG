@@ -1,7 +1,7 @@
 class_name PasswordGate
 extends Node3D
-## Vùng trước cổng khu cần mật khẩu: player bước vào khi chỉ còn thiếu mật khẩu (các điều kiện khác của cổng đã thoả)
-## thì hiện ô nhập. Đúng -> ghi nhớ, báo cổng tính lại (cổng tự mở). Sai -> báo, xoá ô để nhập lại. Esc -> đóng ô.
+## Vùng trước cổng khu cần mật khẩu: player bước vào khi cổng đã mở (khu trước đã phá, lễ thức đã chiếu) mà chưa
+## nhập mật khẩu thì hiện ô nhập. Đúng -> ghi nhớ, báo cổng tính lại (cổng tự mở). Sai -> báo, xoá ô để nhập lại. Esc -> đóng ô.
 ## Gắn với đúng một cổng + một điều kiện qua tham chiếu (nhiều cổng cần mật khẩu không lẫn nhau).
 ## Hiệu năng: chỉ nghe body_entered và nhận phím lúc ô đang mở; không có _process.
 
@@ -61,7 +61,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _on_body_entered(body: Node3D) -> void:
-	if _open or not body is Player or gate.is_open() or condition.is_met() or not _others_met():
+	if _open or not body is Player or not gate.is_open() or gate.is_enterable() or condition.is_met():
 		return
 	_player = body as Player
 	_player.set_controls_enabled(false)
@@ -72,14 +72,6 @@ func _on_body_entered(body: Node3D) -> void:
 	_field.grab_focus.call_deferred()
 	set_process_input(true)
 	prompt_opened.emit()
-
-
-## Chỉ hỏi mật khẩu khi mọi điều kiện khác của cổng đã thoả (chưa thắng boss khu trước thì không hỏi)
-func _others_met() -> bool:
-	for c: UnlockCondition in gate.conditions:
-		if c and c != condition and not c.is_met():
-			return false
-	return true
 
 
 func _on_submitted(text: String) -> void:
