@@ -23,6 +23,14 @@ extends Resource
 @export_range(0.0, 6.0, 0.1) var backdrop_blur: float = 3.0
 @export_range(0.0, 1.0, 0.05) var backdrop_desaturate: float = 0.45
 
+@export_group("Nhấn chỉ số")
+@export var description_colors: Dictionary[StringName, Color] = {
+	&"buff": Color("a7d8ba"),
+	&"damage": Color("f0b877"),
+	&"time": Color("e6d196"),
+}
+@export_range(0.0, 2.0, 0.05) var description_embolden: float = 0.5
+
 @export_group("Đầu và chân màn Tab")
 ## Icon trang trên cùng: cạnh (px), khoảng cách, phần lề trong của hình so với vòng tròn
 @export var page_icon_size: float = 38.0
@@ -166,3 +174,15 @@ extends Resource
 @export var sound_confirm: AudioStream
 @export var sound_page: AudioStream
 @export var sound_error: AudioStream
+
+
+func highlight_description(text: String) -> String:
+	# Dịch cả câu trước khi tô màu để thứ tự từ và chỉ số không bị phụ thuộc tiếng Việt.
+	var result: String = text
+	for token: StringName in description_colors:
+		result = result.replace("[%s]" % token, "[b][color=#%s]" % description_colors[token].to_html())
+		result = result.replace("[/%s]" % token, "[/color][/b]")
+	# Bỏ màu trong cấu hình vẫn phải đọc được mô tả, không lộ tag kỹ thuật.
+	for token: StringName in [&"buff", &"damage", &"time"]:
+		result = result.replace("[%s]" % token, "[b]").replace("[/%s]" % token, "[/b]")
+	return result

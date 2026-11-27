@@ -22,6 +22,12 @@ shadow_size = 8
 shadow_offset = Vector2(0, 3)
 
 [resource]
+description_colors = Dictionary[StringName, Color]({
+&"buff": Color(0.655, 0.847, 0.729, 1),
+&"damage": Color(0.941, 0.722, 0.467, 1),
+&"time": Color(0.902, 0.82, 0.588, 1)
+})
+description_embolden = 0.5
 script = ExtResource("1")
 charm_tile_size = Vector2(68, 68)
 equipped_tile_size = Vector2(108, 128)

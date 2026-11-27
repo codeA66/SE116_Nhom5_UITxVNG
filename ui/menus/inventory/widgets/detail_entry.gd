@@ -37,3 +37,9 @@ func add_section(heading: String, text: String, warning: bool = false) -> Detail
 	if not text.is_empty():
 		sections.append({"heading": heading, "text": text, "warning": warning})
 	return self
+
+
+func add_highlighted_section(heading: String, text: String) -> DetailEntry:
+	if not text.is_empty():
+		sections.append({"heading": heading, "text": text, "warning": false, "highlighted": true})
+	return self

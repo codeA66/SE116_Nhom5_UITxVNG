@@ -103,7 +103,7 @@ func get_detail() -> DetailEntry:
 	if equipped:
 		entry.subtitle += "  ·  " + tr(style.charm_equipped_text)
 	entry.art_texture = charm.icon
-	entry.add_section(style.charm_effect_text, charm.description)
+	entry.add_highlighted_section(style.charm_effect_text, charm.description)
 	entry.lore = tr(charm.lore)
 	if GameState.can_change_charms():
 		var action_text: String = style.charm_remove_text if equipped else style.charm_equip_text
