@@ -40,8 +40,6 @@ extends Node3D
 @export var flame_color: Color = Color(0.95, 0.32, 0.06)
 @export var edge_color: Color = Color(0.45, 0.06, 0.03)
 
-static var _puff_texture: GradientTexture2D
-static var _streak_texture: GradientTexture2D
 
 var _scorch_left: float = 0.0
 var _flames: GPUParticles3D
@@ -214,6 +212,7 @@ func _curve(start: float, peak: float, end: float) -> CurveTexture:
 
 ## Đốm tròn mềm cho lưỡi lửa (dùng chung mọi instance)
 static func _get_puff_texture() -> GradientTexture2D:
+	var _puff_texture: GradientTexture2D = SharedResources.get_resource(&"fire.flare.puff") as GradientTexture2D
 	if _puff_texture == null:
 		var gradient := Gradient.new()
 		gradient.offsets = PackedFloat32Array([0.0, 0.45, 1.0])
@@ -225,11 +224,13 @@ static func _get_puff_texture() -> GradientTexture2D:
 		_puff_texture.fill = GradientTexture2D.FILL_RADIAL
 		_puff_texture.fill_from = Vector2(0.5, 0.5)
 		_puff_texture.fill_to = Vector2(0.5, 0.0)
+		SharedResources.store_resource(&"fire.flare.puff", _puff_texture)
 	return _puff_texture
 
 
 ## Vệt sàn: sáng ở gốc lửa, nhạt dần về cuối và hai mép (dùng chung mọi instance)
 static func _get_streak_texture() -> GradientTexture2D:
+	var _streak_texture: GradientTexture2D = SharedResources.get_resource(&"fire.flare.streak") as GradientTexture2D
 	if _streak_texture == null:
 		var gradient := Gradient.new()
 		gradient.offsets = PackedFloat32Array([0.0, 0.35, 1.0])
@@ -241,4 +242,5 @@ static func _get_streak_texture() -> GradientTexture2D:
 		_streak_texture.fill = GradientTexture2D.FILL_RADIAL
 		_streak_texture.fill_from = Vector2(0.5, 0.05)
 		_streak_texture.fill_to = Vector2(1.0, 0.05)
+		SharedResources.store_resource(&"fire.flare.streak", _streak_texture)
 	return _streak_texture

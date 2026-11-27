@@ -21,9 +21,6 @@ const SHADER: Shader = preload("res://assets/vfx/fire/fire_sword/impact/fire_swo
 @export var prepare_scale: float = 0.000001
 @export var prepare_opacity: float = 0.000001
 @export var prepare_frames: int = 3
-static var _mesh_cache: Dictionary[Vector3i, ArrayMesh] = {}
-static var _warmup_done: bool = false
-static var _warmup_running: bool = false
 var _material: ShaderMaterial
 var _epoch: int = 0
 var _age: float = 0.0
@@ -100,6 +97,7 @@ static func surface_point(target: HurtboxComponent, source: Vector3) -> Vector3:
 
 ## Tessellation giữ sẵn nên phát lại chỉ đổi scalar.
 func _build() -> void:
+	var _mesh_cache: Dictionary = SharedResources.get_bucket(&"fire.sword.hit.meshes")
 	var key: Vector3i = Vector3i(streak_count, bits, segments)
 	if _mesh_cache.has(key):
 		_mesh.mesh = _mesh_cache[key]
@@ -132,8 +130,9 @@ func _build() -> void:
 
 ## Chỉ một slot chuẩn bị shader trong camera thật; alpha nhỏ do chính shader xử lý.
 func _prepare() -> void:
-	if _warmup_done or _warmup_running or DisplayServer.get_name() == "headless": return
-	_warmup_running = true
+	var preparation: Dictionary = SharedResources.get_bucket(&"fire.sword.hit.warmup")
+	if preparation.get(&"done", false) or preparation.get(&"running", false) or DisplayServer.get_name() == "headless": return
+	preparation[&"running"] = true
 	var epoch: int = _epoch
 	_material.set_shader_parameter(&"warm_scale", 1.0)
 	_material.set_shader_parameter(&"opacity", prepare_opacity)
@@ -146,6 +145,6 @@ func _prepare() -> void:
 	if epoch == _epoch:
 		pool_released()
 		_material.set_shader_parameter(&"opacity", 1.0)
-	_warmup_done = true
-	_warmup_running = false
+	preparation[&"done"] = true
+	preparation[&"running"] = false
 	print("SWORD_SHADER_PREP burst root_pass opacity=", prepare_opacity)

@@ -1,7 +1,8 @@
 class_name LootItemBeam
 extends Node3D
 ## Shader tự tạo nhịp sáng; không quét thế giới hay cập nhật CPU mỗi frame.
-const BEAM: Shader = preload("res://components/feedback/loot_beam/loot_item_beam.gdshader")
+# Material đang dùng giữ shader; script không cần ghim nó sau khi gỡ vật phẩm.
+const BEAM_PATH: String = "res://components/feedback/loot_beam/loot_item_beam.gdshader"
 @export var tint: Color = Color("ffd447")
 @export_range(0.2, 16.0, 0.1) var height: float = 6.5
 @export_range(0.01, 1.0, 0.01) var ground_depth: float = 0.18
@@ -24,7 +25,7 @@ func _ready() -> void:
 		cylinder.bottom_radius = radius * (0.13 if core else 1.0)
 		cylinder.height = height; cylinder.radial_segments = 12; cylinder.rings = 1
 		cylinder.cap_top = false; cylinder.cap_bottom = false
-		var material: ShaderMaterial = ShaderMaterial.new(); material.shader = BEAM
+		var material: ShaderMaterial = ShaderMaterial.new(); material.shader = load(BEAM_PATH) as Shader
 		material.set_shader_parameter("tint",tint)
 		material.set_shader_parameter("opacity",0.8 if core else 0.19)
 		material.set_shader_parameter("energy",2.5 if core else 1.2)

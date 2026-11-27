@@ -7,13 +7,12 @@ extends RefCounted
 ## Số đoạn dọc một nét: đủ mịn cho nét cuộn mà vẫn rẻ
 const STROKE_SEGMENTS := 24
 
-static var _strip: ArrayMesh
-static var _quad: QuadMesh
-static var _plane: PlaneMesh
-
 
 ## Dải nét: UV.x 0 = đuôi, 1 = đầu; UV.y 0..1 ngang nét
 static func strip() -> ArrayMesh:
+	var _strip: ArrayMesh = null
+	if not Engine.is_editor_hint():
+		_strip = SharedResources.get_resource(&"wind.geometry.strip") as ArrayMesh
 	if _strip:
 		return _strip
 	var vertices := PackedVector3Array()
@@ -35,21 +34,34 @@ static func strip() -> ArrayMesh:
 	arrays[Mesh.ARRAY_INDEX] = indices
 	_strip = ArrayMesh.new()
 	_strip.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	if not Engine.is_editor_hint():
+		SharedResources.store_resource(&"wind.geometry.strip", _strip)
 	return _strip
 
 
 ## Quad 1x1 cho hạt và hơi mờ (shader tự quay về camera)
 static func quad() -> QuadMesh:
+	# Editor không chạy autoload; mesh preview do node gọi giữ và tự nhả khi đóng scene.
+	if Engine.is_editor_hint():
+		return QuadMesh.new()
+	var _quad: QuadMesh = SharedResources.get_resource(&"wind.geometry.quad") as QuadMesh
 	if _quad == null:
 		_quad = QuadMesh.new()
+		SharedResources.store_resource(&"wind.geometry.quad", _quad)
 	return _quad
 
 
 ## Mặt phẳng 1x1 nằm ngang cho dấu mặt đất và vòng sóng
 static func plane() -> PlaneMesh:
+	if Engine.is_editor_hint():
+		var preview: PlaneMesh = PlaneMesh.new()
+		preview.size = Vector2.ONE
+		return preview
+	var _plane: PlaneMesh = SharedResources.get_resource(&"wind.geometry.plane") as PlaneMesh
 	if _plane == null:
 		_plane = PlaneMesh.new()
 		_plane.size = Vector2.ONE
+		SharedResources.store_resource(&"wind.geometry.plane", _plane)
 	return _plane
 
 

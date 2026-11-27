@@ -8,7 +8,8 @@ signal denied
 
 ## Model chìa đứng dọc theo trục Y: lật 90° quanh X cho thân chìa chĩa thẳng vào cửa,
 ## rồi xoay 90° quanh thân để răng chìa dựng đứng, khớp khe ổ khóa dọc lúc cắm vào
-const DIALOG_SCENE: PackedScene = preload("res://ui/dialog/dialog_box.tscn")
+# Hộp thoại chỉ cần được giữ khi cửa đang sử dụng nó.
+const DIALOG_PATH: String = "res://ui/dialog/dialog_box.tscn"
 const KEY_LAY_BASIS := Basis(Vector3.RIGHT, PI * 0.5) * Basis(Vector3.UP, PI * 0.5)
 
 @export var key_id: StringName
@@ -87,7 +88,7 @@ func deny() -> void:
 ## Tạo hộp thoại ở lần báo đầu: cửa không đặt locked_text thì không tốn node nào
 func _get_dialog() -> DialogBox:
 	if _dialog == null:
-		_dialog = DIALOG_SCENE.instantiate() as DialogBox
+		_dialog = (load(DIALOG_PATH) as PackedScene).instantiate() as DialogBox
 		add_child(_dialog)
 	return _dialog
 

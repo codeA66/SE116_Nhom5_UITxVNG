@@ -13,7 +13,6 @@ const STONE_SHADER: Shader = preload("res://assets/shaders/wind/shrine/wind_shri
 const REVIVE_PULSE_SCALE := 1.8
 const REVIVE_PULSE_TIME := 0.35
 
-static var _stone_material_cache: Dictionary[String, BaseMaterial3D] = {}
 
 @export var style: WindShrineStyle = DEFAULT_STYLE:
 	set(value):
@@ -35,6 +34,7 @@ var _ribbon_material: ShaderMaterial
 var _inlay_material: ShaderMaterial
 var _stone_overlay: ShaderMaterial
 var _materials: Array[ShaderMaterial] = []
+var _editor_stone_material_cache: Dictionary[String, BaseMaterial3D] = {}
 var _transition: Tween
 var _last_target: bool = false
 
@@ -143,6 +143,7 @@ func _apply_style() -> void:
 
 
 func _apply_stone_brightness(brightness: float) -> void:
+	var _stone_material_cache: Dictionary = _editor_stone_material_cache if Engine.is_editor_hint() else SharedResources.get_bucket(&"wind.shrine.stone_materials")
 	# Dùng chung bản material đã cân sáng, không nhân bản theo từng checkpoint.
 	for mesh_instance: MeshInstance3D in _stone_meshes:
 		for surface: int in range(mesh_instance.mesh.get_surface_count()):

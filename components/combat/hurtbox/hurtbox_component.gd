@@ -18,10 +18,6 @@ const GROUP := &"hurtbox"
 ## Hệ số nhận sát thương theo loại: 0 = miễn nhiễm, 0.5 = kháng một nửa, 2 = yếu gấp đôi. Không có = 1
 @export var resistances: Dictionary[DamageInfo.Type, float] = {}
 
-## Bộ chỉnh sát thương dùng chung cho mọi hurtbox (cheat dev): mỗi Callable nhận (hurtbox, info, damage) và trả
-## lượng máu mới bị trừ. Mặc định trống nên không tốn gì; tĩnh để cheat không phải tìm từng hurtbox trong màn
-static var damage_modifiers: Array[Callable] = []
-
 ## Chặn mọi đòn, kể cả đòn xuyên bất tử (chế độ test của player)
 var invulnerable: bool = false
 
@@ -58,6 +54,14 @@ func is_alive() -> bool:
 	return health == null or not health.is_dead()
 
 
+static func add_damage_modifier(modifier: Callable) -> void:
+	SharedResources.add_damage_modifier(modifier)
+
+
+static func remove_damage_modifier(modifier: Callable) -> void:
+	SharedResources.remove_damage_modifier(modifier)
+
+
 ## Trả true từ callback để nhận xử lý đòn hợp lệ trước khi trừ máu và phát hurt.
 func add_hit_interceptor(interceptor: Callable) -> void:
 	if interceptor.is_valid() and not _hit_interceptors.has(interceptor):
@@ -73,7 +77,7 @@ func receive_hit(info: DamageInfo) -> bool:
 	if invulnerable or not is_alive() or (is_invincible() and not info.ignores_invincibility):
 		return false
 	var damage_taken := _resolve_damage(info)
-	for modifier: Callable in damage_modifiers:
+	for modifier: Callable in SharedResources.get_damage_modifiers():
 		damage_taken = maxi(int(modifier.call(self, info, damage_taken)), 0)
 	if damage_taken > 0:
 		for interceptor: Callable in _hit_interceptors:

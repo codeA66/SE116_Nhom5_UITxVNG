@@ -18,9 +18,6 @@ const PHASE_SCATTER := 4
 ## Giới hạn slot hạt của MultiMesh (đốm + tia nhọn)
 const MAX_SLOTS := 192
 @export var data: Tuning = preload("res://resources/feedback/ability_acquire/ability_acquire_default.tres")
-static var _quad: QuadMesh
-static var _ray_meshes: Dictionary[int, ArrayMesh] = {}
-static var _live_count: int = 0
 var motes: MultiMeshInstance3D
 var rays: MeshInstance3D
 var ring: MeshInstance3D
@@ -48,16 +45,18 @@ var _gather_window: float = 0.0
 var _random: RandomNumberGenerator = RandomNumberGenerator.new()
 ## Tạo tất cả slot và material trước màn nhận kỹ năng, không tạo ở nhịp bùng.
 func _ready() -> void:
-	_live_count += 1
+	SharedResources.store_value(&"acquire.live_count", int(SharedResources.get_value(&"acquire.live_count", 0)) + 1)
 	top_level = true
 	set_process(false)
 	_warmup = Node3D.new()
 	_warmup.name = "WarmupSources"
 	_warmup.hide()
 	add_child(_warmup)
+	var _quad: QuadMesh = SharedResources.get_resource(&"acquire.quad") as QuadMesh
 	if _quad == null:
 		_quad = QuadMesh.new()
 		_quad.size = Vector2.ONE
+		SharedResources.store_resource(&"acquire.quad", _quad)
 	# Bệ đã có mesh riêng nên không dựng pool và probe hạt cũ cho cùng một cảnh.
 	if data.continuous_energy:
 		return
@@ -104,10 +103,11 @@ func _ready() -> void:
 	clear_visuals()
 ## Cache dùng chung được nhả khi khu cuối cùng có hiệu ứng này rời cây.
 func _exit_tree() -> void:
-	_live_count -= 1
-	if _live_count <= 0:
-		_quad = null
-		_ray_meshes.clear()
+	var live_count: int = int(SharedResources.get_value(&"acquire.live_count", 0)) - 1
+	SharedResources.store_value(&"acquire.live_count", live_count)
+	if live_count <= 0:
+		SharedResources.release_resource(&"acquire.quad")
+		SharedResources.release_bucket(&"acquire.rays")
 ## Nguồn sách được chuẩn bị từ ready của pickup, trước ShaderWarmup của khu.
 func prepare_source(source: Node3D) -> void:
 	if source == _source: return
@@ -383,6 +383,7 @@ func _add_probe(source: GeometryInstance3D, phase: int) -> void:
 	_warmup.add_child(probe)
 ## Mesh ray dùng chung giữa các pickup có cùng độ chia.
 static func _get_rays(segments: int) -> ArrayMesh:
+	var _ray_meshes: Dictionary = SharedResources.get_bucket(&"acquire.rays")
 	segments = clampi(segments, 4, 32)
 	if _ray_meshes.has(segments): return _ray_meshes[segments]
 	var vertices: PackedVector3Array = PackedVector3Array()

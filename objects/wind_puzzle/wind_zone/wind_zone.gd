@@ -14,7 +14,7 @@ signal configuration_changed
 ## Vùng có hướng gió lệch khỏi phương ngang quá mức này được coi là cột gió (lên hoặc xuống)
 const VERTICAL_THRESHOLD := 0.7
 ## Chỉ dùng để cảnh báo trong editor: gió chặn hay không là so sức gió với tốc độ chạy của player
-const PLAYER_MOVEMENT: MovementStats = preload("res://resources/player/player_movement.tres")
+const MOVEMENT_PATH: String = "res://resources/player/player_movement.tres"
 
 @export var data: WindData:
 	set(value):
@@ -81,7 +81,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		return ["Chưa gán WindData: kéo một file trong resources/world/wind/wind/ vào ô Data."]
 	if is_vertical():
 		return []
-	var run_speed := PLAYER_MOVEMENT.max_speed
+	var run_speed: float = (load(MOVEMENT_PATH) as MovementStats).max_speed
 	if data.blocks_player and data.strength <= run_speed:
 		return ["Gió đánh dấu Blocks Player nhưng sức gió (%.1f) không lớn hơn tốc độ chạy (%.1f): người chơi vẫn đi ngược được. Tăng Strength hoặc tắt Blocks Player." % [data.strength, run_speed]]
 	if not data.blocks_player and data.strength >= run_speed:

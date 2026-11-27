@@ -95,7 +95,6 @@ const SONG_TRAM_FX = preload("res://assets/vfx/shared/charms/song_tram/song_tram
 @export_group("Flame Shape")
 @export var tongue_count: float = 7.0
 @export var tongue_size: float = 0.08
-static var _mesh_cache: Dictionary[Vector3i, ArrayMesh] = {}
 var _material: ShaderMaterial
 var _pool: ObjectPool
 var _age: float = 0.0
@@ -349,6 +348,7 @@ func _configure() -> void:
 
 ## Một surface chứa cung, đuôi cong, hạt hình học và snap để giữ số draw nhỏ.
 func _build_mesh() -> void:
+	var _mesh_cache: Dictionary = SharedResources.get_bucket(&"fire.sword.slash.meshes")
 	var key: Vector3i = Vector3i(strand_count, segments, dust_count)
 	if _mesh_cache.has(key):
 		_ribbons.mesh = _mesh_cache[key]

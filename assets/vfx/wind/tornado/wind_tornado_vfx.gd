@@ -28,9 +28,6 @@ const MIN_RADIUS := 0.001
 ## Lúc nổ, thân lốc bung ra tới bấy nhiêu lần bán kính miệng rồi tan (nhìn như gió văng ra)
 @export var explode_spread: float = 2.4
 
-static var _strand_mesh: ArrayMesh
-static var _ring_mesh: ArrayMesh
-static var _debris_mesh: ArrayMesh
 
 var _age: float = 0.0
 ## < 0 = chưa nổ
@@ -54,9 +51,9 @@ var _materials: Array[ShaderMaterial] = []
 
 func _ready() -> void:
 	_build_meshes()
-	_strands.mesh = _strand_mesh
-	_rings.mesh = _ring_mesh
-	_debris.mesh = _debris_mesh
+	_strands.mesh = SharedResources.get_resource(&"wind.tornado.strands") as ArrayMesh
+	_rings.mesh = SharedResources.get_resource(&"wind.tornado.rings") as ArrayMesh
+	_debris.mesh = SharedResources.get_resource(&"wind.tornado.debris") as ArrayMesh
 	for visual: MeshInstance3D in [_strands, _rings, _debris]:
 		var material := visual.material_override as ShaderMaterial
 		material.set_shader_parameter(&"spin", spin_speed)
@@ -151,7 +148,7 @@ func _apply(_delta: float) -> void:
 
 ## Dựng mesh một lần cho mọi lốc (dữ liệu tĩnh): không gian đơn vị cao 1, bán kính miệng 1
 static func _build_meshes() -> void:
-	if _strand_mesh:
+	if SharedResources.get_resource(&"wind.tornado.strands") != null:
 		return
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
@@ -162,14 +159,14 @@ static func _build_meshes() -> void:
 	for i in strand_count:
 		var offset := float(i) / float(strand_count)
 		_add_strand(st, 1.7, 0.0, 1.0, 0.16, 0.46, false, offset, rng.randf(), rng.randf_range(0.85, 1.2), 64)
-	_strand_mesh = st.commit()
+	SharedResources.store_resource(&"wind.tornado.strands", st.commit())
 	# Vòng xoáy theo tầng: cung dẹt nằm ngang, xoay nhanh hơn thân
 	st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	# Vòng dày dần lên miệng: đỉnh lốc đặc, rối như đám mây
 	for y: float in [0.18, 0.36, 0.52, 0.66, 0.78, 0.88, 0.96, 1.02]:
 		_add_strand(st, rng.randf_range(0.6, 0.85), y, y, 0.06 + 0.12 * y, 0.08 + 0.16 * y, true, rng.randf(), rng.randf(), rng.randf_range(1.4, 2.1), 36, rng.randf_range(1.05, 1.2))
-	_ring_mesh = st.commit()
+	SharedResources.store_resource(&"wind.tornado.rings", st.commit())
 	# Vệt bụi ngắn bay quanh ngoài thân
 	st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -177,7 +174,7 @@ static func _build_meshes() -> void:
 		# Mảnh vụn dồn về chân lốc, bị cuốn sát đất
 		var y0 := pow(rng.randf(), 1.8) * 0.75
 		_add_strand(st, 0.22, y0, y0 + rng.randf_range(0.08, 0.18), 0.025, 0.035, false, rng.randf(), rng.randf(), rng.randf_range(1.2, 1.5), 10, rng.randf_range(1.25, 1.45))
-	_debris_mesh = st.commit()
+	SharedResources.store_resource(&"wind.tornado.debris", st.commit())
 
 
 ## Bán kính phễu theo độ cao (0..1): chân hẹp, loe dần lên miệng
