@@ -195,3 +195,6 @@ wait_for_cutscene = NodePath("../IntroCutscene")
 delay_after_cutscene = 0.0
 
 [connection signal="combat_ready" from="." to="AreaTitleTrigger" method="announce"]
+
+[editable path="Gates/WindGate"]
+[editable path="Gates/WindGate/Portal"]

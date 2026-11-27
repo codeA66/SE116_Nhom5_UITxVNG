@@ -1,11 +1,13 @@
 extends Node3D
 ## Use case: qua tường đã mở, hạ hai nhóm lính, canh ba đoạn sàn sụp và tới người gác cầu.
+## UC2: checkpoint sau tường gấu lưu tiến trình; rơi qua mỗi đoạn sàn sụp thì chết ở mặt nước và hồi sinh tại đó.
+## TC2: đi vào checkpoint thật, đứng chờ từng ô rơi, đo máu về 0/state Dead rồi đợi tải lại đúng điểm đã lưu.
 
 const LEVEL_PATH: String = "res://levels/zone_1_wind/level_1/level_1.tscn"
-const CONNECTOR: PackedScene = preload("res://levels/zone_1_wind/level_1/rooms/tier_3/connection/tier3_connection.tscn")
-const ROOM_27: PackedScene = preload("res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_27_boss_gate.scn")
-const LIGHTING: PackedScene = preload("res://levels/zone_1_wind/map_wind_island/wind_palace_lighting.tscn")
-const HERO: PackedScene = preload("res://entities/player/player.tscn")
+const CONNECTOR: String = "res://levels/zone_1_wind/level_1/rooms/tier_3/connection/tier3_connection.tscn"
+const ROOM_27: String = "res://levels/zone_1_wind/level_1/rooms/tier_2/t2_room_27_boss_gate.scn"
+const LIGHTING: String = "res://levels/zone_1_wind/map_wind_island/wind_palace_lighting.tscn"
+const HERO: String = "res://entities/player/player.tscn"
 const FIRST_FIGHT_WON: StringName = &"level_1.t2_approach_arena_lower_cleared"
 const ARENA_WON: StringName = &"level_1.t2_approach_arena_cleared"
 
@@ -15,6 +17,9 @@ var _level: ZoneRoot
 var _failures: int = 0
 var _checks: int = 0
 var _capture_dir: String
+var _water_contact: bool = false
+var _water_entry_y: float = INF
+var _tile_crumbled: bool = false
 
 
 func _ready() -> void:
@@ -27,14 +32,14 @@ func _run() -> void:
 	GameState.set_flag(&"level_1.enc_bear_miniboss")
 	var args: PackedStringArray = OS.get_cmdline_user_args()
 	var laser_edges_only: bool = "--laser-edges" in args
+	var falling_death_only: bool = "--falling-death" in args
 	if laser_edges_only:
 		GameState.set_flag(FIRST_FIGHT_WON)
 		GameState.set_flag(ARENA_WON)
 	if args.size() > 1:
 		_capture_dir = args[1]
-	if "--full" in args:
-		var packed: PackedScene = load(LEVEL_PATH) as PackedScene
-		_level = packed.instantiate() as ZoneRoot
+	if not laser_edges_only or "--full" in args or falling_death_only:
+		_level = (load(LEVEL_PATH) as PackedScene).instantiate() as ZoneRoot
 		_level.shader_warmup = null
 		get_tree().root.add_child(_level)
 		get_tree().current_scene = _level
@@ -43,17 +48,27 @@ func _run() -> void:
 		_player = _level.get_node("Player") as Player
 		_connector = _level.get_node("Tier3Bridge") as Node3D
 	else:
-		_connector = CONNECTOR.instantiate() as Node3D
+		_connector = (load(CONNECTOR) as PackedScene).instantiate() as Node3D
 		_connector.position = Vector3(-8, 21.62, -375.645)
-		var room: Node3D = ROOM_27.instantiate() as Node3D
+		var room: Node3D = (load(ROOM_27) as PackedScene).instantiate() as Node3D
 		room.position = Vector3(-8, 0, -224)
 		add_child(room)
 		add_child(_connector)
-		add_child(LIGHTING.instantiate())
-		_player = HERO.instantiate() as Player
+		add_child((load(LIGHTING) as PackedScene).instantiate())
+		_player = (load(HERO) as PackedScene).instantiate() as Player
 		add_child(_player)
 		_player.prepare_for_combat()
 
+	if not laser_edges_only:
+		await _check_falling_death()
+		if falling_death_only or _failures > 0:
+			await _finish()
+			return
+	await _check_route(laser_edges_only)
+	await _finish()
+
+
+func _check_route(laser_edges_only: bool) -> void:
 	var arena: Node3D = _connector.get_node("ApproachRooms/LaserArena") as Node3D
 	var walk: Node3D = _connector.get_node("ApproachRooms/CrumblingLaserWalk") as Node3D
 	var keeper: Gatekeeper = _connector.get_node("Tier3Gatekeeper") as Gatekeeper
@@ -64,7 +79,6 @@ func _run() -> void:
 	hurtbox.invulnerable = true
 	if laser_edges_only:
 		await _check_laser_edges(arena, walk, hurtbox)
-		await _finish()
 		return
 	_player.teleport(arena.to_global(Vector3(0, 0.12, 2)), Vector3.FORWARD)
 	await _frames(150 if not _capture_dir.is_empty() else 25)
@@ -89,21 +103,13 @@ func _run() -> void:
 	var first: LaserEmitter = walk.get_node("Hazards/FirstSpanBeam") as LaserEmitter
 	var second: LaserEmitter = walk.get_node("Hazards/SecondSpanBeam") as LaserEmitter
 	var third: LaserEmitter = walk.get_node("Hazards/ThirdSpanBeam") as LaserEmitter
-	var tile: CrumblingFloor = walk.get_node("World/FirstTile01") as CrumblingFloor
-	var fell: Array[bool] = [false]
-	tile.crumbled.connect(func() -> void: fell[0] = true)
 	_check(await _see_phase(first, LaserEmitter.Phase.ON), "Laser ngang sàn có pha bắn")
 	await _capture("02_span_laser_on")
-	await _walk_to(walk.to_global(Vector3(0, 0, -8.3)))
-	await _frames(85)
-	_check(fell[0] and _player.global_position.y < walk.global_position.y - 0.15, "Giẫm đủ lâu làm ô rơi và cáo đáp trên dốc đỡ")
-	_check(await _walk_to(walk.to_global(Vector3(0, 0, -6.45))), "Đi lên dốc về bệ đầu")
-	_check(absf(_player.global_position.y - walk.global_position.y) < 0.15, "Bệ đầu và dốc khớp cao độ")
-	_check(await _see_phase(first, LaserEmitter.Phase.ON), "Pha đầu lặp lại")
 	_check(await _see_phase(first, LaserEmitter.Phase.OFF), "Qua được lúc tia đầu vừa tắt")
-	await _frames(12)
 	hurtbox.invulnerable = false
 	var health_before: int = _player.health.current_health
+	_check(await _walk_to(walk.to_global(Vector3(0, 0, -14.4))), "Đi liên tục qua sàn sụp đầu tới bệ an toàn")
+	_check(absf(_player.global_position.y - walk.global_position.y) < 0.15, "Qua sàn sụp không rơi khi tiếp tục đi")
 	_check(await _walk_to(walk.to_global(Vector3(0, 0, -19.4))), "Đi thường tới vị trí chờ tia thứ hai")
 	_check(await _see_phase(second, LaserEmitter.Phase.ON), "Tia thứ hai có pha bắn độc lập")
 	_check(await _see_phase(second, LaserEmitter.Phase.OFF), "Có cửa sổ đi đoạn sàn thứ hai")
@@ -129,7 +135,79 @@ func _run() -> void:
 		await _capture("04_tier3_entry")
 	hurtbox.invulnerable = true
 	await _check_laser_edges(arena, walk, hurtbox)
-	await _finish()
+
+
+func _check_falling_death() -> void:
+	var checkpoint: Checkpoint = _level.get_node_or_null(^"BearExitCheckpoint") as Checkpoint
+	_check(checkpoint != null, "TC2 có checkpoint sau tường gấu trước ba phòng")
+	if checkpoint == null:
+		return
+	_player.teleport(checkpoint.global_position + Vector3(0.0, 0.1, 2.0), Vector3.FORWARD)
+	await _frames(8)
+	_check(await _walk_to(checkpoint.global_position), "TC2 đi bộ vào trigger checkpoint mới")
+	await _frames(8)
+	_check(checkpoint.is_active() and GameState.get_checkpoint_zone() == LEVEL_PATH,
+		"TC2 checkpoint lưu đúng scene Map Gió")
+	var spawn_id: StringName = checkpoint.checkpoint_id
+	var spawn_position: Vector3 = (checkpoint.get_node(^"Spawn") as Node3D).global_position
+	for section: String in ["First", "Second", "Third"]:
+		var walk: Node3D = _connector.get_node(^"ApproachRooms/CrumblingLaserWalk") as Node3D
+		var tile: CrumblingFloor = walk.get_node(NodePath("World/" + section + "Tile01")) as CrumblingFloor
+		var water: KillZone = _level.get_node(^"Rooms/Tier1/Room01Dock/Water/KillZone") as KillZone
+		_water_contact = false
+		_water_entry_y = INF
+		_tile_crumbled = false
+		water.body_entered.connect(_record_water_entry)
+		tile.crumbled.connect(_record_tile_crumbled)
+		var hurtbox: HurtboxComponent = _player.get_node(^"HurtboxComponent") as HurtboxComponent
+		# Cách ly tia laser để ca này chỉ đo cái chết do rơi xuống nước.
+		hurtbox.invulnerable = true
+		_player.teleport(tile.global_position + Vector3.UP * 0.1)
+		var deadline: int = Time.get_ticks_msec() + 15000
+		while not _player.health.is_dead() and Time.get_ticks_msec() < deadline:
+			await get_tree().process_frame
+		var died: bool = _player.health.is_dead()
+		_check(died, "TC2 " + section + ": đứng chờ sàn sụp gây chết thật")
+		if not died:
+			return
+		_check(_player.state_machine.current_state.name == &"Dead", "TC2 " + section + ": vào state Dead")
+		_check(_tile_crumbled and _water_contact and _water_entry_y < tile.global_position.y - tile.size.y,
+			"TC2 " + section + ": sàn sụp rồi rơi vào vùng nước thật của map")
+		await _capture("falling_death_" + section.to_lower())
+		if not _water_contact:
+			return
+		var previous_zone_id: int = _level.get_instance_id()
+		deadline = Time.get_ticks_msec() + 240000
+		var arrived: bool = false
+		while Time.get_ticks_msec() < deadline:
+			var world: ZoneRoot = get_tree().current_scene as ZoneRoot
+			if world != null and world.get_instance_id() != previous_zone_id and not SceneManager.is_busy() and world.is_combat_ready():
+				_level = world
+				_player = world.get_node(^"Player") as Player
+				_connector = world.get_node(^"Tier3Bridge") as Node3D
+				arrived = true
+				break
+			await get_tree().process_frame
+		_check(arrived, "TC2 " + section + ": tải lại Map Gió sau khi chết")
+		if not arrived:
+			return
+		_check(GameState.get_checkpoint_spawn_id() == spawn_id and _player.global_position.distance_to(spawn_position) < 0.7,
+			"TC2 " + section + ": hồi sinh đúng checkpoint sau tường gấu")
+		_check(_player.health.current_health == _player.health.max_health, "TC2 " + section + ": hồi sinh đầy máu")
+		_check(GameState.has_flag(&"level_1.enc_bear_miniboss"), "TC2 " + section + ": giữ tiến trình hạ gấu đã lưu")
+		await _capture("falling_respawn_" + section.to_lower())
+		await _frames(100)
+
+
+func _record_water_entry(body: Node3D) -> void:
+	if body == _player:
+		_water_contact = true
+		_water_entry_y = body.global_position.y
+		print("FALL_WATER_CONTACT position=", body.global_position)
+
+
+func _record_tile_crumbled() -> void:
+	_tile_crumbled = true
 
 
 func _finish() -> void:
@@ -151,6 +229,13 @@ func _finish() -> void:
 
 
 func _check_laser_edges(arena: Node3D, walk: Node3D, hurtbox: HurtboxComponent) -> void:
+	# Ca phủ tia cần chân đứng đúng cao độ; việc rơi/chết đã được đo riêng với sàn chạy thật.
+	for child: Node in walk.get_node(^"World").get_children():
+		var tile: CrumblingFloor = child as CrumblingFloor
+		if tile != null:
+			tile.state_machine.transition_to(&"Solid")
+			tile.set_physics_process(false)
+	await _frames(3)
 	# Bám mép phải sát tầm va chạm của thân để phát hiện đường tắt mà test giữa sàn bỏ sót.
 	for emitter: LaserEmitter in arena.get_node("Hazards").get_children():
 		await _check_edge_crossing(arena, emitter, hurtbox, 8.16)
