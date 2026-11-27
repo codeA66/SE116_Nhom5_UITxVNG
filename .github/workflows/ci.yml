@@ -182,9 +182,12 @@ jobs:
 
       - name: Export Windows
         run: |
+          # Cache import cũng chứa scene đã đóng gói; dựng lại để không xuất scene cũ.
+          rm -rf .godot/exported
           mkdir -p build
           ~/godot/godot --headless --path . --export-release "Windows Desktop" "$PWD/build/Foxy.exe"
-          test -f build/Foxy.exe
+          test -s build/Foxy.exe
+          test -s build/Foxy.pck
 
       - name: Đưa bản build lên Artifacts
         uses: actions/upload-artifact@v4
