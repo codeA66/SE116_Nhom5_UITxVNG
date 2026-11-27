@@ -7,108 +7,23 @@
 [ext_resource type="Script" path="res://objects/combat/spawner_cage/flag_reveal.gd" id="flag_reveal"]
 [ext_resource type="PackedScene" path="res://objects/core/portal/portal.tscn" id="portal"]
 
-[sub_resource type="ProceduralSkyMaterial" id="SkyPaint"]
-sky_top_color = Color(0.072, 0.126, 0.24, 1)
-sky_horizon_color = Color(0.37, 0.52, 0.62, 1)
-ground_bottom_color = Color(0.04, 0.057, 0.11, 1)
-ground_horizon_color = Color(0.28, 0.40, 0.50, 1)
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/final_sanctuary/geometry/stage/stage.gltf" id="stage"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/final_sanctuary/geometry/shrine/shrine.gltf" id="shrine"]
+[ext_resource type="PackedScene" path="res://assets/models/map_wind/wind_palace_v1/final_sanctuary/geometry/weather/weather.gltf" id="weather"]
 
-[sub_resource type="Sky" id="Sky"]
-sky_material = SubResource("SkyPaint")
+[ext_resource type="PackedScene" path="res://assets/vfx/wind/ambient/sanctuary/wind_sanctuary_ambience.tscn" id="ambience"]
 
 [sub_resource type="Environment" id="WindSky"]
-background_mode = 2
-sky = SubResource("Sky")
+background_mode = 1
+background_color = Color(0.025, 0.055, 0.073, 1)
 ambient_light_source = 3
-ambient_light_color = Color(0.59, 0.74, 0.86, 1)
-ambient_light_energy = 0.68
-ambient_light_sky_contribution = 0.25
+ambient_light_color = Color(0.56, 0.65, 0.72, 1)
+ambient_light_energy = 0.85
+reflected_light_source = 2
+tonemap_mode = 2
 fog_enabled = true
-fog_light_color = Color(0.42, 0.57, 0.66, 1)
-fog_density = 0.012
-
-[sub_resource type="StandardMaterial3D" id="FloorStone"]
-albedo_color = Color(0.23, 0.31, 0.36, 1)
-roughness = 0.92
-
-[sub_resource type="StandardMaterial3D" id="RimStone"]
-albedo_color = Color(0.13, 0.205, 0.245, 1)
-roughness = 0.9
-
-[sub_resource type="StandardMaterial3D" id="IvoryStone"]
-albedo_color = Color(0.45, 0.57, 0.59, 1)
-roughness = 0.88
-
-[sub_resource type="StandardMaterial3D" id="Inlay"]
-albedo_color = Color(0.35, 0.60, 0.66, 1)
-emission_enabled = true
-emission = Color(0.17, 0.40, 0.48, 1)
-emission_energy_multiplier = 0.4
-
-[sub_resource type="CylinderMesh" id="Floor"]
-material = SubResource("FloorStone")
-top_radius = 15.8
-bottom_radius = 15.8
-height = 0.9
-radial_segments = 48
-
-[sub_resource type="CylinderMesh" id="Plinth"]
-material = SubResource("RimStone")
-top_radius = 15.3
-bottom_radius = 13.7
-height = 2.3
-radial_segments = 48
-
-[sub_resource type="CylinderShape3D" id="FloorBody"]
-radius = 15.8
-height = 0.9
-
-[sub_resource type="BoxMesh" id="Rail"]
-material = SubResource("RimStone")
-size = Vector3(3.68, 1.05, 0.83)
-
-[sub_resource type="BoxShape3D" id="RailBody"]
-size = Vector3(3.68, 1.05, 0.83)
-
-[sub_resource type="BoxMesh" id="RailCap"]
-material = SubResource("IvoryStone")
-size = Vector3(3.62, 0.17, 0.78)
-
-[sub_resource type="CylinderMesh" id="Pillar"]
-material = SubResource("IvoryStone")
-top_radius = 0.39
-bottom_radius = 0.75
-height = 3.7
-radial_segments = 8
-
-[sub_resource type="PrismMesh" id="Crest"]
-material = SubResource("Inlay")
-size = Vector3(0.67, 0.82, 0.42)
-
-[sub_resource type="BoxMesh" id="ApproachStone"]
-material = SubResource("IvoryStone")
-size = Vector3(1.3, 0.05, 0.16)
-
-[sub_resource type="TorusMesh" id="OuterLine"]
-material = SubResource("Inlay")
-inner_radius = 10.65
-outer_radius = 10.8
-rings = 48
-ring_segments = 8
-
-[sub_resource type="TorusMesh" id="InnerLine"]
-material = SubResource("IvoryStone")
-inner_radius = 6.6
-outer_radius = 6.70
-rings = 44
-ring_segments = 8
-
-[sub_resource type="TorusMesh" id="SealLine"]
-material = SubResource("Inlay")
-inner_radius = 2.65
-outer_radius = 2.73
-rings = 32
-ring_segments = 8
+fog_light_color = Color(0.055, 0.12, 0.15, 1)
+fog_density = 0.002
 
 [node name="WindFinalArena" type="Node3D"]
 script = ExtResource("zone")
@@ -120,49 +35,32 @@ shader_warmup = null
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Lighting"]
 environment = SubResource("WindSky")
 
-[node name="Moon" type="DirectionalLight3D" parent="Lighting"]
-rotation = Vector3(-0.94, -0.53, 0)
-light_color = Color(0.82, 0.91, 1, 1)
-light_energy = 0.88
+[node name="CloudBreak" type="DirectionalLight3D" parent="Lighting"]
+rotation_degrees = Vector3(-58, -32, 0)
+light_color = Color(0.73, 0.87, 1, 1)
+light_energy = 1.25
 shadow_enabled = true
+directional_shadow_max_distance = 90.0
+
+[node name="CloudFill" type="DirectionalLight3D" parent="Lighting"]
+rotation_degrees = Vector3(-36, 145, 0)
+light_color = Color(0.47, 0.58, 0.64, 1)
+light_energy = 0.4
 
 [node name="Architecture" type="Node3D" parent="."]
 
-[node name="Platform" type="StaticBody3D" parent="Architecture"]
-position = Vector3(0, -0.45, 0)
-collision_mask = 0
+[node name="Stage" parent="Architecture" instance=ExtResource("stage")]
 
-[node name="Face" type="MeshInstance3D" parent="Architecture/Platform"]
-mesh = SubResource("Floor")
+[node name="Shrine" parent="Architecture" instance=ExtResource("shrine")]
 
-[node name="Shape" type="CollisionShape3D" parent="Architecture/Platform"]
-shape = SubResource("FloorBody")
+[node name="Weather" parent="Architecture" instance=ExtResource("weather")]
 
-[node name="Foundation" type="MeshInstance3D" parent="Architecture"]
-position = Vector3(0, -2.09, 0)
-mesh = SubResource("Plinth")
-
-[node name="Parapet" type="StaticBody3D" parent="Architecture"]
-collision_mask = 0
-
-[node name="Pilasters" type="Node3D" parent="Architecture"]
-
-[node name="Inlays" type="Node3D" parent="."]
-
-[node name="Outer" type="MeshInstance3D" parent="Inlays"]
-position = Vector3(0, 0.114, 0)
+[node name="StormVault" parent="Architecture/Weather" index="0"]
 cast_shadow = 0
-mesh = SubResource("OuterLine")
 
-[node name="Inner" type="MeshInstance3D" parent="Inlays"]
-position = Vector3(0, 0.104, 0)
-cast_shadow = 0
-mesh = SubResource("InnerLine")
-
-[node name="Seal" type="MeshInstance3D" parent="Inlays"]
-position = Vector3(0, 0.13, -3)
-cast_shadow = 0
-mesh = SubResource("SealLine")
+[node name="WindSanctuaryAmbience" parent="." node_paths=PackedStringArray("shrine", "storm_vault") instance=ExtResource("ambience")]
+shrine = NodePath("../Architecture/Shrine")
+storm_vault = NodePath("../Architecture/Weather/StormVault")
 
 [node name="Anchors" type="Node3D" parent="."]
 
@@ -193,388 +91,3 @@ position = Vector3(0, 0, -9)
 portal_id = &"wind_final_return"
 target_zone = "res://levels/temple_center/hub/hub.tscn"
 target_portal_id = &"wind_gate"
-
-[node name="Rail0" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.525, 14.68)
-shape = SubResource("RailBody")
-
-[node name="Stone0" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.525, 14.68)
-mesh = SubResource("Rail")
-
-[node name="Cap0" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.16, 14.68)
-mesh = SubResource("RailCap")
-
-[node name="Rail1" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 3.799464, 0.525, 14.179791)
-shape = SubResource("RailBody")
-
-[node name="Stone1" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 3.799464, 0.525, 14.179791)
-mesh = SubResource("Rail")
-
-[node name="Cap1" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 3.799464, 1.16, 14.179791)
-mesh = SubResource("RailCap")
-
-[node name="Rail2" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 7.34, 0.525, 12.713253)
-shape = SubResource("RailBody")
-
-[node name="Stone2" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 7.34, 0.525, 12.713253)
-mesh = SubResource("Rail")
-
-[node name="Cap2" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 7.34, 1.16, 12.713253)
-mesh = SubResource("RailCap")
-
-[node name="Rail3" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 10.380328, 0.525, 10.380328)
-shape = SubResource("RailBody")
-
-[node name="Stone3" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 10.380328, 0.525, 10.380328)
-mesh = SubResource("Rail")
-
-[node name="Cap3" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 10.380328, 1.16, 10.380328)
-mesh = SubResource("RailCap")
-
-[node name="Rail4" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 12.713253, 0.525, 7.34)
-shape = SubResource("RailBody")
-
-[node name="Stone4" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 12.713253, 0.525, 7.34)
-mesh = SubResource("Rail")
-
-[node name="Cap4" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 12.713253, 1.16, 7.34)
-mesh = SubResource("RailCap")
-
-[node name="Rail5" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, 0.258819, 14.179791, 0.525, 3.799464)
-shape = SubResource("RailBody")
-
-[node name="Stone5" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, 0.258819, 14.179791, 0.525, 3.799464)
-mesh = SubResource("Rail")
-
-[node name="Cap5" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, 0.258819, 14.179791, 1.16, 3.799464)
-mesh = SubResource("RailCap")
-
-[node name="Rail6" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14.68, 0.525, 0)
-shape = SubResource("RailBody")
-
-[node name="Stone6" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14.68, 0.525, 0)
-mesh = SubResource("Rail")
-
-[node name="Cap6" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14.68, 1.16, 0)
-mesh = SubResource("RailCap")
-
-[node name="Rail7" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 14.179791, 0.525, -3.799464)
-shape = SubResource("RailBody")
-
-[node name="Stone7" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 14.179791, 0.525, -3.799464)
-mesh = SubResource("Rail")
-
-[node name="Cap7" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 14.179791, 1.16, -3.799464)
-mesh = SubResource("RailCap")
-
-[node name="Rail8" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 12.713253, 0.525, -7.34)
-shape = SubResource("RailBody")
-
-[node name="Stone8" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 12.713253, 0.525, -7.34)
-mesh = SubResource("Rail")
-
-[node name="Cap8" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 12.713253, 1.16, -7.34)
-mesh = SubResource("RailCap")
-
-[node name="Rail9" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 10.380328, 0.525, -10.380328)
-shape = SubResource("RailBody")
-
-[node name="Stone9" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 10.380328, 0.525, -10.380328)
-mesh = SubResource("Rail")
-
-[node name="Cap9" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 10.380328, 1.16, -10.380328)
-mesh = SubResource("RailCap")
-
-[node name="Rail10" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 7.34, 0.525, -12.713253)
-shape = SubResource("RailBody")
-
-[node name="Stone10" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 7.34, 0.525, -12.713253)
-mesh = SubResource("Rail")
-
-[node name="Cap10" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 7.34, 1.16, -12.713253)
-mesh = SubResource("RailCap")
-
-[node name="Rail11" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 3.799464, 0.525, -14.179791)
-shape = SubResource("RailBody")
-
-[node name="Stone11" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 3.799464, 0.525, -14.179791)
-mesh = SubResource("Rail")
-
-[node name="Cap11" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 3.799464, 1.16, -14.179791)
-mesh = SubResource("RailCap")
-
-[node name="Rail12" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.525, -14.68)
-shape = SubResource("RailBody")
-
-[node name="Stone12" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.525, -14.68)
-mesh = SubResource("Rail")
-
-[node name="Cap12" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.16, -14.68)
-mesh = SubResource("RailCap")
-
-[node name="Rail13" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, -0.965926, -3.799464, 0.525, -14.179791)
-shape = SubResource("RailBody")
-
-[node name="Stone13" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, -0.965926, -3.799464, 0.525, -14.179791)
-mesh = SubResource("Rail")
-
-[node name="Cap13" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, -0.965926, -3.799464, 1.16, -14.179791)
-mesh = SubResource("RailCap")
-
-[node name="Rail14" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -7.34, 0.525, -12.713253)
-shape = SubResource("RailBody")
-
-[node name="Stone14" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -7.34, 0.525, -12.713253)
-mesh = SubResource("Rail")
-
-[node name="Cap14" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -7.34, 1.16, -12.713253)
-mesh = SubResource("RailCap")
-
-[node name="Rail15" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -10.380328, 0.525, -10.380328)
-shape = SubResource("RailBody")
-
-[node name="Stone15" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -10.380328, 0.525, -10.380328)
-mesh = SubResource("Rail")
-
-[node name="Cap15" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -10.380328, 1.16, -10.380328)
-mesh = SubResource("RailCap")
-
-[node name="Rail16" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -12.713253, 0.525, -7.34)
-shape = SubResource("RailBody")
-
-[node name="Stone16" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -12.713253, 0.525, -7.34)
-mesh = SubResource("Rail")
-
-[node name="Cap16" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -12.713253, 1.16, -7.34)
-mesh = SubResource("RailCap")
-
-[node name="Rail17" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, -0.258819, -14.179791, 0.525, -3.799464)
-shape = SubResource("RailBody")
-
-[node name="Stone17" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, -0.258819, -14.179791, 0.525, -3.799464)
-mesh = SubResource("Rail")
-
-[node name="Cap17" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(-0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, -0.258819, -14.179791, 1.16, -3.799464)
-mesh = SubResource("RailCap")
-
-[node name="Rail18" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14.68, 0.525, 0)
-shape = SubResource("RailBody")
-
-[node name="Stone18" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14.68, 0.525, 0)
-mesh = SubResource("Rail")
-
-[node name="Cap18" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14.68, 1.16, 0)
-mesh = SubResource("RailCap")
-
-[node name="Rail19" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, -14.179791, 0.525, 3.799464)
-shape = SubResource("RailBody")
-
-[node name="Stone19" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, -14.179791, 0.525, 3.799464)
-mesh = SubResource("Rail")
-
-[node name="Cap19" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, -14.179791, 1.16, 3.799464)
-mesh = SubResource("RailCap")
-
-[node name="Rail20" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -12.713253, 0.525, 7.34)
-shape = SubResource("RailBody")
-
-[node name="Stone20" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -12.713253, 0.525, 7.34)
-mesh = SubResource("Rail")
-
-[node name="Cap20" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -12.713253, 1.16, 7.34)
-mesh = SubResource("RailCap")
-
-[node name="Rail21" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -10.380328, 0.525, 10.380328)
-shape = SubResource("RailBody")
-
-[node name="Stone21" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -10.380328, 0.525, 10.380328)
-mesh = SubResource("Rail")
-
-[node name="Cap21" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -10.380328, 1.16, 10.380328)
-mesh = SubResource("RailCap")
-
-[node name="Rail22" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -7.34, 0.525, 12.713253)
-shape = SubResource("RailBody")
-
-[node name="Stone22" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -7.34, 0.525, 12.713253)
-mesh = SubResource("Rail")
-
-[node name="Cap22" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -7.34, 1.16, 12.713253)
-mesh = SubResource("RailCap")
-
-[node name="Rail23" type="CollisionShape3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -3.799464, 0.525, 14.179791)
-shape = SubResource("RailBody")
-
-[node name="Stone23" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -3.799464, 0.525, 14.179791)
-mesh = SubResource("Rail")
-
-[node name="Cap23" type="MeshInstance3D" parent="Architecture/Parapet"]
-transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -3.799464, 1.16, 14.179791)
-mesh = SubResource("RailCap")
-
-[node name="Pillar2" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(9.271437, 1.4, 12.082771)
-mesh = SubResource("Pillar")
-
-[node name="Glass2" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(9.271437, 3.72, 12.082771)
-mesh = SubResource("Crest")
-
-[node name="Pillar4" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(14.070685, 1.4, 5.828269)
-mesh = SubResource("Pillar")
-
-[node name="Glass4" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(14.070685, 3.72, 5.828269)
-mesh = SubResource("Crest")
-
-[node name="Pillar7" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(14.070685, 2, -5.828269)
-mesh = SubResource("Pillar")
-
-[node name="Glass7" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(14.070685, 4.32, -5.828269)
-mesh = SubResource("Crest")
-
-[node name="Pillar10" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(5.828269, 2, -14.070685)
-mesh = SubResource("Pillar")
-
-[node name="Glass10" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(5.828269, 4.32, -14.070685)
-mesh = SubResource("Crest")
-
-[node name="Pillar12" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-1.987914, 2, -15.099705)
-mesh = SubResource("Pillar")
-
-[node name="Glass12" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-1.987914, 4.32, -15.099705)
-mesh = SubResource("Crest")
-
-[node name="Pillar14" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-9.271437, 2, -12.082771)
-mesh = SubResource("Pillar")
-
-[node name="Glass14" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-9.271437, 4.32, -12.082771)
-mesh = SubResource("Crest")
-
-[node name="Pillar17" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-15.099705, 2, -1.987914)
-mesh = SubResource("Pillar")
-
-[node name="Glass17" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-15.099705, 4.32, -1.987914)
-mesh = SubResource("Crest")
-
-[node name="Pillar20" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-12.082771, 1.4, 9.271437)
-mesh = SubResource("Pillar")
-
-[node name="Glass20" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-12.082771, 3.72, 9.271437)
-mesh = SubResource("Crest")
-
-[node name="Pillar22" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-5.828269, 1.4, 14.070685)
-mesh = SubResource("Pillar")
-
-[node name="Glass22" type="MeshInstance3D" parent="Architecture/Pilasters"]
-position = Vector3(-5.828269, 3.72, 14.070685)
-mesh = SubResource("Crest")
-
-[node name="StepMark0" type="MeshInstance3D" parent="Inlays"]
-position = Vector3(0, 0.06, 8.5)
-cast_shadow = 0
-mesh = SubResource("ApproachStone")
-
-[node name="StepMark1" type="MeshInstance3D" parent="Inlays"]
-position = Vector3(0, 0.06, 9.25)
-cast_shadow = 0
-mesh = SubResource("ApproachStone")
-
-[node name="StepMark2" type="MeshInstance3D" parent="Inlays"]
-position = Vector3(0, 0.06, 10)
-cast_shadow = 0
-mesh = SubResource("ApproachStone")
-
-[node name="StepMark3" type="MeshInstance3D" parent="Inlays"]
-position = Vector3(0, 0.06, 11.25)
-cast_shadow = 0
-mesh = SubResource("ApproachStone")
-
-[node name="StepMark4" type="MeshInstance3D" parent="Inlays"]
-position = Vector3(0, 0.06, 12)
-cast_shadow = 0
-mesh = SubResource("ApproachStone")
