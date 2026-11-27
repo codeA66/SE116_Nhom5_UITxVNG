@@ -405,7 +405,18 @@ func _tc23_echoes() -> void:
 	if echoes == null:
 		return
 	var start := pickup.global_position
-	await _wait(0.6)
+	# Dư ảnh thứ i cần i + 1 điểm mẫu cách nhau echo_spacing theo quãng đường: chờ theo quãng đường đã bay chứ không
+	# theo thời gian cố định (máy CI chậm, sau 0.6 s viên mới bay 0.9-1.3 m nên chỉ thấy 3 dư ảnh)
+	var needed: float = float(echoes.get_child_count() + 1) * float(pickup.get(&"echo_spacing")) + 0.05
+	var travelled := 0.0
+	var last := pickup.global_position
+	var waited := 0.0
+	while travelled < needed and waited < 3.0 and pickup.is_processing():
+		await get_tree().process_frame
+		waited += get_process_delta_time()
+		travelled += pickup.global_position.distance_to(last)
+		last = pickup.global_position
+	_check(travelled >= needed, "TC23: viên bay đủ %.2f m để có đủ dư ảnh (đã bay %.2f m sau %.2f s)" % [needed, travelled, waited])
 	var shown := 0
 	var min_gap := INF
 	var prev := Vector3.INF
