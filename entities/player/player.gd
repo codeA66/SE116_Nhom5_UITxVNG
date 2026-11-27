@@ -1,6 +1,6 @@
 class_name Player
 extends Character
-## Player: đọc input theo hướng camera, coyote time, các input buffer, nhặt vũ khí, mở khóa kỹ năng.
+## Player: đọc input theo hướng camera, các input buffer, nhặt vũ khí, mở khóa kỹ năng.
 ## Vũ khí và kỹ năng thuộc tiến trình (GameState), không lưu trong player: chuyển scene không bị mất.
 
 ## Vừa bắn cung, bắt đầu thời gian hồi (HUD nghe để hiện, không phải dò mỗi frame)
@@ -47,8 +47,6 @@ const ANIM_HURT := &"Rig_Medium_General/Hit_A"
 const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 
 @export_group("Input Feel")
-@export var coyote_time: float = 0.12
-@export var jump_buffer_time: float = 0.12
 @export var attack_buffer_time: float = 0.25
 ## Không ngắn hơn cancel_start của đòn chém: bấm dash sớm trong đòn vẫn được giữ tới lúc hủy được
 @export var dash_buffer_time: float = 0.2
@@ -87,7 +85,7 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 @export_range(1, 8) var bow_volley_limit: int = 8
 
 ## Đòn đánh gần nhất trúng player, state Hurt dùng để lấy hướng đẩy lùi
-## Tắt khi cutscene / hội thoại: bỏ qua mọi phím (đi, nhảy, đánh, dash, gió, tương tác, đổi vũ khí).
+## Tắt khi cutscene / hội thoại: bỏ qua mọi phím (đi, đánh, dash, gió, tương tác, đổi vũ khí).
 ## Vật lý vẫn chạy nên đứng trên thuyền / bệ vẫn được chở đi. Đổi bằng set_controls_enabled()
 var controls_enabled: bool = true
 var _terrain_speed_scales: Dictionary[Node, float] = {}
@@ -98,8 +96,6 @@ var pending_weapon: WeaponData
 ## Bấm đổi trong một hành động: thực hiện sau khi hành động kết thúc.
 var _requested_weapon_slot: int = -1
 
-var _coyote_timer: float = 0.0
-var _jump_buffer_timer: float = 0.0
 var _attack_buffer_timer: float = 0.0
 var _dash_buffer_timer: float = 0.0
 var _dash_cooldown_timer: float = 0.0
@@ -291,7 +287,6 @@ func set_controls_enabled(enabled: bool) -> void:
 	if not enabled:
 		cancel_bow_volley()
 		# Xoá lệnh đang chờ trong buffer: thả khoá xong không tự bật đòn đã bấm lúc bị khoá
-		_jump_buffer_timer = 0.0
 		_attack_buffer_timer = 0.0
 		_dash_buffer_timer = 0.0
 		_skill_buffers.clear()
@@ -376,17 +371,6 @@ func set_damage_protection(source: Node, enabled: bool) -> void:
 		_hurtbox.invulnerable = _previous_invulnerable
 
 
-## Đúng khi có jump buffer, còn coyote time và không bị trói chân
-func can_jump() -> bool:
-	return not root_locked() and _jump_buffer_timer > 0.0 and _coyote_timer > 0.0
-
-
-func jump() -> void:
-	super()
-	_jump_buffer_timer = 0.0
-	_coyote_timer = 0.0
-
-
 func get_weapon() -> WeaponData:
 	return GameState.get_weapon()
 
@@ -442,7 +426,7 @@ func consume_attack_input() -> void:
 	_attack_buffer_timer = 0.0
 
 
-## Khóa tấn công/cung/kỹ năng chủ động; vẫn đi, nhảy, dash và tương tác khi mang vật.
+## Khóa tấn công/cung/kỹ năng chủ động; vẫn đi, dash và tương tác khi mang vật.
 func set_combat_locked(source: Node, locked: bool) -> void:
 	if locked:
 		_combat_locks[source] = true
@@ -459,7 +443,7 @@ func combat_locked() -> bool:
 	return not _combat_locks.is_empty()
 
 
-## Khóa dash (dính tơ nhện...); vẫn đi, nhảy, đánh và dùng kỹ năng. Xóa luôn lệnh dash đang chờ trong buffer.
+## Khóa dash (dính tơ nhện...); vẫn đi, đánh và dùng kỹ năng. Xóa luôn lệnh dash đang chờ trong buffer.
 ## source tự được gỡ khóa khi rời cây (nguồn bị xóa thì không kẹt khóa mãi)
 func set_dash_locked(source: Node, locked: bool) -> void:
 	if locked:
@@ -486,10 +470,9 @@ func set_root_locked(source: Node, locked: bool) -> void:
 			source.tree_exiting.connect(release, CONNECT_ONE_SHOT)
 		set_terrain_speed(source, 0.0)
 		set_dash_locked(source, true)
-		_jump_buffer_timer = 0.0
 		velocity.x = 0.0
 		velocity.z = 0.0
-		if state_machine.current_state and state_machine.current_state.name in [PlayerState.DASH, PlayerState.JUMP]:
+		if state_machine.current_state and state_machine.current_state.name == PlayerState.DASH:
 			state_machine.transition_to(PlayerState.IDLE if is_on_floor() else PlayerState.FALL)
 	else:
 		_release_root_lock(source)
@@ -769,7 +752,7 @@ func _update_weapon_selection() -> void:
 		_requested_weapon_slot = -1
 		return
 	var state := state_machine.current_state
-	if state == null or state.name not in [PlayerState.IDLE, PlayerState.RUN, PlayerState.JUMP, PlayerState.FALL]:
+	if state == null or state.name not in [PlayerState.IDLE, PlayerState.RUN, PlayerState.FALL]:
 		return
 	GameState.select_weapon(_requested_weapon_slot)
 	_requested_weapon_slot = -1
@@ -1058,7 +1041,6 @@ func find_attack_direction(preferred: Vector3) -> Vector3:
 func _pre_state_update(delta: float) -> void:
 	_update_weapon_selection()
 	if is_on_floor():
-		_coyote_timer = coyote_time
 		_air_dashes_used = 0
 		# Area3D nhận biết vùng gió trễ vài frame: chỉ công nhận vị trí của safe_ground_frames frame trước,
 		# khi suốt khoảng đó không có gió. Chỗ an toàn vì vậy luôn lùi khỏi mép vùng gió và mép vực
@@ -1068,10 +1050,7 @@ func _pre_state_update(delta: float) -> void:
 			_recent_floor_positions.append(global_position)
 			if _recent_floor_positions.size() > safe_ground_frames:
 				_last_safe_position = _recent_floor_positions.pop_front()
-	else:
-		_coyote_timer -= delta
 
-	_jump_buffer_timer = _update_buffer(&"jump", _jump_buffer_timer, jump_buffer_time, delta)
 	if _attack_blocked_by_ui:
 		_attack_buffer_timer = 0.0
 	else:
@@ -1246,10 +1225,6 @@ func _warm_bow_volley_pool() -> void:
 
 func _configure_projectile_instance(node: Node) -> void:
 	(node as Node3D).set_as_top_level(true)
-
-
-func _is_holding_jump() -> bool:
-	return controls_enabled and Input.is_action_pressed("jump")
 
 
 func _update_buffer(action: StringName, timer: float, buffer_time: float, delta: float) -> float:

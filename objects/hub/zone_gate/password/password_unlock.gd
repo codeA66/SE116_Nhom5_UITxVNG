@@ -16,6 +16,11 @@ static var store_path: String = "user://access.cfg"
 @export var hint: String = "Cần mật khẩu"
 
 
+func _init() -> void:
+	# Mật khẩu chỉ hỏi lúc bước vào cổng, cổng vẫn mở / chiếu lễ thức khi thắng khu trước
+	check_on_entry = true
+
+
 func is_met() -> bool:
 	var config := ConfigFile.new()
 	if config.load(store_path) != OK:

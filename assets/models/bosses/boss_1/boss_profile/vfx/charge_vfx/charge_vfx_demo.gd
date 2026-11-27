@@ -3,7 +3,7 @@ extends Node3D
 
 @export_group("Nội dung xem thử")
 @export var visual_scene: PackedScene = preload("../../boss.tscn")
-@export var replay_action: StringName = &"jump"
+@export var replay_action: StringName = &"ui_accept"
 @export_range(0.0, 10.0) var autoplay_delay: float = 0.8
 @export_group("Góc nhìn")
 @export var camera_position: Vector3 = Vector3(1.70, 1.37, 2.65)

@@ -5,21 +5,24 @@ extends Node
 ##
 ## ===== USE CASE =====
 ## UC1  Chưa thắng boss Gió: bước tới cổng Lửa -> không hiện ô mật khẩu, cổng báo cần đánh boss.
-## UC2  Đã thắng boss Gió, chưa nhập mật khẩu: cổng Lửa đóng ("Cần mật khẩu"); bước vào vùng trước cổng -> hiện ô
-##      nhập mật khẩu kèm dòng liên hệ, player đứng yên.
-## UC3  Gõ sai rồi Enter -> báo sai, cổng vẫn đóng, ô vẫn mở để nhập lại.
-## UC4  Esc -> ô đóng, player đi lại được, cổng vẫn đóng; bước ra rồi vào lại -> ô hiện lại.
-## UC5  Gõ đúng rồi Enter -> ô đóng, player đi lại được, cổng mở (opened phát 1 lần).
-## UC6  Nhớ theo máy: nạp lại hub, hoặc chơi save mới (đã thắng boss Gió) -> cổng mở ngay, không hỏi lại.
+## UC2  Đã thắng boss Gió, chưa nhập mật khẩu: cổng Lửa MỞ ngay (lễ thức / cắt cảnh chạy, người chơi biết đi đâu)
+##      nhưng chưa vào được (vách chặn còn, cổng dịch chuyển tắt, bảng ghi "Cần mật khẩu"); bước vào vùng trước cổng
+##      -> hiện ô nhập mật khẩu kèm dòng liên hệ, player đứng yên.
+## UC3  Gõ sai rồi Enter -> báo sai, vẫn chưa vào được, ô vẫn mở để nhập lại.
+## UC4  Esc -> ô đóng, player đi lại được, vẫn chưa vào được; bước ra rồi vào lại -> ô hiện lại.
+## UC5  Gõ đúng rồi Enter -> ô đóng, player đi lại được, vào được (vách chặn tắt, cổng dịch chuyển bật); opened không
+##      phát thêm (đã phát lúc thắng boss Gió).
+## UC6  Nhớ theo máy: nạp lại hub, hoặc chơi save mới (đã thắng boss Gió) -> vào được ngay, không hỏi lại.
 ## UC7  Cổng Lửa thật trong hub có điều kiện mật khẩu; file scene chỉ chứa mã băm SHA-256, không có chữ gốc.
 ##
 ## ===== TEST CASE =====
 ## TC1 (UC1)  Không cờ zone.wind.cleared, đi bộ thật vào vùng -> prompt ẩn.
-## TC2 (UC2)  Có cờ, đi bộ vào vùng -> prompt hiện, có chữ liên hệ gmail, controls_enabled = false, bảng cổng ghi mật khẩu.
-## TC3 (UC3)  Gõ phím thật "sai123" + Enter -> báo sai, cổng đóng, prompt vẫn hiện, ô nhập trống.
-## TC4 (UC4)  Esc -> prompt ẩn, điều khiển bật lại, cổng đóng; ra khỏi vùng rồi vào lại -> prompt hiện.
-## TC5 (UC5)  Gõ phím thật mật khẩu thử + Enter -> prompt ẩn, điều khiển bật, cổng mở, opened = 1.
-## TC6 (UC6)  Nạp lại hub; rồi thay tiến trình mới (chỉ có cờ boss Gió) -> cổng mở ngay, prompt không hiện.
+## TC2 (UC2)  Đặt cờ lúc đang ở hub -> is_open, opened = 1, chưa vào được (portal tắt, vách chặn bật), bảng ghi mật khẩu;
+##            đi bộ vào vùng -> prompt hiện, có chữ liên hệ gmail, controls_enabled = false.
+## TC3 (UC3)  Gõ phím thật "sai123" + Enter -> báo sai, chưa vào được, prompt vẫn hiện, ô nhập trống.
+## TC4 (UC4)  Esc -> prompt ẩn, điều khiển bật lại, chưa vào được; ra khỏi vùng rồi vào lại -> prompt hiện.
+## TC5 (UC5)  Gõ phím thật mật khẩu thử + Enter -> prompt ẩn, điều khiển bật, vào được (portal bật, vách chặn tắt), opened = 1.
+## TC6 (UC6)  Nạp lại hub; rồi thay tiến trình mới (chỉ có cờ boss Gió) -> vào được ngay, prompt không hiện.
 ## TC7 (UC7)  FireGate có PasswordUnlock, mã băm 64 ký tự hex, hub.tscn không chứa chữ gốc mật khẩu thử.
 
 const HUB := "res://levels/temple_center/hub/hub.tscn"
@@ -110,6 +113,16 @@ func _password_condition(hub: Node) -> Resource:
 	return null
 
 
+## Vào được thật: cổng báo vào được, vùng dịch chuyển đang nghe, vách chặn tắt
+func _enterable() -> bool:
+	var gate := _gate()
+	if not gate.has_method(&"is_enterable") or not gate.call(&"is_enterable"):
+		return false
+	var portal_area := gate.get_node("Portal").find_children("*", "Area3D", true, false)[0] as Area3D
+	var blocker := gate.get_node("Blocker/CollisionShape3D") as CollisionShape3D
+	return portal_area.monitoring and blocker.disabled
+
+
 func _prompt() -> Node:
 	return _hub.find_child("PasswordGate", true, false)
 
@@ -148,7 +161,15 @@ func _tc1_before_boss() -> void:
 
 func _tc2_prompt() -> void:
 	var label := (_gate().get_node("Label") as Label3D).text
-	_check(not _gate().is_open() and label.to_lower().contains("mật khẩu"), "TC2: thắng boss Gió, chưa nhập -> cổng đóng, bảng ghi '%s'" % label.replace("\n", " / "))
+	_check(_gate().is_open() and _opened == 1, "TC2: thắng boss Gió -> cổng mở ngay, chưa cần mật khẩu (opened %d lần)" % _opened)
+	_check(not _enterable(), "TC2: chưa nhập mật khẩu -> chưa vào được (portal tắt, vách chặn bật)")
+	_check(label.to_lower().contains("mật khẩu"), "TC2: bảng cổng ghi '%s'" % label.replace("
+", " / "))
+	# Chờ cắt cảnh khu Lửa thức dậy chạy xong (trả điều khiển) rồi mới đi tới cổng
+	var t := 0.0
+	while t < 12.0 and not _p.controls_enabled:
+		await get_tree().process_frame
+		t += get_process_delta_time()
 	await _walk_to_gate()
 	_check(_prompt_visible(), "TC2: bước tới cổng -> hiện ô nhập mật khẩu")
 	_check(not _p.controls_enabled, "TC2: lúc nhập mật khẩu player đứng yên")
@@ -160,14 +181,14 @@ func _tc3_wrong() -> void:
 	await _type("sai123")
 	await _press(KEY_ENTER)
 	var gate_node := _prompt()
-	_check(not _gate().is_open() and _prompt_visible(), "TC3: sai mật khẩu -> cổng vẫn đóng, ô vẫn mở")
+	_check(not _enterable() and _prompt_visible(), "TC3: sai mật khẩu -> vẫn chưa vào được, ô vẫn mở")
 	_check(_all_text(gate_node).to_lower().contains("sai"), "TC3: báo sai mật khẩu")
 	_check(_line_edit().text.is_empty(), "TC3: ô nhập được xoá để nhập lại")
 
 
 func _tc4_escape() -> void:
 	await _press(KEY_ESCAPE)
-	_check(not _prompt_visible() and _p.controls_enabled and not _gate().is_open(), "TC4: Esc -> ô đóng, đi lại được, cổng vẫn đóng")
+	_check(not _prompt_visible() and _p.controls_enabled and not _enterable(), "TC4: Esc -> ô đóng, đi lại được, vẫn chưa vào được")
 	await _walk_away()
 	await _walk_to_gate()
 	_check(_prompt_visible(), "TC4: ra rồi vào lại -> ô hiện lại")
@@ -178,16 +199,20 @@ func _tc5_correct() -> void:
 	await _press(KEY_ENTER)
 	await _wait(0.2)
 	_check(not _prompt_visible() and _p.controls_enabled, "TC5: đúng mật khẩu -> ô đóng, đi lại được")
-	_check(_gate().is_open() and _opened == 1, "TC5: cổng Lửa mở (opened %d lần)" % _opened)
+	_check(_enterable(), "TC5: đúng mật khẩu -> vào được (portal bật, vách chặn tắt)")
+	_check(_opened == 1, "TC5: opened không phát lại (%d lần)" % _opened)
 
 
 func _tc6_remember() -> void:
 	await _load_hub()
-	_check(_gate().is_open(), "TC6: nạp lại hub -> cổng mở ngay")
+	_check(_enterable(), "TC6: nạp lại hub -> vào được ngay")
 	_new_progress(true)
 	await _load_hub()
-	await _walk_to_gate()
-	_check(_gate().is_open() and not _prompt_visible(), "TC6: save mới (đã thắng boss Gió) -> cổng mở, không hỏi lại")
+	# Cổng đã vào được nên không đi xuyên qua (sẽ dịch chuyển sang khu Lửa): chỉ đứng trong vùng hỏi mật khẩu
+	var password_gate := _prompt() as Node3D
+	_p.teleport(password_gate.global_position + _gate().global_basis.z * 1.0, -_gate().global_basis.z)
+	await _wait(0.5)
+	_check(_enterable() and not _prompt_visible(), "TC6: save mới (đã thắng boss Gió) -> vào được, không hỏi lại")
 
 
 func _tc7_scene_condition() -> void:
