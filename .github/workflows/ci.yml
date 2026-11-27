@@ -87,7 +87,7 @@ jobs:
         group:
           - { name: player-fire, filter: "tests/(player|fire)/" }
           - { name: wind-ui, filter: "tests/(wind|ui)/" }
-          - { name: npc-levels, filter: "tests/(npcs|levels)/" }
+          - { name: npc-levels, filter: "tests/(npcs|levels|project)/" }
     steps:
       - uses: actions/checkout@v4
 

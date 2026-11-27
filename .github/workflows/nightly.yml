@@ -29,7 +29,7 @@ jobs:
           - { name: fire-level-3, filter: "tests/levels/fire_level_3/[a-z0-9_]+\\.tscn" }
           - { name: fire-level-3-tier-2, filter: "tests/levels/fire_level_3/tier_2/" }
           - { name: other-levels, filter: "tests/levels/(boat|hub|monkey|wind)" }
-          - { name: wind-ui-npc, filter: "tests/(wind|ui|npcs|breakables|kits)/" }
+          - { name: wind-ui-npc, filter: "tests/(wind|ui|npcs|breakables|kits|project)/" }
     steps:
       - uses: actions/checkout@v4
 
