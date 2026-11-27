@@ -19,6 +19,7 @@ extends Node
 ## UC12 Nhận tiền phải "thấy được": viên nở ra lúc rơi, có vòng sáng ở chỗ quái gục (1 vòng mỗi lần rơi),
 ##      chớp sáng nhỏ lúc nhặt (giới hạn tần suất để 12 viên về cùng lúc không thành mảng chói); mọi hiệu ứng tự tắt hẳn.
 ##      Loại tiền khác có thể có hình rơi / nhặt riêng (khai báo trong CurrencyData).
+## UC13 Chuỗi dư ảnh giữ đủ bóng sau khi bay đủ xa, không nhấp nháy khi lấy mẫu đường đi hoặc tái dùng pool.
 ##
 ## ===== TEST CASE =====
 ## TC1  (UC1)   Bảng [soul_jade x2]: giết quái -> 1 viên bay; 3 s sau +2 đúng, HUD đúng, pool rỗng. Lặp 3 lần đều +2 (không ngẫu nhiên).
@@ -43,6 +44,9 @@ extends Node
 ## TC22 (UC12)  Không hiện chữ số nào ở chỗ quái gục (kiểu Death's Door): hiệu ứng rơi không có Label3D.
 ## TC23 (UC12)  Lúc bay: 4 dư ảnh (node Echoes) hiện sau đốm, cách nhau theo quãng đường (không chồng một chỗ), nhỏ và mờ dần;
 ##              nhặt xong thì dư ảnh ẩn hết; viên mới rơi không mang dư ảnh cũ từ lần trước.
+## TC25 (UC13)  Đường bay thẳng: nhiều khung liên tiếp đều đủ 4 bóng, mỗi bóng cách nhau echo_spacing;
+##              thử chậm/nhanh, bước vượt nhiều khoảng, khoảng cách 0.00001 / 0 / âm / 0.05 / 2 / 50 m và đứng yên.
+## TC26 (UC13)  Trả pool: ngừng xử lý và ẩn bóng; phóng lại ở chỗ khác không kéo theo bóng cũ, không thêm node.
 
 const SANDBOX := "res://tests/fire/sandbox/fire_sandbox.tscn"
 const ENEMY := "res://entities/enemies/palace/enemy_1/enemy_1.tscn"
@@ -68,6 +72,12 @@ func _ready() -> void:
 
 func _run() -> void:
 	await _setup()
+	if OS.get_cmdline_user_args().has("--echo-only"):
+		await _tc25_echo_continuity()
+		await _tc26_echo_pool_reset()
+		print("RESULT fails=%d" % _fails)
+		get_tree().quit(0 if _fails == 0 else 1)
+		return
 	await _tc1_fixed()
 	await _tc2_multi()
 	_tc3_tables()
@@ -88,6 +98,8 @@ func _run() -> void:
 	await _tc22_no_world_number()
 	await _tc23_echoes()
 	_tc24_streak_and_color()
+	await _tc25_echo_continuity()
+	await _tc26_echo_pool_reset()
 	print("RESULT fails=%d" % _fails)
 	get_tree().quit()
 
@@ -430,3 +442,117 @@ func _tc24_streak_and_color() -> void:
 	var c := SOUL_JADE.color
 	_check(c.r > 0.8 and c.b > 0.4 and c.g < 0.5, "TC24: màu loại tiền hồng cánh sen %s" % c)
 	pickup.free()
+
+
+func _tc25_echo_continuity() -> void:
+	await _echo_flight("chậm", 0.05, 0.5)
+	await _echo_flight("mặc định", 0.32, 4.0)
+	await _echo_flight("vượt nhiều khoảng mỗi frame", 0.05, 5000.0)
+	await _echo_flight("khoảng lớn", 2.0, 20.0)
+	await _echo_flight("khoảng rất lớn", 50.0, 1000.0)
+	await _echo_flight("khoảng rất nhỏ", 0.00001, 4.0)
+	await _echo_flight("khoảng bằng 0", 0.0, 4.0)
+	await _echo_flight("khoảng âm", -1.0, 4.0)
+	await _echo_flight("đứng yên", 0.32, 0.0)
+
+
+func _echo_flight(label: String, spacing: float, speed: float) -> void:
+	var target: Node3D = Node3D.new()
+	add_child(target)
+	target.global_position = Vector3(100000.0, 2.0, 0.0)
+	var pickup: CurrencyPickup = _make_echo_pickup(spacing, speed)
+	var echoes: Array[Node3D] = _echo_nodes(pickup)
+	pickup.launch(Vector3(0.0, 2.0, 0.0), target, SOUL_JADE, 1)
+	var effective_spacing: float = maxf(spacing, 0.05)
+	var previous: Vector3 = pickup.global_position
+	var distance: float = 0.0
+	var samples: int = 0
+	var missing: int = 0
+	var worst_gap: float = 0.0
+	var finite: bool = true
+	var deadline: int = Time.get_ticks_msec() + 10000
+	while samples < 12 and Time.get_ticks_msec() < deadline:
+		await get_tree().process_frame
+		distance += previous.distance_to(pickup.global_position)
+		previous = pickup.global_position
+		if speed > 0.0 and distance < effective_spacing * 5.0:
+			continue
+		samples += 1
+		var shown: int = 0
+		var last: Vector3 = pickup.global_position
+		for echo: Node3D in echoes:
+			finite = finite and echo.global_position.is_finite()
+			if echo.visible:
+				shown += 1
+				worst_gap = maxf(worst_gap, absf(last.distance_to(echo.global_position) - effective_spacing))
+				last = echo.global_position
+		if shown != (4 if speed > 0.0 else 0):
+			missing += 1
+	_check(samples == 12 and missing == 0, "TC25 %s: đủ bóng ở mọi khung (%d/%d khung sai)" % [label, missing, samples])
+	_check(finite and worst_gap <= maxf(0.003, effective_spacing * 0.02),
+		"TC25 %s: khoảng cách ổn định, tọa độ hữu hạn (sai số %.5f m)" % [label, worst_gap])
+	pickup.pool_released()
+	pickup.queue_free()
+	target.queue_free()
+	await get_tree().process_frame
+
+
+func _tc26_echo_pool_reset() -> void:
+	var target: Node3D = Node3D.new()
+	add_child(target)
+	target.global_position = Vector3(100000.0, 2.0, 0.0)
+	var pickup: CurrencyPickup = _make_echo_pickup(0.32, 8.0)
+	var echoes: Array[Node3D] = _echo_nodes(pickup)
+	var node_count: int = pickup.get_child_count()
+	_check(not pickup.is_processing() and _visible_echoes(echoes) == 0, "TC26 mới tạo: không xử lý, không bóng")
+	pickup.launch(Vector3.ZERO, target, SOUL_JADE, 1)
+	var start: Vector3 = pickup.global_position
+	var deadline: int = Time.get_ticks_msec() + 5000
+	while start.distance_to(pickup.global_position) < 2.0 and Time.get_ticks_msec() < deadline:
+		await get_tree().process_frame
+	_check(_visible_echoes(echoes) == 4, "TC26 lần đầu: đủ 4 bóng")
+	pickup.pool_released()
+	_check(not pickup.is_processing() and _visible_echoes(echoes) == 0, "TC26 trả pool: ngừng xử lý và ẩn toàn bộ bóng")
+	pickup.launch(Vector3(40.0, 2.0, 0.0), target, SOUL_JADE, 1)
+	_check(_visible_echoes(echoes) == 0, "TC26 phóng lại: chưa bay thì không có bóng cũ")
+	start = pickup.global_position
+	deadline = Time.get_ticks_msec() + 5000
+	var stale: bool = false
+	while start.distance_to(pickup.global_position) < 2.0 and Time.get_ticks_msec() < deadline:
+		await get_tree().process_frame
+		for echo: Node3D in echoes:
+			if echo.visible and echo.global_position.distance_to(start) > start.distance_to(pickup.global_position) + 0.01:
+				stale = true
+	_check(not stale and _visible_echoes(echoes) == 4, "TC26 phóng lại: đủ 4 bóng tại đường bay mới")
+	_check(pickup.get_child_count() == node_count, "TC26 dùng lại không tạo thêm node")
+	pickup.pool_released()
+	pickup.queue_free()
+	target.queue_free()
+	await get_tree().process_frame
+
+
+func _make_echo_pickup(spacing: float, speed: float) -> CurrencyPickup:
+	var pickup: CurrencyPickup = SOUL_JADE.pickup_scene.instantiate() as CurrencyPickup
+	pickup.echo_spacing = spacing
+	# Đường thẳng loại bỏ góc cua ngẫu nhiên để đo đúng khoảng cách dọc chuỗi bóng.
+	pickup.pop_speed = Vector2(speed, speed)
+	pickup.pop_up = Vector2.ZERO
+	pickup.pop_gravity = 0.0
+	pickup.pop_time = 60.0
+	pickup.spawn_scale_time = 0.0
+	add_child(pickup)
+	return pickup
+
+
+func _echo_nodes(pickup: CurrencyPickup) -> Array[Node3D]:
+	var result: Array[Node3D] = []
+	for echo: Node3D in pickup.get_node(^"Echoes").get_children():
+		result.append(echo)
+	return result
+
+
+func _visible_echoes(echoes: Array[Node3D]) -> int:
+	var count: int = 0
+	for echo: Node3D in echoes:
+		count += 1 if echo.visible else 0
+	return count

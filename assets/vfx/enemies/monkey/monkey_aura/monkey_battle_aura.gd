@@ -1,7 +1,8 @@
 class_name MonkeyBattleAura
 extends Node3D
 ## Reused aura and expanding chestbeat rings; no particle nodes allocated per beat.
-const FLAME: Shader = preload("res://assets/vfx/enemies/monkey/monkey_aura/monkey_battle_aura.gdshader")
+# Material đang dùng giữ shader; script chỉ giữ đường dẫn để GPU được dọn khi hết hiệu ứng.
+const FLAME_PATH: String = "res://assets/vfx/enemies/monkey/monkey_aura/monkey_battle_aura.gdshader"
 var _buff: bool = false
 var _chant: bool = false
 var _age: float = 0.0
@@ -12,7 +13,7 @@ var _waves: Array[MeshInstance3D] = []
 
 func _ready() -> void:
 	_flames = Node3D.new(); add_child(_flames)
-	_flame_material = ShaderMaterial.new(); _flame_material.shader = FLAME
+	_flame_material = ShaderMaterial.new(); _flame_material.shader = load(FLAME_PATH) as Shader
 	for i: int in 4:
 		var card: MeshInstance3D = MeshInstance3D.new()
 		var quad: QuadMesh = QuadMesh.new(); quad.size = Vector2(0.85, 1.65)

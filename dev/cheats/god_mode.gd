@@ -13,12 +13,11 @@ func _init() -> void:
 
 
 func apply(_console: DevConsole) -> void:
-	if not HurtboxComponent.damage_modifiers.has(_modifier):
-		HurtboxComponent.damage_modifiers.append(_modifier)
+	HurtboxComponent.add_damage_modifier(_modifier)
 
 
 func remove(_console: DevConsole) -> void:
-	HurtboxComponent.damage_modifiers.erase(_modifier)
+	HurtboxComponent.remove_damage_modifier(_modifier)
 
 
 func _zero_for_player(hurtbox: HurtboxComponent, _info: DamageInfo, damage: int) -> int:

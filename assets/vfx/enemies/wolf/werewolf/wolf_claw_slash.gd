@@ -3,8 +3,6 @@ extends Node3D
 ## Ba vệt móng, gió mỏng và dư ảnh; mesh dựng sẵn, dùng lại theo pool.
 signal finished
 const ARC: Shader = preload("res://assets/vfx/enemies/wolf/werewolf/claw_arc.gdshader")
-static var _horizontal: ArrayMesh
-static var _vertical: ArrayMesh
 var _materials: Array[ShaderMaterial] = []
 var _flat: Array[MeshInstance3D] = []
 var _down: Array[MeshInstance3D] = []
@@ -13,7 +11,13 @@ var _sweep: float = 0.15
 
 func _ready() -> void:
 	set_as_top_level(true)
-	if _horizontal==null: _horizontal=_build(false);_vertical=_build(true)
+	var _horizontal: ArrayMesh = SharedResources.get_resource(&"wolf.claw.horizontal") as ArrayMesh
+	var _vertical: ArrayMesh = SharedResources.get_resource(&"wolf.claw.vertical") as ArrayMesh
+	if _horizontal == null:
+		_horizontal = _build(false)
+		_vertical = _build(true)
+		SharedResources.store_resource(&"wolf.claw.horizontal", _horizontal)
+		SharedResources.store_resource(&"wolf.claw.vertical", _vertical)
 	for layer: int in 3:
 		var mat: ShaderMaterial=ShaderMaterial.new();mat.shader=ARC;mat.set_shader_parameter(&"layer",layer)
 		_materials.append(mat)

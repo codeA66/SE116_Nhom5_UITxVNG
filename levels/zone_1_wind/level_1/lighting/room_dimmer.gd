@@ -10,9 +10,6 @@ extends Node
 ## Node chứa phòng; trống = cha của node này
 @export var target: Node
 
-## Vật liệu gốc + độ sáng -> bản tối, dùng chung giữa các phòng để không nhân bản vật liệu thừa
-static var _cache: Dictionary = {}
-
 
 func _ready() -> void:
 	set_process(false)
@@ -63,6 +60,7 @@ func _dim_multimesh(multi: MultiMeshInstance3D) -> void:
 
 
 func _dimmed(source: Material) -> Material:
+	var _cache: Dictionary = SharedResources.get_bucket(&"wind.rooms.dimmed_materials")
 	var standard := source as StandardMaterial3D
 	if standard == null or standard.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED or standard.emission_enabled:
 		return null

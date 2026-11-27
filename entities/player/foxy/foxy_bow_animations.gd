@@ -7,8 +7,9 @@ extends RefCounted
 ## DRAWN: kéo đầy của Bow_Shoot (cung cầm dọc); FULL: kéo đầy khi cầm ngang ở BowHold
 enum Pose { REST, NOCKED, DRAWN, FULL }
 
-const SHOT: AttackData = preload("res://resources/combat/attacks/bow/bow_shot.tres")
-const BOW: BowData = preload("res://resources/combat/weapons/bow.tres")
+# Chỉ giữ đường dẫn để script hoạt ảnh không ghim prefab tên cùng toàn bộ VFX.
+const SHOT_PATH: String = "res://resources/combat/attacks/bow/bow_shot.tres"
+const BOW_PATH: String = "res://resources/combat/weapons/bow.tres"
 const ROLES: Array[StringName] = [&"upper_l", &"fore_l", &"hand_l", &"upper_r", &"fore_r", &"hand_r"]
 ## Hướng xương theo tư thế, trong không gian rig (+Z là hướng bắn, tay phải ở +X).
 ## "_l" cho tay trái (cả cánh tay trên nếu không có "upper_l"); "_r" cho cẳng tay và bàn tay phải
@@ -44,8 +45,10 @@ static func install(library: AnimationLibrary, skeleton: Skeleton3D, skeleton_pa
 		library.add_animation(StringName("%s_Bow" % clip), animation)
 	if not library.has_animation(&"Idle"):
 		return
-	var shot_length := SHOT.duration * SHOT.anim_speed
-	var release := SHOT.active_start * SHOT.anim_speed
+	var shot: AttackData = load(SHOT_PATH) as AttackData
+	var bow: BowData = load(BOW_PATH) as BowData
+	var shot_length := shot.duration * shot.anim_speed
+	var release := shot.active_start * shot.anim_speed
 	library.add_animation(&"Bow_Shoot", _make_clip(library, skeleton, skeleton_path, bones, shot_length, [
 		[0.0, Pose.REST], [release * 0.75, Pose.DRAWN], [release, Pose.DRAWN],
 		[lerpf(release, shot_length, 0.55), Pose.REST], [shot_length, Pose.REST],
@@ -53,13 +56,13 @@ static func install(library: AnimationLibrary, skeleton: Skeleton3D, skeleton_pa
 	var draw_keys := [[0.0, Pose.NOCKED], [DRAW_CLIP_LENGTH, Pose.FULL]]
 	var draw := _make_clip(library, skeleton, skeleton_path, bones, DRAW_CLIP_LENGTH, draw_keys, arm_yaw)
 	_replace_body_tracks(draw, skeleton, skeleton_path, bones, body, draw_keys)
-	library.add_animation(BOW.draw_animation, draw)
+	library.add_animation(bow.draw_animation, draw)
 	# Buông: tay phải bật về chỗ dây rồi hạ cung, vừa hết thời gian thu tay
-	var recovery := maxf(BOW.release_recovery, 0.05)
+	var recovery := maxf(bow.release_recovery, 0.05)
 	var release_keys := [[0.0, Pose.FULL], [recovery * 0.3, Pose.NOCKED], [recovery, Pose.REST]]
 	var release_clip := _make_clip(library, skeleton, skeleton_path, bones, recovery, release_keys, arm_yaw)
 	_replace_body_tracks(release_clip, skeleton, skeleton_path, bones, body, release_keys)
-	library.add_animation(BOW.release_animation, release_clip)
+	library.add_animation(bow.release_animation, release_clip)
 
 
 ## Clip một lần (không lặp) dựa trên Idle, chỉ thay track tay

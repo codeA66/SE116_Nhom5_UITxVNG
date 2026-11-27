@@ -76,7 +76,8 @@ const ANIM_DEATH := &"Rig_Medium_General/Death_A"
 ## Mức dự trữ tối thiểu; pool được làm nóng thêm theo số phát và thời gian tên tồn tại.
 @export var arrow_pool_size: int = 4
 ## Chuẩn bị cả vũ khí chưa nhặt, không cấp vũ khí cho tiến trình.
-@export var combat_weapons: Array[WeaponData] = [preload("res://resources/combat/weapons/bow.tres")]
+# Giữ mặc định warmup nhưng để dữ liệu được nhả cùng player thay vì bị script ghim lại.
+@export var combat_weapons: Array[WeaponData] = [load("res://resources/combat/weapons/bow.tres") as WeaponData]
 ## Khi nhắm cung, người quay nghiêng bấy nhiêu độ để vai trái hướng về mục tiêu như cung thủ;
 ## cung và mũi tên vẫn theo đúng hướng nhắm. Model nhìn theo +Z nên bên trái là +X. 0 = đứng thẳng mặt
 @export_range(-180.0, 180.0, 0.5) var bow_stance_degrees: float = 90.0

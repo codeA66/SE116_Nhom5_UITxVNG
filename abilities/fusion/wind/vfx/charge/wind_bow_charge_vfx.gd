@@ -42,7 +42,6 @@ const SHADER: Shader = preload("res://abilities/fusion/wind/vfx/charge/wind_bow_
 @export var brightness_min: float = 0.85
 @export var brightness_max: float = 1.0
 @export var streak_texture: Texture2D = preload("res://abilities/fusion/wind/vfx/textures/wind_streak.png")
-static var _mesh_cache: Dictionary[Vector2i, ArrayMesh] = {}
 var _material: ShaderMaterial
 var _phase: Phase = Phase.IDLE
 var _amount: float = 0.0
@@ -177,6 +176,7 @@ func _configure() -> void:
 
 ## Dải mẫu dựng một lần; shader uốn thành helix ba chiều quanh trục tên.
 func _build_mesh() -> void:
+	var _mesh_cache: Dictionary = SharedResources.get_bucket(&"wind.bow.charge.meshes")
 	var key: Vector2i = Vector2i(streak_count, segments)
 	if _mesh_cache.has(key):
 		_ribbons.mesh = _mesh_cache[key]

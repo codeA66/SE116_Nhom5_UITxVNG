@@ -25,7 +25,6 @@ class MouseGlyph extends Control:
 		draw_rect(button, TutorialPopup.GOLD)
 		draw_line(Vector2(5, 20), Vector2(25, 20), TutorialPopup.IVORY, 1.0, true)
 
-static var _token_regex: RegEx
 
 @export_group("Hiển thị")
 @export var fade_duration: float = 0.2
@@ -194,9 +193,11 @@ func _hide_energy_focus() -> void:
 
 
 static func _get_regex() -> RegEx:
+	var _token_regex: RegEx = SharedResources.get_value(&"tutorial.token_regex") as RegEx
 	if _token_regex == null:
 		_token_regex = RegEx.new()
 		_token_regex.compile(r"\{key(?<num>\d+)?\}|\{action:(?<act>[a-zA-Z0-9_]+)\}")
+		SharedResources.store_value(&"tutorial.token_regex", _token_regex)
 	return _token_regex
 
 

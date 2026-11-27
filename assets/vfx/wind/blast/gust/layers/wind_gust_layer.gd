@@ -12,7 +12,6 @@ const STROKE_WIDTH_PROFILE: float = 0.65
 @export var phase_sound: AudioStream
 @export var loop_sound: bool = false
 
-static var _shared_material: StandardMaterial3D
 
 var gust: WindBlastGust
 var cast_extent: Vector3
@@ -61,12 +60,14 @@ func begin_layer(span: float, extent: Vector3) -> void:
 
 ## Cùng một biến thể vật liệu cho cả nét chính lẫn impact.
 static func ink_material() -> StandardMaterial3D:
+	var _shared_material: StandardMaterial3D = SharedResources.get_resource(&"wind.gust.ink") as StandardMaterial3D
 	if _shared_material == null:
 		_shared_material = StandardMaterial3D.new()
 		_shared_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		_shared_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 		_shared_material.vertex_color_use_as_albedo = true
 		_shared_material.vertex_color_is_srgb = true
+		SharedResources.store_resource(&"wind.gust.ink", _shared_material)
 	return _shared_material
 
 ## Các dải màu dùng chung mặt phẳng để biên sắc và tránh lớp trong suốt chồng lên nhau.

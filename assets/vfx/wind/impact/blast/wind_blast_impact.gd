@@ -7,11 +7,6 @@ extends WindImpactVfx
 @export_range(0.04, 1.0) var end_scale: float = 0.12
 @export_range(6, 24) var segments: int = 10
 
-static var _cached_mesh: ArrayMesh
-static var _cached_flash: ArrayMesh
-static var _cached_style: WindBurstStyle
-static var _cached_segments: int
-
 var _flash: ArrayMesh
 var _wake: ArrayMesh
 
@@ -19,13 +14,14 @@ var _wake: ArrayMesh
 
 ## Bỏ khởi tạo material của scene gốc vì impact chỉ dùng lưới đã dựng.
 func _ready() -> void:
-	if _cached_mesh == null or _cached_style != style or _cached_segments != segments:
-		_cached_mesh = _build_ink()
-		_cached_flash = _build_flash()
-		_cached_style = style
-		_cached_segments = segments
-	_flash = _cached_flash
-	_wake = _cached_mesh
+	var cache: Dictionary = SharedResources.get_bucket(&"wind.blast.impact")
+	if not cache.has(&"mesh") or cache[&"style"] != style or cache[&"segments"] != segments:
+		cache[&"mesh"] = _build_ink()
+		cache[&"flash"] = _build_flash()
+		cache[&"style"] = style
+		cache[&"segments"] = segments
+	_flash = cache[&"flash"] as ArrayMesh
+	_wake = cache[&"mesh"] as ArrayMesh
 	_shape.mesh = _flash
 	_shape.material_override = WindGustLayer.ink_material()
 	# Scene kế thừa bụi gió cũ: các lớp hạt cũ không được khởi tạo (không gọi super._ready) nên phải ẩn hẳn,

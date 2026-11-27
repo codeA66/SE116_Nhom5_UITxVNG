@@ -75,8 +75,6 @@ const KIND_SHOCK := 5
 @export var prepare_frames: int = 3
 @export var prepare_opacity: float = 0.000001
 
-static var _mesh_cache: Dictionary[Vector4i, ArrayMesh] = {}
-static var _warmup_done: bool = false
 
 var _fire: ShaderMaterial
 var _scorch: ShaderMaterial
@@ -171,6 +169,7 @@ func _ground_below(from: Vector3) -> Vector3:
 
 ## Dựng lưới một lần cho mỗi cấu hình số lượng: phát lại chỉ đổi uniform
 func _build() -> void:
+	var _mesh_cache: Dictionary = SharedResources.get_bucket(&"fire.arrow.hit.meshes")
 	var key := Vector4i(blob_count, lick_count, spark_count, smoke_count)
 	if _mesh_cache.has(key):
 		_mesh.mesh = _mesh_cache[key]
@@ -212,9 +211,10 @@ static func _add_quads(mesh: ArrayMesh, tags: Array[Vector2]) -> void:
 
 ## Vẽ thử một lần ở độ mờ gần 0 để biên dịch shader trước trận (tránh giật ở phát trúng đầu tiên)
 func _prepare() -> void:
-	if _warmup_done or DisplayServer.get_name() == "headless" or not is_inside_tree():
+	var preparation: Dictionary = SharedResources.get_bucket(&"fire.arrow.hit.warmup")
+	if preparation.get(&"done", false) or DisplayServer.get_name() == "headless" or not is_inside_tree():
 		return
-	_warmup_done = true
+	preparation[&"done"] = true
 	var epoch := _epoch
 	_fire.set_shader_parameter(&"opacity", prepare_opacity)
 	_scorch.set_shader_parameter(&"opacity", prepare_opacity)

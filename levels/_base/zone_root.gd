@@ -7,13 +7,14 @@ extends Node3D
 signal player_spawned(player: Player)
 signal combat_ready
 
-const PLAYER_SCENE := preload("res://entities/player/player.tscn")
+# Chỉ giữ đường dẫn để script không ghim toàn bộ prefab Player khi khu đã đóng.
+const PLAYER_SCENE: String = "res://entities/player/player.tscn"
 
 ## Dùng khi vào khu không qua cổng hay checkpoint (mở game lần đầu, chạy thử scene bằng F6)
 @export var default_spawn_id: StringName = &"start"
 ## Biên dịch sẵn shader lúc vào khu, khi màn còn tối (renderer Compatibility đứng hình ở lần đầu vẽ hiệu ứng).
 ## Để trống = bỏ qua
-@export var shader_warmup: ShaderWarmupData = preload("res://resources/vfx/shader_warmup_default.tres")
+@export var shader_warmup: ShaderWarmupData = load("res://resources/vfx/shader_warmup_default.tres")
 
 var _combat_ready: bool = false
 
@@ -27,7 +28,7 @@ func _ready() -> void:
 
 	var player := get_node_or_null(^"Player") as Player
 	if player == null:
-		player = PLAYER_SCENE.instantiate() as Player
+		player = (load(PLAYER_SCENE) as PackedScene).instantiate() as Player
 		# Đặt sẵn ở điểm xuất hiện trước khi vào cây: vào ở gốc toạ độ rồi mới dời thì vùng kích hoạt phủ gốc toạ độ
 		# (trận boss, trigger...) vẫn bắt được player ở bước vật lý đầu tiên
 		if spawn:

@@ -8,7 +8,8 @@ extends NpcService
 signal paid
 
 @export var data: TollData
-@export var currency: CurrencyData = preload("res://resources/player/currency/soul_jade.tres")
+# Dữ liệu tiền chứa prefab VFX nên chỉ giữ theo vòng đời dịch vụ.
+@export var currency: CurrencyData = load("res://resources/player/currency/soul_jade.tres")
 @export var price: int = 50
 ## Cờ lưu "đã trả" của RIÊNG cổng này, ví dụ "zone_1_wind.tier_2.toll". Trống = không lưu (chỉ để thử)
 @export var paid_flag: StringName

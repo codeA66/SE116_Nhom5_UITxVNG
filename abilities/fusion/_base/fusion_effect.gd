@@ -4,29 +4,16 @@ extends Resource
 ## đúng lúc; hiệu ứng nào chỉ cần một vài thời điểm thì chỉ ghi đè hàm đó.
 ## Thêm buff mới (Lửa cháy, Nước làm chậm...) = thêm script kế thừa + file .tres, không sửa code cũ.
 
-static var _loaded_effects: Array[WeakRef] = []
-static var _registry_lock: Mutex = Mutex.new()
 @export var warmup_scenes: Array[PackedScene] = []
 
 
 func _init() -> void:
-	# Resource được nạp từ bảng fusion trước lúc vào khu; weakref không giữ tài nguyên đã bỏ.
-	_registry_lock.lock()
-	_loaded_effects.append(weakref(self))
-	_registry_lock.unlock()
+	# Owner khởi tạo trước GameState để Resource nạp sẵn không phải giữ registry static.
+	SharedResources.register_weak(&"fusion.effects", self)
 
 
 static func _registered_effects() -> Array[Resource]:
-	var effects: Array[Resource] = []
-	_registry_lock.lock()
-	for i in range(_loaded_effects.size() - 1, -1, -1):
-		var effect: Resource = _loaded_effects[i].get_ref() as Resource
-		if effect == null:
-			_loaded_effects.remove_at(i)
-		else:
-			effects.append(effect)
-	_registry_lock.unlock()
-	return effects
+	return SharedResources.get_registered(&"fusion.effects")
 
 
 static func prepare_loaded_effects(user: Player) -> void:

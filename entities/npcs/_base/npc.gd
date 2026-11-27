@@ -46,7 +46,8 @@ const CONTEXT_FAREWELL: StringName = &"farewell"
 @export var talk_bounce_time: float = 0.22
 
 @export_group("Giao diện")
-@export var dialogue_box_scene: PackedScene = preload("res://ui/dialogue/dialogue_box.tscn")
+# Để scene hộp thoại được nhả cùng NPC thay vì thuộc hằng khởi tạo của script.
+@export var dialogue_box_scene: PackedScene = load("res://ui/dialogue/dialogue_box.tscn")
 ## Lớp vẽ của hộp thoại, đặt trên HUD
 @export var ui_layer: int = 20
 

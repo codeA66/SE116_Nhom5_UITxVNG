@@ -51,7 +51,7 @@ func get_upgrade(level: int) -> SkillUpgradeData:
 func resolve(level: int) -> AbilityData:
 	level = clampi(level, 1, get_max_level())
 	if _forms.has(level):
-		return _forms[level]
+		return _forms[level] if _forms[level] != null else self
 	var form: AbilityData = self
 	var changes: Dictionary[StringName, Variant] = {}
 	for index in level - 1:
@@ -66,7 +66,8 @@ func resolve(level: int) -> AbilityData:
 		form = form.duplicate()
 		for property: StringName in changes:
 			form.set(property, changes[property])
-	_forms[level] = form
+	# Null đánh dấu dạng gốc: cache self tạo vòng tham chiếu khiến cả ảnh/shader của kỹ năng không được nhả.
+	_forms[level] = form if form != self else null
 	return form
 
 

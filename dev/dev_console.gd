@@ -8,7 +8,8 @@ extends Node
 signal cheats_changed
 
 const CHEAT_DIR := "res://dev/cheats/"
-const MENU_SCENE := preload("res://dev/dev_menu.tscn")
+# Bản release không cần nạp hoặc giữ giao diện dev.
+const MENU_PATH: String = "res://dev/dev_menu.tscn"
 
 ## Phím mở bảng (Input Map)
 @export var toggle_action: StringName = &"dev_menu"
@@ -25,7 +26,7 @@ func _ready() -> void:
 		return
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_load_cheats()
-	_menu = MENU_SCENE.instantiate() as DevMenu
+	_menu = (load(MENU_PATH) as PackedScene).instantiate() as DevMenu
 	add_child(_menu)
 	_menu.setup(self)
 	SceneManager.zone_ready.connect(_on_zone_ready)

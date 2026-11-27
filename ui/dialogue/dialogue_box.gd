@@ -16,7 +16,8 @@ const RESULT_CANCELLED := -1
 ## Ký tự được dừng thêm một nhịp sau khi hiện
 const PUNCTUATION := ".,!?…:;"
 
-@export var style: DialogueStyle = preload("res://resources/ui/dialogue_style.tres")
+# Style được nhả cùng hộp thoại, không bị hằng khởi tạo trong script giữ lại.
+@export var style: DialogueStyle = load("res://resources/ui/dialogue_style.tres")
 ## Các phím sang câu / hiện hết câu / xác nhận lựa chọn (chuột trái cũng được)
 @export var advance_actions: Array[StringName] = [&"interact", &"ui_accept"]
 @export var cancel_action: StringName = &"ui_cancel"

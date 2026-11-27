@@ -7,6 +7,8 @@ extends Node3D
 ## Viên chạm người nhặt (collector cộng tiền rồi nhả về pool)
 signal collected(pickup: CurrencyPickup)
 
+const MIN_ECHO_SPACING: float = 0.05
+
 @export_group("Pop")
 ## Tốc độ bật ngang / bật lên lúc rơi ra (m/s)
 @export var pop_speed: Vector2 = Vector2(1.5, 3.0)
@@ -32,7 +34,7 @@ signal collected(pickup: CurrencyPickup)
 @export_range(1.0, 2.0, 0.01) var spawn_overshoot: float = 1.25
 ## Dư ảnh (node Echoes tuỳ chọn, mỗi con là một bản sao hình): xếp cách nhau echo_spacing mét theo quãng đường đã bay,
 ## nên bay nhanh hay chậm chuỗi bóng vẫn đều
-@export_range(0.05, 2.0, 0.01) var echo_spacing: float = 0.35
+@export_range(MIN_ECHO_SPACING, 2.0, 0.01) var echo_spacing: float = 0.35
 
 ## Loại tiền và số tiền viên này mang (rơi nhiều: ít viên, mỗi viên mang nhiều hơn)
 var currency: CurrencyData
@@ -47,6 +49,8 @@ var _echoes: Array[Node3D] = []
 var _path: PackedVector3Array
 var _path_last: Vector3
 var _path_dist: float = 0.0
+var _path_count: int = 1
+var _sample_spacing: float = MIN_ECHO_SPACING
 
 @onready var _visual: Node3D = get_node_or_null(^"Visual") as Node3D
 @onready var _trail: Node = get_node_or_null(^"Trail")
@@ -63,7 +67,7 @@ func _ready() -> void:
 				# Dư ảnh đứng yên theo toạ độ thế giới, không đi theo viên
 				(child as Node3D).top_level = true
 				_echoes.append(child)
-		_path.resize(_echoes.size())
+	_path.resize(_echoes.size() + 1)
 	_hide_echoes()
 
 
@@ -79,9 +83,7 @@ func launch(origin: Vector3, target: Node3D, kind: CurrencyData, amount: int) ->
 	_age = 0.0
 	_speed = 0.0
 	_apply_spawn_scale()
-	_path.fill(global_position)
-	_path_last = global_position
-	_path_dist = 0.0
+	_reset_echo_path()
 	_set_trail(true)
 	set_process(true)
 
@@ -91,7 +93,7 @@ func pool_released() -> void:
 	set_process(false)
 	_target = null
 	_set_trail(false)
-	_hide_echoes()
+	_reset_echo_path()
 
 
 func _process(delta: float) -> void:
@@ -100,10 +102,10 @@ func _process(delta: float) -> void:
 		_visual.rotate_y(spin_speed * delta)
 	if _age <= spawn_scale_time + delta:
 		_apply_spawn_scale()
-	_update_echoes()
 	if _age < pop_time:
 		_velocity.y -= pop_gravity * delta
 		global_position += _velocity * delta
+		_update_echoes()
 		return
 	# Người nhặt đã mất (đổi khu giữa chừng): vẫn tính tiền, không để viên trôi mãi
 	if not is_instance_valid(_target):
@@ -122,6 +124,7 @@ func _process(delta: float) -> void:
 		collected.emit(self)
 		return
 	global_position += step
+	_update_echoes()
 
 
 ## Nở 0 -> overshoot (60% thời gian) -> 1; chỉ đổi scale, không đổi chuyển động
@@ -134,22 +137,50 @@ func _apply_spawn_scale() -> void:
 	scale = Vector3.ONE * s
 
 
-## Mỗi khi đi thêm echo_spacing mét thì đẩy điểm mới vào đầu đường đi; dư ảnh thứ i đứng ở điểm thứ i.
-## Dư ảnh chỉ hiện khi đã có điểm khác vị trí rơi (lúc mới rơi không chồng cả chuỗi vào một chỗ)
+## Giữ phần quãng đường dư để FPS thấp không kéo giãn bóng; chỉ lưu những điểm còn cần cho chuỗi.
 func _update_echoes() -> void:
 	if _echoes.is_empty():
 		return
-	_path_dist += global_position.distance_to(_path_last)
+	var spacing: float = _effective_echo_spacing()
+	if not is_equal_approx(spacing, _sample_spacing):
+		_reset_echo_path()
+		return
+	var segment: Vector3 = global_position - _path_last
+	var distance: float = segment.length()
+	var total: float = _path_dist + distance
+	var remainder: float = fposmod(total, spacing)
+	# Giới hạn trước khi đổi sang int: một frame vượt rất xa vẫn chỉ cập nhật tối đa số điểm của chuỗi.
+	var samples: int = floori(minf(floorf(total / spacing), float(_path.size())))
+	if samples > 0:
+		var index: int = _path.size() - 1
+		while index >= samples:
+			_path[index] = _path[index - samples]
+			index -= 1
+		for sample: int in samples:
+			_path[sample] = global_position - segment * ((remainder + float(sample) * spacing) / distance)
+		_path_count = mini(_path.size(), _path_count + samples)
+	_path_dist = remainder
 	_path_last = global_position
-	if _path_dist >= echo_spacing:
-		_path_dist = 0.0
-		for i in range(_path.size() - 1, 0, -1):
-			_path[i] = _path[i - 1]
-		_path[0] = global_position
-	for i in _echoes.size():
-		var echo := _echoes[i]
-		echo.global_position = _path[i]
-		echo.visible = _path[i].distance_squared_to(global_position) > 0.0001 and (i == 0 or _path[i] != _path[i - 1])
+	var fraction: float = 1.0 - remainder / spacing
+	for index: int in _echoes.size():
+		var echo: Node3D = _echoes[index]
+		echo.visible = _path_count > index + 1
+		if echo.visible:
+			# Nội suy sau chuyển động giữ bóng đầu ở phía sau, không ẩn khi điểm mới trùng vị trí viên.
+			echo.global_position = _path[index].lerp(_path[index + 1], fraction)
+
+
+func _reset_echo_path() -> void:
+	_path.fill(global_position)
+	_path_last = global_position
+	_path_dist = 0.0
+	_path_count = 1
+	_sample_spacing = _effective_echo_spacing()
+	_hide_echoes()
+
+
+func _effective_echo_spacing() -> float:
+	return maxf(echo_spacing, MIN_ECHO_SPACING) if is_finite(echo_spacing) else MIN_ECHO_SPACING
 
 
 func _hide_echoes() -> void:

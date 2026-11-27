@@ -3,7 +3,6 @@ extends Resource
 ## Thông số hình ảnh riêng cho fusion, chạy trên Compatibility không cần bloom.
 
 const WIND_SHADER: Shader = preload("res://abilities/fusion/wind/vfx/style/fusion_wind.gdshader")
-static var _shader_variants: Dictionary[int, Shader] = {}
 
 @export_group("Textures")
 @export var streak_texture: Texture2D
@@ -78,9 +77,11 @@ var _particle_mesh: QuadMesh
 var _particle_curve: Curve
 var _particle_gradient: Gradient
 var _cache_signature: int = 0
+var _editor_shader_variants: Dictionary[int, Shader] = {}
 
 
 func create_material(effect_mode: int = 0) -> ShaderMaterial:
+	var _shader_variants: Dictionary = _editor_shader_variants if Engine.is_editor_hint() else SharedResources.get_bucket(&"wind.fusion.shader_variants")
 	_check_configuration()
 	if _material_templates.has(effect_mode):
 		return _material_templates[effect_mode].duplicate(false) as ShaderMaterial

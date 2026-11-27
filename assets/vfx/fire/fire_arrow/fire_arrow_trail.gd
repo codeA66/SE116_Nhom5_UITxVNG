@@ -32,7 +32,6 @@ const IMPACT_BACKOFF := 0.3
 ## Dải co về và mờ hết sau khi tên dừng (s)
 @export var fade_time: float = 0.14
 
-static var _mesh_cache: Dictionary[int, ArrayMesh] = {}
 
 var _projectile: Node3D
 var _start: Vector3
@@ -158,6 +157,7 @@ func _disconnect_projectile() -> void:
 
 ## Dải segments ô (UV2.y = 0) + một ô quả lửa đầu tên (UV2.y = 1); dựng một lần, các vệt dùng chung
 static func _get_mesh(count: int) -> ArrayMesh:
+	var _mesh_cache: Dictionary = SharedResources.get_bucket(&"fire.arrow.trail.meshes")
 	if _mesh_cache.has(count):
 		return _mesh_cache[count]
 	var vertices := PackedVector3Array()

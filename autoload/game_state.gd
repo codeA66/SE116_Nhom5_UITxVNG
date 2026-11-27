@@ -31,11 +31,24 @@ signal tutorial_unlocked(tutorial: TutorialData)
 ## Danh sách bài hướng dẫn vừa đổi
 signal tutorials_changed
 
-const NEW_GAME: NewGameData = preload("res://resources/player/new_game.tres")
-const FUSIONS: FusionTable = preload("res://resources/combat/fusion/fusion_table.tres")
-const ITEMS: ItemCatalog = preload("res://resources/player/items/catalog.tres")
-const TUTORIALS: TutorialCatalog = preload("res://resources/tutorials/catalog.tres")
+# Dữ liệu thuộc autoload để được nhả cùng phiên chơi, không thuộc hằng của script.
+var _new_game: NewGameData = load("res://resources/player/new_game.tres")
+var _fusions: FusionTable = load("res://resources/combat/fusion/fusion_table.tres")
+var _items: ItemCatalog = load("res://resources/player/items/catalog.tres")
+var _tutorials: TutorialCatalog = load("res://resources/tutorials/catalog.tres")
 
+var NEW_GAME: NewGameData:
+	get:
+		return _new_game
+var FUSIONS: FusionTable:
+	get:
+		return _fusions
+var ITEMS: ItemCatalog:
+	get:
+		return _items
+var TUTORIALS: TutorialCatalog:
+	get:
+		return _tutorials
 var progress: PlayerProgress = PlayerProgress.new()
 
 var _player_health: int = -1
@@ -149,7 +162,7 @@ func unlock_ability(ability: AbilityData) -> void:
 ## Nguyên tố người chơi đang có (kỹ năng gốc đã mở khóa)
 func get_owned_elements() -> Array[ElementData]:
 	var owned: Array[ElementData] = []
-	for element in FUSIONS.elements:
+	for element in _fusions.elements:
 		if element.ability and has_ability(element.ability.id):
 			owned.append(element)
 	return owned
@@ -157,7 +170,7 @@ func get_owned_elements() -> Array[ElementData]:
 
 ## Nguyên tố đang ghép ở ô vũ khí slot; null nếu chưa ghép
 func get_fused_element(slot: WeaponData.Slot) -> ElementData:
-	return FUSIONS.get_element(progress.fusions.get(slot, &""))
+	return _fusions.get_element(progress.fusions.get(slot, &""))
 
 
 ## Chiêu ghép của vũ khí đang cầm; null nếu vũ khí chưa ghép hoặc tổ hợp chưa có chiêu
@@ -166,19 +179,19 @@ func get_active_fusion() -> FusionData:
 	if weapon == null:
 		return null
 	var element := get_fused_element(weapon.slot)
-	return FUSIONS.get_fusion(weapon.slot, element.id) if element else null
+	return _fusions.get_fusion(weapon.slot, element.id) if element else null
 
 
 ## Kỹ năng đang bị khóa vì nguyên tố của nó đang ghép vào vũ khí
 func is_ability_fused(ability_id: StringName) -> bool:
-	var element := FUSIONS.get_element_by_ability(ability_id)
+	var element := _fusions.get_element_by_ability(ability_id)
 	return element != null and progress.fusions.values().has(element.id)
 
 
 ## Ghép nguyên tố vào ô vũ khí. Nguyên tố đang ở vũ khí khác thì chuyển sang (mỗi nguyên tố chỉ ở một chỗ),
 ## vũ khí đích đang có nguyên tố khác thì nguyên tố cũ được tháo ra (mỗi vũ khí một nguyên tố)
 func fuse(element_id: StringName, slot: WeaponData.Slot) -> bool:
-	var element := FUSIONS.get_element(element_id)
+	var element := _fusions.get_element(element_id)
 	if element == null or not get_owned_elements().has(element) or get_weapon_in_slot(slot) == null:
 		return false
 	if progress.fusions.get(slot, &"") == element_id:
@@ -303,14 +316,14 @@ func is_charm_equipped(id: StringName) -> bool:
 
 
 func get_charm_notches() -> int:
-	return progress.charm_notches if progress.charm_notches >= 0 else NEW_GAME.charm_notches
+	return progress.charm_notches if progress.charm_notches >= 0 else _new_game.charm_notches
 
 
 ## Số ô khắc đang bị bùa đeo chiếm
 func get_used_notches() -> int:
 	var used := 0
 	for id: StringName in progress.equipped_charms:
-		var charm := ITEMS.get_charm(id)
+		var charm := _items.get_charm(id)
 		used += charm.notch_cost if charm else 0
 	return used
 
@@ -322,7 +335,7 @@ func can_change_charms() -> bool:
 
 ## Đeo bùa: cần đang ở khu đổi bùa, đã có bùa và còn đủ ô khắc
 func equip_charm(id: StringName) -> bool:
-	var charm := ITEMS.get_charm(id)
+	var charm := _items.get_charm(id)
 	if charm == null or not can_change_charms() or not owns_charm(id) or is_charm_equipped(id):
 		return false
 	if get_used_notches() + charm.notch_cost > get_charm_notches():
@@ -366,7 +379,7 @@ func has_tutorial(id: StringName) -> bool:
 func get_unlocked_tutorials() -> Array[TutorialData]:
 	var result: Array[TutorialData] = []
 	for id: StringName in progress.unlocked_tutorials:
-		var tut := TUTORIALS.get_tutorial(id)
+		var tut := _tutorials.get_tutorial(id)
 		if tut:
 			result.append(tut)
 	return result
@@ -381,7 +394,7 @@ func unlock_tutorial(tutorial_or_id: Variant, popup: bool = true) -> bool:
 		id = tutorial.id
 	elif tutorial_or_id is StringName or tutorial_or_id is String:
 		id = StringName(tutorial_or_id)
-		tutorial = TUTORIALS.get_tutorial(id)
+		tutorial = _tutorials.get_tutorial(id)
 	
 	if id.is_empty() or has_tutorial(id):
 		return false
@@ -496,7 +509,7 @@ func set_player_energy(value: int) -> void:
 
 ## Kỹ năng khởi đầu luôn có, kể cả save cũ tạo trước khi thêm chúng. Không phát signal: không phải vừa nhặt
 func _grant_starting_abilities() -> void:
-	for ability in NEW_GAME.starting_abilities:
+	for ability in _new_game.starting_abilities:
 		if ability and not has_ability(ability.id):
 			progress.abilities.append(ability)
 
@@ -510,4 +523,3 @@ func _is_valid_currency_call(id: StringName, amount: int) -> bool:
 		push_warning("GameState: số tiền âm (%d) cho '%s', dùng spend_currency để trừ" % [amount, id])
 		return false
 	return true
-

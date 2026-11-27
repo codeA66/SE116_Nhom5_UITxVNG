@@ -55,7 +55,6 @@ const SONG_TRAM_FX = preload("res://assets/vfx/shared/charms/song_tram/song_tram
 @export var body_color: Color = Color("58b6c4")
 @export var edge_color: Color = Color("224952")
 @export var noise_texture: Texture2D = preload("res://abilities/fusion/wind/vfx/textures/wind_noise.png")
-static var _mesh_cache: Dictionary[Vector3i, ArrayMesh] = {}
 var _material: ShaderMaterial
 var _pool: ObjectPool
 var _age: float = 0.0
@@ -208,6 +207,7 @@ func _configure() -> void:
 
 ## Một surface chứa cung, đuôi cong, hạt hình học và snap để giữ số draw nhỏ.
 func _build_mesh() -> void:
+	var _mesh_cache: Dictionary = SharedResources.get_bucket(&"wind.sword.slash.meshes")
 	var key: Vector3i = Vector3i(strand_count, segments, dust_count)
 	if _mesh_cache.has(key):
 		_ribbons.mesh = _mesh_cache[key]
