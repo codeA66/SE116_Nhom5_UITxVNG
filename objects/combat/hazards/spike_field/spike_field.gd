@@ -59,10 +59,10 @@ func rebuild() -> void:
 			var tilt_x: float = rng.randf_range(-max_tilt, max_tilt)
 			var tilt_z: float = rng.randf_range(-max_tilt, max_tilt)
 			var yaw: float = rng.randf_range(0.0, TAU)
-			var basis := Basis.from_euler(Vector3(tilt_x, yaw, tilt_z)).scaled(Vector3(1.0, h_scale, 1.0))
+			var spike_basis := Basis.from_euler(Vector3(tilt_x, yaw, tilt_z)).scaled(Vector3(1.0, h_scale, 1.0))
 			# Giữ đáy mũi chông nằm ở mặt cục bộ y = 0 dù nghiêng hay co giãn
 			var origin := Vector3(px, spike_height * h_scale * 0.5, pz)
-			mm.set_instance_transform(idx, Transform3D(basis, origin))
+			mm.set_instance_transform(idx, Transform3D(spike_basis, origin))
 			idx += 1
 
 	multimesh = mm

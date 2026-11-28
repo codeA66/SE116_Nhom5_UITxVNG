@@ -1148,9 +1148,9 @@ func _on_arrow_enemy_damaged(arrow: ArrowProjectile) -> void:
 		bow_enemy_hit.emit()
 
 
-func _on_bow_hit_contact(hurtbox: HurtboxComponent, position: Vector3, direction: Vector3, arrow: ArrowProjectile) -> void:
+func _on_bow_hit_contact(hurtbox: HurtboxComponent, hit_position: Vector3, direction: Vector3, arrow: ArrowProjectile) -> void:
 	if _weapon_damage_projectiles.has(arrow) and not health.is_dead():
-		bow_enemy_hit_contact.emit(hurtbox, position, direction)
+		bow_enemy_hit_contact.emit(hurtbox, hit_position, direction)
 
 
 func _prepare_bow_model(bow: WeaponData) -> void:
