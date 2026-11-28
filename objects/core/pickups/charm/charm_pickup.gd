@@ -15,6 +15,9 @@ signal revealed
 @export var beam_color: Color = Color("fff1c4")
 ## Bài hướng dẫn mở khi nhặt (ví dụ bùa đầu tiên dạy cách đeo); để trống = không hiện
 @export var tutorial: TutorialData
+## Bật: đã có bùa này rồi thì không đặt thêm bản nữa. Tắt cho bùa người chơi phải thấy rơi ra (NPC tặng), kể cả khi
+## đã có sẵn do lệnh dev; nhặt lại thì túi không thêm bản thứ hai
+@export var skip_if_owned: bool = true
 
 
 func _ready() -> void:
@@ -22,7 +25,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint() or is_queued_for_deletion():
 		return
 	# Bùa đã có (ví dụ nhận ở nơi khác) thì không đặt thêm bản nữa
-	if charm and GameState.owns_charm(charm.id):
+	if skip_if_owned and charm and GameState.owns_charm(charm.id):
 		queue_free()
 		return
 	if starts_hidden:
@@ -57,5 +60,6 @@ func _can_be_picked_by(interactor: Node3D) -> bool:
 
 func _give_to(_interactor: Node3D) -> void:
 	GameState.add_charm(charm)
+	GameState.announce_item(charm.display_name, charm.icon)
 	if tutorial:
 		GameState.unlock_tutorial(tutorial)

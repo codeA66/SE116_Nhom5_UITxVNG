@@ -3,7 +3,8 @@ extends Node
 ##
 ## ===== USE CASE =====
 ## UC1  Phòng 10 tier 1 không còn trận bò tót; có người chèo đò đứng chờ; cổng dịch chuyển chưa hiện.
-## UC2  Nói chuyện lần đầu: nghe dặn rồi nhận Bùa Đoạt Tiễn (một lần), không hỏi gọi thuyền.
+## UC2  Nói chuyện lần đầu: nghe dặn, Bùa Đoạt Tiễn RƠI RA đất trước mặt người chèo đò (một lần), không hỏi gọi
+##      thuyền. Chưa vào túi cho tới khi player đi tới bấm nhặt. Đã có bùa sẵn (lệnh dev mở hết) thì vẫn rơi ra.
 ## UC3  Nói chuyện lần sau: nhắc đeo bùa, không tặng thêm.
 ## UC4  Đeo bùa ở checkpoint (chỗ đổi bùa) -> cổng dịch chuyển ở phòng 10 hiện, trỏ tới đấu trường hổ.
 ##      Tháo bùa thì cổng vẫn mở. Ngoài checkpoint không đeo được.
@@ -17,8 +18,10 @@ extends Node
 ## ===== TEST CASE =====
 ## TC1 (UC1)  tier_1: không có Room10BossFight, file không tham chiếu boss_1.tscn; Room10Keeper là Npc nằm trong
 ##            phòng 10; Room10TigerPortal chưa hiện.
-## TC2 (UC2)  talk_requested + bấm interact hết câu -> có bùa arrow_rend_charm, cờ charm_given, không mở hỏi gọi thuyền,
-##            trả điều khiển.
+## TC2 (UC2)  talk_requested + bấm interact hết câu -> cờ charm_given, bùa CHƯA vào túi, Room10CharmDrop/CharmPickup
+##            hiện trên đất trong phòng 10; đứng tại chỗ bùa bấm interact thật -> có arrow_rend_charm, vật nhặt biến mất;
+##            không mở hỏi gọi thuyền, trả điều khiển.
+## TC2b (UC2) Tiến trình mới đã có sẵn bùa: nói chuyện -> bùa vẫn rơi ra trên đất.
 ## TC3 (UC3)  Lời chào đổi sang đoạn khác; nói hết lần nữa -> vẫn đúng 1 bùa.
 ## TC4 (UC4)  equip ngoài checkpoint -> false, cổng ẩn; vào chỗ đổi bùa + equip -> cờ portal_open, Portal trong cây,
 ##            target_zone = đấu trường; tháo bùa -> Portal vẫn trong cây.
@@ -65,6 +68,7 @@ func _run() -> void:
 	_check(_portal_in_tree(), "TC5: nạp lại tier 1 -> cổng dịch chuyển hiện sẵn")
 	await _tc6_to_9_arena()
 	await _tc10_retry()
+	await _tc2b_owned_still_drops()
 	_finish()
 
 
@@ -121,14 +125,55 @@ func _tc2_gift() -> void:
 	var keeper := _keeper()
 	if keeper == null:
 		return
+	# Đứng sát người chèo đò như lúc nói chuyện thật: lần bấm đóng câu thoại cuối không được nhặt luôn bùa vừa rơi
+	_player.teleport(keeper.global_position + Vector3(0.0, 0.1, 1.2), Vector3.FORWARD)
+	await _wait(0.4)
 	keeper.talk_requested.emit(_player)
 	await _wait(0.3)
 	await _finish_lines(keeper)
 	await _wait(0.5)
-	_check(GameState.owns_charm(CHARM), "TC2: nhận Bùa Đoạt Tiễn")
 	_check(GameState.has_flag(GIFT_FLAG), "TC2: lưu cờ đã tặng bùa")
 	_check(not keeper.get_dialogue_box().is_open(), "TC2: không mở hỏi gọi thuyền / hộp thoại đã đóng")
 	_check(_player.controls_enabled, "TC2: nói xong trả điều khiển")
+	# Player đứng sát người chèo đò bấm đóng câu thoại cuối: bùa rơi đủ xa nên không bị nhặt luôn
+	_check(not GameState.owns_charm(CHARM), "TC2: bùa chưa vào túi khi chưa nhặt (bấm đóng thoại ở chỗ đứng nói chuyện không nhặt luôn)")
+	var drop := _charm_drop()
+	_check(drop != null and drop.is_inside_tree() and drop.is_visible_in_tree(), "TC2: bùa rơi ra, nằm trên đất")
+	if drop == null or not drop.is_inside_tree():
+		return
+	var p := drop.global_position
+	_check(ROOM_10.has_point(Vector2(p.x, p.z)), "TC2: bùa rơi trong phòng 10 (%.1f, %.1f)" % [p.x, p.z])
+	# Nhặt thật: đứng ngay chỗ bùa rồi bấm phím tương tác
+	_player.teleport(p + Vector3(0.0, 0.1, 0.6), Vector3.FORWARD)
+	await _wait(0.5)
+	await _press(&"interact")
+	await _wait(0.5)
+	_check(GameState.owns_charm(CHARM), "TC2: bấm nhặt -> có Bùa Đoạt Tiễn")
+	_check(not is_instance_valid(drop) or not drop.is_inside_tree() or not drop.is_visible_in_tree(), "TC2: nhặt xong vật trên đất biến mất")
+	var notice := _player.get_node_or_null("HUD/ItemNotice")
+	_check(notice != null and notice.call(&"is_showing") and String(notice.call(&"get_current_name")) == "Bùa Đoạt Tiễn", "TC2: hiện banner 'Nhận được Bùa Đoạt Tiễn'")
+	_check(GameState.has_tutorial(&"arrow_rend_charm"), "TC2: mở hướng dẫn ra checkpoint đeo Bùa Đoạt Tiễn")
+
+
+## Bùa rơi trước mặt người chèo đò (nằm trong FlagReveal theo cờ đã tặng)
+func _charm_drop() -> Node3D:
+	return _zone.get_node_or_null("Room10CharmDrop/CharmPickup") as Node3D
+
+
+func _tc2b_owned_still_drops() -> void:
+	var progress := PlayerProgress.new()
+	GameState.replace_progress(progress)
+	GameState.add_charm(load("res://resources/player/items/charms/special/arrow_rend_charm.tres") as CharmData)
+	await _load(TIER_1)
+	var keeper := _keeper()
+	if keeper == null:
+		return
+	keeper.talk_requested.emit(_player)
+	await _wait(0.3)
+	await _finish_lines(keeper)
+	await _wait(0.5)
+	var drop := _charm_drop()
+	_check(drop != null and drop.is_inside_tree() and drop.is_visible_in_tree(), "TC2b: đã có bùa sẵn -> nói chuyện vẫn rơi bùa ra đất")
 
 
 func _tc3_repeat() -> void:

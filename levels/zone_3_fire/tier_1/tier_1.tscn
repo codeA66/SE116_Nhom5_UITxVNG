@@ -47,6 +47,8 @@
 [ext_resource type="Script" path="res://entities/npcs/_base/services/charm_gift_service.gd" id="room10_gift_service"]
 [ext_resource type="Resource" path="res://resources/player/items/charms/special/arrow_rend_charm.tres" id="room10_charm"]
 [ext_resource type="Script" path="res://objects/core/triggers/charm_worn_flag/charm_worn_flag.gd" id="room10_charm_watch"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="room10_charm_pickup"]
+[ext_resource type="Resource" path="res://resources/tutorials/data/tut_arrow_rend.tres" id="room10_charm_tutorial"]
 [ext_resource type="Script" uid="uid://b8bgtpep1x3cb" path="res://objects/wind_puzzle/flag_source/flag_source.gd" id="flag_source_script"]
 [ext_resource type="PackedScene" path="res://objects/core/encounter/hostage_rescue/hostage_rescue.tscn" id="hostage_rescue_scene"]
 [ext_resource type="PackedScene" path="res://objects/core/pickups/key/key_drop.tscn" id="key_drop_scene"]
@@ -643,7 +645,19 @@ script = ExtResource("room10_gift_service")
 keep_dialogue_open = true
 charm = ExtResource("room10_charm")
 gift_flag = &"level_3.tiger.charm_given"
-gift_line = "Cầm lấy {charm}. Đeo nó vào rồi hẵng đi gặp con hổ."
+give_directly = false
+gift_line = "{charm} ở ngay trước mặt ngươi. Nhặt lấy, rồi ra đống lửa ngoài cửa mà đeo vào."
+
+[node name="Room10CharmDrop" type="Node3D" parent="."]
+script = ExtResource("flag_reveal_script")
+flag = &"level_3.tiger.charm_given"
+
+[node name="CharmPickup" parent="Room10CharmDrop" instance=ExtResource("room10_charm_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 162, 4.32, 43.5)
+persistent_id = &"level_3.tiger.charm_picked"
+charm = ExtResource("room10_charm")
+skip_if_owned = false
+tutorial = ExtResource("room10_charm_tutorial")
 
 [node name="Room10CharmWatch" type="Node" parent="."]
 script = ExtResource("room10_charm_watch")

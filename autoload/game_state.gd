@@ -26,6 +26,9 @@ signal ability_level_changed(ability: AbilityData, level: int)
 signal charms_changed
 ## Vừa vào / ra khu đổi bùa (màn Tab bật / tắt việc đeo bùa)
 signal charm_station_changed(inside: bool)
+## Người chơi vừa nhặt / nhận một vật (banner "Nhận được" trên HUD nghe). Chỉ vật nhặt thật gọi announce_item(),
+## không phát khi nạp save hay lệnh dev, để không hiện hàng loạt
+signal item_received(display_name: String, icon: Texture2D)
 ## Mở khóa bài hướng dẫn mới (Popup và Sổ Hướng Dẫn nghe)
 signal tutorial_unlocked(tutorial: TutorialData)
 ## Danh sách bài hướng dẫn vừa đổi
@@ -301,6 +304,11 @@ func upgrade_ability(ability: AbilityData) -> bool:
 
 func owns_charm(id: StringName) -> bool:
 	return progress.charms.has(id)
+
+
+## Báo cho HUD hiện banner "Nhận được"
+func announce_item(display_name: String, icon: Texture2D) -> void:
+	item_received.emit(display_name, icon)
 
 
 func add_charm(charm: CharmData) -> void:
