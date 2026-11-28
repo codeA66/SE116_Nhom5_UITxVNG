@@ -75,6 +75,9 @@
 [ext_resource type="PackedScene" path="res://objects/combat/hazards/forge_hammer/forge_hammer.tscn" id="forge_hammer_scene"]
 [ext_resource type="PackedScene" path="res://objects/combat/hazards/laser_statue/laser_statue.tscn" id="laser_statue_scene"]
 [ext_resource type="Resource" path="res://resources/combat/hazards/laser_statue_room08.tres" id="laser_statue_room08_data"]
+[ext_resource type="PackedScene" path="res://objects/core/pickups/charm/charm_pickup.tscn" id="t210_charm_pickup"]
+[ext_resource type="Resource" path="res://resources/player/items/charms/utility/ash_bind_charm.tres" id="t210_charm"]
+
 [sub_resource type="BoxShape3D" id="Tier3RouteTrigger"]
 size = Vector3(3.4, 2.4, 1.0)
 
@@ -215,6 +218,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 424, 24, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 386, 28, -2)
 [node name="T2SIceCave" type="Node3D" parent="Rooms/Tier2" unique_id=641790524 instance=ExtResource("35_lxn5w")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 338, 8, 14)
+[node name="T210Charm" parent="Rooms/Tier2" instance=ExtResource("t210_charm_pickup")]
+editor_description = "Bùa Tro Ghìm: nằm sẵn trên bệ cuối đường Cinder Run (phòng 10), cạnh cổng"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 383, 4.32, 64)
+persistent_id = &"zone_3_fire.t2.room_10_charm"
+charm = ExtResource("t210_charm")
+
 [node name="Connectors" type="Node3D" parent="Rooms/Tier2" unique_id=1729103324 instance=ExtResource("36_t22de")]
 [node name="T201ArrivalZone" type="Area3D" parent="RoomFocus"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.68, 1.4)
