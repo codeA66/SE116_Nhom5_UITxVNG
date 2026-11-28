@@ -632,10 +632,10 @@ hit_flash_time = 0.06
 [node name="Room10Keeper" parent="." instance=ExtResource("room10_keeper_scene")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 162, 4.32, 38)
 
-[node name="Story" parent="Room10Keeper"]
+[node name="Story" parent="Room10Keeper" index="8"]
 dialogues = Array[ExtResource("room10_dialogue_script")]([ExtResource("room10_gift"), ExtResource("room10_wear"), ExtResource("room10_open")])
 
-[node name="FerryFareService" parent="Room10Keeper"]
+[node name="FerryFareService" parent="Room10Keeper" index="6"]
 enabled = false
 
 [node name="CharmGift" type="Node" parent="Room10Keeper"]
@@ -954,3 +954,4 @@ shape = SubResource("Tier1ZoneShape")
 [editable path="WestWalk/WestWalkTrap"]
 [editable path="WestWalk/WestWalkGuards"]
 [editable path="Room13/Room13Encounter"]
+[editable path="Room10Keeper"]
