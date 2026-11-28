@@ -44,12 +44,15 @@ var _turn_to: Vector3 = Vector3.ZERO
 @onready var _shape: CollisionShape3D = $CollisionShape3D
 @onready var _interactable: InteractableComponent = $InteractableComponent
 @onready var _animation: AnimationPlayer = $AnimationPlayer
+@onready var _mirror_reflection: PlanarMirrorComponent = get_node_or_null(^"Pivot/PlanarMirrorComponent") as PlanarMirrorComponent
 
 
 func _ready() -> void:
 	_interactable.prompt_text = prompt
 	_interactable.interacted.connect(_on_interacted)
 	_animation.animation_finished.connect(_on_turn_finished)
+	if _mirror_reflection != null:
+		_mirror_reflection.set_active(_present)
 
 
 func configure(data: LiPuzzleData, initial_step: int) -> void:
@@ -114,6 +117,8 @@ func set_present(present: bool) -> void:
 	_present = present
 	if not present:
 		_animation.stop(true)
+	if _mirror_reflection != null:
+		_mirror_reflection.set_active(present)
 	_shape.set_deferred(&"disabled", not present or step_count() == 0)
 	_refresh_interaction()
 

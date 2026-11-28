@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CameraCutsceneData" format=3]
+
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/camera_cutscene_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+travel_time = 1.1
+hold_time = 1.5
+return_time = 1.0
+shot_offset = Vector3(4.5, 4.5, 8.5)
+look_height = 1.9
+shot_fov = 44.0
+push_in_fov = 38.0
+hold_orbit_degrees = 5.0
+letterbox_ratio = 0.1
+letterbox_time = 0.45

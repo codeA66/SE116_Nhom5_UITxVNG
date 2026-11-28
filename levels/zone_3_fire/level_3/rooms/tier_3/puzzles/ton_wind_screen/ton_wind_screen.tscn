@@ -6,7 +6,7 @@
 
 [sub_resource type="Resource" id="Wind"]
 script = ExtResource("wind")
-strength = 3.2
+strength = 5.2
 
 [sub_resource type="BoxShape3D" id="Volume"]
 resource_local_to_scene = true
@@ -25,10 +25,9 @@ metallic = 0.6
 albedo_color = Color(0.54, 0.22, 0.077, 1)
 shading_mode = 0
 [sub_resource type="StandardMaterial3D" id="Ash"]
-albedo_color = Color(0.92, 0.78, 0.61, 1)
 shading_mode = 0
-transparency = 1
 vertex_color_use_as_albedo = true
+transparency = 1
 
 [sub_resource type="StandardMaterial3D" id="WindCue"]
 albedo_color = Color(0.93, 0.52, 0.21, 1)
@@ -46,30 +45,84 @@ size = Vector3(3.35, 0.07, 0.28)
 material = SubResource("Glimmer")
 
 [sub_resource type="BoxMesh" id="AshMesh"]
-size = Vector3(0.052, 0.052, 0.85)
-material = SubResource("Ash")
+size = Vector3(0.055, 0.055, 0.54)
 
 [sub_resource type="BoxMesh" id="ChevronArm"]
 size = Vector3(0.115, 0.024, 0.65)
 material = SubResource("WindCue")
 
-[sub_resource type="Gradient" id="AshFade"]
-offsets = PackedFloat32Array(0, 0.16, 0.66, 1)
-colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.82, 1, 1, 1, 0.52, 1, 1, 1, 0)
+[sub_resource type="Shader" id="WindFlight"]
+code = "shader_type particles;
+render_mode disable_velocity;
 
-[sub_resource type="GradientTexture1D" id="AshFadeTexture"]
-gradient = SubResource("AshFade")
+uniform vec3 zone_half;
+uniform float source_z;
+uniform float flight_speed;
+uniform vec2 flight_height;
+uniform vec3 streak_half;
+uniform vec3 panel_half;
+uniform vec3 panel;
+uniform vec3 paired_panel;
+uniform vec3 fixed_center;
+uniform vec3 fixed_half;
+uniform bool has_panel;
+uniform bool has_pair;
+uniform bool has_fixed;
+uniform float impact_time = 0.12;
 
-[sub_resource type="ParticleProcessMaterial" id="DustMaterial"]
+float random_unit(uint seed) {
+	seed = (seed ^ (seed >> 16u)) * 2246822519u;
+	seed = (seed ^ (seed >> 13u)) * 3266489917u;
+	return float(seed ^ (seed >> 16u)) / 4294967295.0;
+}
+
+void start() {
+	uint seed = NUMBER + RANDOM_SEED;
+	TRANSFORM = mat4(1.0);
+	float across = mix(-zone_half.x, zone_half.x, random_unit(seed));
+	float height = mix(flight_height.x, flight_height.y, random_unit(seed + 43u));
+	TRANSFORM[3].xyz = vec3(across, height, source_z);
+	CUSTOM = vec4(0.0);
+	VELOCITY = vec3(0.0, 0.0, -flight_speed * mix(0.85, 1.0, random_unit(seed + 97u)));
+	COLOR = vec4(0.79, 0.86, 1.0, 0.55);
+}
+
+float front_at(vec2 lane, vec3 center, vec3 half_size) {
+	return all(lessThanEqual(abs(lane - center.xy), half_size.xy + streak_half.xy))
+		? center.z + half_size.z : -1e20;
+}
+
+void process() {
+	vec3 pos = TRANSFORM[3].xyz;
+	if (CUSTOM.x > 0.0) {
+		CUSTOM.x -= DELTA;
+		COLOR.a = clamp(CUSTOM.x / impact_time, 0.0, 1.0);
+		if (CUSTOM.x <= 0.0) { ACTIVE = false; }
+	} else {
+		float front = -1e20;
+		if (has_panel) { front = front_at(pos.xy, panel, panel_half); }
+		if (has_pair) { front = max(front, front_at(pos.xy, paired_panel, panel_half)); }
+		if (has_fixed) { front = max(front, front_at(pos.xy, fixed_center, fixed_half)); }
+		float next_z = pos.z + VELOCITY.z * DELTA;
+		if (pos.z < front) {
+			ACTIVE = false;
+		} else if (next_z - streak_half.z <= front) {
+			TRANSFORM[3].z = front + 0.08;
+			TRANSFORM[0].x = 3.0;
+			TRANSFORM[1].y = 2.0;
+			TRANSFORM[2].z = 0.12;
+			CUSTOM.x = impact_time;
+			COLOR = vec4(0.75, 0.94, 1.0, 1.0);
+		} else {
+			TRANSFORM[3].z = next_z;
+			if (next_z < -zone_half.z) { ACTIVE = false; }
+		}
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id="DustMaterial"]
 resource_local_to_scene = true
-emission_shape = 3
-emission_box_extents = Vector3(4.5, 1.8, 2.45)
-direction = Vector3(0, 0, -1)
-spread = 4.0
-gravity = Vector3(0, 0, 0)
-initial_velocity_min = 4.6
-initial_velocity_max = 6.8
-color_ramp = SubResource("AshFadeTexture")
+shader = SubResource("WindFlight")
 
 [node name="TonWindScreen" type="Area3D"]
 collision_layer = 64
@@ -87,7 +140,7 @@ script = ExtResource("sync")
 shape_node = NodePath("../CollisionShape3D")
 
 [node name="Screen" type="AnimatableBody3D" parent="."]
-position = Vector3(-4.0, 0, 0.78)
+position = Vector3(-4.0, 0, 0)
 collision_layer = 256
 collision_mask = 0
 sync_to_physics = false
@@ -169,7 +222,8 @@ cast_shadow = 0
 [node name="Dust" type="GPUParticles3D" parent="."]
 cast_shadow = 0
 emitting = false
-amount = 58
+material_override = SubResource("Ash")
+amount = 44
 lifetime = 0.62
 local_coords = true
 process_material = SubResource("DustMaterial")

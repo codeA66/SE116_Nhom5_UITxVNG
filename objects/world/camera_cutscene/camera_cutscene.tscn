@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://objects/world/camera_cutscene/states/hold.gd" id="6_ojx5u"]
 [ext_resource type="Script" path="res://objects/world/camera_cutscene/states/outro.gd" id="7_d37mf"]
 [ext_resource type="Script" path="res://objects/world/camera_cutscene/states/done.gd" id="8_vip37"]
+[ext_resource type="Script" path="res://components/feedback/camera_shake/camera_shake.gd" id="9_shake"]
 
 [node name="CameraCutscene" type="Node3D" unique_id=875361822]
 script = ExtResource("1_4ufqe")
@@ -22,6 +23,12 @@ monitorable = false
 
 [node name="CutCamera" type="Camera3D" parent="." unique_id=1482162782]
 far = 400.0
+
+[node name="CameraShake" type="Node" parent="CutCamera"]
+script = ExtResource("9_shake")
+max_offset = 1.35
+max_roll_degrees = 0.0
+frequency = 22.0
 
 [node name="Letterbox" type="CanvasLayer" parent="." unique_id=1638955247]
 layer = 20

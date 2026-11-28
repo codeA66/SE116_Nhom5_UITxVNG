@@ -95,6 +95,17 @@ func record_completion() -> void:
 	_complete()
 
 
+## Khoá cứng trạng thái đã sạc khi cửa thủng lỗ cho tia đâm xuyên qua giữa chừng.
+func force_latch() -> void:
+	if _blocked or not requires_continuous_light or _latched:
+		return
+	_latched = true
+	_set_charge_level(1.0)
+	set_physics_process(false)
+	if _gate_lowered and not _active:
+		_complete()
+
+
 func set_enabled(enabled: bool) -> void:
 	_enabled = enabled
 	if not enabled:

@@ -6,7 +6,7 @@ signal failed(player: Player)
 
 enum Phase { REST, WARNING, ACTIVE, BUILDUP }
 
-@export var source_offset: Vector3 = Vector3(0.0, -1.12, 2.0)
+@export var source_offset: Vector3 = Vector3(0.0, -7.07, 2.0)
 
 var phase: Phase = Phase.REST
 var _data: KhamPuzzleData
@@ -22,7 +22,7 @@ var _protected_players: Dictionary[Player, HurtboxComponent] = {}
 
 func _ready() -> void:
 	var shape: BoxShape3D = ($CollisionShape3D as CollisionShape3D).shape as BoxShape3D
-	_vfx.configure(source_offset, shape.size)
+	_vfx.configure_rising(source_offset, shape.size.y)
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	_timer.timeout.connect(_advance)

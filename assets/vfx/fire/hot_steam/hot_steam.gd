@@ -51,6 +51,20 @@ func configure(source_offset: Vector3, hazard_size: Vector3) -> void:
 	set_resting()
 
 
+func configure_rising(source_offset: Vector3, hazard_height: float) -> void:
+	_rock.hide()
+	# Cột hơi xuất phát ngoài mép sàn rồi hướng lên vùng bẫy.
+	var travel: Vector3 = Vector3.UP * hazard_height - source_offset
+	var lifetime: float = maxf(data.lifetime, 0.1)
+	_setup_emitter(_jet, data.jet_particles, lifetime, source_offset, travel.normalized(), travel.length() / lifetime)
+	# Hơi báo phun xuất hiện ngay sát mép lối đi để người chơi kịp thấy.
+	var warning_origin: Vector3 = Vector3(source_offset.x, 0.0, source_offset.z)
+	_setup_emitter(_wisps, data.warning_particles, lifetime, warning_origin, Vector3.UP, data.warning_speed)
+	_wisps.scale_amount_min *= 0.55
+	_wisps.scale_amount_max *= 0.55
+	set_resting()
+
+
 func set_resting() -> void:
 	_stop_emitters()
 	_rock_material.set_shader_parameter(&"heat", data.resting_glow)

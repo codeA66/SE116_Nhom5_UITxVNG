@@ -17,6 +17,7 @@ extends Resource
 @export_range(0.05, 2.0, 0.05) var valve_turn_time: float = 0.35
 @export_range(0.05, 5.0, 0.05) var bridge_open_time: float = 0.8
 @export_range(0.1, 10.0, 0.1) var bridge_hidden_depth: float = 4.0
+@export var valve_locked_color: Color = Color(0.45, 0.45, 0.47, 1.0)
 @export_group("Chuyển phase")
 @export_range(0.0, 5.0, 0.05) var phase_one_sink_time: float = 0.8
 @export_range(0.1, 20.0, 0.1) var phase_one_sink_depth: float = 4.0

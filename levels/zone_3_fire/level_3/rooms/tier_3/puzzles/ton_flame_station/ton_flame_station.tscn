@@ -12,11 +12,11 @@ albedo_color = Color(0.13, 0.065, 0.043, 1)
 albedo_color = Color(0.21, 0.13, 0.066, 1)
 metallic = 0.65
 [sub_resource type="StandardMaterial3D" id="Ember"]
-albedo_color = Color(1, 0.34, 0.085, 1)
+albedo_color = Color(0.29, 0.65, 1, 1)
 shading_mode = 0
 disable_fog = true
 [sub_resource type="StandardMaterial3D" id="Fire"]
-albedo_color = Color(1, 0.61, 0.16, 1)
+albedo_color = Color(0.29, 0.65, 1, 1)
 shading_mode = 0
 [sub_resource type="BoxMesh" id="Foot"]
 size = Vector3(0.82, 0.26, 0.82)
@@ -74,7 +74,7 @@ cast_shadow = 0
 
 [node name="Light" type="OmniLight3D" parent="."]
 position = Vector3(0, 1.7, 0)
-light_color = Color(1, 0.62, 0.34, 1)
+light_color = Color(0.38, 0.7, 1, 1)
 light_energy = 9.0
 omni_range = 19.0
 

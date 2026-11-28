@@ -36,9 +36,15 @@
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/t3_walkthrough_connectors.tscn" id="connectors"]
 
 [ext_resource type="PackedScene" path="res://levels/zone_3_fire/level_3/rooms/tier_3/tier_3_altar.tscn" id="tier_3_altar"]
+[ext_resource type="Material" path="res://assets/materials/map_fire/lava_material.tres" id="lava_sea"]
+[ext_resource type="PackedScene" path="res://objects/core/checkpoint/fire/fire_checkpoint.tscn" id="fire_checkpoint"]
+[ext_resource type="PackedScene" path="res://objects/world/camera_cutscene/camera_cutscene.tscn" id="camera_cutscene"]
+[ext_resource type="Script" path="res://objects/world/camera_cutscene/camera_cutscene_data.gd" id="cutscene_data"]
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/wing_collapse/wing_collapse_controller.gd" id="wing_collapse"]
+[ext_resource type="Resource" path="res://resources/world/puzzles/wing_collapse_default.tres" id="wing_collapse_data"]
 
 [sub_resource type="BoxShape3D" id="TonDarkBounds"]
-size = Vector3(49, 28, 50)
+size = Vector3(40.2, 22, 39.8)
 
 [sub_resource type="Resource" id="FireCamera"]
 script = ExtResource("camera_data")
@@ -54,15 +60,62 @@ completed_flag = &"level_3.t3_walkthrough_ly_exit"
 
 [sub_resource type="Resource" id="KhamRoutePuzzle"]
 script = ExtResource("kham_data")
-vent_rest_time = 1.0
+vent_rest_time = 2.5
 vent_active_time = 1.5
 seal_flag = &"level_3.t3_walkthrough_kham"
 
 [sub_resource type="BoxShape3D" id="Fall"]
 size = Vector3(210, 10, 160)
 
+[sub_resource type="PlaneMesh" id="LavaSeaPlane"]
+size = Vector2(210, 160)
+
+[sub_resource type="Resource" id="LyCollapseShot"]
+script = ExtResource("cutscene_data")
+travel_time = 1.0
+hold_time = 2.5
+return_time = 0.9
+shot_offset = Vector3(14, 15, -24)
+look_height = 1.6
+shot_fov = 52.0
+push_in_fov = 44.0
+hold_orbit_degrees = 5.0
+
+[sub_resource type="Resource" id="KhamCollapseShot"]
+script = ExtResource("cutscene_data")
+travel_time = 1.0
+hold_time = 2.5
+return_time = 0.9
+shot_offset = Vector3(-14, 15, 24)
+look_height = 1.6
+shot_fov = 52.0
+push_in_fov = 44.0
+hold_orbit_degrees = 5.0
+
+[sub_resource type="Resource" id="TonCollapseShot"]
+script = ExtResource("cutscene_data")
+travel_time = 1.0
+hold_time = 2.5
+return_time = 0.9
+shot_offset = Vector3(24, 15, 14)
+look_height = 1.6
+shot_fov = 52.0
+push_in_fov = 44.0
+hold_orbit_degrees = 5.0
+
+[sub_resource type="Resource" id="ChanCollapseShot"]
+script = ExtResource("cutscene_data")
+travel_time = 1.0
+hold_time = 2.5
+return_time = 0.9
+shot_offset = Vector3(-24, 15, -14)
+look_height = 1.6
+shot_fov = 52.0
+push_in_fov = 44.0
+hold_orbit_degrees = 5.0
+
 [node name="Tier3Walkthrough" type="Node3D"]
-editor_description = "Sảnh bốn hướng. Lưu tiến trình khi lắp từng viên ngọc ở bệ trung tâm."
+editor_description = "Sảnh bốn hướng. Chạm checkpoint ở lối vào phòng để lưu tiến trình."
 script = ExtResource("zone")
 shader_warmup = null
 
@@ -70,6 +123,12 @@ shader_warmup = null
 script = ExtResource("route")
 
 [node name="FireLighting" parent="." instance=ExtResource("lighting")]
+
+[node name="LavaSea" type="MeshInstance3D" parent="."]
+position = Vector3(-2, -6.5, 1)
+material_override = ExtResource("lava_sea")
+cast_shadow = 0
+mesh = SubResource("LavaSeaPlane")
 
 [node name="ZoneCameraView" type="Node" parent="."]
 script = ExtResource("camera_zone")
@@ -103,14 +162,16 @@ seal_flag = &"level_3.t3_walkthrough_ton"
 sun = NodePath("../../FireLighting/SunLight")
 bounce_light = NodePath("../../FireLighting/LavaBounceLight")
 world_environment = NodePath("../../FireLighting/Environment")
-dark_light_ratio = 0.015
-dark_ambient_ratio = 0.025
-fade_time = 0.45
+dark_light_ratio = 0.0
+dark_ambient_ratio = 0.0
+fade_time = 0.65
 use_black_background = true
+dim_material = ExtResource("lava_sea")
+dim_ratio = 0.05
 use_carried_light = false
 
 [node name="RoomVolume" type="CollisionShape3D" parent="TonAshenGale/TonDarkZone"]
-position = Vector3(14, 2, 20)
+position = Vector3(14, 4, 20.1)
 shape = SubResource("TonDarkBounds")
 
 [node name="ChanThunderAnvil" parent="." instance=ExtResource("chan")]
@@ -118,6 +179,27 @@ position = Vector3(28, 0, 0)
 seal_flag = &"level_3.t3_walkthrough_chan"
 
 [node name="Connectors" parent="." instance=ExtResource("connectors")]
+
+[node name="RoomCheckpoints" type="Node3D" parent="."]
+
+[node name="Ly" parent="RoomCheckpoints" instance=ExtResource("fire_checkpoint")]
+position = Vector3(0, 0.28, 24.5)
+rotation = Vector3(0, 3.14159265, 0)
+checkpoint_id = &"level_3.t3_ly_entrance"
+
+[node name="Kham" parent="RoomCheckpoints" instance=ExtResource("fire_checkpoint")]
+position = Vector3(0, 0.28, -24.5)
+checkpoint_id = &"level_3.t3_kham_entrance"
+
+[node name="Ton" parent="RoomCheckpoints" instance=ExtResource("fire_checkpoint")]
+position = Vector3(-24.5, 0.28, 0)
+rotation = Vector3(0, 1.57079633, 0)
+checkpoint_id = &"level_3.t3_ton_entrance"
+
+[node name="Chan" parent="RoomCheckpoints" instance=ExtResource("fire_checkpoint")]
+position = Vector3(24.5, 0.28, 0)
+rotation = Vector3(0, -1.57079633, 0)
+checkpoint_id = &"level_3.t3_chan_entrance"
 
 [node name="Finish" type="Node3D" parent="."]
 
@@ -147,3 +229,62 @@ monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="FallRecovery"]
 shape = SubResource("Fall")
+
+[node name="CollapseCutscene" parent="." node_paths=PackedStringArray("focus_target") instance=ExtResource("camera_cutscene")]
+data = SubResource("LyCollapseShot")
+focus_target = NodePath("../WingCollapses/LyFocus")
+manual_only = true
+
+[node name="WingCollapses" type="Node3D" parent="."]
+
+[node name="LyFocus" type="Marker3D" parent="WingCollapses"]
+position = Vector3(0, 2, 30)
+
+[node name="KhamFocus" type="Marker3D" parent="WingCollapses"]
+position = Vector3(0, 2, -30)
+
+[node name="TonFocus" type="Marker3D" parent="WingCollapses"]
+position = Vector3(-28, 2, 0)
+
+[node name="ChanFocus" type="Marker3D" parent="WingCollapses"]
+position = Vector3(28, 2, 0)
+
+[node name="LyCollapse" type="Node3D" parent="WingCollapses" node_paths=PackedStringArray("targets", "hub_barrier", "camera_focus", "cutscene")]
+script = ExtResource("wing_collapse")
+data = ExtResource("wing_collapse_data")
+placed_flag = &"level_3.t3_walkthrough_ly_placed"
+targets = [NodePath("../../LiFoundry"), NodePath("../../Connectors/South"), NodePath("../../RoomCheckpoints/Ly")]
+hub_barrier = NodePath("../../Connectors/Hub/SouthSealWall")
+camera_focus = NodePath("../LyFocus")
+cutscene = NodePath("../../CollapseCutscene")
+cutscene_data = SubResource("LyCollapseShot")
+
+[node name="KhamCollapse" type="Node3D" parent="WingCollapses" node_paths=PackedStringArray("targets", "hub_barrier", "camera_focus", "cutscene")]
+script = ExtResource("wing_collapse")
+data = ExtResource("wing_collapse_data")
+placed_flag = &"level_3.t3_walkthrough_kham_placed"
+targets = [NodePath("../../KhamCondenser"), NodePath("../../Connectors/North"), NodePath("../../RoomCheckpoints/Kham")]
+hub_barrier = NodePath("../../Connectors/Hub/NorthSealWall")
+camera_focus = NodePath("../KhamFocus")
+cutscene = NodePath("../../CollapseCutscene")
+cutscene_data = SubResource("KhamCollapseShot")
+
+[node name="TonCollapse" type="Node3D" parent="WingCollapses" node_paths=PackedStringArray("targets", "hub_barrier", "camera_focus", "cutscene")]
+script = ExtResource("wing_collapse")
+data = ExtResource("wing_collapse_data")
+placed_flag = &"level_3.t3_walkthrough_ton_placed"
+targets = [NodePath("../../TonAshenGale"), NodePath("../../Connectors/West"), NodePath("../../RoomCheckpoints/Ton")]
+hub_barrier = NodePath("../../Connectors/Hub/WestSealWall")
+camera_focus = NodePath("../TonFocus")
+cutscene = NodePath("../../CollapseCutscene")
+cutscene_data = SubResource("TonCollapseShot")
+
+[node name="ChanCollapse" type="Node3D" parent="WingCollapses" node_paths=PackedStringArray("targets", "hub_barrier", "camera_focus", "cutscene")]
+script = ExtResource("wing_collapse")
+data = ExtResource("wing_collapse_data")
+placed_flag = &"level_3.t3_walkthrough_chan_placed"
+targets = [NodePath("../../ChanThunderAnvil"), NodePath("../../Connectors/East"), NodePath("../../RoomCheckpoints/Chan")]
+hub_barrier = NodePath("../../Connectors/Hub/EastSealWall")
+camera_focus = NodePath("../ChanFocus")
+cutscene = NodePath("../../CollapseCutscene")
+cutscene_data = SubResource("ChanCollapseShot")

@@ -21,7 +21,7 @@ func _ready() -> void:
 		block.lifted.connect(_on_block_lifted)
 	for socket: ChanSocket in sockets:
 		socket.configure(_held_block)
-		socket.connection_changed.connect(_hide_tracks)
+		socket.connection_changed.connect(stop)
 	_timer.timeout.connect(_clear)
 	_clear()
 

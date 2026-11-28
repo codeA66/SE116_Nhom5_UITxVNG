@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WingCollapseData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://levels/zone_3_fire/level_3/rooms/tier_3/puzzles/wing_collapse/wing_collapse_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+rumble_duration = 0.85
+rumble_amplitude = 0.18
+rumble_frequency = 28.0
+stagger_step = 0.045
+max_stagger_span = 1.05
+fall_gravity = 34.0
+max_tilt_degrees = 28.0
+sink_y = -16.0
+max_collapse_duration = 2.6
+initial_trauma = 0.95
+pulse_trauma = 0.72
+pulse_interval = 0.28
+post_fall_hold = 0.35
