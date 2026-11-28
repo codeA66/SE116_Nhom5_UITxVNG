@@ -67,7 +67,7 @@ func _t_load() -> void:
 	var caster := await _spawn(Vector3(0, 0, 0), null, true)
 	var model := caster.get_node("Model/Visual/FireCasterModel") as Node3D
 	var burnable := caster.get_node("BurnableComponent") as BurnableComponent
-	_check(model.is_visible_in_tree() and caster.data.display_name == "Quỷ Xương Lửa" and caster.health.max_health == 4, "nạp: model hiện, tên + máu 4")
+	_check(model.is_visible_in_tree() and caster.data.display_name == "Quỷ Xương Lửa" and caster.health.max_health == 6, "nạp: model hiện, tên + máu 6")
 	_check(is_equal_approx(caster.hurtbox.resistances.get(DamageInfo.Type.FIRE, 1.0), 1.0), "không miễn lửa: hệ số sát thương lửa 1")
 	var anim := caster.get_node("AnimationPlayer") as AnimationPlayer
 	var clips: Array[StringName] = [&"Idle", &"Walk", &"Cast", &"Hurt", &"Death"]

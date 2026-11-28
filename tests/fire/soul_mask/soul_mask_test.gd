@@ -1,6 +1,6 @@
 extends Node3D
 ## Test Đầu Lửa (SoulMask) bằng hành vi thật: vật lý, va chạm, phím chém thật của player.
-## 1. Nạp: model hiện, tên + máu 5, có hàm, miệng ở phía trước mặt, bay lơ lửng đúng độ cao.
+## 1. Nạp: model hiện, tên + máu 6, có hàm, miệng ở phía trước mặt, bay lơ lửng đúng độ cao.
 ## 2. Lượn vòng: sinh xa 12 m thì lại gần tới bán kính lượn rồi bay vòng quanh player.
 ## 3. Tụ lực rồi bắn: hàm há dần, vạch cảnh báo hiện; bắn đúng charge_time; player đứng trong đường bắn mất 1 máu.
 ## 4. Né: player bước ngang sau lúc khoá hướng thì không trúng. Tường chắn: tia dừng ở tường, player sau tường không trúng.
@@ -62,7 +62,7 @@ func _t_load() -> void:
 	await _frames(90)
 	var model := mask.get_node("Model/Visual/SoulMaskModel") as Node3D
 	var jaw := mask.get_node_or_null(mask.jaw_path) as Node3D
-	_check(model.is_visible_in_tree() and mask.data.display_name == "Đầu Lửa" and mask.health.max_health == 5, "nạp: model hiện, tên Đầu Lửa, máu 5")
+	_check(model.is_visible_in_tree() and mask.data.display_name == "Đầu Lửa" and mask.health.max_health == 6, "nạp: model hiện, tên Đầu Lửa, máu 6")
 	_check(jaw != null, "có node hàm Mask_Jaw")
 	var model_root := mask.get_node("Model") as Node3D
 	var muzzle_local := model_root.to_local(mask.muzzle_position())
