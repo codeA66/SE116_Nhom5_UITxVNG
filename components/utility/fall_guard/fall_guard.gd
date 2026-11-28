@@ -86,14 +86,14 @@ func _local_bounds(prop: Node3D) -> AABB:
 ## Thông tin một đoạn theo toạ độ thế giới: tâm chân, trục dọc (X cục bộ), dài, dày, hai đầu
 func _describe(prop: Node3D, local: AABB) -> Dictionary:
 	var scale_v: Vector3 = prop.global_basis.get_scale()
-	var basis := prop.global_basis.orthonormalized()
+	var prop_basis := prop.global_basis.orthonormalized()
 	var length: float = local.size.x * scale_v.x
 	var depth: float = local.size.z * scale_v.z
 	var center_local: Vector3 = local.get_center()
 	var foot: Vector3 = prop.global_transform * Vector3(center_local.x, local.position.y, center_local.z)
-	var axis: Vector3 = basis.x
+	var axis: Vector3 = prop_basis.x
 	return {
-		"basis": basis, "foot": foot, "axis": axis, "length": length, "depth": depth,
+		"basis": prop_basis, "foot": foot, "axis": axis, "length": length, "depth": depth,
 		"is_post": length < 1.0 and depth < 1.0,
 		"ends": [foot - axis * length * 0.5, foot + axis * length * 0.5],
 	}
@@ -124,9 +124,9 @@ func _opens_to_void(end: Vector3, outward: Vector3) -> bool:
 
 
 func _add_guard(piece: Dictionary, pieces: Array[Dictionary]) -> void:
-	var basis: Basis = piece.basis
+	var piece_basis: Basis = piece.basis
 	var axis: Vector3 = piece.axis
-	var side: Vector3 = basis.z
+	var side: Vector3 = piece_basis.z
 	var length: float = piece.length
 	var depth: float = maxf(piece.depth, min_thickness)
 	var shift := Vector3.ZERO
@@ -148,5 +148,5 @@ func _add_guard(piece: Dictionary, pieces: Array[Dictionary]) -> void:
 	var shape := CollisionShape3D.new()
 	shape.shape = box
 	_body.add_child(shape)
-	var center: Vector3 = (piece.foot as Vector3) + shift + basis.y * (guard_height * 0.5)
-	shape.global_transform = Transform3D(basis, center)
+	var center: Vector3 = (piece.foot as Vector3) + shift + piece_basis.y * (guard_height * 0.5)
+	shape.global_transform = Transform3D(piece_basis, center)
