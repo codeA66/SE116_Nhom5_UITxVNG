@@ -1,7 +1,6 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://levels/_base/zone_root.gd" id="zone"]
-[ext_resource type="PackedScene" path="res://levels/zone_3_fire/tier_1/lighting/fire_lighting.tscn" id="lighting"]
 [ext_resource type="Script" path="res://entities/player/camera/camera_view_data.gd" id="view_data"]
 [ext_resource type="Script" path="res://objects/hub/zone_camera_view/zone_camera_view.gd" id="view"]
 [ext_resource type="Script" path="res://objects/core/spawn_point/spawn_point.gd" id="spawn"]
@@ -12,386 +11,130 @@
 [ext_resource type="Resource" path="res://resources/world/cutscenes/tiger_intro.tres" id="intro_data"]
 [ext_resource type="Script" path="res://objects/combat/spawner_cage/flag_reveal.gd" id="flag_reveal"]
 [ext_resource type="PackedScene" path="res://objects/core/portal/portal.tscn" id="portal"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_4m.glb" id="k_floor_4m"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/floor_vein_4m.glb" id="k_floor_vein_4m"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_4m.glb" id="k_wall_4m"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_low_4m.glb" id="k_wall_low_4m"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/fire_pillar.glb" id="k_fire_pillar"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/chain_hanging_4m.glb" id="k_chain_hanging_4m"]
-[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/wall_broken_4m.glb" id="k_wall_broken_4m"]
+
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/tiger_arena/tiger_arena_architecture.glb" id="arena_model"]
+[ext_resource type="PackedScene" path="res://assets/models/map_fire/fire_kit/tiger_arena/tiger_arena_cage_door.glb" id="cage_door"]
+[ext_resource type="Script" path="res://levels/zone_3_fire/tier_1/tiger_arena/presentation/tiger_arena_presentation.gd" id="presentation"]
 
 [sub_resource type="Resource" id="ArenaView"]
 script = ExtResource("view_data")
 distance = 38.0
 yaw_degrees = 45.0
 
+
+[sub_resource type="Environment" id="ArenaEnvironment"]
+background_mode = 1
+background_color = Color(0.08, 0.042, 0.065, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.71, 0.65, 0.62, 1)
+ambient_light_energy = 0.47
+tonemap_mode = 3
+tonemap_exposure = 0.94
+fog_enabled = true
+fog_light_color = Color(0.28, 0.112, 0.12, 1)
+fog_light_energy = 0.55
+fog_density = 0.0026
+fog_height = -4.0
+fog_height_density = 0.051
+adjustment_enabled = true
+adjustment_contrast = 1.07
+adjustment_saturation = 0.96
+
 [sub_resource type="BoxShape3D" id="Box_Floor"]
 size = Vector3(28, 0.32, 28)
 
 [sub_resource type="BoxShape3D" id="Box_Hall"]
-size = Vector3(8, 0.32, 4)
+size = Vector3(8.38, 0.32, 4.3)
 
-[sub_resource type="BoxShape3D" id="Box_NorthWall"]
-size = Vector3(28.2, 4, 0.82)
+[sub_resource type="BoxShape3D" id="Box_HallCornerNorth"]
+size = Vector3(0.82, 0.8, 1.72)
+
+[sub_resource type="BoxShape3D" id="Box_HallCornerSouth"]
+size = Vector3(0.82, 0.8, 1.72)
+
+[sub_resource type="BoxShape3D" id="Box_NorthWallEast"]
+size = Vector3(8.98, 3.28, 0.82)
+
+[sub_resource type="BoxShape3D" id="Box_NorthWallWest"]
+size = Vector3(8.98, 3.28, 0.82)
 
 [sub_resource type="BoxShape3D" id="Box_SouthWall"]
-size = Vector3(28.2, 1.25, 0.82)
+size = Vector3(28.17, 1.23, 0.82)
 
-[sub_resource type="BoxShape3D" id="Box_EastWallN"]
-size = Vector3(0.82, 1.25, 12.06)
+[sub_resource type="BoxShape3D" id="Box_EastWall"]
+size = Vector3(0.82, 1.23, 28.13)
 
-[sub_resource type="BoxShape3D" id="Box_EastWallS"]
-size = Vector3(0.82, 1.25, 12.06)
+[sub_resource type="BoxShape3D" id="Box_WestWallNorth"]
+size = Vector3(0.82, 2.47, 10.44)
 
-[sub_resource type="BoxShape3D" id="Box_WestWallN"]
-size = Vector3(0.82, 4, 10.1)
+[sub_resource type="BoxShape3D" id="Box_WestWallSouth"]
+size = Vector3(0.82, 2.47, 10.44)
 
-[sub_resource type="BoxShape3D" id="Box_WestWallS"]
-size = Vector3(0.82, 4, 10.1)
+[sub_resource type="BoxShape3D" id="Box_HallWallNorth"]
+size = Vector3(8.12, 2.45, 0.82)
 
-[sub_resource type="BoxShape3D" id="Box_HallWallN"]
-size = Vector3(8.1, 4, 0.82)
-
-[sub_resource type="BoxShape3D" id="Box_HallWallS"]
-size = Vector3(8.1, 1.25, 0.82)
+[sub_resource type="BoxShape3D" id="Box_HallWallSouth"]
+size = Vector3(8.12, 1.24, 0.82)
 
 [sub_resource type="BoxShape3D" id="Box_HallEndWall"]
-size = Vector3(0.82, 4, 4.8)
+size = Vector3(0.82, 2.47, 4.8)
 
-[sub_resource type="BoxShape3D" id="Box_Brazier0"]
-size = Vector3(1.9, 3.5, 1.9)
+[sub_resource type="BoxShape3D" id="Box_CageFloor"]
+size = Vector3(11.18, 0.32, 4.6)
+
+[sub_resource type="BoxShape3D" id="Box_CageSideEast"]
+size = Vector3(0.65, 4.2, 4.15)
+
+[sub_resource type="BoxShape3D" id="Box_CageSideWest"]
+size = Vector3(0.65, 4.2, 4.15)
+
+[sub_resource type="BoxShape3D" id="Box_CageBack"]
+size = Vector3(11.25, 4.04, 0.56)
 
 [sub_resource type="BoxShape3D" id="Box_Brazier1"]
-size = Vector3(1.9, 3.5, 1.9)
+size = Vector3(1.86, 1.88, 1.86)
 
 [sub_resource type="BoxShape3D" id="Box_Brazier2"]
-size = Vector3(1.9, 3.5, 1.9)
+size = Vector3(1.86, 1.88, 1.86)
 
 [sub_resource type="BoxShape3D" id="Box_Brazier3"]
-size = Vector3(1.9, 3.5, 1.9)
+size = Vector3(1.86, 1.88, 1.86)
 
-[sub_resource type="BoxShape3D" id="Box_Rubble"]
-size = Vector3(4, 3, 1.6)
+[sub_resource type="BoxShape3D" id="Box_Brazier4"]
+size = Vector3(1.86, 1.88, 1.86)
 
 [node name="TigerArena" type="Node3D"]
 script = ExtResource("zone")
 default_spawn_id = &"tiger_arena_entry"
 
-[node name="FireLighting" parent="." instance=ExtResource("lighting")]
+
+[node name="FireLighting" type="Node3D" parent="."]
+
+[node name="Air" type="WorldEnvironment" parent="FireLighting"]
+environment = SubResource("ArenaEnvironment")
+
+[node name="Skylight" type="DirectionalLight3D" parent="FireLighting"]
+rotation = Vector3(-0.98, -0.37, 0)
+light_color = Color(0.93, 0.86, 0.83, 1)
+light_energy = 0.55
+shadow_enabled = true
+directional_shadow_max_distance = 63.0
+
+[node name="LavaRim" type="DirectionalLight3D" parent="FireLighting"]
+rotation = Vector3(0.36, 2.42, 0)
+light_color = Color(1, 0.34, 0.13, 1)
+light_energy = 0.20
 
 [node name="ZoneCameraView" type="Node" parent="."]
 script = ExtResource("view")
 view = SubResource("ArenaView")
 
+
 [node name="Architecture" type="Node3D" parent="."]
 
-[node name="Floor" type="Node3D" parent="Architecture"]
+[node name="ArenaModel" parent="Architecture" instance=ExtResource("arena_model")]
 
-[node name="Tile1" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-12, 0, -12)
-
-[node name="Tile2" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-12, 0, -8)
-
-[node name="Tile3" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-12, 0, -4)
-
-[node name="Tile4" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-12, 0, 0)
-
-[node name="Tile5" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-12, 0, 4)
-
-[node name="Tile6" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-12, 0, 8)
-
-[node name="Tile7" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-12, 0, 12)
-
-[node name="Tile8" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-8, 0, -12)
-
-[node name="Tile9" parent="Architecture/Floor" instance=ExtResource("k_floor_vein_4m")]
-position = Vector3(-8, 0, -8)
-
-[node name="Tile10" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-8, 0, -4)
-
-[node name="Tile11" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-8, 0, 0)
-
-[node name="Tile12" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-8, 0, 4)
-
-[node name="Tile13" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-8, 0, 8)
-
-[node name="Tile14" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-8, 0, 12)
-
-[node name="Tile15" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-4, 0, -12)
-
-[node name="Tile16" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-4, 0, -8)
-
-[node name="Tile17" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-4, 0, -4)
-
-[node name="Tile18" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-4, 0, 0)
-
-[node name="Tile19" parent="Architecture/Floor" instance=ExtResource("k_floor_vein_4m")]
-position = Vector3(-4, 0, 4)
-
-[node name="Tile20" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-4, 0, 8)
-
-[node name="Tile21" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-4, 0, 12)
-
-[node name="Tile22" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(0, 0, -12)
-
-[node name="Tile23" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(0, 0, -8)
-
-[node name="Tile24" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(0, 0, -4)
-
-[node name="Tile25" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(0, 0, 0)
-
-[node name="Tile26" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(0, 0, 4)
-
-[node name="Tile27" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(0, 0, 8)
-
-[node name="Tile28" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(0, 0, 12)
-
-[node name="Tile29" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(4, 0, -12)
-
-[node name="Tile30" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(4, 0, -8)
-
-[node name="Tile31" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(4, 0, -4)
-
-[node name="Tile32" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(4, 0, 0)
-
-[node name="Tile33" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(4, 0, 4)
-
-[node name="Tile34" parent="Architecture/Floor" instance=ExtResource("k_floor_vein_4m")]
-position = Vector3(4, 0, 8)
-
-[node name="Tile35" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(4, 0, 12)
-
-[node name="Tile36" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(8, 0, -12)
-
-[node name="Tile37" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(8, 0, -8)
-
-[node name="Tile38" parent="Architecture/Floor" instance=ExtResource("k_floor_vein_4m")]
-position = Vector3(8, 0, -4)
-
-[node name="Tile39" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(8, 0, 0)
-
-[node name="Tile40" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(8, 0, 4)
-
-[node name="Tile41" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(8, 0, 8)
-
-[node name="Tile42" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(8, 0, 12)
-
-[node name="Tile43" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(12, 0, -12)
-
-[node name="Tile44" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(12, 0, -8)
-
-[node name="Tile45" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(12, 0, -4)
-
-[node name="Tile46" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(12, 0, 0)
-
-[node name="Tile47" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(12, 0, 4)
-
-[node name="Tile48" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(12, 0, 8)
-
-[node name="Tile49" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(12, 0, 12)
-
-[node name="Tile50" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-16, 0, 0)
-
-[node name="Tile51" parent="Architecture/Floor" instance=ExtResource("k_floor_4m")]
-position = Vector3(-20, 0, 0)
-
-[node name="Walls" type="Node3D" parent="Architecture"]
-
-[node name="North0" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-12, 0.32, -13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="South0" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(-12, 0.32, 13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="North1" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-8, 0.32, -13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="South1" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(-8, 0.32, 13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="North2" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-4, 0.32, -13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="South2" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(-4, 0.32, 13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="North3" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(0, 0.32, -13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="South3" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(0, 0.32, 13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="North4" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(4, 0.32, -13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="South4" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(4, 0.32, 13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="North5" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(8, 0.32, -13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="South5" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(8, 0.32, 13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="North6" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(12, 0.32, -13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="South6" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(12, 0.32, 13.65)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="East0" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(13.65, 0.28, -12)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="East1" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(13.65, 0.28, -8)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="East2" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(13.65, 0.28, -4)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="East3" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(13.65, 0.28, 4)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="East4" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(13.65, 0.28, 8)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="East5" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(13.65, 0.28, 12)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="WestS0" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-13.65, 0.28, 6.075)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(1.2438, 1, 1)
-
-[node name="WestN0" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-13.65, 0.28, -6.075)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(1.2438, 1, 1)
-
-[node name="WestS1" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-13.65, 0.28, 11.125)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(1.2438, 1, 1)
-
-[node name="WestN1" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-13.65, 0.28, -11.125)
-rotation = Vector3(0, 1.5708, 0)
-scale = Vector3(1.2438, 1, 1)
-
-[node name="HallN0" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-16, 0.32, -2.41)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="HallS0" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(-16, 0.32, 2.41)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="HallN1" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-20, 0.32, -2.41)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="HallS1" parent="Architecture/Walls" instance=ExtResource("k_wall_low_4m")]
-position = Vector3(-20, 0.32, 2.41)
-scale = Vector3(0.9852, 1, 1)
-
-[node name="HallEnd" parent="Architecture/Walls" instance=ExtResource("k_wall_4m")]
-position = Vector3(-22.41, 0.28, 0)
-rotation = Vector3(0, 1.5708, 0)
-
-[node name="Braziers" type="Node3D" parent="Architecture"]
-
-[node name="Brazier0" parent="Architecture/Braziers" instance=ExtResource("k_fire_pillar")]
-position = Vector3(-11.3, 0.32, -11.3)
-
-[node name="Brazier1" parent="Architecture/Braziers" instance=ExtResource("k_fire_pillar")]
-position = Vector3(11.3, 0.32, -11.3)
-
-[node name="Brazier2" parent="Architecture/Braziers" instance=ExtResource("k_fire_pillar")]
-position = Vector3(-11.3, 0.32, 11.3)
-
-[node name="Brazier3" parent="Architecture/Braziers" instance=ExtResource("k_fire_pillar")]
-position = Vector3(11.3, 0.32, 11.3)
-
-[node name="Den" type="Node3D" parent="Architecture"]
-
-[node name="ChainL" parent="Architecture/Den" instance=ExtResource("k_chain_hanging_4m")]
-position = Vector3(-1.5, 0.32, -13)
-
-[node name="ChainR" parent="Architecture/Den" instance=ExtResource("k_chain_hanging_4m")]
-position = Vector3(1.5, 0.32, -13)
-
-[node name="Rubble" parent="Architecture/Den" instance=ExtResource("k_wall_broken_4m")]
-position = Vector3(5, 0.32, -11.6)
+[node name="CageDoor" parent="Architecture" instance=ExtResource("cage_door")]
 
 [node name="Collision" type="StaticBody3D" parent="."]
 
@@ -400,64 +143,84 @@ position = Vector3(0, 0.16, 0)
 shape = SubResource("Box_Floor")
 
 [node name="Hall" type="CollisionShape3D" parent="Collision"]
-position = Vector3(-18, 0.16, 0)
+position = Vector3(-18.19, 0.16, 0)
 shape = SubResource("Box_Hall")
 
-[node name="NorthWall" type="CollisionShape3D" parent="Collision"]
-position = Vector3(0, 2.32, -13.65)
-shape = SubResource("Box_NorthWall")
+[node name="HallCornerNorth" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-14.41, 0.71, -2.92)
+shape = SubResource("Box_HallCornerNorth")
+
+[node name="HallCornerSouth" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-14.41, 0.71, 2.92)
+shape = SubResource("Box_HallCornerSouth")
+
+[node name="NorthWallEast" type="CollisionShape3D" parent="Collision"]
+position = Vector3(9.59, 1.92, -13.65)
+shape = SubResource("Box_NorthWallEast")
+
+[node name="NorthWallWest" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-9.59, 1.92, -13.65)
+shape = SubResource("Box_NorthWallWest")
 
 [node name="SouthWall" type="CollisionShape3D" parent="Collision"]
-position = Vector3(0, 0.945, 13.65)
+position = Vector3(0, 0.91, 13.65)
 shape = SubResource("Box_SouthWall")
 
-[node name="EastWallN" type="CollisionShape3D" parent="Collision"]
-position = Vector3(13.65, 0.945, -8.03)
-shape = SubResource("Box_EastWallN")
+[node name="EastWall" type="CollisionShape3D" parent="Collision"]
+position = Vector3(13.65, 0.91, 0)
+shape = SubResource("Box_EastWall")
 
-[node name="EastWallS" type="CollisionShape3D" parent="Collision"]
-position = Vector3(13.65, 0.945, 8.03)
-shape = SubResource("Box_EastWallS")
+[node name="WestWallNorth" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-13.65, 1.53, -8.77)
+shape = SubResource("Box_WestWallNorth")
 
-[node name="WestWallN" type="CollisionShape3D" parent="Collision"]
-position = Vector3(-13.65, 2.32, -8.6)
-shape = SubResource("Box_WestWallN")
+[node name="WestWallSouth" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-13.65, 1.53, 8.77)
+shape = SubResource("Box_WestWallSouth")
 
-[node name="WestWallS" type="CollisionShape3D" parent="Collision"]
-position = Vector3(-13.65, 2.32, 8.6)
-shape = SubResource("Box_WestWallS")
+[node name="HallWallNorth" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-18.35, 1.54, -2.41)
+shape = SubResource("Box_HallWallNorth")
 
-[node name="HallWallN" type="CollisionShape3D" parent="Collision"]
-position = Vector3(-18, 2.32, -2.41)
-shape = SubResource("Box_HallWallN")
-
-[node name="HallWallS" type="CollisionShape3D" parent="Collision"]
-position = Vector3(-18, 0.945, 2.41)
-shape = SubResource("Box_HallWallS")
+[node name="HallWallSouth" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-18.35, 0.94, 2.41)
+shape = SubResource("Box_HallWallSouth")
 
 [node name="HallEndWall" type="CollisionShape3D" parent="Collision"]
-position = Vector3(-22.41, 2.32, 0)
+position = Vector3(-22.41, 1.53, 0)
 shape = SubResource("Box_HallEndWall")
 
-[node name="Brazier0" type="CollisionShape3D" parent="Collision"]
-position = Vector3(-11.3, 2.07, -11.3)
-shape = SubResource("Box_Brazier0")
+[node name="CageFloor" type="CollisionShape3D" parent="Collision"]
+position = Vector3(0, 0.16, -16.3)
+shape = SubResource("Box_CageFloor")
+
+[node name="CageSideEast" type="CollisionShape3D" parent="Collision"]
+position = Vector3(5.62, 2.42, -16.27)
+shape = SubResource("Box_CageSideEast")
+
+[node name="CageSideWest" type="CollisionShape3D" parent="Collision"]
+position = Vector3(-5.62, 2.42, -16.27)
+shape = SubResource("Box_CageSideWest")
+
+[node name="CageBack" type="CollisionShape3D" parent="Collision"]
+position = Vector3(0, 2.34, -18.4)
+shape = SubResource("Box_CageBack")
 
 [node name="Brazier1" type="CollisionShape3D" parent="Collision"]
-position = Vector3(11.3, 2.07, -11.3)
+position = Vector3(-11.8, 1.26, -11.9)
 shape = SubResource("Box_Brazier1")
 
 [node name="Brazier2" type="CollisionShape3D" parent="Collision"]
-position = Vector3(-11.3, 2.07, 11.3)
+position = Vector3(11.8, 1.26, -11.9)
 shape = SubResource("Box_Brazier2")
 
 [node name="Brazier3" type="CollisionShape3D" parent="Collision"]
-position = Vector3(11.3, 2.07, 11.3)
+position = Vector3(-11.8, 1.26, 11.9)
 shape = SubResource("Box_Brazier3")
 
-[node name="Rubble" type="CollisionShape3D" parent="Collision"]
-position = Vector3(5, 1.82, -11.6)
-shape = SubResource("Box_Rubble")
+[node name="Brazier4" type="CollisionShape3D" parent="Collision"]
+position = Vector3(11.8, 1.26, 11.9)
+shape = SubResource("Box_Brazier4")
 
 [node name="Anchors" type="Node3D" parent="."]
 
@@ -495,6 +258,10 @@ focus_target = NodePath("../Anchors/DenFocus")
 persistent_id = &"level_3.tiger.intro_seen"
 trigger_source = NodePath("../TigerFight")
 trigger_signal = &"intro_requested"
+
+
+[node name="ArenaPresentation" type="Node3D" parent="."]
+script = ExtResource("presentation")
 
 [node name="ExitReveal" type="Node3D" parent="."]
 script = ExtResource("flag_reveal")
