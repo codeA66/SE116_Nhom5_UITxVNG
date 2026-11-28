@@ -57,6 +57,7 @@
 [ext_resource type="Script" path="res://entities/player/data/currency_data.gd" id="56_souljade_type"]
 [ext_resource type="Script" path="res://components/utility/restore/restore_component.gd" id="57_restore"]
 [ext_resource type="PackedScene" path="res://ui/hud/tutorials/tutorial_popup.tscn" id="58_tutorial_popup"]
+[ext_resource type="PackedScene" path="res://ui/hud/prompt/item_notice/item_notice.tscn" id="59_item_notice"]
 
 [ext_resource type="PackedScene" path="res://components/elements/fire/burnable/burnable_component.tscn" id="92_burn"]
 [ext_resource type="PackedScene" path="res://assets/vfx/fire/burning/burning_vfx.tscn" id="93_burnvfx"]
@@ -215,6 +216,8 @@ currency = ExtResource("56_souljade")
 interactor = NodePath("../../Interactor")
 
 [node name="TutorialPopup" parent="HUD" instance=ExtResource("58_tutorial_popup")]
+
+[node name="ItemNotice" parent="HUD" instance=ExtResource("59_item_notice")]
 
 [node name="MenuLayer" type="CanvasLayer" parent="."]
 layer = 40

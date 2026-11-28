@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="TutorialData" format=3]
+
+[ext_resource type="Script" path="res://resources/tutorials/tutorial_data.gd" id="1_tut"]
+
+[resource]
+script = ExtResource("1_tut")
+id = &"arrow_rend_charm"
+title = "Bùa Đoạt Tiễn"
+category = "Hệ Thống"
+input_actions = Array[StringName]([&"inventory"])
+prompt_template = "Ra checkpoint ngoài cửa, nhấn {key1} rồi vào trang Bùa để đeo Bùa Đoạt Tiễn."
+summary = "Đeo Bùa Đoạt Tiễn ở checkpoint thì cổng ở phòng người chèo đò mới mở, dẫn tới hang hổ lửa."
+sections = Array[Dictionary]([{
+"heading": "Đeo ở checkpoint",
+"text": "Bùa chỉ đeo được khi đứng trong vùng sáng của miếu checkpoint. Checkpoint gần nhất nằm ngay ngoài cửa phòng người chèo đò.",
+"warning": true
+}, {
+"heading": "Mở đường tới hang hổ",
+"text": "Đeo bùa xong, quay lại phòng người chèo đò: cổng dịch chuyển sẽ mở và giữ luôn, tháo bùa sau đó cũng không đóng.",
+"warning": false
+}])
+hint = "[Tab] Mở Túi Đồ  •  [Z / C] Đổi trang  •  [Enter] Đeo / tháo bùa"
+lore = "Người chèo đò nói: thứ bùa này từng ghim cả tên bay của kẻ săn hổ."
+order = 7
+wait_for_action = true
+completion_charm = &"arrow_rend_charm"

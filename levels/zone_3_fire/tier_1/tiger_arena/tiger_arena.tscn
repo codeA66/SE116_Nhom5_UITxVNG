@@ -249,7 +249,7 @@ trigger_size = Vector3(24, 4, 24)
 visible_before_start = true
 introduction = NodePath("../TigerIntro")
 
-[node name="Spawn" parent="TigerFight"]
+[node name="Spawn" parent="TigerFight" index="1"]
 position = Vector3(0, 0, -8)
 
 [node name="TigerIntro" parent="." node_paths=PackedStringArray("focus_target", "trigger_source") instance=ExtResource("cutscene")]
@@ -273,3 +273,5 @@ rotation = Vector3(0, -1.5708, 0)
 portal_id = &"tiger_arena_exit"
 target_zone = "res://levels/zone_3_fire/tier_2/tier_2.tscn"
 target_portal_id = &"start"
+
+[editable path="TigerFight"]
